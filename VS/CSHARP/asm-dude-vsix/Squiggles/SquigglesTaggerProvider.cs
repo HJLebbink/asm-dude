@@ -39,21 +39,21 @@ namespace AsmDude.Squiggles
     internal sealed class SquigglesTaggerProvider : IViewTaggerProvider
     {
         [Import]
-        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private readonly IBufferTagAggregatorFactoryService aggregatorFactory_ = null;
 
         [Import]
-        private readonly ITextDocumentFactoryService _docFactory = null;
+        private readonly ITextDocumentFactoryService docFactory_ = null;
 
         [Import]
-        private readonly IContentTypeRegistryService _contentService = null;
+        private readonly IContentTypeRegistryService contentService_ = null;
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
             ITagger<T> sc()
             {
-                LabelGraph labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
-                AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
-                return new SquigglesTagger(buffer, this._aggregatorFactory, labelGraph, asmSimulator) as ITagger<T>;
+                LabelGraph labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, this.aggregatorFactory_, this.docFactory_, this.contentService_);
+                AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this.aggregatorFactory_);
+                return new SquigglesTagger(buffer, this.aggregatorFactory_, labelGraph, asmSimulator) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

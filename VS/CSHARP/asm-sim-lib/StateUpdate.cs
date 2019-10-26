@@ -32,92 +32,92 @@ namespace AsmSim
     public class StateUpdate : IDisposable
     {
         #region Fields
-        private readonly Tools _tools;
-        private readonly Context _ctx;
-        private string _nextKey;
-        private readonly string _prevKey_Regular;
-        private readonly string _prevKey_Branch;
-        private readonly BoolExpr _branch_Condition;
+        private readonly Tools tools_;
+        private readonly Context ctx_;
+        private string nextKey_;
+        private readonly string prevKey_Regular_;
+        private readonly string prevKey_Branch_;
+        private readonly BoolExpr branch_Condition_;
 
         public bool Empty { get; private set; }
 
         /// <summary>Gets or sets a value indicating whether gets if this stateUpdate is an update in which the state is reset.</summary>
         public bool Reset { get; set; }
 
-        private BranchInfo _branchInfo;
+        private BranchInfo branchInfo_;
 
-        private readonly object _ctxLock = new object();
+        private readonly object ctxLock_ = new object();
 
         #endregion
 
         #region Flags
-        private BoolExpr _cf = null;
-        private BoolExpr _pf = null;
-        private BoolExpr _af = null;
-        private BoolExpr _zf = null;
-        private BoolExpr _sf = null;
-        private BoolExpr _of = null;
-        private BoolExpr _df = null;
+        private BoolExpr cf_ = null;
+        private BoolExpr pf_ = null;
+        private BoolExpr af_ = null;
+        private BoolExpr zf_ = null;
+        private BoolExpr sf_ = null;
+        private BoolExpr of_ = null;
+        private BoolExpr df_ = null;
 
-        private BoolExpr _cf_U = null;
-        private BoolExpr _pf_U = null;
-        private BoolExpr _af_U = null;
-        private BoolExpr _zf_U = null;
-        private BoolExpr _sf_U = null;
-        private BoolExpr _of_U = null;
-        private BoolExpr _df_U = null;
+        private BoolExpr cf_U_ = null;
+        private BoolExpr pf_U_ = null;
+        private BoolExpr af_U_ = null;
+        private BoolExpr zf_U_ = null;
+        private BoolExpr sf_U_ = null;
+        private BoolExpr of_U_ = null;
+        private BoolExpr df_U_ = null;
         #endregion
 
         #region Registers
-        private BoolExpr _rax = null;
-        private BoolExpr _rbx = null;
-        private BoolExpr _rcx = null;
-        private BoolExpr _rdx = null;
+        private BoolExpr rax_ = null;
+        private BoolExpr rbx_ = null;
+        private BoolExpr rcx_ = null;
+        private BoolExpr rdx_ = null;
 
-        private BoolExpr _rsi = null;
-        private BoolExpr _rdi = null;
-        private BoolExpr _rbp = null;
-        private BoolExpr _rsp = null;
+        private BoolExpr rsi_ = null;
+        private BoolExpr rdi_ = null;
+        private BoolExpr rbp_ = null;
+        private BoolExpr rsp_ = null;
 
-        private BoolExpr _r8 = null;
-        private BoolExpr _r9 = null;
-        private BoolExpr _r10 = null;
-        private BoolExpr _r11 = null;
+        private BoolExpr r8_ = null;
+        private BoolExpr r9_ = null;
+        private BoolExpr r10_ = null;
+        private BoolExpr r11_ = null;
 
-        private BoolExpr _r12 = null;
-        private BoolExpr _r13 = null;
-        private BoolExpr _r14 = null;
-        private BoolExpr _r15 = null;
+        private BoolExpr r12_ = null;
+        private BoolExpr r13_ = null;
+        private BoolExpr r14_ = null;
+        private BoolExpr r15_ = null;
 
-        private BoolExpr _simd = null;
+        private BoolExpr simd_ = null;
 
-        private BoolExpr _rax_U = null;
-        private BoolExpr _rbx_U = null;
-        private BoolExpr _rcx_U = null;
-        private BoolExpr _rdx_U = null;
+        private BoolExpr rax_U_ = null;
+        private BoolExpr rbx_U_ = null;
+        private BoolExpr rcx_U_ = null;
+        private BoolExpr rdx_U_ = null;
 
-        private BoolExpr _rsi_U = null;
-        private BoolExpr _rdi_U = null;
-        private BoolExpr _rbp_U = null;
-        private BoolExpr _rsp_U = null;
+        private BoolExpr rsi_U_ = null;
+        private BoolExpr rdi_U_ = null;
+        private BoolExpr rbp_U_ = null;
+        private BoolExpr rsp_U_ = null;
 
-        private BoolExpr _r8_U = null;
-        private BoolExpr _r9_U = null;
-        private BoolExpr _r10_U = null;
-        private BoolExpr _r11_U = null;
+        private BoolExpr r8_U_ = null;
+        private BoolExpr r9_U_ = null;
+        private BoolExpr r10_U_ = null;
+        private BoolExpr r11_U_ = null;
 
-        private BoolExpr _r12_U = null;
-        private BoolExpr _r13_U = null;
-        private BoolExpr _r14_U = null;
-        private BoolExpr _r15_U = null;
+        private BoolExpr r12_U_ = null;
+        private BoolExpr r13_U_ = null;
+        private BoolExpr r14_U_ = null;
+        private BoolExpr r15_U_ = null;
 
-        private BoolExpr _simd_U = null;
+        private BoolExpr simd_U_ = null;
         #endregion
 
         #region Memory
-        private BoolExpr _mem_Update = null;
-        private BoolExpr _mem_Update_U = null;
-        private ArrayExpr _mem_Full = null;
+        private BoolExpr mem_Update_ = null;
+        private BoolExpr mem_Update_U_ = null;
+        private ArrayExpr mem_Full_ = null;
         #endregion
 
         #region Constructor
@@ -127,12 +127,12 @@ namespace AsmSim
         {
             Contract.Requires(tools != null);
 
-            this._branch_Condition = null;
-            this._prevKey_Regular = prevKey;
-            this._prevKey_Branch = null;
-            this._nextKey = nextKey;
-            this._tools = tools;
-            this._ctx = new Context(tools.Settings); // housekeeping in Dispose();
+            this.branch_Condition_ = null;
+            this.prevKey_Regular_ = prevKey;
+            this.prevKey_Branch_ = null;
+            this.nextKey_ = nextKey;
+            this.tools_ = tools;
+            this.ctx_ = new Context(tools.Settings); // housekeeping in Dispose();
             this.Empty = true;
         }
 
@@ -144,12 +144,12 @@ namespace AsmSim
             Contract.Requires(tools != null);
             Contract.Requires(branchCondition != null);
 
-            this._ctx = new Context(tools.Settings); // housekeeping in Dispose();
-            this._branch_Condition = branchCondition.Translate(this._ctx) as BoolExpr;
-            this._prevKey_Regular = prevKey_Regular;
-            this._prevKey_Branch = prevKey_Branch;
-            this._nextKey = nextKey;
-            this._tools = tools;
+            this.ctx_ = new Context(tools.Settings); // housekeeping in Dispose();
+            this.branch_Condition_ = branchCondition.Translate(this.ctx_) as BoolExpr;
+            this.prevKey_Regular_ = prevKey_Regular;
+            this.prevKey_Branch_ = prevKey_Branch;
+            this.nextKey_ = nextKey;
+            this.tools_ = tools;
             this.Empty = false;
         }
         #endregion
@@ -159,15 +159,15 @@ namespace AsmSim
         {
             Contract.Requires(state != null);
 
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
                 if (!this.Reset)
                 {
                     state.Assert(this.Value, false, true);
-                    state.Assert(this._simd, false, true);
+                    state.Assert(this.simd_, false, true);
                 }
                 state.Assert(this.Undef, true, true);
-                state.Assert(this._simd_U, true, true);
+                state.Assert(this.simd_U_, true, true);
 
                 state.Add(this.BranchInfo);
             }
@@ -177,70 +177,72 @@ namespace AsmSim
         public BitVecExpr NextLineNumberExpr { get; set; }
 
         #region Getters
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private IEnumerable<BoolExpr> Value
         {
             get
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
-                foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
+                foreach (Flags flag in this.tools_.StateConfig.GetFlagOn())
                 {
                     yield return this.Get_Private(flag, false);
                 }
-                foreach (Rn reg in this._tools.StateConfig.GetRegOn())
+                foreach (Rn reg in this.tools_.StateConfig.GetRegOn())
                 {
                     yield return this.Get_Private(reg, false);
                 }
-                if (this._tools.StateConfig.Mem)
+                if (this.tools_.StateConfig.Mem)
                 {
-                    if (this._mem_Full != null)
+                    if (this.mem_Full_ != null)
                     {
-                        yield return this._mem_Update ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), this._mem_Full);
+                        yield return this.mem_Update_ ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), this.mem_Full_);
                     }
                     else
                     {
-                        if (this._branch_Condition == null)
+                        if (this.branch_Condition_ == null)
                         {
-                            yield return this._mem_Update ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), Tools.Create_Mem_Key(this._prevKey_Regular, ctx));
+                            yield return this.mem_Update_ ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), Tools.Create_Mem_Key(this.prevKey_Regular_, ctx));
                         }
                         else
                         {
-                            yield return ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), ctx.MkITE(this._branch_Condition, Tools.Create_Mem_Key(this._prevKey_Regular, ctx), Tools.Create_Mem_Key(this._prevKey_Branch, ctx)));
+                            yield return ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), ctx.MkITE(this.branch_Condition_, Tools.Create_Mem_Key(this.prevKey_Regular_, ctx), Tools.Create_Mem_Key(this.prevKey_Branch_, ctx)));
                         }
                     }
                 }
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private IEnumerable<BoolExpr> Undef
         {
             get
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
-                foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
+                foreach (Flags flag in this.tools_.StateConfig.GetFlagOn())
                 {
                     yield return this.Get_Private(flag, true);
                 }
-                foreach (Rn reg in this._tools.StateConfig.GetRegOn())
+                foreach (Rn reg in this.tools_.StateConfig.GetRegOn())
                 {
                     yield return this.Get_Private(reg, true);
                 }
-                if (this._tools.StateConfig.Mem)
+                if (this.tools_.StateConfig.Mem)
                 {
-                    if (this._mem_Full != null)
+                    if (this.mem_Full_ != null)
                     {
-                        yield return this._mem_Update_U ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), this._mem_Full);
+                        yield return this.mem_Update_U_ ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), this.mem_Full_);
                     }
                     else
                     {
-                        if (this._branch_Condition == null)
+                        if (this.branch_Condition_ == null)
                         {
-                            yield return this._mem_Update_U ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), Tools.Create_Mem_Key(this._prevKey_Regular, ctx));
+                            yield return this.mem_Update_U_ ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), Tools.Create_Mem_Key(this.prevKey_Regular_, ctx));
                         }
                         else
                         {
-                            yield return ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), ctx.MkITE(this._branch_Condition, Tools.Create_Mem_Key(this._prevKey_Regular, ctx), Tools.Create_Mem_Key(this._prevKey_Branch, ctx)));
+                            yield return ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), ctx.MkITE(this.branch_Condition_, Tools.Create_Mem_Key(this.prevKey_Regular_, ctx), Tools.Create_Mem_Key(this.prevKey_Branch_, ctx)));
                         }
                     }
                 }
@@ -249,7 +251,7 @@ namespace AsmSim
 
         public BranchInfo BranchInfo
         {
-            get { return this._branchInfo; }
+            get { return this.branchInfo_; }
 
             set
             {
@@ -258,29 +260,30 @@ namespace AsmSim
                     this.Empty = false;
                 }
 
-                if (this._branchInfo != null)
+                if (this.branchInfo_ != null)
                 {
                     Console.WriteLine("WARNING: StatusUpdate:BranchInfo.Set: branchInfo is already set.");
                 }
 
-                this._branchInfo = value;
+                this.branchInfo_ = value;
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private BoolExpr Get_Private(Rn reg, bool undef)
         {
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
-                Context ctx = this._ctx;
-                if (this._branch_Condition == null)
+                Context ctx = this.ctx_;
+                if (this.branch_Condition_ == null)
                 {
-                    return this.Get_Raw_Private(reg, undef) ?? ctx.MkEq(Tools.Create_Key(reg, this.NextKey, ctx), Tools.Create_Key(reg, this._prevKey_Regular, ctx));
+                    return this.Get_Raw_Private(reg, undef) ?? ctx.MkEq(Tools.Create_Key(reg, this.NextKey, ctx), Tools.Create_Key(reg, this.prevKey_Regular_, ctx));
                 }
                 else
                 {
                     return ctx.MkEq(
                         Tools.Create_Key(reg, this.NextKey, ctx),
-                        ctx.MkITE(this._branch_Condition, Tools.Create_Key(reg, this._prevKey_Regular, ctx), Tools.Create_Key(reg, this._prevKey_Branch, ctx)));
+                        ctx.MkITE(this.branch_Condition_, Tools.Create_Key(reg, this.prevKey_Regular_, ctx), Tools.Create_Key(reg, this.prevKey_Branch_, ctx)));
                 }
             }
         }
@@ -289,47 +292,48 @@ namespace AsmSim
         {
             switch (reg)
             {
-                case Rn.RAX: return undef ? this._rax_U : this._rax;
-                case Rn.RBX: return undef ? this._rbx_U : this._rbx;
-                case Rn.RCX: return undef ? this._rcx_U : this._rcx;
-                case Rn.RDX: return undef ? this._rdx_U : this._rdx;
+                case Rn.RAX: return undef ? this.rax_U_ : this.rax_;
+                case Rn.RBX: return undef ? this.rbx_U_ : this.rbx_;
+                case Rn.RCX: return undef ? this.rcx_U_ : this.rcx_;
+                case Rn.RDX: return undef ? this.rdx_U_ : this.rdx_;
 
-                case Rn.RSI: return undef ? this._rsi_U : this._rsi;
-                case Rn.RDI: return undef ? this._rdi_U : this._rdi;
-                case Rn.RBP: return undef ? this._rbp_U : this._rbp;
-                case Rn.RSP: return undef ? this._rsp_U : this._rsp;
+                case Rn.RSI: return undef ? this.rsi_U_ : this.rsi_;
+                case Rn.RDI: return undef ? this.rdi_U_ : this.rdi_;
+                case Rn.RBP: return undef ? this.rbp_U_ : this.rbp_;
+                case Rn.RSP: return undef ? this.rsp_U_ : this.rsp_;
 
-                case Rn.R8: return undef ? this._r8_U : this._r8;
-                case Rn.R9: return undef ? this._r9_U : this._r9;
-                case Rn.R10: return undef ? this._r10_U : this._r10;
-                case Rn.R11: return undef ? this._r11_U : this._r11;
+                case Rn.R8: return undef ? this.r8_U_ : this.r8_;
+                case Rn.R9: return undef ? this.r9_U_ : this.r9_;
+                case Rn.R10: return undef ? this.r10_U_ : this.r10_;
+                case Rn.R11: return undef ? this.r11_U_ : this.r11_;
 
-                case Rn.R12: return undef ? this._r12_U : this._r12;
-                case Rn.R13: return undef ? this._r13_U : this._r13;
-                case Rn.R14: return undef ? this._r14_U : this._r14;
-                case Rn.R15: return undef ? this._r15_U : this._r15;
+                case Rn.R12: return undef ? this.r12_U_ : this.r12_;
+                case Rn.R13: return undef ? this.r13_U_ : this.r13_;
+                case Rn.R14: return undef ? this.r14_U_ : this.r14_;
+                case Rn.R15: return undef ? this.r15_U_ : this.r15_;
 
                 default: throw new Exception();
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private BoolExpr Get_Private(Flags flag, bool undef)
         {
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
-                Context ctx = this._ctx;
-                if (this._branch_Condition == null)
+                Context ctx = this.ctx_;
+                if (this.branch_Condition_ == null)
                 {
                     BoolExpr f1 = Tools.Create_Key(flag, this.NextKey, ctx);
-                    BoolExpr f2 = Tools.Create_Key(flag, this._prevKey_Regular, ctx);
+                    BoolExpr f2 = Tools.Create_Key(flag, this.prevKey_Regular_, ctx);
                     return this.Get_Raw_Private(flag, undef) ?? ctx.MkEq(f1, f2);
                 }
                 else
                 {
                     BoolExpr f1 = Tools.Create_Key(flag, this.NextKey, ctx);
-                    BoolExpr f2 = Tools.Create_Key(flag, this._prevKey_Regular, ctx);
-                    BoolExpr f3 = Tools.Create_Key(flag, this._prevKey_Branch, ctx);
-                    return ctx.MkEq(f1, ctx.MkITE(this._branch_Condition, f2, f3));
+                    BoolExpr f2 = Tools.Create_Key(flag, this.prevKey_Regular_, ctx);
+                    BoolExpr f3 = Tools.Create_Key(flag, this.prevKey_Branch_, ctx);
+                    return ctx.MkEq(f1, ctx.MkITE(this.branch_Condition_, f2, f3));
                 }
             }
         }
@@ -338,13 +342,13 @@ namespace AsmSim
         {
             switch (flag)
             {
-                case Flags.CF: return undef ? this._cf_U : this._cf;
-                case Flags.PF: return undef ? this._pf_U : this._pf;
-                case Flags.AF: return undef ? this._af_U : this._af;
-                case Flags.ZF: return undef ? this._zf_U : this._zf;
-                case Flags.SF: return undef ? this._sf_U : this._sf;
-                case Flags.OF: return undef ? this._of_U : this._of;
-                case Flags.DF: return undef ? this._df_U : this._df;
+                case Flags.CF: return undef ? this.cf_U_ : this.cf_;
+                case Flags.PF: return undef ? this.pf_U_ : this.pf_;
+                case Flags.AF: return undef ? this.af_U_ : this.af_;
+                case Flags.ZF: return undef ? this.zf_U_ : this.zf_;
+                case Flags.SF: return undef ? this.sf_U_ : this.sf_;
+                case Flags.OF: return undef ? this.of_U_ : this.of_;
+                case Flags.DF: return undef ? this.df_U_ : this.df_;
                 default: throw new Exception();
             }
         }
@@ -352,66 +356,67 @@ namespace AsmSim
 
         #region Setters
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public string NextKey
         {
-            get { return this._nextKey; }
+            get { return this.nextKey_; }
 
             set
             {
-                if (this._nextKey == null)
+                if (this.nextKey_ == null)
                 {
-                    this._nextKey = value;
+                    this.nextKey_ = value;
                 }
-                else if (this._nextKey != value)
+                else if (this.nextKey_ != value)
                 {
-                    Context ctx = this._ctx;
+                    Context ctx = this.ctx_;
 
-                    foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
+                    foreach (Flags flag in this.tools_.StateConfig.GetFlagOn())
                     {
                         {
                             BoolExpr expr = this.Get_Raw_Private(flag, false);
                             if (expr != null)
                             {
-                                this.Set_Private(flag, expr.Substitute(Tools.Create_Key(flag, this._nextKey, ctx), Tools.Create_Key(flag, value, ctx)) as BoolExpr, false);
+                                this.Set_Private(flag, expr.Substitute(Tools.Create_Key(flag, this.nextKey_, ctx), Tools.Create_Key(flag, value, ctx)) as BoolExpr, false);
                             }
                         }
                         {
                             BoolExpr expr = this.Get_Raw_Private(flag, true);
                             if (expr != null)
                             {
-                                this.Set_Private(flag, expr.Substitute(Tools.Create_Key(flag, this._nextKey, ctx), Tools.Create_Key(flag, value, ctx)) as BoolExpr, true);
+                                this.Set_Private(flag, expr.Substitute(Tools.Create_Key(flag, this.nextKey_, ctx), Tools.Create_Key(flag, value, ctx)) as BoolExpr, true);
                             }
                         }
                     }
-                    foreach (Rn reg in this._tools.StateConfig.GetRegOn())
+                    foreach (Rn reg in this.tools_.StateConfig.GetRegOn())
                     {
                         {
                             BoolExpr expr = this.Get_Raw_Private(reg, false);
                             if (expr != null)
                             {
-                                this.Set_Private(reg, expr.Substitute(Tools.Create_Key(reg, this._nextKey, ctx), Tools.Create_Key(reg, value, ctx)) as BoolExpr, false);
+                                this.Set_Private(reg, expr.Substitute(Tools.Create_Key(reg, this.nextKey_, ctx), Tools.Create_Key(reg, value, ctx)) as BoolExpr, false);
                             }
                         }
                         {
                             BoolExpr expr = this.Get_Raw_Private(reg, true);
                             if (expr != null)
                             {
-                                this.Set_Private(reg, expr.Substitute(Tools.Create_Key(reg, this._nextKey, ctx), Tools.Create_Key(reg, value, ctx)) as BoolExpr, true);
+                                this.Set_Private(reg, expr.Substitute(Tools.Create_Key(reg, this.nextKey_, ctx), Tools.Create_Key(reg, value, ctx)) as BoolExpr, true);
                             }
                         }
                     }
-                    if (this._tools.StateConfig.Mem)
+                    if (this.tools_.StateConfig.Mem)
                     {
-                        if (this._mem_Update != null)
+                        if (this.mem_Update_ != null)
                         {
-                            this._mem_Update = this._mem_Update.Substitute(Tools.Create_Mem_Key(this._nextKey, ctx), Tools.Create_Mem_Key(value, ctx)) as BoolExpr;
+                            this.mem_Update_ = this.mem_Update_.Substitute(Tools.Create_Mem_Key(this.nextKey_, ctx), Tools.Create_Mem_Key(value, ctx)) as BoolExpr;
                         }
-                        if (this._mem_Update_U != null)
+                        if (this.mem_Update_U_ != null)
                         {
-                            this._mem_Update_U = this._mem_Update_U.Substitute(Tools.Create_Mem_Key(this._nextKey, ctx), Tools.Create_Mem_Key(value, ctx)) as BoolExpr;
+                            this.mem_Update_U_ = this.mem_Update_U_.Substitute(Tools.Create_Mem_Key(this.nextKey_, ctx), Tools.Create_Mem_Key(value, ctx)) as BoolExpr;
                         }
                     }
-                    this._nextKey = value;
+                    this.nextKey_ = value;
                 }
             }
         }
@@ -424,13 +429,13 @@ namespace AsmSim
 
         public void Set(Flags flag, Tv value)
         {
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
                 switch (value)
                 {
-                    case Tv.ZERO: this.Set(flag, this._ctx.MkFalse()); break;
-                    case Tv.ONE: this.Set(flag, this._ctx.MkTrue()); break;
-                    case Tv.UNKNOWN: this.Set(flag, null, this._ctx.MkTrue()); break;
+                    case Tv.ZERO: this.Set(flag, this.ctx_.MkFalse()); break;
+                    case Tv.ONE: this.Set(flag, this.ctx_.MkTrue()); break;
+                    case Tv.UNKNOWN: this.Set(flag, null, this.ctx_.MkTrue()); break;
                     case Tv.UNDEFINED: this.Set(flag, null, null); break;
                     default: throw new Exception();
                 }
@@ -442,13 +447,14 @@ namespace AsmSim
             this.Set(flag, value, value);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set(Flags flag, BoolExpr value, BoolExpr undef)
         {
             this.Empty = false;
 
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
                 value = value?.Translate(ctx) as BoolExpr;
                 undef = undef?.Translate(ctx) as BoolExpr;
@@ -458,7 +464,7 @@ namespace AsmSim
                 {
                     if (value == null)
                     {
-                        value_Constraint = ctx.MkEq(key, Tools.Create_Flag_Key_Fresh(flag, this._tools.Rand, ctx));
+                        value_Constraint = ctx.MkEq(key, Tools.Create_Flag_Key_Fresh(flag, this.tools_.Rand, ctx));
                     }
                     else if (value.IsTrue)
                     {
@@ -477,7 +483,7 @@ namespace AsmSim
                 {
                     if (undef == null)
                     {
-                        undef_Constraint = ctx.MkEq(key, Tools.Create_Flag_Key_Fresh(flag, this._tools.Rand, ctx));
+                        undef_Constraint = ctx.MkEq(key, Tools.Create_Flag_Key_Fresh(flag, this.tools_.Rand, ctx));
                     }
                     else if (undef.IsTrue)
                     {
@@ -498,14 +504,15 @@ namespace AsmSim
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set_SF_ZF_PF(BitVecExpr value)
         {
             Contract.Requires(value != null);
             this.Empty = false;
 
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 value = value.Translate(ctx) as BitVecExpr;
                 this.Set(Flags.SF, ToolsFlags.Create_SF(value, value.SortSize, ctx));
                 this.Set(Flags.ZF, ToolsFlags.Create_ZF(value, ctx));
@@ -520,71 +527,71 @@ namespace AsmSim
                 case Flags.CF:
                     if (undef)
                     {
-                        this._cf_U = value;
+                        this.cf_U_ = value;
                     }
                     else
                     {
-                        this._cf = value;
+                        this.cf_ = value;
                     }
                     break;
                 case Flags.PF:
                     if (undef)
                     {
-                        this._pf_U = value;
+                        this.pf_U_ = value;
                     }
                     else
                     {
-                        this._pf = value;
+                        this.pf_ = value;
                     }
                     break;
                 case Flags.AF:
                     if (undef)
                     {
-                        this._af_U = value;
+                        this.af_U_ = value;
                     }
                     else
                     {
-                        this._af = value;
+                        this.af_ = value;
                     }
                     break;
                 case Flags.ZF:
                     if (undef)
                     {
-                        this._zf_U = value;
+                        this.zf_U_ = value;
                     }
                     else
                     {
-                        this._zf = value;
+                        this.zf_ = value;
                     }
                     break;
                 case Flags.SF:
                     if (undef)
                     {
-                        this._sf_U = value;
+                        this.sf_U_ = value;
                     }
                     else
                     {
-                        this._sf = value;
+                        this.sf_ = value;
                     }
                     break;
                 case Flags.OF:
                     if (undef)
                     {
-                        this._of_U = value;
+                        this.of_U_ = value;
                     }
                     else
                     {
-                        this._of = value;
+                        this.of_ = value;
                     }
                     break;
                 case Flags.DF:
                     if (undef)
                     {
-                        this._df_U = value;
+                        this.df_U_ = value;
                     }
                     else
                     {
-                        this._df = value;
+                        this.df_ = value;
                     }
                     break;
                 default: throw new Exception();
@@ -596,7 +603,7 @@ namespace AsmSim
         #region Set Register
         public void Set(Rn reg, ulong value)
         {
-            BitVecExpr valueExpr = this._ctx.MkBV(value, (uint)RegisterTools.NBits(reg));
+            BitVecExpr valueExpr = this.ctx_.MkBV(value, (uint)RegisterTools.NBits(reg));
             this.Set(reg, valueExpr, valueExpr);
         }
 
@@ -607,19 +614,20 @@ namespace AsmSim
 
         public void Set(Rn reg, Tv[] value)
         {
-            (BitVecExpr value, BitVecExpr undef) tup = ToolsZ3.MakeVecExpr(value, this._ctx);
+            (BitVecExpr value, BitVecExpr undef) tup = ToolsZ3.MakeVecExpr(value, this.ctx_);
             this.Set(reg, tup.value, tup.undef);
         }
 
         /// <summary> Fill all bits of the provided register with the provided truth-value</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set(Rn reg, Tv value)
         {
             switch (value)
             {
                 case Tv.ZERO: this.Set(reg, 0UL); break;
                 case Tv.UNKNOWN:
-                    BitVecExpr unknown = Tools.Create_Reg_Key_Fresh(reg, this._tools.Rand, this._ctx);
-                    this.Set(reg, unknown, this._ctx.MkBV(0, (uint)RegisterTools.NBits(reg)));
+                    BitVecExpr unknown = Tools.Create_Reg_Key_Fresh(reg, this.tools_.Rand, this.ctx_);
+                    this.Set(reg, unknown, this.ctx_.MkBV(0, (uint)RegisterTools.NBits(reg)));
                     break;
                 case Tv.INCONSISTENT:
                 case Tv.UNDEFINED:
@@ -635,6 +643,7 @@ namespace AsmSim
             this.Set(reg, value, value);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set(Rn reg, BitVecExpr value, BitVecExpr undef)
         {
             Contract.Requires(value != null);
@@ -642,9 +651,9 @@ namespace AsmSim
 
             this.Empty = false;
 
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
                 value = value.Translate(ctx) as BitVecExpr;
                 undef = undef.Translate(ctx) as BitVecExpr;
@@ -664,7 +673,7 @@ namespace AsmSim
                             }
                         case 16:
                             {
-                                BitVecExpr reg64Expr = Tools.Create_Key(reg64, this._prevKey_Regular, ctx);
+                                BitVecExpr reg64Expr = Tools.Create_Key(reg64, this.prevKey_Regular_, ctx);
                                 BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
                                 value = ctx.MkConcat(prefix, value);
                                 undef = ctx.MkConcat(prefix, undef);
@@ -672,7 +681,7 @@ namespace AsmSim
                             }
                         case 8:
                             {
-                                BitVecExpr reg64Expr = Tools.Create_Key(reg64, this._prevKey_Regular, ctx);
+                                BitVecExpr reg64Expr = Tools.Create_Key(reg64, this.prevKey_Regular_, ctx);
                                 if (RegisterTools.Is8BitHigh(reg))
                                 {
                                     BitVecExpr postFix = ctx.MkExtract(7, 0, reg64Expr);
@@ -712,7 +721,7 @@ namespace AsmSim
                 {
                     uint max = 512 * 32;
 
-                    BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this._prevKey_Regular), max);
+                    BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this.prevKey_Regular_), max);
                     (uint high, uint low) = Tools.SIMD_Extract_Range(reg);
 
                     BitVecExpr top = null;
@@ -737,8 +746,8 @@ namespace AsmSim
                     BitVecExpr nextKey = ctx.MkBVConst(Tools.Reg_Name(reg, this.NextKey), 512 * 32);
                     //Debug.Assert(newValue.SortSize == nextKey.SortSize);
 
-                    this._simd = ctx.MkEq(nextKey, newValue);
-                    this._simd_U = ctx.MkEq(nextKey, newUndef);
+                    this.simd_ = ctx.MkEq(nextKey, newValue);
+                    this.simd_U_ = ctx.MkEq(nextKey, newUndef);
                 }
                 else
                 {
@@ -754,164 +763,164 @@ namespace AsmSim
                 case Rn.RAX:
                     if (undef)
                     {
-                        this._rax_U = value;
+                        this.rax_U_ = value;
                     }
                     else
                     {
-                        this._rax = value;
+                        this.rax_ = value;
                     }
                     break;
                 case Rn.RBX:
                     if (undef)
                     {
-                        this._rbx_U = value;
+                        this.rbx_U_ = value;
                     }
                     else
                     {
-                        this._rbx = value;
+                        this.rbx_ = value;
                     }
                     break;
                 case Rn.RCX:
                     if (undef)
                     {
-                        this._rcx_U = value;
+                        this.rcx_U_ = value;
                     }
                     else
                     {
-                        this._rcx = value;
+                        this.rcx_ = value;
                     }
                     break;
                 case Rn.RDX:
                     if (undef)
                     {
-                        this._rdx_U = value;
+                        this.rdx_U_ = value;
                     }
                     else
                     {
-                        this._rdx = value;
+                        this.rdx_ = value;
                     }
                     break;
 
                 case Rn.RSI:
                     if (undef)
                     {
-                        this._rsi_U = value;
+                        this.rsi_U_ = value;
                     }
                     else
                     {
-                        this._rsi = value;
+                        this.rsi_ = value;
                     }
                     break;
                 case Rn.RDI:
                     if (undef)
                     {
-                        this._rdi_U = value;
+                        this.rdi_U_ = value;
                     }
                     else
                     {
-                        this._rdi = value;
+                        this.rdi_ = value;
                     }
                     break;
                 case Rn.RBP:
                     if (undef)
                     {
-                        this._rbp_U = value;
+                        this.rbp_U_ = value;
                     }
                     else
                     {
-                        this._rbp = value;
+                        this.rbp_ = value;
                     }
                     break;
                 case Rn.RSP:
                     if (undef)
                     {
-                        this._rsp_U = value;
+                        this.rsp_U_ = value;
                     }
                     else
                     {
-                        this._rsp = value;
+                        this.rsp_ = value;
                     }
                     break;
 
                 case Rn.R8:
                     if (undef)
                     {
-                        this._r8_U = value;
+                        this.r8_U_ = value;
                     }
                     else
                     {
-                        this._r8 = value;
+                        this.r8_ = value;
                     }
                     break;
                 case Rn.R9:
                     if (undef)
                     {
-                        this._r9_U = value;
+                        this.r9_U_ = value;
                     }
                     else
                     {
-                        this._r9 = value;
+                        this.r9_ = value;
                     }
                     break;
                 case Rn.R10:
                     if (undef)
                     {
-                        this._r10_U = value;
+                        this.r10_U_ = value;
                     }
                     else
                     {
-                        this._r10 = value;
+                        this.r10_ = value;
                     }
                     break;
                 case Rn.R11:
                     if (undef)
                     {
-                        this._r11_U = value;
+                        this.r11_U_ = value;
                     }
                     else
                     {
-                        this._r11 = value;
+                        this.r11_ = value;
                     }
                     break;
 
                 case Rn.R12:
                     if (undef)
                     {
-                        this._r12_U = value;
+                        this.r12_U_ = value;
                     }
                     else
                     {
-                        this._r12 = value;
+                        this.r12_ = value;
                     }
                     break;
                 case Rn.R13:
                     if (undef)
                     {
-                        this._r13_U = value;
+                        this.r13_U_ = value;
                     }
                     else
                     {
-                        this._r13 = value;
+                        this.r13_ = value;
                     }
                     break;
                 case Rn.R14:
                     if (undef)
                     {
-                        this._r14_U = value;
+                        this.r14_U_ = value;
                     }
                     else
                     {
-                        this._r14 = value;
+                        this.r14_ = value;
                     }
                     break;
                 case Rn.R15:
                     if (undef)
                     {
-                        this._r15_U = value;
+                        this.r15_U_ = value;
                     }
                     else
                     {
-                        this._r15 = value;
+                        this.r15_ = value;
                     }
                     break;
 
@@ -923,7 +932,7 @@ namespace AsmSim
         #region Set Memory
         public void Set_Mem(BitVecExpr address, ulong value, int nBytes)
         {
-            BitVecExpr valueExpr = this._ctx.MkBV(value, (uint)nBytes << 3);
+            BitVecExpr valueExpr = this.ctx_.MkBV(value, (uint)nBytes << 3);
             this.Set_Mem(address, valueExpr);
         }
 
@@ -934,7 +943,7 @@ namespace AsmSim
 
         public void Set_Mem(BitVecExpr address, Tv[] value)
         {
-            (BitVecExpr value, BitVecExpr undef) tup = ToolsZ3.MakeVecExpr(value, this._ctx);
+            (BitVecExpr value, BitVecExpr undef) tup = ToolsZ3.MakeVecExpr(value, this.ctx_);
             this.Set_Mem(address, tup.value, tup.undef);
         }
 
@@ -943,6 +952,7 @@ namespace AsmSim
             this.Set_Mem(address, value, value);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set_Mem(BitVecExpr address, BitVecExpr value, BitVecExpr undef)
         {
             Contract.Requires(address != null);
@@ -951,25 +961,25 @@ namespace AsmSim
 
             this.Empty = false;
 
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 address = address.Translate(ctx) as BitVecExpr;
                 value = value.Translate(ctx) as BitVecExpr;
                 undef = undef.Translate(ctx) as BitVecExpr;
 
-                ArrayExpr newMemContent = Tools.Set_Value_To_Mem(value, address, this._prevKey_Regular, ctx);
-                ArrayExpr newMemContent_U = Tools.Set_Value_To_Mem(undef, address, this._prevKey_Regular, ctx);
+                ArrayExpr newMemContent = Tools.Set_Value_To_Mem(value, address, this.prevKey_Regular_, ctx);
+                ArrayExpr newMemContent_U = Tools.Set_Value_To_Mem(undef, address, this.prevKey_Regular_, ctx);
                 ArrayExpr memKey = Tools.Create_Mem_Key(this.NextKey, ctx);
 
                 //Console.WriteLine("SetMem: memKey=" + memKey + "; new Value=" + newMemContent);
-                if (this._mem_Update != null)
+                if (this.mem_Update_ != null)
                 {
                     Console.WriteLine("WARNING: StateUpdate:SetMem: multiple memory updates are not allowed");
                     //throw new Exception("Multiple memory updates are not allowed");
                 }
-                this._mem_Update = ctx.MkEq(memKey, newMemContent);
-                this._mem_Update_U = ctx.MkEq(memKey, newMemContent_U);
+                this.mem_Update_ = ctx.MkEq(memKey, newMemContent);
+                this.mem_Update_U_ = ctx.MkEq(memKey, newMemContent_U);
             }
         }
 
@@ -979,18 +989,18 @@ namespace AsmSim
 
             this.Empty = false;
 
-            if (this._mem_Full != null)
+            if (this.mem_Full_ != null)
             {
                 Console.WriteLine("WARNING: StateUpdate:SetMem: multiple memory updates are not allowed");
                 //throw new Exception("Multiple memory updates are not allowed");
             }
-            this._mem_Full = memContent.Translate(this._ctx) as ArrayExpr;
+            this.mem_Full_ = memContent.Translate(this.ctx_) as ArrayExpr;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set_Mem_Unknown()
         {
-            this.Set_Mem(Tools.Create_Mem_Key_Fresh(this._tools.Rand, this._ctx));
+            this.Set_Mem(Tools.Create_Mem_Key_Fresh(this.tools_.Rand, this.ctx_));
         }
 
         #endregion
@@ -1011,7 +1021,7 @@ namespace AsmSim
             }
             else if (operand.IsMem)
             {
-                BitVecExpr address = Tools.Calc_Effective_Address(operand, this._prevKey_Regular, this._ctx);
+                BitVecExpr address = Tools.Calc_Effective_Address(operand, this.prevKey_Regular_, this.ctx_);
                 this.Set_Mem(address, value, undef);
             }
             else
@@ -1028,7 +1038,7 @@ namespace AsmSim
         public string ToString2()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
+            foreach (Flags flag in this.tools_.StateConfig.GetFlagOn())
             {
                 BoolExpr b = this.Get_Raw_Private(flag, true);
                 if (b != null)
@@ -1036,7 +1046,7 @@ namespace AsmSim
                     sb.AppendLine(flag + ": " + ToolsZ3.ToString(b));
                 }
             }
-            foreach (Rn reg in this._tools.StateConfig.GetRegOn())
+            foreach (Rn reg in this.tools_.StateConfig.GetRegOn())
             {
                 BoolExpr b = this.Get_Raw_Private(reg, true);
                 if (b != null)
@@ -1044,16 +1054,16 @@ namespace AsmSim
                     sb.AppendLine(reg + ": " + ToolsZ3.ToString(b));
                 }
             }
-            if (this._branchInfo != null)
+            if (this.branchInfo_ != null)
             {
-                sb.AppendLine(this._branchInfo.ToString());
+                sb.AppendLine(this.branchInfo_.ToString());
             }
             return sb.ToString();
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("StateUpdate: PrevKey=" + this._prevKey_Regular + "; NextKey=" + this.NextKey + " ");
+            StringBuilder sb = new StringBuilder("StateUpdate: PrevKey=" + this.prevKey_Regular_ + "; NextKey=" + this.NextKey + " ");
             if (this.Empty)
             {
                 sb.AppendLine("Empty UpdateState");
@@ -1064,7 +1074,7 @@ namespace AsmSim
                 sb.AppendLine("Reset UpdateState");
             }
 
-            foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
+            foreach (Flags flag in this.tools_.StateConfig.GetFlagOn())
             {
                 BoolExpr b = this.Get_Raw_Private(flag, true);
                 if (b != null)
@@ -1072,7 +1082,7 @@ namespace AsmSim
                     sb.AppendLine(flag + ": " + ToolsZ3.ToString(b));
                 }
             }
-            foreach (Rn reg in this._tools.StateConfig.GetRegOn())
+            foreach (Rn reg in this.tools_.StateConfig.GetRegOn())
             {
                 BoolExpr b = this.Get_Raw_Private(reg, true);
                 if (b != null)
@@ -1080,9 +1090,9 @@ namespace AsmSim
                     sb.AppendLine(reg + ": " + ToolsZ3.ToString(b));
                 }
             }
-            if (this._branchInfo != null)
+            if (this.branchInfo_ != null)
             {
-                sb.AppendLine(this._branchInfo.ToString());
+                sb.AppendLine(this.branchInfo_.ToString());
             }
             return sb.ToString();
         }
@@ -1093,72 +1103,72 @@ namespace AsmSim
         public void Dispose()
         {
             this.Disposed = true;
-            lock (this._ctxLock)
+            lock (this.ctxLock_)
             {
-                this._cf?.Dispose();
-                this._pf?.Dispose();
-                this._af?.Dispose();
-                this._zf?.Dispose();
-                this._sf?.Dispose();
-                this._of?.Dispose();
-                this._df?.Dispose();
+                this.cf_?.Dispose();
+                this.pf_?.Dispose();
+                this.af_?.Dispose();
+                this.zf_?.Dispose();
+                this.sf_?.Dispose();
+                this.of_?.Dispose();
+                this.df_?.Dispose();
 
-                this._cf_U?.Dispose();
-                this._pf_U?.Dispose();
-                this._af_U?.Dispose();
-                this._zf_U?.Dispose();
-                this._sf_U?.Dispose();
-                this._of_U?.Dispose();
-                this._df_U?.Dispose();
+                this.cf_U_?.Dispose();
+                this.pf_U_?.Dispose();
+                this.af_U_?.Dispose();
+                this.zf_U_?.Dispose();
+                this.sf_U_?.Dispose();
+                this.of_U_?.Dispose();
+                this.df_U_?.Dispose();
 
-                this._rax?.Dispose();
-                this._rbx?.Dispose();
-                this._rcx?.Dispose();
-                this._rdx?.Dispose();
+                this.rax_?.Dispose();
+                this.rbx_?.Dispose();
+                this.rcx_?.Dispose();
+                this.rdx_?.Dispose();
 
-                this._rsi?.Dispose();
-                this._rdi?.Dispose();
-                this._rbp?.Dispose();
-                this._rsp?.Dispose();
+                this.rsi_?.Dispose();
+                this.rdi_?.Dispose();
+                this.rbp_?.Dispose();
+                this.rsp_?.Dispose();
 
-                this._r8?.Dispose();
-                this._r9?.Dispose();
-                this._r10?.Dispose();
-                this._r11?.Dispose();
+                this.r8_?.Dispose();
+                this.r9_?.Dispose();
+                this.r10_?.Dispose();
+                this.r11_?.Dispose();
 
-                this._r12?.Dispose();
-                this._r13?.Dispose();
-                this._r14?.Dispose();
-                this._r15?.Dispose();
+                this.r12_?.Dispose();
+                this.r13_?.Dispose();
+                this.r14_?.Dispose();
+                this.r15_?.Dispose();
 
-                this._simd?.Dispose();
+                this.simd_?.Dispose();
 
-                this._rax_U?.Dispose();
-                this._rbx_U?.Dispose();
-                this._rcx_U?.Dispose();
-                this._rdx_U?.Dispose();
+                this.rax_U_?.Dispose();
+                this.rbx_U_?.Dispose();
+                this.rcx_U_?.Dispose();
+                this.rdx_U_?.Dispose();
 
-                this._rsi_U?.Dispose();
-                this._rdi_U?.Dispose();
-                this._rbp_U?.Dispose();
-                this._rsp_U?.Dispose();
+                this.rsi_U_?.Dispose();
+                this.rdi_U_?.Dispose();
+                this.rbp_U_?.Dispose();
+                this.rsp_U_?.Dispose();
 
-                this._r8_U?.Dispose();
-                this._r9_U?.Dispose();
-                this._r10_U?.Dispose();
-                this._r11_U?.Dispose();
+                this.r8_U_?.Dispose();
+                this.r9_U_?.Dispose();
+                this.r10_U_?.Dispose();
+                this.r11_U_?.Dispose();
 
-                this._r12_U?.Dispose();
-                this._r13_U?.Dispose();
-                this._r14_U?.Dispose();
-                this._r15_U?.Dispose();
+                this.r12_U_?.Dispose();
+                this.r13_U_?.Dispose();
+                this.r14_U_?.Dispose();
+                this.r15_U_?.Dispose();
 
-                this._simd_U?.Dispose();
-                this._mem_Update?.Dispose();
-                this._mem_Update_U?.Dispose();
-                this._mem_Full?.Dispose();
+                this.simd_U_?.Dispose();
+                this.mem_Update_?.Dispose();
+                this.mem_Update_U_?.Dispose();
+                this.mem_Full_?.Dispose();
 
-                this._ctx.Dispose();
+                this.ctx_.Dispose();
             }
         }
     }

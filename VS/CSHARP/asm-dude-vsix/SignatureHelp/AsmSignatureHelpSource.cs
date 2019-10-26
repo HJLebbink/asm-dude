@@ -33,14 +33,14 @@ namespace AsmDude.SignatureHelp
 
     internal class AsmSignatureHelpSource : ISignatureHelpSource
     {
-        private readonly ITextBuffer _buffer;
-        private readonly MnemonicStore _store;
+        private readonly ITextBuffer buffer_;
+        private readonly MnemonicStore store_;
 
         public AsmSignatureHelpSource(ITextBuffer buffer)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource:constructor");
-            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
-            this._store = AsmDudeTools.Instance.Mnemonic_Store;
+            this.buffer_ = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this.store_ = AsmDudeTools.Instance.Mnemonic_Store;
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace AsmDude.SignatureHelp
             try
             {
                 DateTime time1 = DateTime.Now;
-                ITextSnapshot snapshot = this._buffer.CurrentSnapshot;
-                int position = session.GetTriggerPoint(this._buffer).GetPosition(snapshot);
-                ITrackingSpan applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive, 0);
+                ITextSnapshot snapshot = this.buffer_.CurrentSnapshot;
+                int position = session.GetTriggerPoint(this.buffer_).GetPosition(snapshot);
+                ITrackingSpan applicableToSpan = this.buffer_.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive, 0);
 
                 ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
                 string lineStr = line.GetText();
@@ -122,9 +122,9 @@ namespace AsmDude.SignatureHelp
                 ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.Get_Arch_Swithed_On();
                 //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
 
-                foreach (AsmSignatureElement se in Constrain_Signatures(this._store.GetSignatures(mnemonic), operands, selectedArchitectures))
+                foreach (AsmSignatureElement se in Constrain_Signatures(this.store_.GetSignatures(mnemonic), operands, selectedArchitectures))
                 {
-                    signatures.Add(this.Create_Signature(this._buffer, se, applicableToSpan));
+                    signatures.Add(this.Create_Signature(this.buffer_, se, applicableToSpan));
                 }
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "Signature Help");
             }

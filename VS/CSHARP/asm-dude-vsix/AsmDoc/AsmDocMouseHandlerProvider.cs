@@ -36,13 +36,13 @@ namespace AsmDude.AsmDoc
     internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider
     {
         [Import]
-        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private readonly IBufferTagAggregatorFactoryService aggregatorFactory_ = null;
 
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView view)
         {
             return new AsmDocMouseHandler(
                 view,
-                this._aggregatorFactory,
+                this.aggregatorFactory_,
                 CtrlKeyState.GetStateForView(view),
                 AsmDudeTools.Instance);
         }

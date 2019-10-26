@@ -33,43 +33,35 @@ namespace AsmDude
 
     internal sealed class NasmAttDisassemblyTokenTagger : ITagger<AsmTokenTag>
     {
-        private readonly ITextBuffer _buffer;
-        private readonly AsmDudeTools _asmDudeTools = null;
+        private readonly ITextBuffer buffer_;
+        private readonly AsmDudeTools asmDudeTools_ = null;
 
-        private readonly AsmTokenTag _mnemonic;
-        private readonly AsmTokenTag _register;
-        private readonly AsmTokenTag _remark;
-        private readonly AsmTokenTag _directive;
-        private readonly AsmTokenTag _constant;
-        private readonly AsmTokenTag _jump;
-        private readonly AsmTokenTag _label;
-        private readonly AsmTokenTag _labelDef;
-        private readonly AsmTokenTag _misc;
-        //private readonly AsmTokenTag _userDefined1;
-        //private readonly AsmTokenTag _userDefined2;
-        //private readonly AsmTokenTag _userDefined3;
-        //private readonly AsmTokenTag _UNKNOWN;
+        private readonly AsmTokenTag mnemonic_;
+        private readonly AsmTokenTag register_;
+        private readonly AsmTokenTag remark_;
+        private readonly AsmTokenTag directive_;
+        private readonly AsmTokenTag constant_;
+        private readonly AsmTokenTag jump_;
+        private readonly AsmTokenTag label_;
+        private readonly AsmTokenTag labelDef_;
+        private readonly AsmTokenTag misc_;
 
         internal NasmAttDisassemblyTokenTagger(ITextBuffer buffer)
         {
             AsmDudeToolsStatic.Output_INFO("NasmAttDisassemblyTokenTagger:constructor");
 
-            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
-            this._asmDudeTools = AsmDudeTools.Instance;
+            this.buffer_ = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this.asmDudeTools_ = AsmDudeTools.Instance;
 
-            this._mnemonic = new AsmTokenTag(AsmTokenType.Mnemonic);
-            this._register = new AsmTokenTag(AsmTokenType.Register);
-            this._remark = new AsmTokenTag(AsmTokenType.Remark);
-            this._directive = new AsmTokenTag(AsmTokenType.Directive);
-            this._constant = new AsmTokenTag(AsmTokenType.Constant);
-            this._jump = new AsmTokenTag(AsmTokenType.Jump);
-            this._label = new AsmTokenTag(AsmTokenType.Label);
-            this._labelDef = new AsmTokenTag(AsmTokenType.LabelDef);
-            this._misc = new AsmTokenTag(AsmTokenType.Misc);
-            //this._userDefined1 = new AsmTokenTag(AsmTokenType.UserDefined1);
-            //this._userDefined2 = new AsmTokenTag(AsmTokenType.UserDefined2);
-            //this._userDefined3 = new AsmTokenTag(AsmTokenType.UserDefined3);
-            //this._UNKNOWN = new AsmTokenTag(AsmTokenType.UNKNOWN);
+            this.mnemonic_ = new AsmTokenTag(AsmTokenType.Mnemonic);
+            this.register_ = new AsmTokenTag(AsmTokenType.Register);
+            this.remark_ = new AsmTokenTag(AsmTokenType.Remark);
+            this.directive_ = new AsmTokenTag(AsmTokenType.Directive);
+            this.constant_ = new AsmTokenTag(AsmTokenType.Constant);
+            this.jump_ = new AsmTokenTag(AsmTokenType.Jump);
+            this.label_ = new AsmTokenTag(AsmTokenType.Label);
+            this.labelDef_ = new AsmTokenTag(AsmTokenType.LabelDef);
+            this.misc_ = new AsmTokenTag(AsmTokenType.Misc);
         }
 
         event EventHandler<SnapshotSpanEventArgs> ITagger<AsmTokenTag>.TagsChanged
@@ -100,7 +92,7 @@ namespace AsmDude
                 #region Check if the current line is a line of source code
                 if (IsSourceCode(line_upcase, pos))
                 {
-                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span((0, line_upcase.Length, false), offset, curSpan), this._remark);
+                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span((0, line_upcase.Length, false), offset, curSpan), this.remark_);
                     continue; // go to the next line
                 }
                 #endregion
@@ -111,23 +103,23 @@ namespace AsmDude
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
-                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._remark);
+                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.remark_);
                         continue;
                     }
 
                     // keyword k is a label definition
                     if (pos[k].isLabel)
                     {
-                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef);
+                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.labelDef_);
                         continue;
                     }
 
-                    AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type_Att(asmToken);
+                    AsmTokenType keywordType = this.asmDudeTools_.Get_Token_Type_Att(asmToken);
                     switch (keywordType)
                     {
                         case AsmTokenType.Jump:
                             {
-                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._jump);
+                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.jump_);
 
                                 k++; // goto the next word
                                 if (k == nKeywords)
@@ -144,7 +136,7 @@ namespace AsmDude
                                     case "SHORT":
                                     case "NEAR":
                                         {
-                                            yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._misc);
+                                            yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.misc_);
 
                                             k++;
                                             if (k == nKeywords)
@@ -157,10 +149,10 @@ namespace AsmDude
                                             {
                                                 case "PTR":
                                                     {
-                                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
+                                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this.misc_);
                                                         break;
                                                     }
-                                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
+                                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.label_);
                                                     break;
                                             }
                                             break;
@@ -169,15 +161,15 @@ namespace AsmDude
                                         {
                                             if (RegisterTools.IsRegister(asmToken2))
                                             {
-                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._register);
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.register_);
                                             }
                                             else if (AsmSourceTools.Evaluate_Constant(asmToken2, true).valid)
                                             {
-                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.constant_);
                                             }
                                             else
                                             {
-                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.label_);
                                             }
                                             break;
                                         }
@@ -188,15 +180,15 @@ namespace AsmDude
                             {
                                 if (AsmSourceTools.Evaluate_Constant(asmToken, true).valid)
                                 {
-                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.constant_);
                                 }
                                 else if (asmToken.StartsWith("$", StringComparison.Ordinal))
                                 {
-                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.constant_);
                                 }
                                 else if (asmToken.StartsWith("\"", StringComparison.Ordinal) && asmToken.EndsWith("\"", StringComparison.Ordinal))
                                 {
-                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.constant_);
                                 }
                                 else
                                 {
@@ -206,17 +198,17 @@ namespace AsmDude
                             }
                         case AsmTokenType.Directive:
                             {
-                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
+                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.directive_);
                                 break;
                             }
                         case AsmTokenType.Mnemonic:
                             {
-                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._mnemonic);
+                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.mnemonic_);
                                 break;
                             }
                         case AsmTokenType.Register:
                             {
-                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._register);
+                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.register_);
                                 break;
                             }
                         default: break;

@@ -99,10 +99,10 @@ namespace AsmDude.SyntaxHighlighting
     internal sealed class AsmDisassemblyTaggerProvider : ITaggerProvider
     {
         [Import]
-        private readonly IClassificationTypeRegistryService _classificationTypeRegistry = null;
+        private readonly IClassificationTypeRegistryService classificationTypeRegistry_ = null;
 
         [Import]
-        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private readonly IBufferTagAggregatorFactoryService aggregatorFactory_ = null;
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
@@ -110,8 +110,8 @@ namespace AsmDude.SyntaxHighlighting
 
             ITagger<T> sc()
             {
-                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
-                return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
+                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this.aggregatorFactory_);
+                return new AsmClassifier(buffer, aggregator, this.classificationTypeRegistry_) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

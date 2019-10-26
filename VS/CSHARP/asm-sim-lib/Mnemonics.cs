@@ -40,34 +40,34 @@ namespace AsmSim
             #region Fields
             public static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
 
-            public readonly Mnemonic _mnemonic;
-            private readonly string[] _args;
-            public readonly Tools _tools;
-            protected readonly Context _ctx;
+            public readonly Mnemonic mnemonic_;
+            private readonly string[] args_;
+            public readonly Tools tools_;
+            protected readonly Context ctx_;
 
-            protected (string prevKey, string nextKey, string nextKeyBranch) _keys;
+            protected (string prevKey, string nextKey, string nextKeyBranch) keys_;
 
-            private bool _halted;
-            private string _haltMessage;
-            private string _warningMessage;
+            private bool halted_;
+            private string haltMessage_;
+            private string warningMessage_;
 
-            private StateUpdate _regularUpdate;
-            private StateUpdate _branchUpdate;
+            private StateUpdate regularUpdate_;
+            private StateUpdate branchUpdate_;
             #endregion
 
             protected void Create_RegularUpdate()
             {
-                if (this._regularUpdate == null)
+                if (this.regularUpdate_ == null)
                 {
-                    this._regularUpdate = new StateUpdate(this._keys.prevKey, this._keys.nextKey, this._tools);
+                    this.regularUpdate_ = new StateUpdate(this.keys_.prevKey, this.keys_.nextKey, this.tools_);
                 }
             }
 
             protected void Create_BranchUpdate()
             {
-                if (this._branchUpdate == null)
+                if (this.branchUpdate_ == null)
                 {
-                    this._branchUpdate = new StateUpdate(this._keys.prevKey, this._keys.nextKeyBranch, this._tools);
+                    this.branchUpdate_ = new StateUpdate(this.keys_.prevKey, this.keys_.nextKeyBranch, this.tools_);
                 }
             }
 
@@ -75,12 +75,12 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._regularUpdate == null)
+                    if (this.regularUpdate_ == null)
                     {
-                        this._regularUpdate = new StateUpdate(this._keys.prevKey, this._keys.nextKey, this._tools);
+                        this.regularUpdate_ = new StateUpdate(this.keys_.prevKey, this.keys_.nextKey, this.tools_);
                     }
 
-                    return this._regularUpdate;
+                    return this.regularUpdate_;
                 }
             }
 
@@ -88,12 +88,12 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._branchUpdate == null)
+                    if (this.branchUpdate_ == null)
                     {
-                        this._branchUpdate = new StateUpdate(this._keys.prevKey, this._keys.nextKeyBranch, this._tools);
+                        this.branchUpdate_ = new StateUpdate(this.keys_.prevKey, this.keys_.nextKeyBranch, this.tools_);
                     }
 
-                    return this._branchUpdate;
+                    return this.branchUpdate_;
                 }
             }
 
@@ -102,11 +102,11 @@ namespace AsmSim
                 Contract.Requires(t != null);
                 Contract.Requires(args != null);
 
-                this._mnemonic = m;
-                this._args = args;
-                this._tools = t;
-                this._keys = keys;
-                this._ctx = new Context(t.Settings);
+                this.mnemonic_ = m;
+                this.args_ = args;
+                this.tools_ = t;
+                this.keys_ = keys;
+                this.ctx_ = new Context(t.Settings);
             }
 
             public abstract void Execute();
@@ -116,7 +116,7 @@ namespace AsmSim
             /// <summary>Get the current value of the provided register</summary>
             public BitVecExpr Get(Rn regName)
             {
-                return Tools.Create_Key(regName, this._keys.prevKey, this._ctx);
+                return Tools.Create_Key(regName, this.keys_.prevKey, this.ctx_);
             }
 
             public static BitVecExpr Get(Rn regName, string prevKey, Context ctx)
@@ -126,7 +126,7 @@ namespace AsmSim
 
             public BitVecExpr Undef(Rn regName)
             {
-                return Tools.Create_Reg_Key_Fresh(regName, this._tools.Rand, this._ctx);
+                return Tools.Create_Reg_Key_Fresh(regName, this.tools_.Rand, this.ctx_);
             }
 
             public static BitVecExpr Undef(Rn regName, Random rand, Context ctx)
@@ -137,7 +137,7 @@ namespace AsmSim
             /// <summary>Get the current value of the provided flag</summary>
             public BoolExpr Get(Flags flagName)
             {
-                return Tools.Create_Key(flagName, this._keys.prevKey, this._ctx);
+                return Tools.Create_Key(flagName, this.keys_.prevKey, this.ctx_);
             }
 
             public static BoolExpr Get(Flags flagName, string prevKey, Context ctx)
@@ -147,7 +147,7 @@ namespace AsmSim
 
             public BoolExpr Undef(Flags flagName)
             {
-                return Tools.Create_Flag_Key_Fresh(flagName, this._tools.Rand, this._ctx);
+                return Tools.Create_Flag_Key_Fresh(flagName, this.tools_.Rand, this.ctx_);
             }
 
             public static BoolExpr Undef(Flags flagName, Random rand, Context ctx)
@@ -155,6 +155,7 @@ namespace AsmSim
                 return Tools.Create_Flag_Key_Fresh(flagName, rand, ctx);
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public BitVecExpr GetMem(Rn regName, int nBytes)
             {
                 return this.GetMem(this.Get(regName), nBytes);
@@ -162,13 +163,13 @@ namespace AsmSim
 
             public BitVecExpr GetMem(BitVecExpr address, int nBytes)
             {
-                return Tools.Create_Value_From_Mem(address, nBytes, this._keys.prevKey, this._ctx);
+                return Tools.Create_Value_From_Mem(address, nBytes, this.keys_.prevKey, this.ctx_);
             }
             #endregion
 
             public (StateUpdate regular, StateUpdate branch) Updates
             {
-                get { return (this._regularUpdate, this._branchUpdate); }
+                get { return (this.regularUpdate_, this.branchUpdate_); }
             }
 
             #region Register/Flags read/write
@@ -192,54 +193,54 @@ namespace AsmSim
             {
                 get
                 {
-                    return this._warningMessage;
+                    return this.warningMessage_;
                 }
 
                 protected set
                 {
-                    if (this._warningMessage == null)
+                    if (this.warningMessage_ == null)
                     {
-                        this._warningMessage = value;
+                        this.warningMessage_ = value;
                     }
                     else
                     {
-                        this._warningMessage += Environment.NewLine + value;
+                        this.warningMessage_ += Environment.NewLine + value;
                     }
                 }
             }
 
-            public bool IsHalted { get { return this._halted; } }
+            public bool IsHalted { get { return this.halted_; } }
 
             public string SyntaxError
             {
                 get
                 {
-                    return this._haltMessage;
+                    return this.haltMessage_;
                 }
 
                 protected set
                 {
-                    if (this._haltMessage == null)
+                    if (this.haltMessage_ == null)
                     {
-                        this._haltMessage = value;
+                        this.haltMessage_ = value;
                     }
                     else
                     {
-                        this._haltMessage += Environment.NewLine + value;
+                        this.haltMessage_ += Environment.NewLine + value;
                     }
-                    this._halted = true;
+                    this.halted_ = true;
                 }
             }
 
             public override string ToString()
             {
-                return this._mnemonic + " " + string.Join(", ", this._args);
+                return this.mnemonic_ + " " + string.Join(", ", this.args_);
             }
 
             #region Protected stuff
 
             /// <summary>Gets number of operand of the arguments of this instruction</summary>
-            protected int NOperands { get { return this._args.Length; } }
+            protected int NOperands { get { return this.args_.Length; } }
 
             public static BitVecExpr OpValue(
                 Operand operand,
@@ -413,9 +414,35 @@ namespace AsmSim
             #region IDisposable Support
             public void Dispose()
             {
-                this._ctx.Dispose();
-                //this._branchUpdate?.Dispose();
-                //this._regularUpdate?.Dispose();
+                this.Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            ~OpcodeBase()
+            {
+                this.Dispose(false);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    // free managed resources
+                    this.ctx_?.Dispose();
+                    /* // TODO HJ 26 okt 2019: why does disposing this does not work?
+                    if (this.branchUpdate_ != null)
+                    {
+                        this.branchUpdate_.Dispose();
+                        this.branchUpdate_ = null;
+                    }
+                    if (this.regularUpdate_ != null)
+                    {
+                        this.regularUpdate_.Dispose();
+                        this.regularUpdate_ = null;
+                    }
+                    */
+                }
+                // free native resources if there are any.
             }
             #endregion
         }
@@ -438,7 +465,7 @@ namespace AsmSim
 
         public abstract class Opcode1Base : OpcodeBase
         {
-            protected readonly Operand op1;
+            protected readonly Operand op1_;
 
             public Opcode1Base(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
@@ -447,10 +474,10 @@ namespace AsmSim
 
                 if (this.NOperands == 1)
                 {
-                    this.op1 = new Operand(args[0], false);
-                    if (this.op1.ErrorMessage != null)
+                    this.op1_ = new Operand(args[0], false);
+                    if (this.op1_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage_);
                     }
                 }
                 else
@@ -474,23 +501,23 @@ namespace AsmSim
                     return;
                 }
 
-                if (!allowedOperands1.HasFlag(this.op1.Type))
+                if (!allowedOperands1.HasFlag(this.op1_.Type))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": First operand ({1}) cannot be of type {2}. Allowed types: {3}.", this.ToString(), this.op1, this.op1.Type, AsmSourceTools.ToString(allowedOperands1));
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": First operand ({1}) cannot be of type {2}. Allowed types: {3}.", this.ToString(), this.op1_, this.op1_.Type, AsmSourceTools.ToString(allowedOperands1));
                 }
             }
 
-            public BitVecExpr Op1Value { get { return OpValue(this.op1, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
 
-            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1); } }
+            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1_); } }
 
-            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1); } }
+            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1_); } }
         }
 
         public abstract class Opcode2Base : OpcodeBase
         {
-            protected readonly Operand op1;
-            protected readonly Operand op2;
+            protected readonly Operand op1_;
+            protected readonly Operand op2_;
 
             public Opcode2Base(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
@@ -499,16 +526,16 @@ namespace AsmSim
 
                 if (this.NOperands == 2)
                 {
-                    this.op1 = new Operand(args[0], false);
-                    this.op2 = new Operand(args[1], false);
-                    if (this.op1.ErrorMessage != null)
+                    this.op1_ = new Operand(args[0], false);
+                    this.op2_ = new Operand(args[1], false);
+                    if (this.op1_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage_);
                     }
 
-                    if (this.op2.ErrorMessage != null)
+                    if (this.op2_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2_.ErrorMessage_);
                     }
                 }
                 else
@@ -532,28 +559,28 @@ namespace AsmSim
                     return;
                 }
 
-                if (!allowedOperands2.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type)))
+                if (!allowedOperands2.HasFlag(AsmSourceTools.MergeOt(this.op1_.Type, this.op2_.Type)))
                 {
                     this.SyntaxError = string.Format(
                         "\"{0}\": Invalid combination of opcode and operands. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}). Allowed types: {7}.",
-                        this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, AsmSourceTools.ToString(allowedOperands2));
+                        this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, AsmSourceTools.ToString(allowedOperands2));
                 }
             }
 
-            public BitVecExpr Op1Value { get { return OpValue(this.op1, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
 
-            public BitVecExpr Op2Value { get { return OpValue(this.op2, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_); } }
 
-            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1, this.op2); } }
+            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_); } }
 
-            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1, this.op2); } }
+            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_); } }
         }
 
         public abstract class Opcode3Base : OpcodeBase
         {
-            protected readonly Operand op1;
-            protected readonly Operand op2;
-            protected readonly Operand op3;
+            protected readonly Operand op1_;
+            protected readonly Operand op2_;
+            protected readonly Operand op3_;
 
             public Opcode3Base(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
@@ -562,23 +589,23 @@ namespace AsmSim
 
                 if (this.NOperands == 3)
                 {
-                    this.op1 = new Operand(args[0], false);
-                    this.op2 = new Operand(args[1], false);
-                    this.op3 = new Operand(args[2], false);
+                    this.op1_ = new Operand(args[0], false);
+                    this.op2_ = new Operand(args[1], false);
+                    this.op3_ = new Operand(args[2], false);
 
-                    if (this.op1.ErrorMessage != null)
+                    if (this.op1_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage_);
                     }
 
-                    if (this.op2.ErrorMessage != null)
+                    if (this.op2_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2_.ErrorMessage_);
                     }
 
-                    if (this.op3.ErrorMessage != null)
+                    if (this.op3_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3_.ErrorMessage_);
                     }
                 }
                 else
@@ -602,28 +629,28 @@ namespace AsmSim
                     return;
                 }
 
-                if (!allowedOperands3.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type, this.op3.Type)))
+                if (!allowedOperands3.HasFlag(AsmSourceTools.MergeOt(this.op1_.Type, this.op2_.Type, this.op3_.Type)))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}) Allowed types: {10}.", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}) Allowed types: {10}.", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, this.op3_, this.op3_.Type, this.op3_.NBits, AsmSourceTools.ToString(allowedOperands3));
                 }
             }
 
-            public BitVecExpr Op1Value { get { return OpValue(this.op1, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
 
-            public BitVecExpr Op2Value { get { return OpValue(this.op2, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_); } }
 
-            public BitVecExpr Op3Value { get { return OpValue(this.op3, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op3Value { get { return OpValue(this.op3_, this.keys_.prevKey, this.ctx_); } }
 
-            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1, this.op2, this.op3); } }
+            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
 
-            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1, this.op2, this.op3); } }
+            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
         }
 
         public abstract class OpcodeNBase : OpcodeBase
         {
-            protected readonly Operand op1;
-            protected readonly Operand op2;
-            protected readonly Operand op3;
+            protected readonly Operand op1_;
+            protected readonly Operand op2_;
+            protected readonly Operand op3_;
 
             public OpcodeNBase(Mnemonic mnemonic, string[] args, int maxNArgs, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
@@ -636,39 +663,39 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 1)
                 {
-                    this.op1 = new Operand(args[0], false);
-                    if (this.op1.ErrorMessage != null)
+                    this.op1_ = new Operand(args[0], false);
+                    if (this.op1_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage_);
                     }
                 }
                 if (this.NOperands >= 2)
                 {
-                    this.op2 = new Operand(args[1], false);
-                    if (this.op2.ErrorMessage != null)
+                    this.op2_ = new Operand(args[1], false);
+                    if (this.op2_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2_.ErrorMessage_);
                     }
                 }
                 if (this.NOperands >= 3)
                 {
-                    this.op3 = new Operand(args[2], false);
-                    if (this.op3.ErrorMessage != null)
+                    this.op3_ = new Operand(args[2], false);
+                    if (this.op3_.ErrorMessage_ != null)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3_.ErrorMessage_);
                     }
                 }
             }
 
-            public BitVecExpr Op1Value { get { return OpValue(this.op1, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
 
-            public BitVecExpr Op2Value { get { return OpValue(this.op2, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_); } }
 
-            public BitVecExpr Op3Value { get { return OpValue(this.op3, this._keys.prevKey, this._ctx); } }
+            public BitVecExpr Op3Value { get { return OpValue(this.op3_, this.keys_.prevKey, this.ctx_); } }
 
-            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1, this.op2, this.op3); } }
+            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
 
-            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1, this.op2, this.op3); } }
+            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
         }
 
         public abstract class Opcode2Type1 : Opcode2Base
@@ -681,24 +708,24 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op2.IsImm)
+                if (this.op2_.IsImm)
                 {
-                    if (this.op1.NBits < this.op2.NBits)
+                    if (this.op1_.NBits < this.op2_.NBits)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
-                    if ((this.op1.NBits == 64) && (this.op2.NBits == 32))
+                    if ((this.op1_.NBits == 64) && (this.op2_.NBits == 32))
                     {
-                        this.op2.SignExtend(64);
+                        this.op2_.SignExtend(64);
                     }
-                    else if (this.op2.NBits < this.op1.NBits)
+                    else if (this.op2_.NBits < this.op1_.NBits)
                     {
-                        this.op2.ZeroExtend(this.op1.NBits);
+                        this.op2_.ZeroExtend(this.op1_.NBits);
                     }
                 }
-                else if (this.op1.NBits != this.op2.NBits)
+                else if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
         }
@@ -743,11 +770,11 @@ namespace AsmSim
                 bool memAlreadyCleared = false;
                 if (this.NOperands > 0)
                 {
-                    if (this.op1.IsReg)
+                    if (this.op1_.IsReg)
                     {
-                        this.RegularUpdate.Set(this.op1.Rn, Tv.UNKNOWN);
+                        this.RegularUpdate.Set(this.op1_.Rn, Tv.UNKNOWN);
                     }
-                    else if (this.op1.IsMem && (!memAlreadyCleared))
+                    else if (this.op1_.IsMem && (!memAlreadyCleared))
                     {
                         this.RegularUpdate.Set_Mem_Unknown();
                         memAlreadyCleared = true;
@@ -755,11 +782,11 @@ namespace AsmSim
                 }
                 if (this.NOperands > 1)
                 {
-                    if (this.op2.IsReg)
+                    if (this.op2_.IsReg)
                     {
-                        this.RegularUpdate.Set(this.op2.Rn, Tv.UNKNOWN);
+                        this.RegularUpdate.Set(this.op2_.Rn, Tv.UNKNOWN);
                     }
-                    else if (this.op2.IsMem && (!memAlreadyCleared))
+                    else if (this.op2_.IsMem && (!memAlreadyCleared))
                     {
                         this.RegularUpdate.Set_Mem_Unknown();
                         memAlreadyCleared = true;
@@ -767,11 +794,11 @@ namespace AsmSim
                 }
                 if (this.NOperands > 2)
                 {
-                    if (this.op3.IsReg)
+                    if (this.op3_.IsReg)
                     {
-                        this.RegularUpdate.Set(this.op3.Rn, Tv.UNKNOWN);
+                        this.RegularUpdate.Set(this.op3_.Rn, Tv.UNKNOWN);
                     }
-                    else if (this.op3.IsMem && (!memAlreadyCleared))
+                    else if (this.op3_.IsMem && (!memAlreadyCleared))
                     {
                         this.RegularUpdate.Set_Mem_Unknown();
                         memAlreadyCleared = true;
@@ -788,48 +815,48 @@ namespace AsmSim
 
             public override void Execute()
             {
-                if (this.op1.Type == Ot1.UNKNOWN)
+                if (this.op1_.Type == Ot1.UNKNOWN)
                 {
                     //TODO The moffs8, moffs16, moffs32 and moffs64 operands specify a simple offset relative to the segment base, where 8, 16, 32 and 64 refer to the size of the data.The address-size attribute of the instruction determines the size of the offset, either 16, 32 or 64 bits.
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": execute: Unknown memory address in op1; Operand1={1} ({2}); Operand2={3} ({4})", this.ToString(), this.op1, this.op1.Type, this.op2, this.op2.Type);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": execute: Unknown memory address in op1; Operand1={1} ({2}); Operand2={3} ({4})", this.ToString(), this.op1_, this.op1_.Type, this.op2_, this.op2_.Type);
                 }
                 else
                 {
-                    this.RegularUpdate.Set(this.op1, this.Op2Value);
+                    this.RegularUpdate.Set(this.op1_, this.Op2Value);
                 }
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Cmovcc : Opcode2Base
         {
-            private readonly ConditionalElement _ce;
+            private readonly ConditionalElement ce_;
 
             public Cmovcc(Mnemonic mnemonic, string[] args, ConditionalElement ce, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                this._ce = ce;
+                this.ce_ = ce;
             }
 
             public override void Execute()
             {
-                BoolExpr conditional = ToolsAsmSim.ConditionalTaken(this._ce, this._keys.prevKey, this._ctx);
+                BoolExpr conditional = ToolsAsmSim.ConditionalTaken(this.ce_, this.keys_.prevKey, this.ctx_);
                 BitVecExpr op1 = this.Op1Value;
                 BitVecExpr op2 = this.Op2Value;
                 //Console.WriteLine("Cmovcc ce="+this._ce+"; conditional=" + conditional);
-                BitVecExpr value = this._ctx.MkITE(conditional, op2, op1) as BitVecExpr;
-                BitVecExpr undef = this._ctx.MkBVXOR(op1, op2);
-                this.RegularUpdate.Set(this.op1, value, undef);
+                BitVecExpr value = this.ctx_.MkITE(conditional, op2, op1) as BitVecExpr;
+                BitVecExpr undef = this.ctx_.MkBVXOR(op1, op2);
+                this.RegularUpdate.Set(this.op1_, value, undef);
             }
 
-            public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this._ce); } }
+            public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this.ce_); } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Exchange Register/Memory with Register</summary>
@@ -843,21 +870,21 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
             public override void Execute()
             {
-                this.RegularUpdate.Set(this.op1, this.Op2Value);
-                this.RegularUpdate.Set(this.op2, this.Op1Value);
+                this.RegularUpdate.Set(this.op1_, this.Op2Value);
+                this.RegularUpdate.Set(this.op2_, this.Op1Value);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, true); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1, this.op2); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_, this.op2_); } }
         }
 
         /// <summary>Byte swap</summary>
@@ -871,18 +898,18 @@ namespace AsmSim
                     return;
                 }
 
-                if (!((this.op1.NBits == 32) || (this.op1.NBits == 64)))
+                if (!((this.op1_.NBits == 32) || (this.op1_.NBits == 64)))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be 32-bits or 64-bits. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be 32-bits or 64-bits. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
             }
 
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 BitVecExpr s = this.Op1Value;
                 BitVecExpr dest;
-                if (this.op1.NBits == 32)
+                if (this.op1_.NBits == 32)
                 {
                     BitVecExpr b0 = ctx.MkExtract((1 * 8) - 1, 0 * 8, s);
                     BitVecExpr b1 = ctx.MkExtract((2 * 8) - 1, 1 * 8, s);
@@ -902,12 +929,12 @@ namespace AsmSim
                     BitVecExpr b7 = ctx.MkExtract((8 * 8) - 1, 7 * 8, s);
                     dest = ctx.MkConcat(ctx.MkConcat(ctx.MkConcat(b0, b1), ctx.MkConcat(b2, b3)), ctx.MkConcat(ctx.MkConcat(b4, b5), ctx.MkConcat(b6, b7)));
                 }
-                this.RegularUpdate.Set(this.op1, dest);
+                this.RegularUpdate.Set(this.op1_, dest);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Exchange and add</summary>
@@ -921,9 +948,9 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
@@ -932,18 +959,18 @@ namespace AsmSim
                 BitVecExpr a = this.Op1Value;
                 BitVecExpr b = this.Op2Value;
 
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(a, b, this._ctx);
-                this.RegularUpdate.Set(this.op1, result);
-                this.RegularUpdate.Set(this.op2, a); // swap op1 and op2
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(a, b, this.ctx_);
+                this.RegularUpdate.Set(this.op1_, result);
+                this.RegularUpdate.Set(this.op2_, a); // swap op1 and op2
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
                 this.RegularUpdate.Set_SF_ZF_PF(result);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, true); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1, this.op2); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_, this.op2_); } }
         }
 
         /// <summary>Compare and exchange</summary>
@@ -957,12 +984,13 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 /* Compare AL with r/m8 (op1). If equal, ZF is set and r8 (op2) is loaded into r/m8 (op1). Else, clear ZF and load r/m8 (op1) into AL.
@@ -981,7 +1009,7 @@ namespace AsmSim
                  */
 
                 Rn regA = Rn.NOREG;
-                switch (this.op1.NBits)
+                switch (this.op1_.NBits)
                 {
                     case 8: regA = Rn.AL; break;
                     case 16: regA = Rn.AX; break;
@@ -989,18 +1017,18 @@ namespace AsmSim
                     case 64: regA = Rn.RAX; break;
                 }
                 BitVecExpr regA_Expr_Curr = this.Get(regA);
-                BoolExpr zf = this._ctx.MkEq(regA_Expr_Curr, this.Op1Value);
+                BoolExpr zf = this.ctx_.MkEq(regA_Expr_Curr, this.Op1Value);
                 BitVecExpr op1 = this.Op1Value;
-                this.RegularUpdate.Set(this.op1, this._ctx.MkITE(zf, this.Op2Value, op1) as BitVecExpr);
-                this.RegularUpdate.Set(regA, this._ctx.MkITE(zf, regA_Expr_Curr, op1) as BitVecExpr);
+                this.RegularUpdate.Set(this.op1_, this.ctx_.MkITE(zf, this.Op2Value, op1) as BitVecExpr);
+                this.RegularUpdate.Set(regA, this.ctx_.MkITE(zf, regA_Expr_Curr, op1) as BitVecExpr);
 
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.ctx_);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
-                this.RegularUpdate.Set(Flags.SF, ToolsFlags.Create_SF(result, result.SortSize, this._ctx));
+                this.RegularUpdate.Set(Flags.SF, ToolsFlags.Create_SF(result, result.SortSize, this.ctx_));
                 this.RegularUpdate.Set(Flags.ZF, zf);
-                this.RegularUpdate.Set(Flags.PF, ToolsFlags.Create_PF(result, this._ctx));
+                this.RegularUpdate.Set(Flags.PF, ToolsFlags.Create_PF(result, this.ctx_));
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
@@ -1009,9 +1037,9 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 != null)
+                    if (this.op1_ != null)
                     {
-                        switch (this.op1.NBits)
+                        switch (this.op1_.NBits)
                         {
                             case 8: yield return Rn.AL; break;
                             case 16: yield return Rn.AX; break;
@@ -1020,7 +1048,7 @@ namespace AsmSim
                             default: break;
                         }
                     }
-                    foreach (Rn r in ReadRegs(this.op1, true, this.op2, false))
+                    foreach (Rn r in ReadRegs(this.op1_, true, this.op2_, false))
                     {
                         yield return r;
                     }
@@ -1031,9 +1059,9 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 != null)
+                    if (this.op1_ != null)
                     {
-                        switch (this.op1.NBits)
+                        switch (this.op1_.NBits)
                         {
                             case 8: yield return Rn.AL; break;
                             case 16: yield return Rn.AX; break;
@@ -1042,7 +1070,7 @@ namespace AsmSim
                             default: break;
                         }
                     }
-                    foreach (Rn r in WriteRegs(this.op1))
+                    foreach (Rn r in WriteRegs(this.op1_))
                     {
                         yield return r;
                     }
@@ -1061,24 +1089,25 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != 64)
+                if (this.op1_.NBits != 64)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be a 64-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be a 64-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 //Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
 
                 BitVecExpr op1 = this.Op1Value;
-                BoolExpr zf = this._ctx.MkEq(this._ctx.MkConcat(this.Get(Rn.EDX), this.Get(Rn.EAX)), op1);
+                BoolExpr zf = this.ctx_.MkEq(this.ctx_.MkConcat(this.Get(Rn.EDX), this.Get(Rn.EAX)), op1);
 
-                this.RegularUpdate.Set(this.op1, this._ctx.MkConcat(this.Get(Rn.ECX), this.Get(Rn.EBX)));
-                this.RegularUpdate.Set(Rn.ECX, this._ctx.MkITE(zf, this._ctx.MkExtract(64 - 1, 32, op1), this.Get(Rn.ECX)) as BitVecExpr);
-                this.RegularUpdate.Set(Rn.EBX, this._ctx.MkITE(zf, this._ctx.MkExtract(32 - 1, 0, op1), this.Get(Rn.EBX)) as BitVecExpr);
-                this.RegularUpdate.Set(Rn.EDX, this._ctx.MkITE(zf, this.Get(Rn.EDX), this._ctx.MkExtract(64 - 1, 32, op1)) as BitVecExpr);
-                this.RegularUpdate.Set(Rn.EAX, this._ctx.MkITE(zf, this.Get(Rn.EAX), this._ctx.MkExtract(32 - 1, 0, op1)) as BitVecExpr);
+                this.RegularUpdate.Set(this.op1_, this.ctx_.MkConcat(this.Get(Rn.ECX), this.Get(Rn.EBX)));
+                this.RegularUpdate.Set(Rn.ECX, this.ctx_.MkITE(zf, this.ctx_.MkExtract(64 - 1, 32, op1), this.Get(Rn.ECX)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.EBX, this.ctx_.MkITE(zf, this.ctx_.MkExtract(32 - 1, 0, op1), this.Get(Rn.EBX)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.EDX, this.ctx_.MkITE(zf, this.Get(Rn.EDX), this.ctx_.MkExtract(64 - 1, 32, op1)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.EAX, this.ctx_.MkITE(zf, this.Get(Rn.EAX), this.ctx_.MkExtract(32 - 1, 0, op1)) as BitVecExpr);
                 this.RegularUpdate.Set(Flags.ZF, zf);
             }
 
@@ -1118,24 +1147,25 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != 128)
+                if (this.op1_.NBits != 128)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be a 128-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be a 128-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 //Compare RDX:RAX with m128. If equal, set ZF and load RCX:RBX into m128. Else, clear ZF and load m128 into RDX:RAX.
 
                 BitVecExpr op1 = this.Op1Value;
-                BoolExpr zf = this._ctx.MkEq(this._ctx.MkConcat(this.Get(Rn.RDX), this.Get(Rn.RAX)), op1);
+                BoolExpr zf = this.ctx_.MkEq(this.ctx_.MkConcat(this.Get(Rn.RDX), this.Get(Rn.RAX)), op1);
 
-                this.RegularUpdate.Set(this.op1, this._ctx.MkConcat(this.Get(Rn.RCX), this.Get(Rn.RBX)));
-                this.RegularUpdate.Set(Rn.RCX, this._ctx.MkITE(zf, this._ctx.MkExtract(128 - 1, 64, op1), this.Get(Rn.RCX)) as BitVecExpr);
-                this.RegularUpdate.Set(Rn.RBX, this._ctx.MkITE(zf, this._ctx.MkExtract(64 - 1, 0, op1), this.Get(Rn.RBX)) as BitVecExpr);
-                this.RegularUpdate.Set(Rn.RDX, this._ctx.MkITE(zf, this.Get(Rn.RDX), this._ctx.MkExtract(128 - 1, 64, op1)) as BitVecExpr);
-                this.RegularUpdate.Set(Rn.RAX, this._ctx.MkITE(zf, this.Get(Rn.RAX), this._ctx.MkExtract(64 - 1, 0, op1)) as BitVecExpr);
+                this.RegularUpdate.Set(this.op1_, this.ctx_.MkConcat(this.Get(Rn.RCX), this.Get(Rn.RBX)));
+                this.RegularUpdate.Set(Rn.RCX, this.ctx_.MkITE(zf, this.ctx_.MkExtract(128 - 1, 64, op1), this.Get(Rn.RCX)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.RBX, this.ctx_.MkITE(zf, this.ctx_.MkExtract(64 - 1, 0, op1), this.Get(Rn.RBX)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.RDX, this.ctx_.MkITE(zf, this.Get(Rn.RDX), this.ctx_.MkExtract(128 - 1, 64, op1)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.RAX, this.ctx_.MkITE(zf, this.Get(Rn.RAX), this.ctx_.MkExtract(64 - 1, 0, op1)) as BitVecExpr);
                 this.RegularUpdate.Set(Flags.ZF, zf);
             }
 
@@ -1177,68 +1207,69 @@ namespace AsmSim
                     return;
                 }
 
-                if ((this.op1.NBits == 8) && (this.op1.IsReg || this.op1.IsMem))
+                if ((this.op1_.NBits == 8) && (this.op1_.IsReg || this.op1_.IsMem))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
-                else if ((this.op1.NBits == 64) && this.op1.IsImm)
+                else if ((this.op1_.NBits == 64) && this.op1_.IsImm)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
 
-                if (this.op1.IsReg && t.Parameters.mode_64bit)
+                if (this.op1_.IsReg && t.Parameters.mode_64bit)
                 {
-                    Rn reg = this.op1.Rn;
+                    Rn reg = this.op1_.Rn;
                     if ((reg == Rn.CS) || (reg == Rn.SS) || (reg == Rn.DS) || (reg == Rn.ES))
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid register in 64-bit mode. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid register in 64-bit mode. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                     }
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                if (this._tools.Parameters.mode_64bit) // the stackAddrSize == 64
+                if (this.tools_.Parameters.mode_64bit) // the stackAddrSize == 64
                 {
                     BitVecExpr value = this.Op1Value;
-                    if (this.op1.IsImm)
+                    if (this.op1_.IsImm)
                     {
                         if (value.SortSize < 64)
                         {
-                            value = this._ctx.MkSignExt(64 - value.SortSize, value);
+                            value = this.ctx_.MkSignExt(64 - value.SortSize, value);
                         }
                     }
-                    else if (this.op1.IsReg && RegisterTools.IsSegmentRegister(this.op1.Rn))
+                    else if (this.op1_.IsReg && RegisterTools.IsSegmentRegister(this.op1_.Rn))
                     {
-                        value = this._ctx.MkZeroExt(64 - value.SortSize, value);
+                        value = this.ctx_.MkZeroExt(64 - value.SortSize, value);
                     }
                     BitVecExpr rspExpr = this.Get(Rn.RSP);
-                    this.RegularUpdate.Set(Rn.RSP, this._ctx.MkBVSub(rspExpr, this._ctx.MkBV(8, 64)));
+                    this.RegularUpdate.Set(Rn.RSP, this.ctx_.MkBVSub(rspExpr, this.ctx_.MkBV(8, 64)));
                     this.RegularUpdate.Set_Mem(rspExpr, value);
                 }
-                else if (this._tools.Parameters.mode_32bit)
+                else if (this.tools_.Parameters.mode_32bit)
                 {
                     BitVecExpr value = this.Op1Value;
-                    if (this.op1.IsImm)
+                    if (this.op1_.IsImm)
                     {
                         if (value.SortSize < 32)
                         {
-                            value = this._ctx.MkSignExt(32 - value.SortSize, value);
+                            value = this.ctx_.MkSignExt(32 - value.SortSize, value);
                         }
                     }
-                    else if (this.op1.IsReg && RegisterTools.IsSegmentRegister(this.op1.Rn))
+                    else if (this.op1_.IsReg && RegisterTools.IsSegmentRegister(this.op1_.Rn))
                     {
-                        value = this._ctx.MkZeroExt(32 - value.SortSize, value);
+                        value = this.ctx_.MkZeroExt(32 - value.SortSize, value);
                     }
                     BitVecExpr espExpr = this.Get(Rn.ESP);
-                    this.RegularUpdate.Set(Rn.ESP, this._ctx.MkBVSub(espExpr, this._ctx.MkBV(4, 32)));
+                    this.RegularUpdate.Set(Rn.ESP, this.ctx_.MkBVSub(espExpr, this.ctx_.MkBV(4, 32)));
                     this.RegularUpdate.Set_Mem(espExpr, value);
                 }
-                else if (this._tools.Parameters.mode_16bit)
+                else if (this.tools_.Parameters.mode_16bit)
                 {
                     BitVecExpr value = this.Op1Value;
                     BitVecExpr spExpr = this.Get(Rn.SP);
-                    this.RegularUpdate.Set(Rn.SP, this._ctx.MkBVSub(spExpr, this._ctx.MkBV(2, 16)));
+                    this.RegularUpdate.Set(Rn.SP, this.ctx_.MkBVSub(spExpr, this.ctx_.MkBV(2, 16)));
                     this.RegularUpdate.Set_Mem(spExpr, value);
                 }
                 else
@@ -1251,20 +1282,20 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._tools.Parameters.mode_64bit)
+                    if (this.tools_.Parameters.mode_64bit)
                     {
                         yield return Rn.RSP;
                     }
-                    else if (this._tools.Parameters.mode_32bit)
+                    else if (this.tools_.Parameters.mode_32bit)
                     {
                         yield return Rn.ESP;
                     }
-                    else if (this._tools.Parameters.mode_16bit)
+                    else if (this.tools_.Parameters.mode_16bit)
                     {
                         yield return Rn.SP;
                     }
 
-                    foreach (Rn r in ReadRegs(this.op1, false))
+                    foreach (Rn r in ReadRegs(this.op1_, false))
                     {
                         yield return r;
                     }
@@ -1275,15 +1306,15 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._tools.Parameters.mode_64bit)
+                    if (this.tools_.Parameters.mode_64bit)
                     {
                         yield return Rn.RSP;
                     }
-                    else if (this._tools.Parameters.mode_32bit)
+                    else if (this.tools_.Parameters.mode_32bit)
                     {
                         yield return Rn.ESP;
                     }
-                    else if (this._tools.Parameters.mode_16bit)
+                    else if (this.tools_.Parameters.mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -1306,37 +1337,38 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": 8-bit operand is not allowed. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": 8-bit operand is not allowed. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
 
-                if (this.op1.IsReg && t.Parameters.mode_64bit)
+                if (this.op1_.IsReg && t.Parameters.mode_64bit)
                 {
-                    Rn reg = this.op1.Rn;
+                    Rn reg = this.op1_.Rn;
                     if ((reg == Rn.SS) || (reg == Rn.DS) || (reg == Rn.ES))
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid register in 64-bit mode. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid register in 64-bit mode. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                     }
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                int operand_Size = this.op1.NBits;
-                if (this._tools.Parameters.mode_64bit) // stackAddrSize == 64
+                int operand_Size = this.op1_.NBits;
+                if (this.tools_.Parameters.mode_64bit) // stackAddrSize == 64
                 {
                     BitVecExpr rspExpr = this.Get(Rn.RSP);
                     BitVecExpr newRspExpr;
                     if (operand_Size == 64)
                     {
-                        newRspExpr = this._ctx.MkBVAdd(rspExpr, this._ctx.MkBV(8, 64));
-                        this.RegularUpdate.Set(this.op1, this.GetMem(newRspExpr, 8));
+                        newRspExpr = this.ctx_.MkBVAdd(rspExpr, this.ctx_.MkBV(8, 64));
+                        this.RegularUpdate.Set(this.op1_, this.GetMem(newRspExpr, 8));
                     }
                     else if (operand_Size == 16)
                     {
-                        newRspExpr = this._ctx.MkBVAdd(rspExpr, this._ctx.MkBV(2, 64));
-                        this.RegularUpdate.Set(this.op1, this.GetMem(newRspExpr, 2));
+                        newRspExpr = this.ctx_.MkBVAdd(rspExpr, this.ctx_.MkBV(2, 64));
+                        this.RegularUpdate.Set(this.op1_, this.GetMem(newRspExpr, 2));
                     }
                     else
                     {
@@ -1345,19 +1377,19 @@ namespace AsmSim
                     }
                     this.RegularUpdate.Set(Rn.RSP, newRspExpr);
                 }
-                else if (this._tools.Parameters.mode_32bit) // stackAddrSize == 32
+                else if (this.tools_.Parameters.mode_32bit) // stackAddrSize == 32
                 {
                     BitVecExpr espExpr = this.Get(Rn.ESP);
                     BitVecExpr newEspExpr;
                     if (operand_Size == 32)
                     {
-                        newEspExpr = this._ctx.MkBVAdd(espExpr, this._ctx.MkBV(4, 32));
-                        this.RegularUpdate.Set(this.op1, this.GetMem(newEspExpr, 4));
+                        newEspExpr = this.ctx_.MkBVAdd(espExpr, this.ctx_.MkBV(4, 32));
+                        this.RegularUpdate.Set(this.op1_, this.GetMem(newEspExpr, 4));
                     }
                     else if (operand_Size == 16)
                     {
-                        newEspExpr = this._ctx.MkBVAdd(espExpr, this._ctx.MkBV(2, 32));
-                        this.RegularUpdate.Set(this.op1, this.GetMem(newEspExpr, 2));
+                        newEspExpr = this.ctx_.MkBVAdd(espExpr, this.ctx_.MkBV(2, 32));
+                        this.RegularUpdate.Set(this.op1_, this.GetMem(newEspExpr, 2));
                     }
                     else
                     {
@@ -1366,19 +1398,19 @@ namespace AsmSim
                     }
                     this.RegularUpdate.Set(Rn.ESP, newEspExpr);
                 }
-                else if (this._tools.Parameters.mode_16bit)
+                else if (this.tools_.Parameters.mode_16bit)
                 {
                     BitVecExpr spExpr = this.Get(Rn.SP);
                     BitVecExpr newSpExpr;
                     if (operand_Size == 32)
                     {
-                        newSpExpr = this._ctx.MkBVAdd(spExpr, this._ctx.MkBV(4, 16));
-                        this.RegularUpdate.Set(this.op1, this.GetMem(newSpExpr, 4));
+                        newSpExpr = this.ctx_.MkBVAdd(spExpr, this.ctx_.MkBV(4, 16));
+                        this.RegularUpdate.Set(this.op1_, this.GetMem(newSpExpr, 4));
                     }
                     else if (operand_Size == 16)
                     {
-                        newSpExpr = this._ctx.MkBVAdd(spExpr, this._ctx.MkBV(2, 16));
-                        this.RegularUpdate.Set(this.op1, this.GetMem(newSpExpr, 2));
+                        newSpExpr = this.ctx_.MkBVAdd(spExpr, this.ctx_.MkBV(2, 16));
+                        this.RegularUpdate.Set(this.op1_, this.GetMem(newSpExpr, 2));
                     }
                     else
                     {
@@ -1393,15 +1425,15 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._tools.Parameters.mode_64bit)
+                    if (this.tools_.Parameters.mode_64bit)
                     {
                         yield return Rn.RSP;
                     }
-                    else if (this._tools.Parameters.mode_32bit)
+                    else if (this.tools_.Parameters.mode_32bit)
                     {
                         yield return Rn.ESP;
                     }
-                    else if (this._tools.Parameters.mode_16bit)
+                    else if (this.tools_.Parameters.mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -1412,20 +1444,20 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._tools.Parameters.mode_64bit)
+                    if (this.tools_.Parameters.mode_64bit)
                     {
                         yield return Rn.RSP;
                     }
-                    else if (this._tools.Parameters.mode_32bit)
+                    else if (this.tools_.Parameters.mode_32bit)
                     {
                         yield return Rn.ESP;
                     }
-                    else if (this._tools.Parameters.mode_16bit)
+                    else if (this.tools_.Parameters.mode_16bit)
                     {
                         yield return Rn.SP;
                     }
 
-                    foreach (Rn r in ReadRegs(this.op1, false))
+                    foreach (Rn r in ReadRegs(this.op1_, false))
                     {
                         yield return r;
                     }
@@ -1451,9 +1483,10 @@ namespace AsmSim
             public Cwd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CWD, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.DX, this._ctx.MkExtract(32, 16, this._ctx.MkSignExt(16, this.Get(Rn.AX))));
+                this.RegularUpdate.Set(Rn.DX, this.ctx_.MkExtract(32, 16, this.ctx_.MkSignExt(16, this.Get(Rn.AX))));
             }
 
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
@@ -1467,9 +1500,10 @@ namespace AsmSim
             public Cdq(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CDQ, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.EDX, this._ctx.MkExtract(64, 32, this._ctx.MkSignExt(32, this.Get(Rn.EAX))));
+                this.RegularUpdate.Set(Rn.EDX, this.ctx_.MkExtract(64, 32, this.ctx_.MkSignExt(32, this.Get(Rn.EAX))));
             }
 
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.EAX; } }
@@ -1483,9 +1517,10 @@ namespace AsmSim
             public Cqo(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CQO, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.RDX, this._ctx.MkExtract(128, 64, this._ctx.MkSignExt(64, this.Get(Rn.RAX))));
+                this.RegularUpdate.Set(Rn.RDX, this.ctx_.MkExtract(128, 64, this.ctx_.MkSignExt(64, this.Get(Rn.RAX))));
             }
 
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.RAX; } }
@@ -1499,9 +1534,10 @@ namespace AsmSim
             public Cbw(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CBW, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.AX, this._ctx.MkSignExt(8, this.Get(Rn.AL)));
+                this.RegularUpdate.Set(Rn.AX, this.ctx_.MkSignExt(8, this.Get(Rn.AL)));
             }
 
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AL; } }
@@ -1515,9 +1551,10 @@ namespace AsmSim
             public Cwde(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CWDE, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.EAX, this._ctx.MkSignExt(16, this.Get(Rn.AX)));
+                this.RegularUpdate.Set(Rn.EAX, this.ctx_.MkSignExt(16, this.Get(Rn.AX)));
             }
 
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
@@ -1531,9 +1568,10 @@ namespace AsmSim
             public Cdqe(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CDQE, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.RAX, this._ctx.MkSignExt(32, this.Get(Rn.EAX)));
+                this.RegularUpdate.Set(Rn.RAX, this.ctx_.MkSignExt(32, this.Get(Rn.EAX)));
             }
 
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.EAX; } }
@@ -1552,46 +1590,46 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
-                else if (this.op1.NBits == 16)
+                else if (this.op1_.NBits == 16)
                 {
-                    if (this.op2.NBits != 8)
+                    if (this.op2_.NBits != 8)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
-                else if (this.op1.NBits == 32)
+                else if (this.op1_.NBits == 32)
                 {
-                    if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
+                    if ((this.op2_.NBits != 8) && (this.op2_.NBits != 16))
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
-                else if (this.op1.NBits == 64)
+                else if (this.op1_.NBits == 64)
                 {
-                    if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
+                    if ((this.op2_.NBits != 8) && (this.op2_.NBits != 16))
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
                 else
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
             public override void Execute()
             {
-                uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
-                this.RegularUpdate.Set(this.op1, this._ctx.MkSignExt(nBitsAdded, this.Op2Value));
+                uint nBitsAdded = (uint)(this.op1_.NBits - this.op2_.NBits);
+                this.RegularUpdate.Set(this.op1_, this.ctx_.MkSignExt(nBitsAdded, this.Op2Value));
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Move and sign extend</summary>
@@ -1605,26 +1643,26 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != 64)
+                if (this.op1_.NBits != 64)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
 
-                if (this.op2.NBits == 32)
+                if (this.op2_.NBits == 32)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
             public override void Execute()
             {
-                uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
-                this.RegularUpdate.Set(this.op1, this._ctx.MkSignExt(nBitsAdded, this.Op2Value));
+                uint nBitsAdded = (uint)(this.op1_.NBits - this.op2_.NBits);
+                this.RegularUpdate.Set(this.op1_, this.ctx_.MkSignExt(nBitsAdded, this.Op2Value));
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Move and zero extend</summary>
@@ -1638,46 +1676,46 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
-                else if (this.op1.NBits == 16)
+                else if (this.op1_.NBits == 16)
                 {
-                    if (this.op2.NBits != 8)
+                    if (this.op2_.NBits != 8)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
-                else if (this.op1.NBits == 32)
+                else if (this.op1_.NBits == 32)
                 {
-                    if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
+                    if ((this.op2_.NBits != 8) && (this.op2_.NBits != 16))
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
-                else if (this.op1.NBits == 64)
+                else if (this.op1_.NBits == 64)
                 {
-                    if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
+                    if ((this.op2_.NBits != 8) && (this.op2_.NBits != 16))
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
                 else
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
             public override void Execute()
             {
-                uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
-                this.RegularUpdate.Set(this.op1, this._ctx.MkZeroExt(nBitsAdded, this.Op2Value));
+                uint nBitsAdded = (uint)(this.op1_.NBits - this.op2_.NBits);
+                this.RegularUpdate.Set(this.op1_, this.ctx_.MkZeroExt(nBitsAdded, this.Op2Value));
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         #endregion Data Transfer Instructions
@@ -1716,8 +1754,8 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this._ctx);
-                this.RegularUpdate.Set(this.op1, result);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.ctx_);
+                this.RegularUpdate.Set(this.op1_, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -1726,9 +1764,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Add with carry</summary>
@@ -1737,10 +1775,11 @@ namespace AsmSim
             public Adc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.ADC, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
-                this.RegularUpdate.Set(this.op1, result);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.ctx_);
+                this.RegularUpdate.Set(this.op1_, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -1751,9 +1790,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Subtracts</summary>
@@ -1770,8 +1809,8 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
-                this.RegularUpdate.Set(this.op1, result);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.ctx_);
+                this.RegularUpdate.Set(this.op1_, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -1780,9 +1819,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Subtract with borrow</summary>
@@ -1791,10 +1830,11 @@ namespace AsmSim
             public Sbb(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.SBB, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
-                this.RegularUpdate.Set(this.op1, result);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.ctx_);
+                this.RegularUpdate.Set(this.op1_, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -1805,9 +1845,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Signed multiply</summary>
@@ -1826,32 +1866,32 @@ namespace AsmSim
                     case 1:
                         {
                             Ot1 allowedOperands1 = Ot1.reg | Ot1.mem;
-                            if (!allowedOperands1.HasFlag(this.op1.Type))
+                            if (!allowedOperands1.HasFlag(this.op1_.Type))
                             {
                                 this.SyntaxError = string.Format(
                                     "\"{0}\": Operand1={1} ({2}, bits={3}). Allowed types: {4}.",
-                                    this.ToString(), this.op1, this.op1.Type, this.op1.NBits, AsmSourceTools.ToString(allowedOperands1));
+                                    this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, AsmSourceTools.ToString(allowedOperands1));
                             }
                             break;
                         }
                     case 2:
                         {
                             Ot2 allowedOperands2 = Ot2.reg_reg | Ot2.reg_mem;
-                            if (!allowedOperands2.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type)))
+                            if (!allowedOperands2.HasFlag(AsmSourceTools.MergeOt(this.op1_.Type, this.op2_.Type)))
                             {
                                 this.SyntaxError = string.Format(
                                     "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}). Allowed types: {7}.",
-                                    this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, AsmSourceTools.ToString(allowedOperands2));
+                                    this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, AsmSourceTools.ToString(allowedOperands2));
                             }
-                            if (this.op1.NBits == 8)
+                            if (this.op1_.NBits == 8)
                             {
                                 this.SyntaxError = string.Format(
                                     "\"{0}\": Operand 1 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}).",
-                                    this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                                    this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                             }
-                            if (this.op1.NBits != this.op2.NBits)
+                            if (this.op1_.NBits != this.op2_.NBits)
                             {
-                                this.CreateSyntaxError1(this.op1, this.op2);
+                                this.CreateSyntaxError1(this.op1_, this.op2_);
                             }
 
                             break;
@@ -1859,33 +1899,33 @@ namespace AsmSim
                     case 3:
                         {
                             Ot3 allowedOperands3 = Ot3.reg_reg_imm | Ot3.reg_mem_imm;
-                            if (!allowedOperands3.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type, this.op3.Type)))
+                            if (!allowedOperands3.HasFlag(AsmSourceTools.MergeOt(this.op1_.Type, this.op2_.Type, this.op3_.Type)))
                             {
                                 this.SyntaxError = string.Format(
                                     "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}) Allowed types: {10}.",
-                                    this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
+                                    this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, this.op3_, this.op3_.Type, this.op3_.NBits, AsmSourceTools.ToString(allowedOperands3));
                             }
-                            if (this.op1.NBits == 8)
+                            if (this.op1_.NBits == 8)
                             {
                                 this.SyntaxError = string.Format(
                                     "\"{0}\": Operand 1 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}).",
-                                    this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
+                                    this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, this.op3_, this.op3_.Type, this.op3_.NBits);
                             }
-                            if (this.op1.NBits != this.op2.NBits)
+                            if (this.op1_.NBits != this.op2_.NBits)
                             {
-                                this.CreateSyntaxError1(this.op1, this.op2);
+                                this.CreateSyntaxError1(this.op1_, this.op2_);
                             }
 
-                            if (this.op3.NBits < this.op1.NBits)
+                            if (this.op3_.NBits < this.op1_.NBits)
                             {
-                                this.op3.SignExtend(Math.Min(this.op1.NBits, 32));
+                                this.op3_.SignExtend(Math.Min(this.op1_.NBits, 32));
                             }
-                            if (((this.op1.NBits == 16) && (this.op3.NBits == 8)) ||
-                                ((this.op1.NBits == 32) && (this.op3.NBits == 8)) ||
-                                ((this.op1.NBits == 64) && (this.op3.NBits == 8)) ||
-                                ((this.op1.NBits == 16) && (this.op3.NBits == 16)) ||
-                                ((this.op1.NBits == 32) && (this.op3.NBits == 32)) ||
-                                ((this.op1.NBits == 64) && (this.op3.NBits == 32)))
+                            if (((this.op1_.NBits == 16) && (this.op3_.NBits == 8)) ||
+                                ((this.op1_.NBits == 32) && (this.op3_.NBits == 8)) ||
+                                ((this.op1_.NBits == 64) && (this.op3_.NBits == 8)) ||
+                                ((this.op1_.NBits == 16) && (this.op3_.NBits == 16)) ||
+                                ((this.op1_.NBits == 32) && (this.op3_.NBits == 32)) ||
+                                ((this.op1_.NBits == 64) && (this.op3_.NBits == 32)))
                             {
                                 // ok
                             }
@@ -1893,7 +1933,7 @@ namespace AsmSim
                             {
                                 this.SyntaxError = string.Format(
                                     "\"{0}\": Operand 1 and 3 cannot have the provided combination of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}).",
-                                    this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
+                                    this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, this.op3_, this.op3_.Type, this.op3_.NBits);
                             }
                             break;
                         }
@@ -1903,6 +1943,7 @@ namespace AsmSim
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 /*
@@ -1920,10 +1961,10 @@ namespace AsmSim
                 IMUL r32, r/m32, imm32          doubleword register ← r/m32 ∗ immediate doubleword.
                 IMUL r64, r/m64, imm32          Quadword register ← r/m64 ∗ immediate doubleword.
                 */
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 BoolExpr cf;
 
-                uint nBits = (uint)this.op1.NBits;
+                uint nBits = (uint)this.op1_.NBits;
 
                 switch (this.NOperands)
                 {
@@ -1977,17 +2018,17 @@ namespace AsmSim
                             BitVecExpr newValue = ctx.MkBVMul(ctx.MkSignExt(nBits, this.Op1Value), ctx.MkSignExt(nBits, this.Op2Value));
                             BitVecExpr truncatedValue = ctx.MkExtract(nBits - 1, 0, newValue);
                             BitVecExpr signExtendedTruncatedValue = ctx.MkSignExt(nBits, truncatedValue);
-                            this.RegularUpdate.Set(this.op1.Rn, truncatedValue);
+                            this.RegularUpdate.Set(this.op1_.Rn, truncatedValue);
                             cf = ctx.MkNot(ctx.MkEq(signExtendedTruncatedValue, newValue));
                             break;
                         }
                     case 3:
                         {
-                            this.op3.SignExtend((int)nBits); // sign extend the imm
+                            this.op3_.SignExtend((int)nBits); // sign extend the imm
                             BitVecExpr newValue = ctx.MkBVMul(ctx.MkSignExt(nBits, this.Op2Value), ctx.MkSignExt(nBits, this.Op3Value));
                             BitVecExpr truncatedValue = ctx.MkExtract(nBits - 1, 0, newValue);
                             BitVecExpr signExtendedTruncatedValue = ctx.MkSignExt(nBits, truncatedValue);
-                            this.RegularUpdate.Set(this.op1.Rn, truncatedValue);
+                            this.RegularUpdate.Set(this.op1_.Rn, truncatedValue);
                             cf = ctx.MkNot(ctx.MkEq(signExtendedTruncatedValue, newValue));
                             break;
                         }
@@ -2012,12 +2053,12 @@ namespace AsmSim
                 {
                     if (this.NOperands == 1)
                     {
-                        if (this.op1 == null)
+                        if (this.op1_ == null)
                         {
                             yield break;
                         }
 
-                        switch (this.op1.NBits)
+                        switch (this.op1_.NBits)
                         {
                             case 8:
                                 yield return Rn.AL;
@@ -2033,14 +2074,14 @@ namespace AsmSim
                                 break;
                             default: break;
                         }
-                        foreach (Rn r in ReadRegs(this.op1, false))
+                        foreach (Rn r in ReadRegs(this.op1_, false))
                         {
                             yield return r;
                         }
                     }
                     else
                     {
-                        foreach (Rn r in ReadRegs(this.op1, true, this.op2, false))
+                        foreach (Rn r in ReadRegs(this.op1_, true, this.op2_, false))
                         {
                             yield return r;
                         }
@@ -2052,14 +2093,14 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null)
+                    if (this.op1_ == null)
                     {
                         yield break;
                     }
 
                     if (this.NOperands == 1)
                     {
-                        switch (this.op1.NBits)
+                        switch (this.op1_.NBits)
                         {
                             case 8:
                                 yield return Rn.AX;
@@ -2081,7 +2122,7 @@ namespace AsmSim
                     }
                     else
                     {
-                        foreach (Rn r in WriteRegs(this.op1))
+                        foreach (Rn r in WriteRegs(this.op1_))
                         {
                             yield return r;
                         }
@@ -2096,11 +2137,12 @@ namespace AsmSim
             public Mul(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.MUL, args, Ot1.reg | Ot1.mem, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 BoolExpr cf;
-                uint nBits = (uint)this.op1.NBits;
+                uint nBits = (uint)this.op1_.NBits;
 
                 switch (nBits)
                 {
@@ -2160,12 +2202,12 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null)
+                    if (this.op1_ == null)
                     {
                         yield break;
                     }
 
-                    switch (this.op1.NBits)
+                    switch (this.op1_.NBits)
                     {
                         case 8:
                             yield return Rn.AL;
@@ -2181,7 +2223,7 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ReadRegs(this.op1, false))
+                    foreach (Rn r in ReadRegs(this.op1_, false))
                     {
                         yield return r;
                     }
@@ -2192,12 +2234,12 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null)
+                    if (this.op1_ == null)
                     {
                         yield break;
                     }
 
-                    switch (this.op1.NBits)
+                    switch (this.op1_.NBits)
                     {
                         case 8:
                             yield return Rn.AX;
@@ -2226,14 +2268,15 @@ namespace AsmSim
             public Idiv(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
-                uint nBits = (uint)this.op1.NBits;
+                Context ctx = this.ctx_;
+                uint nBits = (uint)this.op1_.NBits;
                 BitVecExpr term1;
                 BitVecExpr maxValue;
 
-                switch (this.op1.NBits)
+                switch (this.op1_.NBits)
                 {
                     case 8:
                         term1 = this.Get(Rn.AX);
@@ -2266,7 +2309,7 @@ namespace AsmSim
                 BoolExpr quotientTooLarge = ctx.MkBVSGT(quotient, maxValue);
                 BoolExpr dE_Excepton = ctx.MkOr(op1IsZero, quotientTooLarge);
 
-                switch (this.op1.NBits)
+                switch (this.op1_.NBits)
                 {
                     case 8:
                         this.RegularUpdate.Set(Rn.AL, ctx.MkITE(dE_Excepton, this.Undef(Rn.AL), ctx.MkExtract(nBits - 1, 0, quotient)) as BitVecExpr);
@@ -2301,12 +2344,12 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null)
+                    if (this.op1_ == null)
                     {
                         yield break;
                     }
 
-                    switch (this.op1.NBits)
+                    switch (this.op1_.NBits)
                     {
                         case 8:
                             yield return Rn.AL;
@@ -2322,7 +2365,7 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ReadRegs(this.op1, false))
+                    foreach (Rn r in ReadRegs(this.op1_, false))
                     {
                         yield return r;
                     }
@@ -2333,12 +2376,12 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null)
+                    if (this.op1_ == null)
                     {
                         yield break;
                     }
 
-                    switch (this.op1.NBits)
+                    switch (this.op1_.NBits)
                     {
                         case 8:
                             yield return Rn.AX;
@@ -2367,10 +2410,11 @@ namespace AsmSim
             public Div(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
-                uint nBits = (uint)this.op1.NBits;
+                Context ctx = this.ctx_;
+                uint nBits = (uint)this.op1_.NBits;
                 BitVecExpr term1;
                 BitVecExpr maxValue;
                 switch (nBits)
@@ -2442,12 +2486,12 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null)
+                    if (this.op1_ == null)
                     {
                         yield break;
                     }
 
-                    switch (this.op1.NBits)
+                    switch (this.op1_.NBits)
                     {
                         case 8:
                             yield return Rn.AL;
@@ -2463,7 +2507,7 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ReadRegs(this.op1, false))
+                    foreach (Rn r in ReadRegs(this.op1_, false))
                     {
                         yield return r;
                     }
@@ -2474,12 +2518,12 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null)
+                    if (this.op1_ == null)
                     {
                         yield break;
                     }
 
-                    switch (this.op1.NBits)
+                    switch (this.op1_.NBits)
                     {
                         case 8:
                             yield return Rn.AX;
@@ -2508,10 +2552,11 @@ namespace AsmSim
             public Inc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.INC, args, Ot1.reg | Ot1.mem, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
-                this.RegularUpdate.Set(this.op1, result);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
+                this.RegularUpdate.Set(this.op1_, result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -2520,9 +2565,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Decrement</summary>
@@ -2531,10 +2576,11 @@ namespace AsmSim
             public Dec(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DEC, args, Ot1.reg | Ot1.mem, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
-                this.RegularUpdate.Set(this.op1, result);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
+                this.RegularUpdate.Set(this.op1_, result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -2543,9 +2589,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Negate</summary>
@@ -2556,8 +2602,8 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Neg(this.Op1Value, this._ctx);
-                this.RegularUpdate.Set(this.op1, result);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Neg(this.Op1Value, this.ctx_);
+                this.RegularUpdate.Set(this.op1_, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -2566,9 +2612,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Compare</summary>
@@ -2579,7 +2625,7 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.ctx_);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -2588,7 +2634,7 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, false, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
         }
         #endregion Binary Arithmetic Instructions
 
@@ -2600,9 +2646,10 @@ namespace AsmSim
             public Daa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DAA, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
                 BitVecExpr al = this.Get(Rn.AL);
                 BoolExpr af = this.Get(Flags.AF);
@@ -2638,9 +2685,10 @@ namespace AsmSim
             public Das(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DAS, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
                 BitVecExpr al = this.Get(Rn.AL);
                 BoolExpr af = this.Get(Flags.AF);
@@ -2676,9 +2724,10 @@ namespace AsmSim
             public Aaa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.AAA, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
                 BitVecExpr ax = this.Get(Rn.AX);
                 BoolExpr af = this.Get(Flags.AF);
@@ -2714,9 +2763,10 @@ namespace AsmSim
             public Aas(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.AAS, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
                 BitVecExpr ax = this.Get(Rn.AX);
                 BoolExpr af = this.Get(Flags.AF);
@@ -2766,19 +2816,20 @@ namespace AsmSim
                 {
                     this.imm = 10;
                 }
-                else if (this.op1.IsImm && (this.op1.NBits == 8))
+                else if (this.op1_.IsImm && (this.op1_.NBits == 8))
                 {
-                    this.imm = (byte)this.op1.Imm;
+                    this.imm = (byte)this.op1_.Imm;
                 }
                 else
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 BitVecNum bv_imm = ctx.MkBV(this.imm, 8);
                 BitVecExpr al = this.Get(Rn.AL);
                 BitVecExpr al_new = ctx.MkBVSDiv(al, bv_imm);
@@ -2818,19 +2869,20 @@ namespace AsmSim
                 {
                     this.imm = 10;
                 }
-                else if (this.op1.IsImm && (this.op1.NBits == 8))
+                else if (this.op1_.IsImm && (this.op1_.NBits == 8))
                 {
-                    this.imm = (byte)this.op1.Imm;
+                    this.imm = (byte)this.op1_.Imm;
                 }
                 else
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 BitVecNum bv_imm_16 = ctx.MkBV(this.imm, 16);
                 BitVecExpr al_16 = ctx.MkZeroExt(8, this.Get(Rn.AL));
                 BitVecExpr ah_16 = ctx.MkZeroExt(8, this.Get(Rn.AH));
@@ -2865,51 +2917,51 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op2.IsImm)
+                if (this.op2_.IsImm)
                 {
-                    if (this.op1.NBits < this.op2.NBits)
+                    if (this.op1_.NBits < this.op2_.NBits)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
-                    if ((this.op1.NBits == 64) && (this.op2.NBits == 32))
+                    if ((this.op1_.NBits == 64) && (this.op2_.NBits == 32))
                     {
-                        this.op2.SignExtend(this.op1.NBits);
+                        this.op2_.SignExtend(this.op1_.NBits);
                     }
-                    else if (this.op2.NBits == 8)
+                    else if (this.op2_.NBits == 8)
                     {
-                        this.op2.SignExtend(this.op1.NBits);
+                        this.op2_.SignExtend(this.op1_.NBits);
                     }
-                    else if (this.op2.NBits < this.op1.NBits)
+                    else if (this.op2_.NBits < this.op1_.NBits)
                     {
-                        this.op2.ZeroExtend(this.op1.NBits);
+                        this.op2_.ZeroExtend(this.op1_.NBits);
                     }
                 }
-                else if (this.op1.NBits != this.op2.NBits)
+                else if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
             public override void Execute()
             {
                 BitVecExpr value;
-                switch (this._mnemonic)
+                switch (this.mnemonic_)
                 {
-                    case Mnemonic.XOR: value = this._ctx.MkBVXOR(this.Op1Value, this.Op2Value); break;
-                    case Mnemonic.AND: value = this._ctx.MkBVAND(this.Op1Value, this.Op2Value); break;
-                    case Mnemonic.OR: value = this._ctx.MkBVOR(this.Op1Value, this.Op2Value); break;
+                    case Mnemonic.XOR: value = this.ctx_.MkBVXOR(this.Op1Value, this.Op2Value); break;
+                    case Mnemonic.AND: value = this.ctx_.MkBVAND(this.Op1Value, this.Op2Value); break;
+                    case Mnemonic.OR: value = this.ctx_.MkBVOR(this.Op1Value, this.Op2Value); break;
                     default: return;
                 }
-                this.RegularUpdate.Set(this.op1, value);
+                this.RegularUpdate.Set(this.op1_, value);
                 this.RegularUpdate.Set(Flags.CF, Tv.ZERO);
                 this.RegularUpdate.Set(Flags.OF, Tv.ZERO);
                 this.RegularUpdate.Set(Flags.AF, Tv.UNDEFINED);
                 this.RegularUpdate.Set_SF_ZF_PF(value);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Xor : LogicalBase
@@ -2937,13 +2989,13 @@ namespace AsmSim
 
             public override void Execute()
             {
-                this.RegularUpdate.Set(this.op1, this._ctx.MkBVNot(this.Op1Value));
+                this.RegularUpdate.Set(this.op1_, this.ctx_.MkBVNot(this.Op1Value));
                 // Flags are unaffected
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Test : Opcode2Base
@@ -2956,26 +3008,26 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op2.IsImm)
+                if (this.op2_.IsImm)
                 {
-                    if (this.op1.NBits < this.op2.NBits)
+                    if (this.op1_.NBits < this.op2_.NBits)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
-                    if (this.op2.NBits < this.op1.NBits)
+                    if (this.op2_.NBits < this.op1_.NBits)
                     {
-                        this.op2.SignExtend(this.op1.NBits);
+                        this.op2_.SignExtend(this.op1_.NBits);
                     }
                 }
-                else if (this.op1.NBits != this.op2.NBits)
+                else if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
             public override void Execute()
             {
-                BitVecExpr value = this._ctx.MkBVAND(this.Op1Value, this.Op2Value);
+                BitVecExpr value = this.ctx_.MkBVAND(this.Op1Value, this.Op2Value);
                 this.RegularUpdate.Set(Flags.CF, Tv.ZERO);
                 this.RegularUpdate.Set(Flags.OF, Tv.ZERO);
                 this.RegularUpdate.Set(Flags.AF, Tv.UNDEFINED);
@@ -2984,7 +3036,7 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, false, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
         }
 
         #endregion Logical Instructions
@@ -3001,13 +3053,13 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op2.IsReg && (this.op2.Rn != Rn.CL))
+                if (this.op2_.IsReg && (this.op2_.Rn != Rn.CL))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": If operand 2 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": If operand 2 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
                 if (this.Op2Value.SortSize != 8)
                 {
-                    this.Warning = string.Format(Culture, "\"{0}\": value of operand 2 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.Warning = string.Format(Culture, "\"{0}\": value of operand 2 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
@@ -3025,9 +3077,10 @@ namespace AsmSim
 
             public void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left)
             {
-                UpdateFlagsShift(value, cfIn, shiftCount, shiftTooLarge, left, this._keys.prevKey, this.RegularUpdate, this._tools.Rand, this._ctx);
+                UpdateFlagsShift(value, cfIn, shiftCount, shiftTooLarge, left, this.keys_.prevKey, this.RegularUpdate, this.tools_.Rand, this.ctx_);
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public static void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left, string prevKey, StateUpdate stateUpdate, Random rand, Context ctx)
             {
                 Contract.Requires(shiftCount != null);
@@ -3070,6 +3123,7 @@ namespace AsmSim
                 #endregion
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public void UpdateFlagsRotate(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, bool left)
             {
                 Contract.Requires(shiftCount != null);
@@ -3082,7 +3136,7 @@ namespace AsmSim
                  * bits of the result.
                  */
 
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 Contract.Assume(ctx != null);
 
                 uint nBits = shiftCount.SortSize;
@@ -3110,9 +3164,9 @@ namespace AsmSim
                 #endregion
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         #region Shift
@@ -3125,10 +3179,10 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this._ctx, this._tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this.ctx_, this.tools_.Rand);
                 this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
@@ -3142,10 +3196,10 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this._ctx, this._tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this.ctx_, this.tools_.Rand);
                 this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
@@ -3159,10 +3213,10 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this._ctx, this._tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this.ctx_, this.tools_.Rand);
                 this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
@@ -3176,10 +3230,10 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this._ctx, this._tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this.ctx_, this.tools_.Rand);
                 this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
@@ -3196,10 +3250,10 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this._ctx, this._tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this.ctx_, this.tools_.Rand);
                 this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, false);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF | Flags.OF; } }
@@ -3211,12 +3265,13 @@ namespace AsmSim
             public Rcr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.RCR, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this._keys.prevKey, this._ctx);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys_.prevKey, this.ctx_);
                 this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, false);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsReadStatic { get { return Flags.CF; } }
@@ -3230,12 +3285,13 @@ namespace AsmSim
             public Rcl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.RCL, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this._keys.prevKey, this._ctx);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys_.prevKey, this.ctx_);
                 this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, true);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsReadStatic { get { return Flags.CF; } }
@@ -3251,10 +3307,10 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this._ctx, this._tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this.ctx_, this.tools_.Rand);
                 this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, true);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF | Flags.OF; } }
@@ -3272,20 +3328,20 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
 
                 if (this.Op3Value.SortSize != 8)
                 {
-                    this.Warning = string.Format(Culture, "\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.Warning = string.Format(Culture, "\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Rorx : ShiftBaseX
@@ -3295,9 +3351,9 @@ namespace AsmSim
 
             public override void Execute()
             {
-                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this._ctx, this._tools.Rand);
-                this.RegularUpdate.Set(this.op1, result);
+                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                this.RegularUpdate.Set(this.op1_, result);
             }
         }
 
@@ -3308,9 +3364,9 @@ namespace AsmSim
 
             public override void Execute()
             {
-                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this._ctx, this._tools.Rand);
-                this.RegularUpdate.Set(this.op1, result);
+                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                this.RegularUpdate.Set(this.op1_, result);
             }
         }
 
@@ -3321,9 +3377,9 @@ namespace AsmSim
 
             public override void Execute()
             {
-                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this._ctx, this._tools.Rand);
-                this.RegularUpdate.Set(this.op1, result);
+                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                this.RegularUpdate.Set(this.op1_, result);
             }
         }
 
@@ -3334,9 +3390,9 @@ namespace AsmSim
 
             public override void Execute()
             {
-                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this._ctx, this._tools.Rand);
-                this.RegularUpdate.Set(this.op1, result);
+                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                this.RegularUpdate.Set(this.op1_, result);
             }
         }
         #endregion  Shift/Rotate X (no flags updates)
@@ -3353,30 +3409,30 @@ namespace AsmSim
                     return;
                 }
 
-                if ((this.op1.NBits == 8) || (this.op2.NBits == 8))
+                if ((this.op1_.NBits == 8) || (this.op2_.NBits == 8))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 and 2 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 and 2 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, this.op3_, this.op3_.Type, this.op3_.NBits);
                 }
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
 
-                if (this.op3.IsReg && (this.op3.Rn != Rn.CL))
+                if (this.op3_.IsReg && (this.op3_.Rn != Rn.CL))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": If operand 3 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": If operand 3 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, this.op3_, this.op3_.Type, this.op3_.NBits);
                 }
                 if (this.Op3Value.SortSize != 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits, this.op3_, this.op3_.Type, this.op3_.NBits);
                 }
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false, this.op3, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false, this.op3_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Shift right double</summary>
@@ -3387,8 +3443,8 @@ namespace AsmSim
 
             public override void Execute()
             {
-                Context ctx = this._ctx;
-                uint nBits = (uint)this.op1.NBits;
+                Context ctx = this.ctx_;
+                uint nBits = (uint)this.op1_.NBits;
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
                 BitVecExpr nShifts8 = shiftCount.shiftCount; // nShifts8 is 8bits
                 BitVecExpr nShifts = ctx.MkZeroExt(nBits - 8, nShifts8);
@@ -3407,8 +3463,8 @@ namespace AsmSim
                 //DEST is undefined;
                 //CF, OF, SF, ZF, AF, PF are undefined;
 
-                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount.shiftCount, shiftCount.tooLarge, false, this._keys.prevKey, this.RegularUpdate, this._tools.Rand, this._ctx);
-                this.RegularUpdate.Set(this.op1, value_out);
+                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount.shiftCount, shiftCount.tooLarge, false, this.keys_.prevKey, this.RegularUpdate, this.tools_.Rand, this.ctx_);
+                this.RegularUpdate.Set(this.op1_, value_out);
             }
         }
 
@@ -3418,10 +3474,11 @@ namespace AsmSim
             public Shld(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.SHLD, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
-                uint nBits = (uint)this.op1.NBits;
+                Context ctx = this.ctx_;
+                uint nBits = (uint)this.op1_.NBits;
                 (BitVecExpr shiftCount, BoolExpr tooLarge) = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
                 BitVecExpr nShifts = shiftCount;
                 BitVecExpr nShifts64 = ctx.MkZeroExt(nBits - 8, nShifts);
@@ -3438,8 +3495,8 @@ namespace AsmSim
                 BoolExpr bitValue = ToolsZ3.GetBit(value_in, bitPos64, ctx);
                 BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), this.Undef(Flags.CF), bitValue) as BoolExpr;
 
-                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount, tooLarge, true, this._keys.prevKey, this.RegularUpdate, this._tools.Rand, this._ctx);
-                this.RegularUpdate.Set(this.op1, value_out);
+                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount, tooLarge, true, this.keys_.prevKey, this.RegularUpdate, this.tools_.Rand, this.ctx_);
+                this.RegularUpdate.Set(this.op1_, value_out);
             }
         }
         #endregion Shift Double
@@ -3449,33 +3506,33 @@ namespace AsmSim
 
         public sealed class Setcc : Opcode1Base
         {
-            private readonly ConditionalElement _ce;
+            private readonly ConditionalElement ce_;
 
             public Setcc(Mnemonic mnemonic, string[] args, ConditionalElement ce, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, Ot1.reg | Ot1.mem, keys, t)
             {
-                this._ce = ce;
+                this.ce_ = ce;
                 if (this.IsHalted)
                 {
                     return;
                 }
 
-                if (this.op1.NBits != 8)
+                if (this.op1_.NBits != 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "Invalid operands size. Operands can only have size 8. Operand1={0}", this.op1);
+                    this.SyntaxError = string.Format(Culture, "Invalid operands size. Operands can only have size 8. Operand1={0}", this.op1_);
                 }
             }
 
             public override void Execute()
             {
-                BoolExpr conditional = ToolsAsmSim.ConditionalTaken(this._ce, this._keys.prevKey, this._ctx);
-                BitVecExpr result = this._ctx.MkITE(conditional, this._ctx.MkBV(0, 8), this._ctx.MkBV(1, 8)) as BitVecExpr;
-                this.RegularUpdate.Set(this.op1, result);
+                BoolExpr conditional = ToolsAsmSim.ConditionalTaken(this.ce_, this.keys_.prevKey, this.ctx_);
+                BitVecExpr result = this.ctx_.MkITE(conditional, this.ctx_.MkBV(0, 8), this.ctx_.MkBV(1, 8)) as BitVecExpr;
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
-            public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this._ce); } }
+            public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this.ce_); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public abstract class BitTestBase : Opcode2Base
@@ -3488,56 +3545,56 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op2.IsImm)
+                if (this.op2_.IsImm)
                 {
-                    if (this.op2.NBits != 8)
+                    if (this.op2_.NBits != 8)
                     {
-                        this.SyntaxError = string.Format(Culture, "Operand 2 is imm and should have 8 bits. Operand1={0} ({1}, bits={2}); Operand2={3} ({4}, bits={5})", this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "Operand 2 is imm and should have 8 bits. Operand1={0} ({1}, bits={2}); Operand2={3} ({4}, bits={5})", this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
-                else if (this.op1.NBits != this.op2.NBits)
+                else if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
             private BitVecExpr GetBitPos(BitVecExpr value, uint nBits)
             {
-                BitVecNum mask = this._ctx.MkBV((nBits == 64) ? 0x3F : 0x1F, nBits);
-                return this._ctx.MkBVAND(value, mask);
+                BitVecNum mask = this.ctx_.MkBV((nBits == 64) ? 0x3F : 0x1F, nBits);
+                return this.ctx_.MkBVAND(value, mask);
             }
 
             protected void SetBitValue(Mnemonic opcode)
             {
                 //Debug.Assert(this.Op1Value.SortSize == this.Op2Value.SortSize, "nBits op1 = " + this.Op1Value.SortSize +"; nBits op2 = "+ this.Op2Value.SortSize);
 
-                uint nBits = (uint)this.op1.NBits;
+                uint nBits = (uint)this.op1_.NBits;
                 BitVecExpr bitPos = this.GetBitPos(this.Op2Value, nBits);
-                BitVecExpr mask = this._ctx.MkBVSHL(this._ctx.MkBV(1, nBits), bitPos);
-                BitVecExpr mask_INV = this._ctx.MkBVNeg(mask);
+                BitVecExpr mask = this.ctx_.MkBVSHL(this.ctx_.MkBV(1, nBits), bitPos);
+                BitVecExpr mask_INV = this.ctx_.MkBVNeg(mask);
                 BitVecExpr v1 = this.Op1Value;
 
                 switch (opcode)
                 {
                     case Mnemonic.BTC:
                         {
-                            BitVecExpr bitSet = this._ctx.MkBVOR(v1, mask);
-                            BitVecExpr bitCleared = this._ctx.MkBVAND(v1, mask_INV);
-                            BoolExpr bitSetAtPos = ToolsZ3.GetBit(v1, bitPos, this._ctx);
-                            BitVecExpr value = this._ctx.MkITE(bitSetAtPos, bitCleared, bitSet) as BitVecExpr;
-                            this.RegularUpdate.Set(this.op1, value);
+                            BitVecExpr bitSet = this.ctx_.MkBVOR(v1, mask);
+                            BitVecExpr bitCleared = this.ctx_.MkBVAND(v1, mask_INV);
+                            BoolExpr bitSetAtPos = ToolsZ3.GetBit(v1, bitPos, this.ctx_);
+                            BitVecExpr value = this.ctx_.MkITE(bitSetAtPos, bitCleared, bitSet) as BitVecExpr;
+                            this.RegularUpdate.Set(this.op1_, value);
                         }
                         break;
                     case Mnemonic.BTS:
                         {
-                            BitVecExpr bitSet = this._ctx.MkBVOR(v1, mask);
-                            this.RegularUpdate.Set(this.op1, bitSet);
+                            BitVecExpr bitSet = this.ctx_.MkBVOR(v1, mask);
+                            this.RegularUpdate.Set(this.op1_, bitSet);
                         }
                         break;
                     case Mnemonic.BTR:
                         {
-                            BitVecExpr bitCleared = this._ctx.MkBVAND(v1, mask_INV);
-                            this.RegularUpdate.Set(this.op1, bitCleared);
+                            BitVecExpr bitCleared = this.ctx_.MkBVAND(v1, mask_INV);
+                            this.RegularUpdate.Set(this.op1_, bitCleared);
                         }
                         break;
                     case Mnemonic.BT:
@@ -3550,12 +3607,12 @@ namespace AsmSim
                 this.RegularUpdate.Set(Flags.SF, Tv.UNDEFINED);
                 this.RegularUpdate.Set(Flags.AF, Tv.UNDEFINED);
                 this.RegularUpdate.Set(Flags.PF, Tv.UNDEFINED);
-                this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(v1, bitPos, this._ctx));
+                this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(v1, bitPos, this.ctx_));
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
         }
 
         public sealed class Bt_Opcode : BitTestBase
@@ -3573,7 +3630,7 @@ namespace AsmSim
 
             public override void Execute() { this.SetBitValue(Mnemonic.BTS); }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Btr : BitTestBase
@@ -3583,7 +3640,7 @@ namespace AsmSim
 
             public override void Execute() { this.SetBitValue(Mnemonic.BTR); }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Btc : BitTestBase
@@ -3593,7 +3650,7 @@ namespace AsmSim
 
             public override void Execute() { this.SetBitValue(Mnemonic.BTC); }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Bsf : Opcode2Base
@@ -3606,14 +3663,14 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
@@ -3622,27 +3679,28 @@ namespace AsmSim
                 BitVecExpr result;
                 if (pos == nBits - 1)
                 {
-                    result = this._ctx.MkBV(pos, 6);
+                    result = this.ctx_.MkBV(pos, 6);
                 }
                 else
                 {
                     BitVecExpr expr1 = this.MakeBsfExpr(nBits, pos + 1, sourceOperand, one);
-                    result = this._ctx.MkITE(ToolsZ3.GetBit(sourceOperand, pos, one, this._ctx), this._ctx.MkBV(pos, 6), expr1) as BitVecExpr;
+                    result = this.ctx_.MkITE(ToolsZ3.GetBit(sourceOperand, pos, one, this.ctx_), this.ctx_.MkBV(pos, 6), expr1) as BitVecExpr;
                 }
                 return result;
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
-                uint nBits = (uint)this.op1.NBits;
+                Context ctx = this.ctx_;
+                uint nBits = (uint)this.op1_.NBits;
                 {
                     BitVecNum one = ctx.MkBV(1, 1);
                     BitVecExpr answer = ctx.MkConcat(ctx.MkBV(0, nBits - 6), this.MakeBsfExpr(nBits, 0, this.Op2Value, one));
                     Debug.Assert(answer.SortSize == nBits);
-                    BitVecExpr expr_Fresh = this.Undef(this.op1.Rn);
+                    BitVecExpr expr_Fresh = this.Undef(this.op1_.Rn);
                     BitVecExpr expr = ctx.MkITE(ctx.MkEq(this.Op2Value, ctx.MkBV(0, nBits)), expr_Fresh, answer) as BitVecExpr;
-                    this.RegularUpdate.Set(this.op1, expr);
+                    this.RegularUpdate.Set(this.op1_, expr);
                 }
                 { // update flags
                     this.RegularUpdate.Set(Flags.ZF, ctx.MkEq(this.Op2Value, ctx.MkBV(0, nBits)));
@@ -3656,9 +3714,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Bsr : Opcode2Base
@@ -3671,14 +3729,14 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
@@ -3687,27 +3745,28 @@ namespace AsmSim
                 BitVecExpr result;
                 if (pos == 1)
                 {
-                    result = this._ctx.MkBV(0, 6);
+                    result = this.ctx_.MkBV(0, 6);
                 }
                 else
                 {
                     BitVecExpr expr1 = this.MakeBsrExpr(nBits, pos - 1, sourceOperand, one);
-                    result = this._ctx.MkITE(ToolsZ3.GetBit(sourceOperand, pos - 1, one, this._ctx), this._ctx.MkBV(pos - 1, 6), expr1) as BitVecExpr;
+                    result = this.ctx_.MkITE(ToolsZ3.GetBit(sourceOperand, pos - 1, one, this.ctx_), this.ctx_.MkBV(pos - 1, 6), expr1) as BitVecExpr;
                 }
                 return result;
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
-                uint nBits = (uint)this.op1.NBits;
+                Context ctx = this.ctx_;
+                uint nBits = (uint)this.op1_.NBits;
                 {
                     BitVecNum one = ctx.MkBV(1, 1);
                     BitVecExpr answer = ctx.MkConcat(ctx.MkBV(0, nBits - 6), this.MakeBsrExpr(nBits, nBits, this.Op2Value, one));
                     Debug.Assert(answer.SortSize == nBits);
-                    BitVecExpr expr_Fresh = this.Undef(this.op1.Rn);
+                    BitVecExpr expr_Fresh = this.Undef(this.op1_.Rn);
                     BitVecExpr expr = ctx.MkITE(ctx.MkEq(this.Op2Value, ctx.MkBV(0, nBits)), expr_Fresh, answer) as BitVecExpr;
-                    this.RegularUpdate.Set(this.op1, expr);
+                    this.RegularUpdate.Set(this.op1_, expr);
                 }
                 { // update flags
                     this.RegularUpdate.Set(Flags.ZF, ctx.MkEq(this.Op2Value, ctx.MkBV(0, nBits)));
@@ -3721,9 +3780,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
         #endregion
 
@@ -3740,7 +3799,7 @@ namespace AsmSim
                 get
                 {
                     int lineNumber = -1;
-                    switch (this.op1.Type)
+                    switch (this.op1_.Type)
                     {
                         case Ot1.reg:
                             this.SyntaxError = "WARNING: OpcodeJumpBase: jumping based on registry value is not supported.";
@@ -3750,10 +3809,10 @@ namespace AsmSim
                             this.SyntaxError = "WARNING: OpcodeJumpBase: jumping based on memory value is not supported.";
                             break;
                         case Ot1.imm: // assuming the imm is an line number
-                            lineNumber = (int)this.op1.Imm;
+                            lineNumber = (int)this.op1_.Imm;
                             break;
                         case Ot1.UNKNOWN: // assuming it is a string with a line number in it.
-                            lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1.ToString(), StaticFlow.LINENUMBER_SEPARATOR);
+                            lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1_.ToString(), StaticFlow.LINENUMBER_SEPARATOR);
                             break;
                         default:
                             this.SyntaxError = "WARNING: OpcodeJumpBase: UNKNOWN.";
@@ -3798,23 +3857,23 @@ namespace AsmSim
 
             protected sealed override BoolExpr Jump
             {
-                get { return this._ctx.MkTrue(); }
+                get { return this.ctx_.MkTrue(); }
             }
         }
 
         public sealed class Jmpcc : OpcodeJumpBase
         {
-            private readonly ConditionalElement _ce;
+            private readonly ConditionalElement ce_;
 
             public Jmpcc(Mnemonic mnemonic, string[] args, ConditionalElement ce, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, Ot1.imm | Ot1.UNKNOWN, keys, t)
             {
-                this._ce = ce;
+                this.ce_ = ce;
             }
 
-            protected sealed override BoolExpr Jump { get { return ToolsAsmSim.ConditionalTaken(this._ce, this._keys.prevKey, this._ctx); } }
+            protected sealed override BoolExpr Jump { get { return ToolsAsmSim.ConditionalTaken(this.ce_, this.keys_.prevKey, this.ctx_); } }
 
-            public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this._ce); } }
+            public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this.ce_); } }
         }
 
         #region Loop
@@ -3843,7 +3902,8 @@ namespace AsmSim
             public Loop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOP, args, keys, t) { }
 
-            protected sealed override BoolExpr Jump { get { return this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)); } }
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
+            protected sealed override BoolExpr Jump { get { return this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)); } }
         }
 
         public sealed class Loopz : OpcodeLoopBase
@@ -3851,7 +3911,8 @@ namespace AsmSim
             public Loopz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOPZ, args, keys, t) { }
 
-            protected sealed override BoolExpr Jump { get { return this._ctx.MkAnd(this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)), this.Get(Flags.ZF)); } }
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
+            protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.Get(Flags.ZF)); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
@@ -3861,7 +3922,8 @@ namespace AsmSim
             public Loope(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOPE, args, keys, t) { }
 
-            protected sealed override BoolExpr Jump { get { return this._ctx.MkAnd(this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)), this.Get(Flags.ZF)); } }
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
+            protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.Get(Flags.ZF)); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
@@ -3871,7 +3933,8 @@ namespace AsmSim
             public Loopnz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOPNZ, args, keys, t) { }
 
-            protected sealed override BoolExpr Jump { get { return this._ctx.MkAnd(this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)), this._ctx.MkNot(this.Get(Flags.ZF))); } }
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
+            protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.ctx_.MkNot(this.Get(Flags.ZF))); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
@@ -3881,7 +3944,8 @@ namespace AsmSim
             public Loopne(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOPNE, args, keys, t) { }
 
-            protected sealed override BoolExpr Jump { get { return this._ctx.MkAnd(this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)), this._ctx.MkNot(this.Get(Flags.ZF))); } }
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
+            protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.ctx_.MkNot(this.Get(Flags.ZF))); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
@@ -3897,9 +3961,9 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                 }
             }
 
@@ -3908,7 +3972,7 @@ namespace AsmSim
                 get
                 {
                     int lineNumber = -1;
-                    switch (this.op1.Type)
+                    switch (this.op1_.Type)
                     {
                         case Ot1.reg:
                             this.SyntaxError = "WARNING: Call: jumping based on registry value is not supported.";
@@ -3920,10 +3984,10 @@ namespace AsmSim
                             lineNumber = -1;
                             break;
                         case Ot1.imm: // assuming the imm is an line number
-                            lineNumber = (int)this.op1.Imm;
+                            lineNumber = (int)this.op1_.Imm;
                             break;
                         case Ot1.UNKNOWN: // assuming it is a string with a line number in it.
-                            lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1.ToString(), StaticFlow.LINENUMBER_SEPARATOR);
+                            lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1_.ToString(), StaticFlow.LINENUMBER_SEPARATOR);
                             break;
                         default:
                             lineNumber = -1;
@@ -3972,17 +4036,17 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._tools.Parameters.mode_64bit)
+                    if (this.tools_.Parameters.mode_64bit)
                     {
                         yield return Rn.RSP;
                     }
 
-                    if (this._tools.Parameters.mode_32bit)
+                    if (this.tools_.Parameters.mode_32bit)
                     {
                         yield return Rn.ESP;
                     }
 
-                    if (this._tools.Parameters.mode_16bit)
+                    if (this.tools_.Parameters.mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -3993,22 +4057,22 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._tools.Parameters.mode_64bit)
+                    if (this.tools_.Parameters.mode_64bit)
                     {
                         yield return Rn.RSP;
                     }
 
-                    if (this._tools.Parameters.mode_32bit)
+                    if (this.tools_.Parameters.mode_32bit)
                     {
                         yield return Rn.ESP;
                     }
 
-                    if (this._tools.Parameters.mode_16bit)
+                    if (this.tools_.Parameters.mode_16bit)
                     {
                         yield return Rn.SP;
                     }
 
-                    foreach (Rn r in ReadRegs(this.op1, false))
+                    foreach (Rn r in ReadRegs(this.op1_, false))
                     {
                         yield return r;
                     }
@@ -4032,39 +4096,40 @@ namespace AsmSim
 
                 if (this.NOperands == 1)
                 {
-                    if (this.op1.IsImm)
+                    if (this.op1_.IsImm)
                     {
-                        if (this.op1.NBits != 16)
+                        if (this.op1_.NBits != 16)
                         {
-                            this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                            this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                         }
                     }
                     else
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits);
                     }
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 BitVecExpr nextLineNumberExpr;
 
-                if (this._tools.Parameters.mode_64bit)
+                if (this.tools_.Parameters.mode_64bit)
                 {
-                    BitVecExpr newRspExpr = this._ctx.MkBVSub(this.Get(Rn.RSP), this._ctx.MkBV(8, 64));
+                    BitVecExpr newRspExpr = this.ctx_.MkBVSub(this.Get(Rn.RSP), this.ctx_.MkBV(8, 64));
                     nextLineNumberExpr = this.GetMem(newRspExpr, 8);
                     this.RegularUpdate.Set(Rn.RSP, newRspExpr);
                 }
-                else if (this._tools.Parameters.mode_32bit)
+                else if (this.tools_.Parameters.mode_32bit)
                 {
-                    BitVecExpr newEspExpr = this._ctx.MkBVSub(this.Get(Rn.ESP), this._ctx.MkBV(4, 32));
+                    BitVecExpr newEspExpr = this.ctx_.MkBVSub(this.Get(Rn.ESP), this.ctx_.MkBV(4, 32));
                     nextLineNumberExpr = this.GetMem(newEspExpr, 4);
                     this.RegularUpdate.Set(Rn.ESP, newEspExpr);
                 }
-                else if (this._tools.Parameters.mode_16bit)
+                else if (this.tools_.Parameters.mode_16bit)
                 {
-                    BitVecExpr newSpExpr = this._ctx.MkBVSub(this.Get(Rn.SP), this._ctx.MkBV(2, 16));
+                    BitVecExpr newSpExpr = this.ctx_.MkBVSub(this.Get(Rn.SP), this.ctx_.MkBV(2, 16));
                     nextLineNumberExpr = this.GetMem(newSpExpr, 2);
                     this.RegularUpdate.Set(Rn.SP, newSpExpr);
                 }
@@ -4080,17 +4145,17 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._tools.Parameters.mode_64bit)
+                    if (this.tools_.Parameters.mode_64bit)
                     {
                         yield return Rn.RSP;
                     }
 
-                    if (this._tools.Parameters.mode_32bit)
+                    if (this.tools_.Parameters.mode_32bit)
                     {
                         yield return Rn.ESP;
                     }
 
-                    if (this._tools.Parameters.mode_16bit)
+                    if (this.tools_.Parameters.mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -4101,24 +4166,24 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._tools.Parameters.mode_64bit)
+                    if (this.tools_.Parameters.mode_64bit)
                     {
                         yield return Rn.RSP;
                     }
 
-                    if (this._tools.Parameters.mode_32bit)
+                    if (this.tools_.Parameters.mode_32bit)
                     {
                         yield return Rn.ESP;
                     }
 
-                    if (this._tools.Parameters.mode_16bit)
+                    if (this.tools_.Parameters.mode_16bit)
                     {
                         yield return Rn.SP;
                     }
 
-                    if (this.op1 != null)
+                    if (this.op1_ != null)
                     {
-                        foreach (Rn r in ReadRegs(this.op1, false))
+                        foreach (Rn r in ReadRegs(this.op1_, false))
                         {
                             yield return r;
                         }
@@ -4139,13 +4204,13 @@ namespace AsmSim
         /// </summary>
         public abstract class StringOperationAbstract : OpcodeNBase
         {
-            protected readonly Mnemonic _prefix;
-            protected int _nBytes = 0;
+            protected readonly Mnemonic prefix_;
+            protected int nBytes_ = 0;
 
             public StringOperationAbstract(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, 2, keys, t)
             {
-                this._prefix = prefix;
+                this.prefix_ = prefix;
                 if (this.IsHalted)
                 {
                     return;
@@ -4153,31 +4218,31 @@ namespace AsmSim
 
                 if (this.NOperands == 2)
                 {
-                    if (this.op1.NBits != this.op2.NBits)
+                    if (this.op1_.NBits != this.op2_.NBits)
                     {
-                        this.CreateSyntaxError1(this.op1, this.op2);
+                        this.CreateSyntaxError1(this.op1_, this.op2_);
                     }
                 }
             }
 
-            protected Rn SourceIndexReg { get { return this._tools.Parameters.mode_64bit ? Rn.RSI : (this._tools.Parameters.mode_32bit ? Rn.ESI : Rn.SI); } }
+            protected Rn SourceIndexReg { get { return this.tools_.Parameters.mode_64bit ? Rn.RSI : (this.tools_.Parameters.mode_32bit ? Rn.ESI : Rn.SI); } }
 
-            protected Rn DestinationIndexReg { get { return this._tools.Parameters.mode_64bit ? Rn.RDI : (this._tools.Parameters.mode_32bit ? Rn.EDI : Rn.DI); } }
+            protected Rn DestinationIndexReg { get { return this.tools_.Parameters.mode_64bit ? Rn.RDI : (this.tools_.Parameters.mode_32bit ? Rn.EDI : Rn.DI); } }
 
-            protected Rn CounterReg { get { return this._tools.Parameters.mode_64bit ? Rn.RCX : (this._tools.Parameters.mode_32bit ? Rn.ECX : Rn.CX); } }
+            protected Rn CounterReg { get { return this.tools_.Parameters.mode_64bit ? Rn.RCX : (this.tools_.Parameters.mode_32bit ? Rn.ECX : Rn.CX); } }
 
             protected Rn AccumulatorReg
             {
                 get
                 {
-                    switch (this._nBytes)
+                    switch (this.nBytes_)
                     {
                         case 1: return Rn.AL;
                         case 2: return Rn.AX;
                         case 4: return Rn.EAX;
                         case 8: return Rn.RAX;
                         default:
-                            Console.WriteLine("WARNING: StringOperationAbstract: AccumulatorReg: _nBytes has invalid value " + this._nBytes + ".");
+                            Console.WriteLine("WARNING: StringOperationAbstract: AccumulatorReg: nBytes has invalid value " + this.nBytes_ + ".");
                             return Rn.AL;
                     }
                 }
@@ -4187,8 +4252,8 @@ namespace AsmSim
             {
                 get
                 {
-                    int nBits = this._tools.Parameters.mode_64bit ? 64 : (this._tools.Parameters.mode_32bit ? 32 : 16);
-                    return this._ctx.MkBV(this._nBytes, (uint)nBits);
+                    int nBits = this.tools_.Parameters.mode_64bit ? 64 : (this.tools_.Parameters.mode_32bit ? 32 : 16);
+                    return this.ctx_.MkBV(this.nBytes_, (uint)nBits);
                 }
             }
 
@@ -4200,7 +4265,7 @@ namespace AsmSim
                 {
                     yield return this.SourceIndexReg;
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE)
+                    if (this.prefix_ != Mnemonic.NONE)
                     {
                         yield return this.CounterReg;
                     }
@@ -4213,7 +4278,7 @@ namespace AsmSim
                 {
                     yield return this.SourceIndexReg;
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE)
+                    if (this.prefix_ != Mnemonic.NONE)
                     {
                         yield return this.CounterReg;
                     }
@@ -4237,16 +4302,16 @@ namespace AsmSim
                 }
                 if (this.NOperands == 2)
                 {
-                    this._nBytes = this.op1.NBits >> 3;
+                    this.nBytes_ = this.op1_.NBits >> 3;
                 }
                 else if (this.NOperands == 0)
                 {
                     switch (mnemonic)
                     {
-                        case Mnemonic.MOVSB: this._nBytes = 1; break;
-                        case Mnemonic.MOVSW: this._nBytes = 2; break;
-                        case Mnemonic.MOVSD: this._nBytes = 4; break;
-                        case Mnemonic.MOVSQ: this._nBytes = 8; break;
+                        case Mnemonic.MOVSB: this.nBytes_ = 1; break;
+                        case Mnemonic.MOVSW: this.nBytes_ = 2; break;
+                        case Mnemonic.MOVSD: this.nBytes_ = 4; break;
+                        case Mnemonic.MOVSQ: this.nBytes_ = 8; break;
                         default: break;
                     }
                 }
@@ -4256,9 +4321,10 @@ namespace AsmSim
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 Rn src = this.SourceIndexReg;
                 Rn dst = this.DestinationIndexReg;
                 BitVecExpr srcBV = this.Get(src);
@@ -4266,16 +4332,16 @@ namespace AsmSim
 
                 BoolExpr df = this.Get(Flags.DF);
 
-                if (this._prefix == Mnemonic.NONE)
+                if (this.prefix_ == Mnemonic.NONE)
                 {
                     BitVecExpr totalBytes = this.IncrementBV;
                     this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, totalBytes), ctx.MkBVAdd(srcBV, totalBytes)) as BitVecExpr);
                     this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
 
                     //Update memory: copy memory location
-                    this.RegularUpdate.Set_Mem(srcBV, this.GetMem(dstBV, this._nBytes));
+                    this.RegularUpdate.Set_Mem(srcBV, this.GetMem(dstBV, this.nBytes_));
                 }
-                else if (this._prefix == Mnemonic.REP)
+                else if (this.prefix_ == Mnemonic.REP)
                 {
                     Rn counter = this.CounterReg;
                     BitVecExpr counterBV = this.Get(counter);
@@ -4296,7 +4362,7 @@ namespace AsmSim
             public Cmps(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, prefix, args, keys, t)
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
 
                 if (this.IsHalted)
                 {
@@ -4309,16 +4375,16 @@ namespace AsmSim
                 }
                 if (this.NOperands == 2)
                 {
-                    this._nBytes = this.op1.NBits >> 3;
+                    this.nBytes_ = this.op1_.NBits >> 3;
                 }
                 else if (this.NOperands == 0)
                 {
                     switch (mnemonic)
                     {
-                        case Mnemonic.CMPSB: this._nBytes = 1; break;
-                        case Mnemonic.CMPSW: this._nBytes = 2; break;
-                        case Mnemonic.CMPSD: this._nBytes = 4; break;
-                        case Mnemonic.CMPSQ: this._nBytes = 8; break;
+                        case Mnemonic.CMPSB: this.nBytes_ = 1; break;
+                        case Mnemonic.CMPSW: this.nBytes_ = 2; break;
+                        case Mnemonic.CMPSD: this.nBytes_ = 4; break;
+                        case Mnemonic.CMPSQ: this.nBytes_ = 8; break;
                         default: break;
                     }
                 }
@@ -4328,9 +4394,10 @@ namespace AsmSim
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 Rn src = this.SourceIndexReg;
                 Rn dst = this.DestinationIndexReg;
                 BitVecExpr srcBV = this.Get(src);
@@ -4338,9 +4405,9 @@ namespace AsmSim
 
                 BoolExpr df = this.Get(Flags.DF);
 
-                if (this._prefix == Mnemonic.NONE)
+                if (this.prefix_ == Mnemonic.NONE)
                 {
-                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.GetMem(src, this._nBytes), this.GetMem(dst, this._nBytes), this._ctx);
+                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.GetMem(src, this.nBytes_), this.GetMem(dst, this.nBytes_), this.ctx_);
 
                     this.RegularUpdate.Set(Flags.CF, cf);
                     this.RegularUpdate.Set(Flags.OF, of);
@@ -4351,7 +4418,7 @@ namespace AsmSim
                     this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, totalBytes), ctx.MkBVAdd(srcBV, totalBytes)) as BitVecExpr);
                     this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
                 }
-                else if ((this._prefix == Mnemonic.REPE) || (this._prefix == Mnemonic.REPZ))
+                else if ((this.prefix_ == Mnemonic.REPE) || (this.prefix_ == Mnemonic.REPZ))
                 {
                     this.RegularUpdate.Set(Flags.CF, Tv.UNKNOWN);
                     this.RegularUpdate.Set(Flags.PF, Tv.UNKNOWN);
@@ -4364,7 +4431,7 @@ namespace AsmSim
                     this.RegularUpdate.Set(src, Tv.UNKNOWN);
                     this.RegularUpdate.Set(dst, Tv.UNKNOWN);
                 }
-                else if ((this._prefix == Mnemonic.REPNE) || (this._prefix == Mnemonic.REPNZ))
+                else if ((this.prefix_ == Mnemonic.REPNE) || (this.prefix_ == Mnemonic.REPNZ))
                 {
                     this.RegularUpdate.Set(Flags.CF, Tv.UNKNOWN);
                     this.RegularUpdate.Set(Flags.PF, Tv.UNKNOWN);
@@ -4398,16 +4465,16 @@ namespace AsmSim
                 }
                 if (this.NOperands == 2)
                 {
-                    this._nBytes = this.op1.NBits >> 3;
+                    this.nBytes_ = this.op1_.NBits >> 3;
                 }
                 else if (this.NOperands == 0)
                 {
                     switch (mnemonic)
                     {
-                        case Mnemonic.STOSB: this._nBytes = 1; break;
-                        case Mnemonic.STOSW: this._nBytes = 2; break;
-                        case Mnemonic.STOSD: this._nBytes = 4; break;
-                        case Mnemonic.STOSQ: this._nBytes = 8; break;
+                        case Mnemonic.STOSB: this.nBytes_ = 1; break;
+                        case Mnemonic.STOSW: this.nBytes_ = 2; break;
+                        case Mnemonic.STOSD: this.nBytes_ = 4; break;
+                        case Mnemonic.STOSQ: this.nBytes_ = 8; break;
                         default: break;
                     }
                 }
@@ -4417,16 +4484,17 @@ namespace AsmSim
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 Rn dst = this.DestinationIndexReg;
                 BitVecExpr dstBV = this.Get(dst);
 
                 BoolExpr df = this.Get(Flags.DF);
                 BitVecExpr value = this.Get(this.AccumulatorReg);
 
-                if (this._prefix == Mnemonic.NONE)
+                if (this.prefix_ == Mnemonic.NONE)
                 {
                     BitVecExpr totalBytes = this.IncrementBV;
                     this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
@@ -4434,7 +4502,7 @@ namespace AsmSim
                     //Update memory: copy memory location
                     this.RegularUpdate.Set_Mem(dstBV, value);
                 }
-                else if (this._prefix == Mnemonic.REP)
+                else if (this.prefix_ == Mnemonic.REP)
                 {
                     Rn counter = this.CounterReg;
                     BitVecExpr counterBV = this.Get(counter);
@@ -4454,7 +4522,7 @@ namespace AsmSim
                 {
                     yield return this.AccumulatorReg;
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE)
+                    if (this.prefix_ != Mnemonic.NONE)
                     {
                         yield return this.CounterReg;
                     }
@@ -4466,7 +4534,7 @@ namespace AsmSim
                 get
                 {
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE)
+                    if (this.prefix_ != Mnemonic.NONE)
                     {
                         yield return this.CounterReg;
                     }
@@ -4496,16 +4564,16 @@ namespace AsmSim
                 }
                 if (this.NOperands == 1)
                 {
-                    this._nBytes = this.op1.NBits >> 3;
+                    this.nBytes_ = this.op1_.NBits >> 3;
                 }
                 else if (this.NOperands == 0)
                 {
                     switch (mnemonic)
                     {
-                        case Mnemonic.SCASB: this._nBytes = 1; break;
-                        case Mnemonic.SCASW: this._nBytes = 2; break;
-                        case Mnemonic.SCASD: this._nBytes = 4; break;
-                        case Mnemonic.SCASQ: this._nBytes = 8; break;
+                        case Mnemonic.SCASB: this.nBytes_ = 1; break;
+                        case Mnemonic.SCASW: this.nBytes_ = 2; break;
+                        case Mnemonic.SCASD: this.nBytes_ = 4; break;
+                        case Mnemonic.SCASQ: this.nBytes_ = 8; break;
                         default: break;
                     }
                 }
@@ -4515,18 +4583,19 @@ namespace AsmSim
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 Rn dst = this.DestinationIndexReg;
                 BitVecExpr dstBV = this.Get(dst);
 
                 BoolExpr df = this.Get(Flags.DF);
                 BitVecExpr accumulator = this.Get(this.AccumulatorReg);
 
-                if (this._prefix == Mnemonic.NONE)
+                if (this.prefix_ == Mnemonic.NONE)
                 {
-                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(accumulator, this.GetMem(dst, this._nBytes), this._ctx);
+                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(accumulator, this.GetMem(dst, this.nBytes_), this.ctx_);
 
                     this.RegularUpdate.Set(Flags.CF, cf);
                     this.RegularUpdate.Set(Flags.OF, of);
@@ -4536,7 +4605,7 @@ namespace AsmSim
                     BitVecExpr totalBytes = this.IncrementBV;
                     this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
                 }
-                else if ((this._prefix == Mnemonic.REPE) || (this._prefix == Mnemonic.REPZ))
+                else if ((this.prefix_ == Mnemonic.REPE) || (this.prefix_ == Mnemonic.REPZ))
                 {
                     this.RegularUpdate.Set(Flags.CF, Tv.UNKNOWN);
                     this.RegularUpdate.Set(Flags.PF, Tv.UNKNOWN);
@@ -4548,7 +4617,7 @@ namespace AsmSim
                     this.RegularUpdate.Set(this.CounterReg, Tv.UNKNOWN); // I know that counterreg is between zero and the old value...
                     this.RegularUpdate.Set(dst, Tv.UNKNOWN);
                 }
-                else if ((this._prefix == Mnemonic.REPNE) || (this._prefix == Mnemonic.REPNZ))
+                else if ((this.prefix_ == Mnemonic.REPNE) || (this.prefix_ == Mnemonic.REPNZ))
                 {
                     this.RegularUpdate.Set(Flags.CF, Tv.UNKNOWN);
                     this.RegularUpdate.Set(Flags.PF, Tv.UNKNOWN);
@@ -4568,7 +4637,7 @@ namespace AsmSim
                 {
                     yield return this.AccumulatorReg;
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE)
+                    if (this.prefix_ != Mnemonic.NONE)
                     {
                         yield return this.CounterReg;
                     }
@@ -4580,7 +4649,7 @@ namespace AsmSim
                 get
                 {
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE)
+                    if (this.prefix_ != Mnemonic.NONE)
                     {
                         yield return this.CounterReg;
                     }
@@ -4613,16 +4682,16 @@ namespace AsmSim
                 }
                 if (this.NOperands == 1)
                 {
-                    this._nBytes = this.op1.NBits >> 3;
+                    this.nBytes_ = this.op1_.NBits >> 3;
                 }
                 else if (this.NOperands == 0)
                 {
                     switch (mnemonic)
                     {
-                        case Mnemonic.LODSB: this._nBytes = 1; break;
-                        case Mnemonic.LODSW: this._nBytes = 2; break;
-                        case Mnemonic.LODSD: this._nBytes = 4; break;
-                        case Mnemonic.LODSQ: this._nBytes = 8; break;
+                        case Mnemonic.LODSB: this.nBytes_ = 1; break;
+                        case Mnemonic.LODSW: this.nBytes_ = 2; break;
+                        case Mnemonic.LODSD: this.nBytes_ = 4; break;
+                        case Mnemonic.LODSQ: this.nBytes_ = 8; break;
                         default: break;
                     }
                 }
@@ -4632,21 +4701,22 @@ namespace AsmSim
                 }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 Rn src = this.SourceIndexReg;
                 BitVecExpr srcBV = this.Get(src);
 
                 BoolExpr df = this.Get(Flags.DF);
 
-                if (this._prefix == Mnemonic.NONE)
+                if (this.prefix_ == Mnemonic.NONE)
                 {
                     BitVecExpr totalBytes = this.IncrementBV;
                     this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, totalBytes), ctx.MkBVAdd(srcBV, totalBytes)) as BitVecExpr);
 
                     //Update accumulator: copy memory location
-                    this.RegularUpdate.Set(this.AccumulatorReg, this.GetMem(srcBV, this._nBytes));
+                    this.RegularUpdate.Set(this.AccumulatorReg, this.GetMem(srcBV, this.nBytes_));
                 }
                 else
                 {
@@ -4688,28 +4758,28 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits == 64)
+                if (this.op1_.NBits == 64)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
-                Rn regOp1 = this.op1.Rn;
+                Rn regOp1 = this.op1_.Rn;
                 if (!((regOp1 == Rn.AL) || (regOp1 == Rn.AX) || (regOp1 == Rn.EAX)))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
 
-                if (this.op2.IsImm)
+                if (this.op2_.IsImm)
                 {
-                    if (this.op2.NBits != 8)
+                    if (this.op2_.NBits != 8)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
                 else
                 {
-                    if (this.op2.Rn != Rn.DX)
+                    if (this.op2_.Rn != Rn.DX)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
             }
@@ -4717,12 +4787,12 @@ namespace AsmSim
             public override void Execute()
             {
                 // special case: set the truth value to an defined but unknown value
-                this.RegularUpdate.Set(this.op1.Rn, Tv.UNKNOWN);
+                this.RegularUpdate.Set(this.op1_.Rn, Tv.UNKNOWN);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Write to a port</summary>
@@ -4736,28 +4806,28 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op2.NBits == 64)
+                if (this.op2_.NBits == 64)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
-                Rn regOp2 = this.op2.Rn;
+                Rn regOp2 = this.op2_.Rn;
                 if (!((regOp2 == Rn.AL) || (regOp2 == Rn.AX) || (regOp2 == Rn.EAX)))
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
 
-                if (this.op1.IsImm)
+                if (this.op1_.IsImm)
                 {
-                    if (this.op1.NBits != 8)
+                    if (this.op1_.NBits != 8)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
                 else
                 {
-                    if (this.op1.Rn != Rn.DX)
+                    if (this.op1_.Rn != Rn.DX)
                     {
-                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                     }
                 }
             }
@@ -4767,7 +4837,7 @@ namespace AsmSim
                 // state is not changed
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2_, false); } }
         }
 
         //INS,
@@ -4823,9 +4893,10 @@ namespace AsmSim
             public Cmc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CMC, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                this.RegularUpdate.Set(Flags.CF, this._ctx.MkNot(this.Get(Flags.CF)));
+                this.RegularUpdate.Set(Flags.CF, this.ctx_.MkNot(this.Get(Flags.CF)));
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF; } }
@@ -4864,19 +4935,20 @@ namespace AsmSim
             public Lahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LAHF, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                BitVecNum zERO = this._ctx.MkBV(0, 1);
-                BitVecNum oNE = this._ctx.MkBV(1, 1);
+                BitVecNum zERO = this.ctx_.MkBV(0, 1);
+                BitVecNum oNE = this.ctx_.MkBV(1, 1);
 
-                BitVecExpr ahExpr = this._ctx.MkITE(this.Get(Flags.SF), oNE, zERO) as BitVecExpr;
-                ahExpr = this._ctx.MkConcat(ahExpr, this._ctx.MkITE(this.Get(Flags.ZF), oNE, zERO) as BitVecExpr);
-                ahExpr = this._ctx.MkConcat(ahExpr, zERO);
-                ahExpr = this._ctx.MkConcat(ahExpr, this._ctx.MkITE(this.Get(Flags.AF), oNE, zERO) as BitVecExpr);
-                ahExpr = this._ctx.MkConcat(ahExpr, zERO);
-                ahExpr = this._ctx.MkConcat(ahExpr, this._ctx.MkITE(this.Get(Flags.PF), oNE, zERO) as BitVecExpr);
-                ahExpr = this._ctx.MkConcat(ahExpr, oNE);
-                ahExpr = this._ctx.MkConcat(ahExpr, this._ctx.MkITE(this.Get(Flags.CF), oNE, zERO) as BitVecExpr);
+                BitVecExpr ahExpr = this.ctx_.MkITE(this.Get(Flags.SF), oNE, zERO) as BitVecExpr;
+                ahExpr = this.ctx_.MkConcat(ahExpr, this.ctx_.MkITE(this.Get(Flags.ZF), oNE, zERO) as BitVecExpr);
+                ahExpr = this.ctx_.MkConcat(ahExpr, zERO);
+                ahExpr = this.ctx_.MkConcat(ahExpr, this.ctx_.MkITE(this.Get(Flags.AF), oNE, zERO) as BitVecExpr);
+                ahExpr = this.ctx_.MkConcat(ahExpr, zERO);
+                ahExpr = this.ctx_.MkConcat(ahExpr, this.ctx_.MkITE(this.Get(Flags.PF), oNE, zERO) as BitVecExpr);
+                ahExpr = this.ctx_.MkConcat(ahExpr, oNE);
+                ahExpr = this.ctx_.MkConcat(ahExpr, this.ctx_.MkITE(this.Get(Flags.CF), oNE, zERO) as BitVecExpr);
 
                 this.RegularUpdate.Set(Rn.AH, ahExpr);
             }
@@ -4889,16 +4961,17 @@ namespace AsmSim
             public Sahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.SAHF, args, keys, t) { }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
-                BitVecNum oNE = this._ctx.MkBV(1, 1);
+                BitVecNum oNE = this.ctx_.MkBV(1, 1);
                 BitVecExpr ahExpr = this.Get(Rn.AH);
 
-                this.RegularUpdate.Set(Flags.SF, ToolsZ3.GetBit(ahExpr, 7, oNE, this._ctx));
-                this.RegularUpdate.Set(Flags.ZF, ToolsZ3.GetBit(ahExpr, 6, oNE, this._ctx));
-                this.RegularUpdate.Set(Flags.AF, ToolsZ3.GetBit(ahExpr, 4, oNE, this._ctx));
-                this.RegularUpdate.Set(Flags.PF, ToolsZ3.GetBit(ahExpr, 2, oNE, this._ctx));
-                this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(ahExpr, 0, oNE, this._ctx));
+                this.RegularUpdate.Set(Flags.SF, ToolsZ3.GetBit(ahExpr, 7, oNE, this.ctx_));
+                this.RegularUpdate.Set(Flags.ZF, ToolsZ3.GetBit(ahExpr, 6, oNE, this.ctx_));
+                this.RegularUpdate.Set(Flags.AF, ToolsZ3.GetBit(ahExpr, 4, oNE, this.ctx_));
+                this.RegularUpdate.Set(Flags.PF, ToolsZ3.GetBit(ahExpr, 2, oNE, this.ctx_));
+                this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(ahExpr, 0, oNE, this.ctx_));
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.SF | Flags.ZF | Flags.AF | Flags.PF | Flags.CF; } }
@@ -4933,41 +5006,41 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
             public override void Execute()
             {
-                BitVecExpr address = Tools.Calc_Effective_Address(this.op2, this._keys.prevKey, this._ctx);
+                BitVecExpr address = Tools.Calc_Effective_Address(this.op2_, this.keys_.prevKey, this.ctx_);
                 uint addressSize = address.SortSize;
-                uint operandSize = (uint)this.op1.NBits;
+                uint operandSize = (uint)this.op1_.NBits;
 
                 if (operandSize == addressSize)
                 {
-                    this.RegularUpdate.Set(this.op1, address);
+                    this.RegularUpdate.Set(this.op1_, address);
                 }
                 else if ((operandSize == 16) && (addressSize == 32))
                 {
-                    this.RegularUpdate.Set(this.op1, this._ctx.MkExtract(16 - 1, 0, address));
+                    this.RegularUpdate.Set(this.op1_, this.ctx_.MkExtract(16 - 1, 0, address));
                 }
                 else if ((operandSize == 16) && (addressSize == 64))
                 {
-                    this.RegularUpdate.Set(this.op1, this._ctx.MkExtract(16 - 1, 0, address));
+                    this.RegularUpdate.Set(this.op1_, this.ctx_.MkExtract(16 - 1, 0, address));
                 }
                 else if ((operandSize == 32) && (addressSize == 64))
                 {
-                    this.RegularUpdate.Set(this.op1, this._ctx.MkExtract(32 - 1, 0, address));
+                    this.RegularUpdate.Set(this.op1_, this.ctx_.MkExtract(32 - 1, 0, address));
                 }
                 else if ((operandSize == 64) && (addressSize == 32))
                 {
-                    this.RegularUpdate.Set(this.op1, this._ctx.MkZeroExt(32, address));
+                    this.RegularUpdate.Set(this.op1_, this.ctx_.MkZeroExt(32, address));
                 }
             }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Nop : Opcode0Base
@@ -5001,22 +5074,22 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 BitVecExpr src = this.Op2Value;
                 BitVecExpr swapped = null;
-                switch (this.op1.NBits)
+                switch (this.op1_.NBits)
                 {
                     case 16:
                         {
@@ -5041,12 +5114,12 @@ namespace AsmSim
                         }
                     default: throw new Exception();
                 }
-                this.RegularUpdate.Set(this.op1, swapped);
+                this.RegularUpdate.Set(this.op1_, swapped);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Prefetch data into cache in anticipation of write</summary>
@@ -5126,15 +5199,15 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
             public override void Execute()
             {
-                Context ctx = this._ctx;
+                Context ctx = this.ctx_;
                 FPRMExpr roundingMode = ctx.MkFPRoundTowardZero();
 
                 BitVecExpr a = this.Op1Value;
@@ -5148,12 +5221,12 @@ namespace AsmSim
                     a_FP[i] = ctx.MkFPAdd(roundingMode, a_FP[i], b_FP[i]);
                 }
                 BitVecExpr result = ToolsFloatingPoint.FP_2_BV(a_FP, ctx);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Xor Parallel Double FP</summary>
@@ -5167,20 +5240,20 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
             }
 
             public override void Execute()
             {
-                this.RegularUpdate.Set(this.op1, this._ctx.MkBVXOR(this.Op1Value, this.Op2Value));
+                this.RegularUpdate.Set(this.op1_, this.ctx_.MkBVXOR(this.Op1Value, this.Op2Value));
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         public sealed class Popcnt : Opcode2Base
@@ -5193,21 +5266,21 @@ namespace AsmSim
                     return;
                 }
 
-                if (this.op1.NBits != this.op2.NBits)
+                if (this.op1_.NBits != this.op2_.NBits)
                 {
-                    this.CreateSyntaxError1(this.op1, this.op2);
+                    this.CreateSyntaxError1(this.op1_, this.op2_);
                 }
 
-                if (this.op1.NBits == 8)
+                if (this.op1_.NBits == 8)
                 {
-                    this.SyntaxError = string.Format(Culture, "\"{0}\": 8 bits operands are not allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": 8 bits operands are not allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1_, this.op1_.Type, this.op1_.NBits, this.op2_, this.op2_.Type, this.op2_.NBits);
                 }
             }
 
             public override void Execute()
             {
-                Context ctx = this._ctx;
-                uint nBits = (uint)this.op1.NBits;
+                Context ctx = this.ctx_;
+                uint nBits = (uint)this.op1_.NBits;
                 BitVecExpr b = this.Op2Value;
 
                 BitVecExpr result = ctx.MkZeroExt(6, ToolsZ3.GetBit_BV(b, 0, ctx));
@@ -5217,7 +5290,7 @@ namespace AsmSim
                 }
 
                 result = ctx.MkZeroExt(nBits - 7, result);
-                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(this.op1_, result);
 
                 this.RegularUpdate.Set(Flags.OF, Tv.ZERO);
                 this.RegularUpdate.Set(Flags.SF, Tv.ZERO);
@@ -5229,9 +5302,9 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
 
-            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
         #endregion
         #endregion Instructions

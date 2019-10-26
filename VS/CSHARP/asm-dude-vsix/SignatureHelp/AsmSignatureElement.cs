@@ -32,40 +32,40 @@ namespace AsmDude.SignatureHelp
     public class AsmSignatureElement
     {
         #region Fields
-        private readonly Mnemonic _mnemonic;
-        private readonly IList<IList<AsmSignatureEnum>> _operands;
-        private readonly IList<Arch> _arch;
-        private readonly bool _reversed_Signature;
+        private readonly Mnemonic mnemonic_;
+        private readonly IList<IList<AsmSignatureEnum>> operands_;
+        private readonly IList<Arch> arch_;
+        private readonly bool reversed_Signature_;
 
-        private string[] _operandStr;
-        private readonly string[] _operandDoc;
-        private string _doc;
+        private string[] operandStr_;
+        private readonly string[] operandDoc_;
+        private string doc_;
         #endregion
 
         public AsmSignatureElement(Mnemonic mnem, string operandStr2, string archStr, string operandDoc, string doc)
         {
             Contract.Requires(operandDoc != null);
 
-            this._mnemonic = mnem;
-            this._operands = new List<IList<AsmSignatureEnum>>();
-            this._arch = new List<Arch>();
-            this._reversed_Signature = AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
+            this.mnemonic_ = mnem;
+            this.operands_ = new List<IList<AsmSignatureEnum>>();
+            this.arch_ = new List<Arch>();
+            this.reversed_Signature_ = AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
             {
                 string[] x = operandDoc.Split(' ');
                 if (x.Length > 1)
                 {
-                    this._operandDoc = x[1].Split(',');
+                    this.operandDoc_ = x[1].Split(',');
                 }
                 else
                 {
-                    this._operandDoc = Array.Empty<string>();
+                    this.operandDoc_ = Array.Empty<string>();
                 }
-                if (this._reversed_Signature)
+                if (this.reversed_Signature_)
                 {
-                    Array.Reverse(this._operandDoc);
+                    Array.Reverse(this.operandDoc_);
                 }
             }
-            this._doc = doc;
+            this.doc_ = doc;
 
             this.Operands_Str = operandStr2;
             this.Arch_Str = archStr;
@@ -90,11 +90,11 @@ namespace AsmDude.SignatureHelp
         public bool Is_Allowed(Operand op, int operandIndex)
         {
             if (op == null) { return true; }
-            if (operandIndex >= this._operands.Count)
+            if (operandIndex >= this.operands_.Count)
             {
                 return false;
             }
-            foreach (AsmSignatureEnum operandType in this._operands[operandIndex])
+            foreach (AsmSignatureEnum operandType in this.operands_[operandIndex])
             {
                 if (AsmSignatureTools.Is_Allowed_Operand(op, operandType))
                 {
@@ -108,7 +108,7 @@ namespace AsmDude.SignatureHelp
         public bool Is_Allowed(ISet<Arch> selectedArchitectures)
         {
             Contract.Requires(selectedArchitectures != null);
-            foreach (Arch a in this._arch)
+            foreach (Arch a in this.arch_)
             {
                 if (selectedArchitectures.Contains(a))
                 {
@@ -119,15 +119,15 @@ namespace AsmDude.SignatureHelp
             return false;
         }
 
-        public string Documentation { get { return this._doc; } set { this._doc = value; } }
+        public string Documentation { get { return this.doc_; } set { this.doc_ = value; } }
 
         public string Arch_Str
         {
-            get { return ArchTools.ToString(this._arch); }
+            get { return ArchTools.ToString(this.arch_); }
 
             set
             {
-                this._arch.Clear();
+                this.arch_.Clear();
                 if (string.IsNullOrEmpty(value))
                 {
                     //this._arch.Add(Arch.ARCH_486);
@@ -139,7 +139,7 @@ namespace AsmDude.SignatureHelp
                         Arch a = ArchTools.ParseArch(arch2, false, true);
                         if (a != AsmTools.Arch.ARCH_NONE)
                         {
-                            this._arch.Add(a);
+                            this.arch_.Add(a);
                         }
                         else
                         {
@@ -150,19 +150,19 @@ namespace AsmDude.SignatureHelp
             }
         }
 
-        public IList<Arch> Arch { get { return this._arch; } }
+        public IList<Arch> Arch { get { return this.arch_; } }
 
-        public Mnemonic mnemonic { get { return this._mnemonic; } }
+        public Mnemonic mnemonic { get { return this.mnemonic_; } }
 
         public string Operands_Str
         {
             get
             {
                 StringBuilder sb = new StringBuilder();
-                int nOperands = this._operandStr.Length;
+                int nOperands = this.operandStr_.Length;
                 for (int i = 0; i < nOperands; ++i)
                 {
-                    sb.Append(this._operandStr[i]);
+                    sb.Append(this.operandStr_[i]);
                     if (i < nOperands - 1)
                     {
                         sb.Append(", ");
@@ -173,24 +173,24 @@ namespace AsmDude.SignatureHelp
 
             set
             {
-                this._operands.Clear();
+                this.operands_.Clear();
 
                 if (!string.IsNullOrEmpty(value))
                 {
-                    this._operandStr = value.Split(',');
-                    if (this._reversed_Signature)
+                    this.operandStr_ = value.Split(',');
+                    if (this.reversed_Signature_)
                     {
-                        Array.Reverse(this._operandStr);
+                        Array.Reverse(this.operandStr_);
                     }
 
-                    for (int i = 0; i < this._operandStr.Length; ++i)
+                    for (int i = 0; i < this.operandStr_.Length; ++i)
                     {
-                        this._operandStr[i] = this._operandStr[i].Trim();
-                        if (this._operandStr[i].Length > 0)
+                        this.operandStr_[i] = this.operandStr_[i].Trim();
+                        if (this.operandStr_[i].Length > 0)
                         {
                             //AsmDudeToolsStatic.Output_INFO("SignatureStore:load: operandStr " + operandStr);
                             IList<AsmSignatureEnum> operandList = new List<AsmSignatureEnum>();
-                            AsmSignatureEnum[] operandTypes = AsmSignatureTools.Parse_Operand_Type_Enum(this._operandStr[i], false);
+                            AsmSignatureEnum[] operandTypes = AsmSignatureTools.Parse_Operand_Type_Enum(this.operandStr_[i], false);
                             if ((operandTypes.Length == 1) && ((operandTypes[0] == AsmSignatureEnum.NONE) || (operandTypes[0] == AsmSignatureEnum.UNKNOWN)))
                             {
                                 // do nothing
@@ -204,7 +204,7 @@ namespace AsmDude.SignatureHelp
                             }
                             if (operandList.Count > 0)
                             {
-                                this._operands.Add(operandList);
+                                this.operands_.Add(operandList);
                             }
                         }
                     }
@@ -212,19 +212,19 @@ namespace AsmDude.SignatureHelp
             }
         }
 
-        public IList<IList<AsmSignatureEnum>> Operands { get { return this._operands; } }
+        public IList<IList<AsmSignatureEnum>> Operands { get { return this.operands_; } }
 
         public string Get_Operand_Str(int index)
         {
-            return this._operandStr[index];
+            return this.operandStr_[index];
         }
 
         public string Sigature_Doc()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(this._mnemonic);
+            sb.Append(this.mnemonic_);
             sb.Append(" ");
-            foreach (string op in this._operandDoc)
+            foreach (string op in this.operandDoc_)
             {
                 sb.Append(op);
                 sb.Append(",");
@@ -235,9 +235,9 @@ namespace AsmDude.SignatureHelp
 
         public string Get_Operand_Doc(int index)
         {
-            if (index < this._operandDoc.Length)
+            if (index < this.operandDoc_.Length)
             {
-                return this._operandDoc[index];
+                return this.operandDoc_[index];
             }
             return string.Empty;
         }

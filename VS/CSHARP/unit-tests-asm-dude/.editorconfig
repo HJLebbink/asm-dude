@@ -8,3 +8,6 @@ dotnet_diagnostic.SA1300.severity = none
 
 # SA1600: Elements should be documented
 dotnet_diagnostic.SA1600.severity = silent
+
+# SA1633: File should have header
+dotnet_diagnostic.SA1633.severity = none

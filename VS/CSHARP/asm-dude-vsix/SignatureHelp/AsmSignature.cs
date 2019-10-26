@@ -29,37 +29,37 @@ namespace AsmDude.SignatureHelp
 
     internal class AsmSignature : ISignature
     {
-        private readonly ITextBuffer _subjectBuffer;
+        private readonly ITextBuffer subjectBuffer_;
 
-        private IParameter _currentParameter;
-        private string _content;
-        private string _documentation;
-        private ITrackingSpan _applicableToSpan;
-        private ReadOnlyCollection<IParameter> _parameters;
-        private string _printContent;
+        private IParameter currentParameter_;
+        private string content_;
+        private string documentation_;
+        private ITrackingSpan applicableToSpan_;
+        private ReadOnlyCollection<IParameter> parameters_;
+        private string printContent_;
 
         internal AsmSignature(ITextBuffer subjectBuffer, string content, string doc, ReadOnlyCollection<IParameter> parameters)
         {
-            this._subjectBuffer = subjectBuffer ?? throw new ArgumentNullException(nameof(subjectBuffer));
-            this._content = content;
-            this._documentation = doc;
-            this._parameters = parameters;
-            this._subjectBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(this.OnSubjectBufferChanged);
+            this.subjectBuffer_ = subjectBuffer ?? throw new ArgumentNullException(nameof(subjectBuffer));
+            this.content_ = content;
+            this.documentation_ = doc;
+            this.parameters_ = parameters;
+            this.subjectBuffer_.Changed += new EventHandler<TextContentChangedEventArgs>(this.OnSubjectBufferChanged);
         }
 
         public event EventHandler<CurrentParameterChangedEventArgs> CurrentParameterChanged;
 
         public IParameter CurrentParameter
         {
-            get { return this._currentParameter; }
+            get { return this.currentParameter_; }
 
             internal set
             {
-                if (this._currentParameter != value)
+                if (this.currentParameter_ != value)
                 {
-                    IParameter prevCurrentParameter = this._currentParameter;
-                    this._currentParameter = value;
-                    this.RaiseCurrentParameterChanged(prevCurrentParameter, this._currentParameter);
+                    IParameter prevCurrentParameter = this.currentParameter_;
+                    this.currentParameter_ = value;
+                    this.RaiseCurrentParameterChanged(prevCurrentParameter, this.currentParameter_);
                 }
             }
         }
@@ -98,8 +98,8 @@ namespace AsmDude.SignatureHelp
             }
 
             //the number of commas in the current line is the index of the current parameter
-            SnapshotPoint position = this._applicableToSpan.GetStartPoint(this._subjectBuffer.CurrentSnapshot);
-            string lineStr = this._subjectBuffer.CurrentSnapshot.GetLineFromPosition(position).GetText();
+            SnapshotPoint position = this.applicableToSpan_.GetStartPoint(this.subjectBuffer_.CurrentSnapshot);
+            string lineStr = this.subjectBuffer_.CurrentSnapshot.GetLineFromPosition(position).GetText();
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: computeCurrentParameter. lineStr=" + lineStr);
 
             int commaCount = Count_Commas(lineStr);
@@ -122,32 +122,32 @@ namespace AsmDude.SignatureHelp
 
         public ITrackingSpan ApplicableToSpan
         {
-            get { return this._applicableToSpan; }
-            internal set { this._applicableToSpan = value; }
+            get { return this.applicableToSpan_; }
+            internal set { this.applicableToSpan_ = value; }
         }
 
         public string Content
         {
-            get { return this._content; }
-            internal set { this._content = value; }
+            get { return this.content_; }
+            internal set { this.content_ = value; }
         }
 
         public string Documentation
         {
-            get { return this._documentation; }
-            internal set { this._documentation = value; }
+            get { return this.documentation_; }
+            internal set { this.documentation_ = value; }
         }
 
         public ReadOnlyCollection<IParameter> Parameters
         {
-            get { return this._parameters; }
-            internal set { this._parameters = value; }
+            get { return this.parameters_; }
+            internal set { this.parameters_ = value; }
         }
 
         public string PrettyPrintedContent
         {
-            get { return this._printContent; }
-            internal set { this._printContent = value; }
+            get { return this.printContent_; }
+            internal set { this.printContent_ = value; }
         }
     }
 }

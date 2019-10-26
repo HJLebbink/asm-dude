@@ -37,7 +37,7 @@ namespace AsmDude.AsmDoc
     internal sealed class AsmDocUnderlineTaggerProvider : IViewTaggerProvider
     {
         [Import]
-        private readonly IClassificationTypeRegistryService _classificationTypeRegistry = null;
+        private readonly IClassificationTypeRegistryService classificationTypeRegistry_ = null;
 
         private static IClassificationType underlineClassification = null;
 
@@ -61,7 +61,7 @@ namespace AsmDude.AsmDoc
             //AsmDudeToolsStatic.Output_INFO("AsmDocUnderlineTaggerProvider:CreateTagger: file=" + AsmDudeToolsStatic.GetFileName(buffer));
             if (underlineClassification == null)
             {
-                underlineClassification = this._classificationTypeRegistry.GetClassificationType(AsmDocClassificationDefinition.ClassificationTypeNames.Underline);
+                underlineClassification = this.classificationTypeRegistry_.GetClassificationType(AsmDocClassificationDefinition.ClassificationTypeNames.Underline);
             }
             return GetClassifierForView(textView) as ITagger<T>;
         }

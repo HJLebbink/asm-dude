@@ -38,16 +38,16 @@ namespace AsmDude.QuickInfo
     internal sealed class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider
     {
         [Import]
-        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private readonly IBufferTagAggregatorFactoryService aggregatorFactory_ = null;
 
         [Import]
-        private readonly IQuickInfoBroker _quickInfoBroker = null;
+        private readonly IQuickInfoBroker quickInfoBroker_ = null;
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {
             AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:TryCreateIntellisenseController", this.ToString()));
             //NOTE the QuickInfoController is only for the disassembly window, not for the regular windows
-            return new AsmQuickInfoController(textView, subjectBuffers, this._quickInfoBroker, this._aggregatorFactory);
+            return new AsmQuickInfoController(textView, subjectBuffers, this.quickInfoBroker_, this.aggregatorFactory_);
         }
     }
 }

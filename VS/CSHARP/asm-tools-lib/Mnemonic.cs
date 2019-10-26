@@ -2481,15 +2481,15 @@ namespace AsmTools
 
     public static partial class AsmSourceTools
     {
-        private static readonly Dictionary<string, Mnemonic> _mnemonic_cache;
+        private static readonly Dictionary<string, Mnemonic> Mnemonic_cache_;
 
         /// <summary>Static class initializer for AsmSourceTools</summary>
         static AsmSourceTools()
         {
-            _mnemonic_cache = new Dictionary<string, Mnemonic>();
+            Mnemonic_cache_ = new Dictionary<string, Mnemonic>();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
             {
-                _mnemonic_cache.Add(mnemonic.ToString(), mnemonic);
+                Mnemonic_cache_.Add(mnemonic.ToString(), mnemonic);
             }
         }
 
@@ -2634,7 +2634,7 @@ namespace AsmTools
 
         public static Mnemonic ParseMnemonic(string str, bool strIsCapitals)
         {
-            return (_mnemonic_cache.TryGetValue(ToCapitals(str, strIsCapitals), out Mnemonic value)) ? value : Mnemonic.NONE;
+            return (Mnemonic_cache_.TryGetValue(ToCapitals(str, strIsCapitals), out Mnemonic value)) ? value : Mnemonic.NONE;
         }
 
         /// <summary>Parse the provided string that contains a Intel syntax mnemonic</summary>
@@ -4708,7 +4708,7 @@ namespace AsmTools
 
         public static bool IsMnemonic(string keyword, bool strIsCapitals)
         {
-            return _mnemonic_cache.ContainsKey(ToCapitals(keyword, strIsCapitals));
+            return Mnemonic_cache_.ContainsKey(ToCapitals(keyword, strIsCapitals));
         }
 
         public static bool IsMnemonic_Att(string keyword, bool strIsCapitals = false)

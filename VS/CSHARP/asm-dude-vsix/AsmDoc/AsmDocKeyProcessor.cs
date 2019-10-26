@@ -30,16 +30,16 @@ namespace AsmDude.AsmDoc
     /// </summary>
     internal sealed class AsmDocKeyProcessor : KeyProcessor
     {
-        private readonly CtrlKeyState _state;
+        private readonly CtrlKeyState state_;
 
         public AsmDocKeyProcessor(CtrlKeyState state)
         {
-            this._state = state;
+            this.state_ = state;
         }
 
         private void UpdateState(KeyEventArgs args)
         {
-            this._state.Enabled =
+            this.state_.Enabled =
                 ((args.KeyboardDevice.Modifiers & ModifierKeys.Control) != 0) &&
                 ((args.KeyboardDevice.Modifiers & ModifierKeys.Shift) == 0);
         }

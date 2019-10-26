@@ -27,15 +27,14 @@ namespace AsmTools
 
     public class Operand
     {
-        private readonly string _str;
-        private readonly Ot1 _type;
-        private readonly Rn _rn = Rn.NOREG;
-        private ulong _imm = 0;
+        private readonly string str_;
+        private readonly Ot1 type_;
+        private readonly Rn rn_ = Rn.NOREG;
+        private ulong imm_ = 0;
+        private readonly (Rn baseReg, Rn indexReg, int scale, long displacement) mem_;
+        public readonly string ErrorMessage_;
 
         public int NBits { get; set; }
-
-        private readonly (Rn baseReg, Rn indexReg, int scale, long displacement) _mem;
-        public readonly string ErrorMessage;
 
         /// <summary>constructor</summary>
         public Operand(string token, bool isCapitals, AsmParameters p = null)
@@ -43,7 +42,7 @@ namespace AsmTools
             Contract.Requires(token != null);
 
             token = AsmSourceTools.ToCapitals(token, isCapitals);
-            this._str = token;
+            this.str_ = token;
 
             // TODO: properly handle optional elements {K}{Z} {AES}{ER}
             string token2 = token.Contains("{")
@@ -67,19 +66,19 @@ namespace AsmTools
             (bool valid, Rn reg, int nBits) t0 = RegisterTools.ToRn(token2, true);
             if (t0.valid)
             {
-                this._type = Ot1.reg;
-                this._rn = t0.reg;
+                this.type_ = Ot1.reg;
+                this.rn_ = t0.reg;
                 this.NBits = t0.nBits;
             }
             else
             {
-                this._rn = Rn.NOREG;
+                this.rn_ = Rn.NOREG;
 
                 (bool valid, ulong value, int nBits) = AsmSourceTools.Evaluate_Constant(token2, true);
                 if (valid)
                 {
-                    this._type = Ot1.imm;
-                    this._imm = value;
+                    this.type_ = Ot1.imm;
+                    this.imm_ = value;
                     this.NBits = nBits;
                 }
                 else
@@ -87,34 +86,34 @@ namespace AsmTools
                     (bool valid2, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits2, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(token2, true);
                     if (valid2)
                     {
-                        this._type = Ot1.mem;
-                        this._mem = (baseReg, indexReg, scale, displacement);
+                        this.type_ = Ot1.mem;
+                        this.mem_ = (baseReg, indexReg, scale, displacement);
                         this.NBits = nBits2;
                     }
                     else
                     {
-                        this.ErrorMessage = errorMessage;
-                        this._type = Ot1.UNKNOWN;
+                        this.ErrorMessage_ = errorMessage;
+                        this.type_ = Ot1.UNKNOWN;
                         this.NBits = -1;
                     }
                 }
             }
         }
 
-        public Ot1 Type { get { return this._type; } }
+        public Ot1 Type { get { return this.type_; } }
 
-        public bool IsReg { get { return this._type == Ot1.reg; } }
+        public bool IsReg { get { return this.type_ == Ot1.reg; } }
 
-        public bool IsMem { get { return this._type == Ot1.mem; } }
+        public bool IsMem { get { return this.type_ == Ot1.mem; } }
 
-        public bool IsImm { get { return this._type == Ot1.imm; } }
+        public bool IsImm { get { return this.type_ == Ot1.imm; } }
 
-        public Rn Rn { get { return this._rn; } }
+        public Rn Rn { get { return this.rn_; } }
 
-        public ulong Imm { get { return this._imm; } }
+        public ulong Imm { get { return this.imm_; } }
 
         /// <summary> Gets tup with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
-        public (Rn baseReg, Rn indexReg, int scale, long displacement) Mem { get { return this._mem; } }
+        public (Rn baseReg, Rn indexReg, int scale, long displacement) Mem { get { return this.mem_; } }
 
         /// <summary> Sign Extend the imm to the provided number of bits;</summary>
         public void SignExtend(int nBits)
@@ -123,17 +122,17 @@ namespace AsmTools
             {
                 if (nBits > this.NBits)
                 {
-                    bool signBit = ((this._imm >> (this.NBits - 1)) & 1) == 1;
+                    bool signBit = ((this.imm_ >> (this.NBits - 1)) & 1) == 1;
                     if (signBit)
                     {
                         for (int bit = this.NBits; bit < nBits; ++bit)
                         {
-                            this._imm |= 1ul << bit;
+                            this.imm_ |= 1ul << bit;
                         }
                     }
                     else
                     {
-                        // no need to change _imm
+                        // no need to change imm_
                     }
                     this.NBits = nBits;
                 }
@@ -162,8 +161,8 @@ namespace AsmTools
 
         public override string ToString()
         {
-            Contract.Assert(this._str != null);
-            return this._str;
+            Contract.Assert(this.str_ != null);
+            return this.str_;
         }
     }
 }

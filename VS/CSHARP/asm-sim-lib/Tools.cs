@@ -31,8 +31,8 @@ namespace AsmSim
 
     public class Tools
     {
-        private readonly Random _rand;
-        private readonly AsmParameters _p;
+        private readonly Random rand_;
+        private readonly AsmParameters p_;
 
         public StateConfig StateConfig { get; set; }
 
@@ -46,8 +46,8 @@ namespace AsmSim
             Contract.Requires(other != null);
 
             this.Settings = new Dictionary<string, string>(other.Settings);
-            this._rand = other.Rand; //new Random();
-            this._p = other._p;
+            this.rand_ = other.Rand; //new Random();
+            this.p_ = other.p_;
             this.Quiet = other.Quiet;
             this.ShowUndefConstraints = other.ShowUndefConstraints;
             this.StateConfig = other.StateConfig;
@@ -56,8 +56,8 @@ namespace AsmSim
         public Tools(Dictionary<string, string> settings)
         {
             this.Settings = settings;
-            this._rand = new Random();
-            this._p = new AsmParameters();
+            this.rand_ = new Random();
+            this.p_ = new AsmParameters();
             this.Quiet = true;
             this.ShowUndefConstraints = false;
             this.StateConfig = new StateConfig();
@@ -66,9 +66,9 @@ namespace AsmSim
 
         public Dictionary<string, string> Settings { get; private set; }
 
-        public Random Rand { get { return this._rand; } }
+        public Random Rand { get { return this.rand_; } }
 
-        public AsmParameters Parameters { get { return this._p; } }
+        public AsmParameters Parameters { get { return this.p_; } }
 
         public bool Quiet { get; set; }
 

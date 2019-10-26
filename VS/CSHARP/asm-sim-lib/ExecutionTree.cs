@@ -29,18 +29,16 @@ namespace AsmSim
     public class ExecutionTree : IDisposable
     {
         #region Fields
-        private readonly Tools _tools;
-        private readonly BidirectionalGraph<string, TaggedEdge<string, (bool branch, string asmCode)>> _graph;
-        private readonly IDictionary<string, State> _states;
-
-        //private readonly object _updateLock = new object();
+        private readonly Tools tools_;
+        private readonly BidirectionalGraph<string, TaggedEdge<string, (bool branch, string asmCode)>> graph_;
+        private readonly IDictionary<string, State> states_;
         #endregion
 
         public ExecutionTree(Tools tools)
         {
-            this._tools = tools;
-            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool branch, string asmCode)>>(true);
-            this._states = new Dictionary<string, State>();
+            this.tools_ = tools;
+            this.graph_ = new BidirectionalGraph<string, TaggedEdge<string, (bool branch, string asmCode)>>(true);
+            this.states_ = new Dictionary<string, State>();
         }
 
         public void Init(DynamicFlow dFlow, int startLineNumber)

@@ -35,15 +35,15 @@ namespace AsmDude.CodeCompletion
     internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener
     {
         [Import]
-        private readonly IVsEditorAdaptersFactoryService _adaptersFactory = null;
+        private readonly IVsEditorAdaptersFactoryService adaptersFactory_ = null;
 
         [Import]
-        private readonly ICompletionBroker _completionBroker = null;
+        private readonly ICompletionBroker completionBroker_ = null;
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
-            IWpfTextView view = this._adaptersFactory.GetWpfTextView(textViewAdapter);
-            CodeCompletionCommandFilter filter = new CodeCompletionCommandFilter(view, this._completionBroker);
+            IWpfTextView view = this.adaptersFactory_.GetWpfTextView(textViewAdapter);
+            CodeCompletionCommandFilter filter = new CodeCompletionCommandFilter(view, this.completionBroker_);
             textViewAdapter.AddCommandFilter(filter, out Microsoft.VisualStudio.OLE.Interop.IOleCommandTarget next);
             filter.NextCommandHandler = next;
         }

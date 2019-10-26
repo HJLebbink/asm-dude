@@ -127,16 +127,16 @@ namespace AsmDude.OptionsPage
     [Guid(Guids.GuidOptionsPageAsmDude)]
     public class AsmDudeOptionsPage : UIElementDialogPage
     {
-        private readonly AsmDudeOptionsPageUI _asmDudeOptionsPageUI;
+        private readonly AsmDudeOptionsPageUI asmDudeOptionsPageUI_;
 
         public AsmDudeOptionsPage()
         {
-            this._asmDudeOptionsPageUI = new AsmDudeOptionsPageUI();
+            this.asmDudeOptionsPageUI_ = new AsmDudeOptionsPageUI();
         }
 
         protected override System.Windows.UIElement Child
         {
-            get { return this._asmDudeOptionsPageUI; }
+            get { return this.asmDudeOptionsPageUI_; }
         }
 
         #region Private Methods
@@ -144,7 +144,7 @@ namespace AsmDude.OptionsPage
         private bool Setting_Changed(string key, StringBuilder sb)
         {
             object persisted_value = Settings.Default[key];
-            object gui_value = this._asmDudeOptionsPageUI.GetPropValue(key);
+            object gui_value = this.asmDudeOptionsPageUI_.GetPropValue(key);
             if (gui_value.Equals(persisted_value))
             {
                 return false;
@@ -167,7 +167,7 @@ namespace AsmDude.OptionsPage
         {
             string k = key.ToString();
             Color persisted_value = (Color)Settings.Default[k];
-            Color gui_value = (Color)this._asmDudeOptionsPageUI.GetPropValue(k);
+            Color gui_value = (Color)this.asmDudeOptionsPageUI_.GetPropValue(k);
 
             if (gui_value.ToArgb() != persisted_value.ToArgb())
             {
@@ -180,7 +180,7 @@ namespace AsmDude.OptionsPage
         private bool Setting_Update(string key)
         {
             object persisted_value = Settings.Default[key];
-            object gui_value = this._asmDudeOptionsPageUI.GetPropValue(key);
+            object gui_value = this.asmDudeOptionsPageUI_.GetPropValue(key);
             if (gui_value.Equals(persisted_value))
             {
                 return false;
@@ -203,11 +203,11 @@ namespace AsmDude.OptionsPage
         {
             string k = key.ToString();
             Color persisted_value = (Color)Settings.Default[k];
-            Color gui_value = (Color)this._asmDudeOptionsPageUI.GetPropValue(k);
+            Color gui_value = (Color)this.asmDudeOptionsPageUI_.GetPropValue(k);
 
             if (gui_value.ToArgb() != persisted_value.ToArgb())
             {
-                Settings.Default[k] = this._asmDudeOptionsPageUI.GetPropValue(k);
+                Settings.Default[k] = this.asmDudeOptionsPageUI_.GetPropValue(k);
                 return true;
             }
             return false;
@@ -216,7 +216,7 @@ namespace AsmDude.OptionsPage
         private void Set_GUI(PropertyEnum key)
         {
             string k = key.ToString();
-            this._asmDudeOptionsPageUI.SetPropValue(k, Settings.Default[k]);
+            this.asmDudeOptionsPageUI_.SetPropValue(k, Settings.Default[k]);
         }
 
         private void Set_GUI_ARCH(Arch arch)
@@ -259,84 +259,84 @@ namespace AsmDude.OptionsPage
                 switch (arch)
                 {
                     case Arch.ARCH_NONE: break;
-                    case Arch.ARCH_8086: this._asmDudeOptionsPageUI.ARCH_8086_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_186: this._asmDudeOptionsPageUI.ARCH_186_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_286: this._asmDudeOptionsPageUI.ARCH_286_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_386: this._asmDudeOptionsPageUI.ARCH_386_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_486: this._asmDudeOptionsPageUI.ARCH_486_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_PENT: this._asmDudeOptionsPageUI.ARCH_PENT_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_P6: this._asmDudeOptionsPageUI.ARCH_P6_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_MMX: this._asmDudeOptionsPageUI.ARCH_MMX_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SSE: this._asmDudeOptionsPageUI.ARCH_SSE_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SSE2: this._asmDudeOptionsPageUI.ARCH_SSE2_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SSE3: this._asmDudeOptionsPageUI.ARCH_SSE3_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SSSE3: this._asmDudeOptionsPageUI.ARCH_SSSE3_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SSE4_1: this._asmDudeOptionsPageUI.ARCH_SSE4_1_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SSE4_2: this._asmDudeOptionsPageUI.ARCH_SSE4_2_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SSE4A: this._asmDudeOptionsPageUI.ARCH_SSE4A_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SSE5: this._asmDudeOptionsPageUI.ARCH_SSE5_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX: this._asmDudeOptionsPageUI.ARCH_AVX_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX2: this._asmDudeOptionsPageUI.ARCH_AVX2_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_F: this._asmDudeOptionsPageUI.ARCH_AVX512_F_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_CD: this._asmDudeOptionsPageUI.ARCH_AVX512_CD_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_ER: this._asmDudeOptionsPageUI.ARCH_AVX512_ER_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_PF: this._asmDudeOptionsPageUI.ARCH_AVX512_PF_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_BW: this._asmDudeOptionsPageUI.ARCH_AVX512_BW_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_DQ: this._asmDudeOptionsPageUI.ARCH_AVX512_DQ_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_VL: this._asmDudeOptionsPageUI.ARCH_AVX512_VL_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_IFMA: this._asmDudeOptionsPageUI.ARCH_AVX512_IFMA_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_VBMI: this._asmDudeOptionsPageUI.ARCH_AVX512_VBMI_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_VPOPCNTDQ: this._asmDudeOptionsPageUI.ARCH_AVX512_VPOPCNTDQ_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_4VNNIW: this._asmDudeOptionsPageUI.ARCH_AVX512_4VNNIW_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_4FMAPS: this._asmDudeOptionsPageUI.ARCH_AVX512_4FMAPS_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_VBMI2: this._asmDudeOptionsPageUI.ARCH_AVX512_VBMI2_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_VNNI: this._asmDudeOptionsPageUI.ARCH_AVX512_VNNI_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_BITALG: this._asmDudeOptionsPageUI.ARCH_AVX512_BITALG_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_GFNI: this._asmDudeOptionsPageUI.ARCH_AVX512_GFNI_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_VAES: this._asmDudeOptionsPageUI.ARCH_AVX512_VAES_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_VPCLMULQDQ: this._asmDudeOptionsPageUI.ARCH_AVX512_VPCLMULQDQ_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_8086: this.asmDudeOptionsPageUI_.ARCH_8086_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_186: this.asmDudeOptionsPageUI_.ARCH_186_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_286: this.asmDudeOptionsPageUI_.ARCH_286_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_386: this.asmDudeOptionsPageUI_.ARCH_386_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_486: this.asmDudeOptionsPageUI_.ARCH_486_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_PENT: this.asmDudeOptionsPageUI_.ARCH_PENT_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_P6: this.asmDudeOptionsPageUI_.ARCH_P6_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_MMX: this.asmDudeOptionsPageUI_.ARCH_MMX_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SSE: this.asmDudeOptionsPageUI_.ARCH_SSE_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SSE2: this.asmDudeOptionsPageUI_.ARCH_SSE2_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SSE3: this.asmDudeOptionsPageUI_.ARCH_SSE3_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SSSE3: this.asmDudeOptionsPageUI_.ARCH_SSSE3_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SSE4_1: this.asmDudeOptionsPageUI_.ARCH_SSE4_1_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SSE4_2: this.asmDudeOptionsPageUI_.ARCH_SSE4_2_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SSE4A: this.asmDudeOptionsPageUI_.ARCH_SSE4A_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SSE5: this.asmDudeOptionsPageUI_.ARCH_SSE5_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX: this.asmDudeOptionsPageUI_.ARCH_AVX_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX2: this.asmDudeOptionsPageUI_.ARCH_AVX2_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_F: this.asmDudeOptionsPageUI_.ARCH_AVX512_F_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_CD: this.asmDudeOptionsPageUI_.ARCH_AVX512_CD_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_ER: this.asmDudeOptionsPageUI_.ARCH_AVX512_ER_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_PF: this.asmDudeOptionsPageUI_.ARCH_AVX512_PF_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_BW: this.asmDudeOptionsPageUI_.ARCH_AVX512_BW_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_DQ: this.asmDudeOptionsPageUI_.ARCH_AVX512_DQ_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VL: this.asmDudeOptionsPageUI_.ARCH_AVX512_VL_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_IFMA: this.asmDudeOptionsPageUI_.ARCH_AVX512_IFMA_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VBMI: this.asmDudeOptionsPageUI_.ARCH_AVX512_VBMI_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VPOPCNTDQ: this.asmDudeOptionsPageUI_.ARCH_AVX512_VPOPCNTDQ_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_4VNNIW: this.asmDudeOptionsPageUI_.ARCH_AVX512_4VNNIW_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_4FMAPS: this.asmDudeOptionsPageUI_.ARCH_AVX512_4FMAPS_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VBMI2: this.asmDudeOptionsPageUI_.ARCH_AVX512_VBMI2_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VNNI: this.asmDudeOptionsPageUI_.ARCH_AVX512_VNNI_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_BITALG: this.asmDudeOptionsPageUI_.ARCH_AVX512_BITALG_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_GFNI: this.asmDudeOptionsPageUI_.ARCH_AVX512_GFNI_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VAES: this.asmDudeOptionsPageUI_.ARCH_AVX512_VAES_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VPCLMULQDQ: this.asmDudeOptionsPageUI_.ARCH_AVX512_VPCLMULQDQ_UI.ToolTip = tooltip; break;
 
-                    case Arch.ARCH_AVX512_BF16: this._asmDudeOptionsPageUI.ARCH_AVX512_BF16_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AVX512_VP2INTERSECT: this._asmDudeOptionsPageUI.ARCH_AVX512_VP2INTERSECT_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_ENQCMD: this._asmDudeOptionsPageUI.ARCH_ENQCMD_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_BF16: this.asmDudeOptionsPageUI_.ARCH_AVX512_BF16_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VP2INTERSECT: this.asmDudeOptionsPageUI_.ARCH_AVX512_VP2INTERSECT_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_ENQCMD: this.asmDudeOptionsPageUI_.ARCH_ENQCMD_UI.ToolTip = tooltip; break;
 
-                    case Arch.ARCH_ADX: this._asmDudeOptionsPageUI.ARCH_ADX_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AES: this._asmDudeOptionsPageUI.ARCH_AES_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_VMX: this._asmDudeOptionsPageUI.ARCH_VMX_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_BMI1: this._asmDudeOptionsPageUI.ARCH_BMI1_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_BMI2: this._asmDudeOptionsPageUI.ARCH_BMI2_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_F16C: this._asmDudeOptionsPageUI.ARCH_F16C_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_FMA: this._asmDudeOptionsPageUI.ARCH_FMA_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_FSGSBASE: this._asmDudeOptionsPageUI.ARCH_FSGSBASE_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_HLE: this._asmDudeOptionsPageUI.ARCH_HLE_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_INVPCID: this._asmDudeOptionsPageUI.ARCH_INVPCID_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SHA: this._asmDudeOptionsPageUI.ARCH_SHA_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_RTM: this._asmDudeOptionsPageUI.ARCH_RTM_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_MPX: this._asmDudeOptionsPageUI.ARCH_MPX_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_PCLMULQDQ: this._asmDudeOptionsPageUI.ARCH_PCLMULQDQ_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_LZCNT: this._asmDudeOptionsPageUI.ARCH_LZCNT_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_PREFETCHWT1: this._asmDudeOptionsPageUI.ARCH_PREFETCHWT1_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_PRFCHW: this._asmDudeOptionsPageUI.ARCH_PRFCHW_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_RDPID: this._asmDudeOptionsPageUI.ARCH_RDPID_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_RDRAND: this._asmDudeOptionsPageUI.ARCH_RDRAND_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_RDSEED: this._asmDudeOptionsPageUI.ARCH_RDSEED_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_XSAVEOPT: this._asmDudeOptionsPageUI.ARCH_XSAVEOPT_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SGX1: this._asmDudeOptionsPageUI.ARCH_SGX1_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SGX2: this._asmDudeOptionsPageUI.ARCH_SGX2_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_SMX: this._asmDudeOptionsPageUI.ARCH_SMX_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_CLDEMOTE: this._asmDudeOptionsPageUI.ARCH_CLDEMOTE_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_MOVDIR64B: this._asmDudeOptionsPageUI.ARCH_MOVDIR64B_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_MOVDIRI: this._asmDudeOptionsPageUI.ARCH_MOVDIRI_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_PCONFIG: this._asmDudeOptionsPageUI.ARCH_PCONFIG_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_WAITPKG: this._asmDudeOptionsPageUI.ARCH_WAITPKG_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_X64: this._asmDudeOptionsPageUI.ARCH_X64_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_IA64: this._asmDudeOptionsPageUI.ARCH_IA64_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_UNDOC: this._asmDudeOptionsPageUI.ARCH_UNDOC_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_AMD: this._asmDudeOptionsPageUI.ARCH_AMD_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_TBM: this._asmDudeOptionsPageUI.ARCH_TBM_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_3DNOW: this._asmDudeOptionsPageUI.ARCH_3DNOW_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_CYRIX: this._asmDudeOptionsPageUI.ARCH_CYRIX_UI.ToolTip = tooltip; break;
-                    case Arch.ARCH_CYRIXM: this._asmDudeOptionsPageUI.ARCH_CYRIXM_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_ADX: this.asmDudeOptionsPageUI_.ARCH_ADX_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AES: this.asmDudeOptionsPageUI_.ARCH_AES_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_VMX: this.asmDudeOptionsPageUI_.ARCH_VMX_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_BMI1: this.asmDudeOptionsPageUI_.ARCH_BMI1_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_BMI2: this.asmDudeOptionsPageUI_.ARCH_BMI2_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_F16C: this.asmDudeOptionsPageUI_.ARCH_F16C_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_FMA: this.asmDudeOptionsPageUI_.ARCH_FMA_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_FSGSBASE: this.asmDudeOptionsPageUI_.ARCH_FSGSBASE_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_HLE: this.asmDudeOptionsPageUI_.ARCH_HLE_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_INVPCID: this.asmDudeOptionsPageUI_.ARCH_INVPCID_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SHA: this.asmDudeOptionsPageUI_.ARCH_SHA_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_RTM: this.asmDudeOptionsPageUI_.ARCH_RTM_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_MPX: this.asmDudeOptionsPageUI_.ARCH_MPX_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_PCLMULQDQ: this.asmDudeOptionsPageUI_.ARCH_PCLMULQDQ_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_LZCNT: this.asmDudeOptionsPageUI_.ARCH_LZCNT_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_PREFETCHWT1: this.asmDudeOptionsPageUI_.ARCH_PREFETCHWT1_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_PRFCHW: this.asmDudeOptionsPageUI_.ARCH_PRFCHW_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_RDPID: this.asmDudeOptionsPageUI_.ARCH_RDPID_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_RDRAND: this.asmDudeOptionsPageUI_.ARCH_RDRAND_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_RDSEED: this.asmDudeOptionsPageUI_.ARCH_RDSEED_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_XSAVEOPT: this.asmDudeOptionsPageUI_.ARCH_XSAVEOPT_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SGX1: this.asmDudeOptionsPageUI_.ARCH_SGX1_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SGX2: this.asmDudeOptionsPageUI_.ARCH_SGX2_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_SMX: this.asmDudeOptionsPageUI_.ARCH_SMX_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_CLDEMOTE: this.asmDudeOptionsPageUI_.ARCH_CLDEMOTE_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_MOVDIR64B: this.asmDudeOptionsPageUI_.ARCH_MOVDIR64B_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_MOVDIRI: this.asmDudeOptionsPageUI_.ARCH_MOVDIRI_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_PCONFIG: this.asmDudeOptionsPageUI_.ARCH_PCONFIG_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_WAITPKG: this.asmDudeOptionsPageUI_.ARCH_WAITPKG_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_X64: this.asmDudeOptionsPageUI_.ARCH_X64_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_IA64: this.asmDudeOptionsPageUI_.ARCH_IA64_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_UNDOC: this.asmDudeOptionsPageUI_.ARCH_UNDOC_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AMD: this.asmDudeOptionsPageUI_.ARCH_AMD_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_TBM: this.asmDudeOptionsPageUI_.ARCH_TBM_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_3DNOW: this.asmDudeOptionsPageUI_.ARCH_3DNOW_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_CYRIX: this.asmDudeOptionsPageUI_.ARCH_CYRIX_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_CYRIXM: this.asmDudeOptionsPageUI_.ARCH_CYRIXM_UI.ToolTip = tooltip; break;
                     default:
                         break;
                 }
@@ -348,14 +348,14 @@ namespace AsmDude.OptionsPage
             }
 
             string k = arch.ToString();
-            this._asmDudeOptionsPageUI.SetPropValue(k, Settings.Default[k]);
+            this.asmDudeOptionsPageUI_.SetPropValue(k, Settings.Default[k]);
             SetToolTip(MakeToolTip());
         }
 
         private void Set_Settings(PropertyEnum key)
         {
             string k = key.ToString();
-            Settings.Default[k] = this._asmDudeOptionsPageUI.GetPropValue(k);
+            Settings.Default[k] = this.asmDudeOptionsPageUI_.GetPropValue(k);
         }
         #endregion
 
@@ -375,12 +375,12 @@ namespace AsmDude.OptionsPage
             #region Global
             this.Set_GUI(PropertyEnum.Global_MaxFileLines);
             //TODO: 29-09-19 why o why need i set DisplayDefaultValueOnEmptyText to true, while this is not necessary for AsmSim_Number_Of_Threads and AsmSim_Z3_Timeout_MS
-            this._asmDudeOptionsPageUI.Global_MaxFileLines_UI.DisplayDefaultValueOnEmptyText = true;
+            this.asmDudeOptionsPageUI_.Global_MaxFileLines_UI.DisplayDefaultValueOnEmptyText = true;
             #endregion
 
             #region Assembly Flavour
-            this._asmDudeOptionsPageUI.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
-            this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow = AsmDudeToolsStatic.Used_Assembler_Disassembly_Window;
+            this.asmDudeOptionsPageUI_.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
+            this.asmDudeOptionsPageUI_.UsedAssemblerDisassemblyWindow = AsmDudeToolsStatic.Used_Assembler_Disassembly_Window;
             #endregion
 
             #region AsmDoc
@@ -478,13 +478,13 @@ namespace AsmDude.OptionsPage
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Registers);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Code_Completion);
             //TODO: create generic ParseNumeration
-            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration, false);
+            this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Code_Completion_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration, false);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Register_Tooltip);
             //TODO: create generic ParseNumeration
-            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration, false);
+            this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Register_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration, false);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Instruction_Tooltip);
             //TODO: create generic ParseNumeration
-            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false);
+            this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false);
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Unimplemented);
             this.Set_GUI(PropertyEnum.AsmSim_Pragma_Assume);
             #endregion
@@ -521,14 +521,14 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Assembly Flavour
-            if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
+            if (AsmDudeToolsStatic.Used_Assembler != this.asmDudeOptionsPageUI_.UsedAssembler)
             {
-                sb.AppendLine("UsedAssembler_MainWindow=" + this._asmDudeOptionsPageUI.UsedAssembler);
+                sb.AppendLine("UsedAssembler_MainWindow=" + this.asmDudeOptionsPageUI_.UsedAssembler);
                 changed = true;
             }
-            if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow)
+            if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this.asmDudeOptionsPageUI_.UsedAssemblerDisassemblyWindow)
             {
-                sb.AppendLine("UsedAssembler_DisassemblyWindow=" + this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow);
+                sb.AppendLine("UsedAssembler_DisassemblyWindow=" + this.asmDudeOptionsPageUI_.UsedAssemblerDisassemblyWindow);
                 changed = true;
             }
             #endregion
@@ -616,7 +616,7 @@ namespace AsmDude.OptionsPage
             if (this.Setting_Changed(PropertyEnum.AsmSim_On, sb))
             {
                 changed = true;
-                if (!this._asmDudeOptionsPageUI.AsmSim_On)
+                if (!this.asmDudeOptionsPageUI_.AsmSim_On)
                 {
                     string title = null;
                     string message = "I'm sorry " + Environment.UserName + ", I'm afraid I can't do that.";
@@ -636,21 +636,21 @@ namespace AsmDude.OptionsPage
             changed |= this.Setting_Changed(PropertyEnum.AsmSim_Decorate_Unreachable_Instructions, sb);
             changed |= this.Setting_Changed(PropertyEnum.AsmSim_Decorate_Registers, sb);
             changed |= this.Setting_Changed(PropertyEnum.AsmSim_Show_Register_In_Code_Completion, sb);
-            if (Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString())
+            if (Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration != this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString())
             {
-                sb.AppendLine("AsmSim_Show_Register_In_Code_Completion_Numeration=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration);
+                sb.AppendLine("AsmSim_Show_Register_In_Code_Completion_Numeration=" + this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Code_Completion_Numeration);
                 changed = true;
             }
             changed |= this.Setting_Changed(PropertyEnum.AsmSim_Show_Register_In_Register_Tooltip, sb);
-            if (Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString())
+            if (Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration != this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString())
             {
-                sb.AppendLine("AsmSim_Show_Register_In_Register_Tooltip_Numeration=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration);
+                sb.AppendLine("AsmSim_Show_Register_In_Register_Tooltip_Numeration=" + this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Register_Tooltip_Numeration);
                 changed = true;
             }
             changed |= this.Setting_Changed(PropertyEnum.AsmSim_Show_Register_In_Instruction_Tooltip, sb);
-            if (Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString())
+            if (Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration != this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString())
             {
-                sb.AppendLine("AsmSim_Show_Register_In_Instruction_Tooltip_Numeration=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration);
+                sb.AppendLine("AsmSim_Show_Register_In_Instruction_Tooltip_Numeration=" + this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration);
                 changed = true;
             }
             changed |= this.Setting_Changed(PropertyEnum.AsmSim_Decorate_Unimplemented, sb);
@@ -783,15 +783,15 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Assembler Flavour
-            if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
+            if (AsmDudeToolsStatic.Used_Assembler != this.asmDudeOptionsPageUI_.UsedAssembler)
             {
-                AsmDudeToolsStatic.Used_Assembler = this._asmDudeOptionsPageUI.UsedAssembler;
+                AsmDudeToolsStatic.Used_Assembler = this.asmDudeOptionsPageUI_.UsedAssembler;
                 changed = true;
                 restartNeeded = true;
             }
-            if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow)
+            if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this.asmDudeOptionsPageUI_.UsedAssemblerDisassemblyWindow)
             {
-                AsmDudeToolsStatic.Used_Assembler_Disassembly_Window = this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow;
+                AsmDudeToolsStatic.Used_Assembler_Disassembly_Window = this.asmDudeOptionsPageUI_.UsedAssemblerDisassemblyWindow;
                 changed = true;
                 restartNeeded = true;
             }
@@ -819,7 +819,7 @@ namespace AsmDude.OptionsPage
                 }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Opcode))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.SyntaxHighlighting_Opcode).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Opcode).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Opcode_Italic))
@@ -830,62 +830,62 @@ namespace AsmDude.OptionsPage
                 }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Register))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Register, this._asmDudeOptionsPageUI.SyntaxHighlighting_Register).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Register, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Register).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Register_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Remark))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Remark, this._asmDudeOptionsPageUI.SyntaxHighlighting_Remark).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Remark, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Remark).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Remark_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Directive))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Directive, this._asmDudeOptionsPageUI.SyntaxHighlighting_Directive).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Directive, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Directive).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Directive_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Constant))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Constant, this._asmDudeOptionsPageUI.SyntaxHighlighting_Constant).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Constant, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Constant).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Constant_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Jump))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Jump, this._asmDudeOptionsPageUI.SyntaxHighlighting_Jump).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Jump, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Jump).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Jump_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Label))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Label, this._asmDudeOptionsPageUI.SyntaxHighlighting_Label).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.LabelDef, this._asmDudeOptionsPageUI.SyntaxHighlighting_Label).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Label, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Label).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.LabelDef, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Label).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Label_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Misc))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Misc, this._asmDudeOptionsPageUI.SyntaxHighlighting_Misc).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Misc, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Misc).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Misc_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined1))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined1, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined1).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined1, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Userdefined1).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined1_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined2))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined2, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined2).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined2, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Userdefined2).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined2_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined3))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined3, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined3).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined3, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Userdefined3).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined3_Italic)) { changed = true; restartNeeded = true; }
@@ -960,21 +960,21 @@ namespace AsmDude.OptionsPage
             if (this.Setting_Update(PropertyEnum.AsmSim_Decorate_Unreachable_Instructions)) { changed = true; }
             if (this.Setting_Update(PropertyEnum.AsmSim_Decorate_Registers)) { changed = true; }
             if (this.Setting_Update(PropertyEnum.AsmSim_Show_Register_In_Code_Completion)) { changed = true; }
-            if (Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString())
+            if (Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration != this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString())
             {
-                Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString();
+                Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration = this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString();
                 changed = true;
             }
             if (this.Setting_Update(PropertyEnum.AsmSim_Show_Register_In_Register_Tooltip)) { changed = true; }
-            if (Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString())
+            if (Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration != this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString())
             {
-                Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString();
+                Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration = this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString();
                 changed = true;
             }
             if (this.Setting_Update(PropertyEnum.AsmSim_Show_Register_In_Instruction_Tooltip)) { changed = true; }
-            if (Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString())
+            if (Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration != this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString())
             {
-                Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString();
+                Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = this.asmDudeOptionsPageUI_.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString();
                 changed = true;
             }
             if (this.Setting_Update(PropertyEnum.AsmSim_Decorate_Unimplemented)) { changed = true; }

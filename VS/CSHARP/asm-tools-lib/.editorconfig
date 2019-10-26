@@ -110,3 +110,6 @@ dotnet_diagnostic.SA1310.severity = none
 
 # SA1516: Elements should be separated by blank line
 dotnet_diagnostic.SA1516.severity = none
+
+# SA1649: File name should match first type name
+dotnet_diagnostic.SA1649.severity = silent

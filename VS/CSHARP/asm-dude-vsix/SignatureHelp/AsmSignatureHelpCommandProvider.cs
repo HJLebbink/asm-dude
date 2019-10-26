@@ -37,18 +37,18 @@ namespace AsmDude.SignatureHelp
     internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener
     {
         [Import]
-        private readonly IVsEditorAdaptersFactoryService _adapterService = null;
+        private readonly IVsEditorAdaptersFactoryService adapterService_ = null;
 
         [Import]
-        private readonly ISignatureHelpBroker _signatureHelpBroker = null;
+        private readonly ISignatureHelpBroker signatureHelpBroker_ = null;
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
-            ITextView textView = this._adapterService.GetWpfTextView(textViewAdapter);
+            ITextView textView = this.adapterService_.GetWpfTextView(textViewAdapter);
             if (textView != null)
             {
                 textView.Properties.GetOrCreateSingletonProperty(
-                     () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this._signatureHelpBroker));
+                     () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this.signatureHelpBroker_));
             }
         }
     }

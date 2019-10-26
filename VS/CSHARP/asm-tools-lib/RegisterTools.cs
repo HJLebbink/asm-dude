@@ -45,15 +45,15 @@ namespace AsmTools
 
     public static class RegisterTools
     {
-        private static readonly Dictionary<string, Rn> _register_cache;
+        private static readonly Dictionary<string, Rn> Register_cache_;
 
         /// <summary>Static class initializer for RegisterTools</summary>
         static RegisterTools()
         {
-            _register_cache = new Dictionary<string, Rn>();
+            Register_cache_ = new Dictionary<string, Rn>();
             foreach (Rn rn in Enum.GetValues(typeof(Rn)))
             {
-                _register_cache.Add(rn.ToString(), rn);
+                Register_cache_.Add(rn.ToString(), rn);
             }
         }
 
@@ -67,7 +67,7 @@ namespace AsmTools
 
         public static Rn ParseRn(string str, bool strIsCapitals = false)
         {
-            return (_register_cache.TryGetValue(AsmSourceTools.ToCapitals(str, strIsCapitals), out Rn value)) ? value : Rn.NOREG;
+            return (Register_cache_.TryGetValue(AsmSourceTools.ToCapitals(str, strIsCapitals), out Rn value)) ? value : Rn.NOREG;
         }
 
         public static Rn ParseRn_OLD(string str, bool strIsCapitals = false)
@@ -322,7 +322,7 @@ namespace AsmTools
 
         public static bool IsRn(string str, bool strIsCapitals = false)
         {
-            return _register_cache.ContainsKey(AsmSourceTools.ToCapitals(str, strIsCapitals));
+            return Register_cache_.ContainsKey(AsmSourceTools.ToCapitals(str, strIsCapitals));
         }
 
         public static int NBits(Rn rn)
@@ -780,7 +780,7 @@ namespace AsmTools
 
         public static bool IsRegister(string keyword, bool strIsCapitals = false)
         {
-            return _register_cache.ContainsKey(AsmSourceTools.ToCapitals(keyword, strIsCapitals));
+            return Register_cache_.ContainsKey(AsmSourceTools.ToCapitals(keyword, strIsCapitals));
         }
 
         public static RegisterType GetRegisterType(Rn rn)

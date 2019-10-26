@@ -44,14 +44,14 @@ namespace AsmDude.Tools
         /// </summary>
         //private static readonly SortedSet<uint> emptySet = new SortedSet<uint>();
 
-        private readonly ITextBuffer _buffer;
-        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory;
+        private readonly ITextBuffer buffer_;
+        private readonly IBufferTagAggregatorFactoryService aggregatorFactory_;
 
-        private readonly ITextDocumentFactoryService _docFactory;
-        private readonly IContentType _contentType;
+        private readonly ITextDocumentFactoryService docFactory_;
+        private readonly IContentType contentType_;
 
-        private readonly string _thisFilename;
-        private readonly IDictionary<uint, string> _filenames;
+        private readonly string thisFilename_;
+        private readonly IDictionary<uint, string> filenames_;
 
         /// <summary>
         /// Include_Filename = the file that is supposed to be included
@@ -59,24 +59,24 @@ namespace AsmDude.Tools
         /// Source_Filename = full path and name of the source file in which the include is defined
         /// LineNumber = the lineNumber at which the include is defined
         /// </summary>
-        private readonly IList<(string include_filename, string path, string source_filename, int lineNumber)> _undefined_includes;
+        private readonly IList<(string include_filename, string path, string source_filename, int lineNumber)> undefined_includes_;
 
-        //private readonly BidirectionalGraph<uint, TaggedEdge<uint, (string LabelSource, string LabelTarget)>> _graph; TODO consider using graph
+        //private readonly BidirectionalGraph<uint, TaggedEdge<uint, (string LabelSource, string LabelTarget)>> graph_; TODO consider using graph
 
-        private readonly IDictionary<string, IList<uint>> _usedAt;
-        private readonly IDictionary<string, IList<uint>> _defAt;
-        private readonly IDictionary<string, IList<uint>> _defAt_PROTO;
-        private readonly ISet<uint> _hasLabel;
-        private readonly ISet<uint> _hasDef;
+        private readonly IDictionary<string, IList<uint>> usedAt_;
+        private readonly IDictionary<string, IList<uint>> defAt_;
+        private readonly IDictionary<string, IList<uint>> defAt_PROTO_;
+        private readonly ISet<uint> hasLabel_;
+        private readonly ISet<uint> hasDef_;
 
         public bool Enabled { get; private set; }
 
         public ErrorListProvider Error_List_Provider { get; private set; }
 
-        private readonly Delay _delay;
-        private bool _bussy = false;
-        private IWorkItemResult _thread_Result;
-        private readonly object _updateLock = new object();
+        private readonly Delay delay_;
+        private bool bussy_ = false;
+        private IWorkItemResult thread_Result_;
+        private readonly object updateLock_ = new object();
         #endregion Private Fields
 
         #region Constructor
@@ -88,23 +88,23 @@ namespace AsmDude.Tools
                 IContentType contentType)
         {
             //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "LabelGraph:constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
-            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
-            this._aggregatorFactory = aggregatorFactory ?? throw new ArgumentNullException(nameof(aggregatorFactory));
+            this.buffer_ = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this.aggregatorFactory_ = aggregatorFactory ?? throw new ArgumentNullException(nameof(aggregatorFactory));
             this.Error_List_Provider = errorListProvider ?? throw new ArgumentNullException(nameof(errorListProvider));
-            this._docFactory = docFactory ?? throw new ArgumentNullException(nameof(docFactory));
-            this._contentType = contentType;
+            this.docFactory_ = docFactory ?? throw new ArgumentNullException(nameof(docFactory));
+            this.contentType_ = contentType;
 
-            this._filenames = new Dictionary<uint, string>();
+            this.filenames_ = new Dictionary<uint, string>();
 
             //this._graph = new BidirectionalGraph<uint, TaggedEdge<uint, (string LabelSource, string LabelTarget)>>(false);
-            this._usedAt = new ConcurrentDictionary<string, IList<uint>>();
-            this._defAt = new ConcurrentDictionary<string, IList<uint>>();
-            this._defAt_PROTO = new ConcurrentDictionary<string, IList<uint>>();
-            this._hasLabel = new HashSet<uint>();
-            this._hasDef = new HashSet<uint>();
-            this._undefined_includes = new List<(string include_filename, string path, string source_filename, int lineNumber)>();
-            this._thisFilename = AsmDudeToolsStatic.GetFilename(this._buffer);
-            this._delay = new Delay(AsmDudePackage.MsSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
+            this.usedAt_ = new ConcurrentDictionary<string, IList<uint>>();
+            this.defAt_ = new ConcurrentDictionary<string, IList<uint>>();
+            this.defAt_PROTO_ = new ConcurrentDictionary<string, IList<uint>>();
+            this.hasLabel_ = new HashSet<uint>();
+            this.hasDef_ = new HashSet<uint>();
+            this.undefined_includes_ = new List<(string include_filename, string path, string source_filename, int lineNumber)>();
+            this.thisFilename_ = AsmDudeToolsStatic.GetFilename(this.buffer_);
+            this.delay_ = new Delay(AsmDudePackage.MsSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
 
             this.Enabled = Settings.Default.IntelliSense_Label_Analysis_On;
 
@@ -116,23 +116,23 @@ namespace AsmDude.Tools
 
             if (this.Enabled)
             {
-                this._delay.Done_Event += (o, i) =>
+                this.delay_.Done_Event += (o, i) =>
                 {
-                    if (this._bussy)
+                    if (this.bussy_)
                     {
-                        this._delay.Reset();
+                        this.delay_.Reset();
                     }
                     else
                     {
-                        if ((this._thread_Result != null) && !this._thread_Result.IsCompleted && !this._thread_Result.IsCanceled)
+                        if ((this.thread_Result_ != null) && !this.thread_Result_.IsCompleted && !this.thread_Result_.IsCanceled)
                         {
-                            this._thread_Result.Cancel();
+                            this.thread_Result_.Cancel();
                         }
-                        this._thread_Result = AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
+                        this.thread_Result_ = AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
                     }
                 };
                 this.Reset();
-                this._buffer.ChangedLowPriority += this.Buffer_Changed;
+                this.buffer_.ChangedLowPriority += this.Buffer_Changed;
             }
         }
         #endregion
@@ -141,7 +141,7 @@ namespace AsmDude.Tools
 
         public void Reset()
         {
-            this._delay.Reset();
+            this.delay_.Reset();
         }
 
         public static int Get_Linenumber(uint id)
@@ -157,7 +157,7 @@ namespace AsmDude.Tools
         public string Get_Filename(uint id)
         {
             uint fileId = Get_File_Id(id);
-            if (this._filenames.TryGetValue(fileId, out string filename))
+            if (this.filenames_.TryGetValue(fileId, out string filename))
             {
                 return filename;
             }
@@ -182,7 +182,7 @@ namespace AsmDude.Tools
         {
             get
             {
-                foreach (KeyValuePair<string, IList<uint>> entry in this._defAt)
+                foreach (KeyValuePair<string, IList<uint>> entry in this.defAt_)
                 {
                     if (entry.Value.Count > 1)
                     {
@@ -202,23 +202,23 @@ namespace AsmDude.Tools
             {
                 AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
                 SortedDictionary<uint, string> result = new SortedDictionary<uint, string>();
-                lock (this._updateLock)
+                lock (this.updateLock_)
                 {
-                    foreach (KeyValuePair<string, IList<uint>> entry in this._usedAt)
+                    foreach (KeyValuePair<string, IList<uint>> entry in this.usedAt_)
                     {
                         string full_Qualified_Label = entry.Key;
-                        if (this._defAt.ContainsKey(full_Qualified_Label))
+                        if (this.defAt_.ContainsKey(full_Qualified_Label))
                         {
                             continue;
                         }
 
                         string regular_Label = AsmDudeToolsStatic.Retrieve_Regular_Label(full_Qualified_Label, usedAssember);
-                        if (this._defAt.ContainsKey(regular_Label))
+                        if (this.defAt_.ContainsKey(regular_Label))
                         {
                             continue;
                         }
 
-                        if (this._defAt_PROTO.ContainsKey(regular_Label))
+                        if (this.defAt_PROTO_.ContainsKey(regular_Label))
                         {
                             continue;
                         }
@@ -251,9 +251,9 @@ namespace AsmDude.Tools
             get
             {
                 SortedDictionary<string, string> result = new SortedDictionary<string, string>();
-                lock (this._updateLock)
+                lock (this.updateLock_)
                 {
-                    foreach (KeyValuePair<string, IList<uint>> entry in this._defAt)
+                    foreach (KeyValuePair<string, IList<uint>> entry in this.defAt_)
                     {
                         uint id = entry.Value[0];
                         int lineNumber = Get_Linenumber(id);
@@ -261,7 +261,7 @@ namespace AsmDude.Tools
                         string lineContent;
                         if (Is_From_Main_File(id))
                         {
-                            lineContent = " :" + this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                            lineContent = " :" + this.buffer_.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                         }
                         else
                         {
@@ -276,12 +276,12 @@ namespace AsmDude.Tools
 
         public bool Has_Label(string label)
         {
-            return this._defAt.ContainsKey(label) || this._defAt_PROTO.ContainsKey(label);
+            return this.defAt_.ContainsKey(label) || this.defAt_PROTO_.ContainsKey(label);
         }
 
         public bool Has_Label_Clash(string label)
         {
-            if (this._defAt.TryGetValue(label, out IList<uint> list))
+            if (this.defAt_.TryGetValue(label, out IList<uint> list))
             {
                 return list.Count > 1;
             }
@@ -292,14 +292,14 @@ namespace AsmDude.Tools
         {
             SortedSet<uint> results = new SortedSet<uint>();
             {
-                if (this._defAt.TryGetValue(label, out IList<uint> list))
+                if (this.defAt_.TryGetValue(label, out IList<uint> list))
                 {
                     //AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Label_Def_Linenumbers: Regular label definitions. label=" + label + ": found "+list.Count +" definitions.");
                     results.UnionWith(list);
                 }
             }
             {
-                if (this._defAt_PROTO.TryGetValue(label, out IList<uint> list))
+                if (this.defAt_PROTO_.TryGetValue(label, out IList<uint> list))
                 {
                     //AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Label_Def_Linenumbers: PROTO label defintions. label=" + label + ": found "+list.Count +" definitions.");
                     results.UnionWith(list);
@@ -315,13 +315,13 @@ namespace AsmDude.Tools
             //AsmDudeToolsStatic.Output_INFO("LabelGraph:Label_Used_At_Info: full_Qualified_Label=" + full_Qualified_Label + "; label=" + label);
             SortedSet<uint> results = new SortedSet<uint>();
             {
-                if (this._usedAt.TryGetValue(full_Qualified_Label, out IList<uint> lines))
+                if (this.usedAt_.TryGetValue(full_Qualified_Label, out IList<uint> lines))
                 {
                     results.UnionWith(lines);
                 }
             }
             {
-                if (this._usedAt.TryGetValue(label, out IList<uint> lines))
+                if (this.usedAt_.TryGetValue(label, out IList<uint> lines))
                 {
                     results.UnionWith(lines);
                 }
@@ -329,7 +329,7 @@ namespace AsmDude.Tools
             if (full_Qualified_Label.Equals(label, StringComparison.Ordinal))
             {
                 AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
-                foreach (KeyValuePair<string, IList<uint>> entry in this._usedAt)
+                foreach (KeyValuePair<string, IList<uint>> entry in this.usedAt_)
                 {
                     string regular_Label = AsmDudeToolsStatic.Retrieve_Regular_Label(entry.Key, usedAssember);
                     if (label.Equals(regular_Label, StringComparison.Ordinal))
@@ -348,22 +348,22 @@ namespace AsmDude.Tools
                 return;
             }
 
-            lock (this._updateLock)
+            lock (this.updateLock_)
             {
                 DateTime time1 = DateTime.Now;
-                this._bussy = true;
+                this.bussy_ = true;
 
-                this._usedAt.Clear();
-                this._defAt.Clear();
-                this._defAt_PROTO.Clear();
-                this._hasLabel.Clear();
-                this._hasDef.Clear();
-                this._filenames.Clear();
-                this._filenames.Add(0, AsmDudeToolsStatic.GetFilename(this._buffer));
-                this._undefined_includes.Clear();
+                this.usedAt_.Clear();
+                this.defAt_.Clear();
+                this.defAt_PROTO_.Clear();
+                this.hasLabel_.Clear();
+                this.hasDef_.Clear();
+                this.filenames_.Clear();
+                this.filenames_.Add(0, AsmDudeToolsStatic.GetFilename(this.buffer_));
+                this.undefined_includes_.Clear();
 
                 const uint fileId = 0; // use fileId=0 for the main file (and use numbers higher than 0 for included files)
-                this.Add_All(this._buffer, fileId);
+                this.Add_All(this.buffer_, fileId);
 
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "LabelGraph");
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
@@ -375,14 +375,14 @@ namespace AsmDude.Tools
                     this.Disable();
 #                   endif
                 }
-                this._bussy = false;
+                this.bussy_ = false;
             }
             this.Reset_Done_Event?.Invoke(this, new EventArgs());
         }
 
         public event EventHandler<EventArgs> Reset_Done_Event;
 
-        public IEnumerable<(string include_Filename, string path, string source_Filename, int lineNumber)> Undefined_Includes { get { return this._undefined_includes; } }
+        public IEnumerable<(string include_Filename, string path, string source_Filename, int lineNumber)> Undefined_Includes { get { return this.undefined_includes_; } }
 
         #endregion Public Methods
 
@@ -390,21 +390,21 @@ namespace AsmDude.Tools
 
         private void Disable()
         {
-            string msg = string.Format(AsmDudeToolsStatic.CultureUI, "Performance of LabelGraph is horrible: disabling label analysis for {0}.", this._thisFilename);
+            string msg = string.Format(AsmDudeToolsStatic.CultureUI, "Performance of LabelGraph is horrible: disabling label analysis for {0}.", this.thisFilename_);
             AsmDudeToolsStatic.Output_WARNING(msg);
 
             this.Enabled = false;
-            lock (this._updateLock)
+            lock (this.updateLock_)
             {
-                this._buffer.ChangedLowPriority -= this.Buffer_Changed;
-                this._defAt.Clear();
-                this._defAt_PROTO.Clear();
-                this._hasDef.Clear();
-                this._usedAt.Clear();
-                this._hasLabel.Clear();
-                this._undefined_includes.Clear();
+                this.buffer_.ChangedLowPriority -= this.Buffer_Changed;
+                this.defAt_.Clear();
+                this.defAt_PROTO_.Clear();
+                this.hasDef_.Clear();
+                this.usedAt_.Clear();
+                this.hasLabel_.Clear();
+                this.undefined_includes_.Clear();
             }
-            AsmDudeToolsStatic.Disable_Message(msg, this._thisFilename, this.Error_List_Provider);
+            AsmDudeToolsStatic.Disable_Message(msg, this.thisFilename_, this.Error_List_Provider);
         }
 
         private static int Get_Line_Number_UNUSED(IMappingTagSpan<AsmTokenTag> tag)
@@ -427,7 +427,7 @@ namespace AsmDude.Tools
             else
             {
                 // not used, because it does not work correctly
-                lock (this._updateLock)
+                lock (this.updateLock_)
                 {
                     // experimental faster method, but it still has subtle bugs
                     switch (e.Changes.Count)
@@ -435,9 +435,9 @@ namespace AsmDude.Tools
                         case 0: return;
                         case 1:
                             ITextChange textChange = e.Changes[0];
-                            ITextBuffer buffer = this._buffer;
+                            ITextBuffer buffer = this.buffer_;
 
-                            ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
+                            ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this.aggregatorFactory_);
 
                             switch (textChange.LineCountDelta)
                             {
@@ -480,8 +480,8 @@ namespace AsmDude.Tools
 
         private void Add_All(ITextBuffer buffer, uint fileId)
         {
-            ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
-            lock (this._updateLock)
+            ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this.aggregatorFactory_);
+            lock (this.updateLock_)
             {
                 if (fileId == 0)
                 {
@@ -527,15 +527,15 @@ namespace AsmDude.Tools
                             if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO, StringComparison.Ordinal))
                             {
                                 //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
-                                Add_To_Dictionary(label, id, this._defAt_PROTO);
-                                this._hasDef.Add(id);
+                                Add_To_Dictionary(label, id, this.defAt_PROTO_);
+                                this.hasDef_.Add(id);
                             }
                             else
                             {
                                 string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssember);
                                 //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
-                                Add_To_Dictionary(full_Qualified_Label, id, this._defAt);
-                                this._hasDef.Add(id);
+                                Add_To_Dictionary(full_Qualified_Label, id, this.defAt_);
+                                this.hasDef_.Add(id);
                             }
                             break;
                         }
@@ -544,10 +544,10 @@ namespace AsmDude.Tools
                             string labelStr = Get_Text(buffer, asmTokenTag);
                             string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, labelStr, usedAssember);
 
-                            Add_To_Dictionary(full_Qualified_Label, id, this._usedAt);
+                            Add_To_Dictionary(full_Qualified_Label, id, this.usedAt_);
 
                             //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
-                            this._hasLabel.Add(id);
+                            this.hasLabel_.Add(id);
                             break;
                         }
                     case AsmTokenType.Directive:
@@ -618,16 +618,16 @@ namespace AsmDude.Tools
                         includeFilename = includeFilename.Substring(1, includeFilename.Length - 2);
                     }
                 }
-                string filePath = Path.GetDirectoryName(this._thisFilename) + Path.DirectorySeparatorChar + includeFilename;
+                string filePath = Path.GetDirectoryName(this.thisFilename_) + Path.DirectorySeparatorChar + includeFilename;
 
                 if (!File.Exists(filePath))
                 {
                     //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
-                    this._undefined_includes.Add((include_filename: includeFilename, path: filePath, source_filename: currentFilename, lineNumber: lineNumber));
+                    this.undefined_includes_.Add((include_filename: includeFilename, path: filePath, source_filename: currentFilename, lineNumber: lineNumber));
                 }
                 else
                 {
-                    if (this._filenames.Values.Contains(filePath))
+                    if (this.filenames_.Values.Contains(filePath))
                     {
                         //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
                     }
@@ -635,10 +635,10 @@ namespace AsmDude.Tools
                     {
                         //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath);
 
-                        ITextDocument doc = this._docFactory.CreateAndLoadTextDocument(filePath, this._contentType, true, out bool characterSubstitutionsOccurred);
+                        ITextDocument doc = this.docFactory_.CreateAndLoadTextDocument(filePath, this.contentType_, true, out bool characterSubstitutionsOccurred);
                         doc.FileActionOccurred += this.Doc_File_Action_Occurred;
-                        uint fileId = (uint)this._filenames.Count;
-                        this._filenames.Add(fileId, filePath);
+                        uint fileId = (uint)this.filenames_.Count;
+                        this.filenames_.Add(fileId, filePath);
                         this.Add_All(doc.TextBuffer, fileId);
                     }
                 }

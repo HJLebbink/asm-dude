@@ -33,11 +33,11 @@ namespace AsmDude
 
     internal sealed class CodeCompletionCommandFilter : IOleCommandTarget
     {
-        private ICompletionSession _currentSession;
+        private ICompletionSession currentSession_;
 
         public CodeCompletionCommandFilter(IWpfTextView textView, ICompletionBroker broker)
         {
-            this._currentSession = null;
+            this.currentSession_ = null;
             this.TextView = textView ?? throw new ArgumentNullException(nameof(textView));
             this.Broker = broker ?? throw new ArgumentNullException(nameof(broker));
             //Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: {0}:constructor", this.ToString()));
@@ -59,7 +59,7 @@ namespace AsmDude
             ThreadHelper.ThrowIfNotOnUIThread();
 
             //if (VsShellUtilities.IsInAutomationFunction(m_provider.ServiceProvider)) {
-            //    return _nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            //    return nextCommandHandler_.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             //}
             if (false)
             {
@@ -92,12 +92,12 @@ namespace AsmDude
                 char.IsPunctuation(typedChar))
             {
                 //check for a selection
-                if ((this._currentSession != null) && !this._currentSession.IsDismissed)
+                if ((this.currentSession_ != null) && !this.currentSession_.IsDismissed)
                 {
                     //if the selection is fully selected, commit the current session
-                    if (this._currentSession.SelectedCompletionSet.SelectionStatus.IsSelected)
+                    if (this.currentSession_.SelectedCompletionSet.SelectionStatus.IsSelected)
                     {
-                        this._currentSession.Commit();
+                        this.currentSession_.Commit();
 
                         //pass along the command so the char is added to the buffer, except if the command is an enter
                         if (nCmdID != (uint)VSConstants.VSStd2KCmdID.RETURN)
@@ -108,7 +108,7 @@ namespace AsmDude
                     }
                     else
                     { //if there is no selection, dismiss the session
-                        this._currentSession.Dismiss();
+                        this.currentSession_.Dismiss();
                     }
                 }
             }
@@ -117,28 +117,28 @@ namespace AsmDude
             bool handled = false;
             if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar))
             {
-                if (this._currentSession == null || this._currentSession.IsDismissed)
+                if (this.currentSession_ == null || this.currentSession_.IsDismissed)
                 { // If there is no active session, bring up completion
                     if (this.StartSession())
                     {
-                        if (this._currentSession != null)
+                        if (this.currentSession_ != null)
                         {
-                            this._currentSession.Filter();
+                            this.currentSession_.Filter();
                         }
                     }
                 }
                 else
                 { //the completion session is already active, so just filter
-                    this._currentSession.Filter();
+                    this.currentSession_.Filter();
                 }
                 handled = true;
             }
             else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE //redo the filter if there is a deletion
                   || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE)
             {
-                if (this._currentSession != null && !this._currentSession.IsDismissed)
+                if (this.currentSession_ != null && !this.currentSession_.IsDismissed)
                 {
-                    this._currentSession.Filter();
+                    this.currentSession_.Filter();
                 }
                 handled = true;
             }
@@ -209,7 +209,7 @@ namespace AsmDude
                 if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar))
                 {
                     //if (!typedChar.Equals(char.MinValue)) {
-                    if ((this._currentSession == null) || this._currentSession.IsDismissed)
+                    if ((this.currentSession_ == null) || this.currentSession_.IsDismissed)
                     { // If there is no active session, bring up completion
                         this.StartSession();
                     }
@@ -219,7 +219,7 @@ namespace AsmDude
                 else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE //redo the filter if there is a deletion
                       || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE)
                 {
-                    if ((this._currentSession != null) && !this._currentSession.IsDismissed)
+                    if ((this.currentSession_ != null) && !this.currentSession_.IsDismissed)
                     {
                         this.Filter();
                     }
@@ -250,7 +250,7 @@ namespace AsmDude
 
         private bool StartSession()
         {
-            if (this._currentSession != null)
+            if (this.currentSession_ != null)
             {
                 return false;
             }
@@ -260,15 +260,15 @@ namespace AsmDude
             if (this.Broker.IsCompletionActive(this.TextView))
             {
                 //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:StartSession. Recycling an existing auto-complete session", this.ToString()));
-                this._currentSession = this.Broker.GetSessions(this.TextView)[0];
+                this.currentSession_ = this.Broker.GetSessions(this.TextView)[0];
             }
             else
             {
                 //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:StartSession. Creating a new auto-complete session", this.ToString()));
-                this._currentSession = this.Broker.CreateCompletionSession(this.TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
+                this.currentSession_ = this.Broker.CreateCompletionSession(this.TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
             }
-            this._currentSession.Dismissed += (sender, args) => this._currentSession = null;
-            this._currentSession.Start();
+            this.currentSession_.Dismissed += (sender, args) => this.currentSession_ = null;
+            this.currentSession_.Start();
             //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:StartSession", this.ToString()));
             return true;
         }
@@ -280,29 +280,29 @@ namespace AsmDude
         /// <returns></returns>
         private bool Complete(bool force)
         {
-            if (this._currentSession == null)
+            if (this.currentSession_ == null)
             {
                 return false;
             }
-            if (!this._currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force)
+            if (!this.currentSession_.SelectedCompletionSet.SelectionStatus.IsSelected && !force)
             {
-                this._currentSession.Dismiss();
+                this.currentSession_.Dismiss();
                 return false;
             }
             else
             {
-                this._currentSession.Commit();
+                this.currentSession_.Commit();
                 return true;
             }
         }
 
         private bool Cancel()
         {
-            if (this._currentSession == null)
+            if (this.currentSession_ == null)
             {
                 return false;
             }
-            this._currentSession.Dismiss();
+            this.currentSession_.Dismiss();
             return true;
         }
 
@@ -311,13 +311,13 @@ namespace AsmDude
         /// </summary>
         private void Filter()
         {
-            if (this._currentSession == null)
+            if (this.currentSession_ == null)
             {
                 return;
             }
             // this._currentSession.SelectedCompletionSet.SelectBestMatch();
             //this._currentSession.SelectedCompletionSet.Recalculate();
-            this._currentSession.Filter();
+            this.currentSession_.Filter();
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)

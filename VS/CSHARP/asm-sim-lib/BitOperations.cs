@@ -130,6 +130,7 @@ namespace AsmSim
         #endregion
 
         #region Shift operations
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public static (BitVecExpr result, BoolExpr cf) ShiftOperations(
             Mnemonic op,
             BitVecExpr value,
@@ -192,6 +193,7 @@ namespace AsmSim
             return (result: value_out, cf: cf);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public static (BitVecExpr result, BoolExpr cf) ShiftOperations(
             Mnemonic op,
             BitVecExpr value,

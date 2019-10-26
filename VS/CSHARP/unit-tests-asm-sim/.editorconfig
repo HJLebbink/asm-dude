@@ -59,3 +59,9 @@ dotnet_diagnostic.SA1310.severity = none
 
 # SA1108: Block statements should not contain embedded comments
 dotnet_diagnostic.SA1108.severity = none
+
+# SA1633: File should have header
+dotnet_diagnostic.SA1633.severity = none
+
+# SA1404: Code analysis suppression should have justification
+dotnet_diagnostic.SA1404.severity = none

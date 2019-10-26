@@ -28,29 +28,29 @@ namespace AsmTools
 
     public class StopWatch
     {
-        private readonly IDictionary<string, long> _startTimeTicks;
-        private readonly IDictionary<string, double> _totalTimeInSec;
+        private readonly IDictionary<string, long> startTimeTicks_;
+        private readonly IDictionary<string, double> totalTimeInSec_;
 
         /// <summary> Constructor </summary>
         public StopWatch()
         {
             this.On = true;
-            this._startTimeTicks = new Dictionary<string, long>();
-            this._totalTimeInSec = new Dictionary<string, double>();
+            this.startTimeTicks_ = new Dictionary<string, long>();
+            this.totalTimeInSec_ = new Dictionary<string, double>();
         }
         public bool On { get; set; }
 
         public void Reset()
         {
-            this._startTimeTicks.Clear();
-            this._totalTimeInSec.Clear();
+            this.startTimeTicks_.Clear();
+            this.totalTimeInSec_.Clear();
         }
 
         public void Start(string key)
         {
             if (this.On)
             {
-                this._startTimeTicks[key] = DateTime.Now.Ticks;
+                this.startTimeTicks_[key] = DateTime.Now.Ticks;
             }
         }
 
@@ -59,17 +59,17 @@ namespace AsmTools
             if (this.On)
             {
                 double elapsedSec = 0;
-                if (this._startTimeTicks.TryGetValue(key, out long value))
+                if (this.startTimeTicks_.TryGetValue(key, out long value))
                 {
                     elapsedSec = (double)(DateTime.Now.Ticks - value) / 10000000;
                 }
-                if (this._totalTimeInSec.TryGetValue(key, out double sum))
+                if (this.totalTimeInSec_.TryGetValue(key, out double sum))
                 {
-                    this._totalTimeInSec[key] = sum + elapsedSec;
+                    this.totalTimeInSec_[key] = sum + elapsedSec;
                 }
                 else
                 {
-                    this._totalTimeInSec[key] = elapsedSec;
+                    this.totalTimeInSec_[key] = elapsedSec;
                 }
             }
         }
@@ -80,13 +80,13 @@ namespace AsmTools
             StringBuilder sb = new StringBuilder();
             if (this.On)
             {
-                if (this._totalTimeInSec.Count == 0)
+                if (this.totalTimeInSec_.Count == 0)
                 {
                     sb.Append("StopWatch: no entries");
                 }
                 else
                 {
-                    foreach (KeyValuePair<string, double> entry in this._totalTimeInSec)
+                    foreach (KeyValuePair<string, double> entry in this.totalTimeInSec_)
                     {
                         totalTime += entry.Value;
                         sb.Append("StopWatch: ").Append(entry.Key).Append(": ").Append(entry.Value).AppendLine(" sec.");

@@ -31,7 +31,7 @@ namespace AsmSim
 
     public static class ToolsZ3
     {
-        private static readonly object _object = new object();
+        private static readonly object Object_ = new object();
 
         #region Public Methods
 
@@ -40,7 +40,7 @@ namespace AsmSim
             Contract.Requires(rand != null);
 
             ulong i1, i2;
-            lock (_object)
+            lock (Object_)
             {
                 i1 = (ulong)rand.Next();
                 i2 = (ulong)rand.Next();

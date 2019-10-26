@@ -42,7 +42,7 @@ namespace AsmDude.AsmDoc
             //AsmDudeToolsStatic.Output_INFO("CtrlKeyState:Constructor");
         }
 
-        private bool _enabled = false;
+        private bool enabled_ = false;
 
         internal bool Enabled
         {
@@ -51,18 +51,18 @@ namespace AsmDude.AsmDoc
                 // Check and see if ctrl is down but we missed it somehow.
                 bool ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) != 0 &&
                                 (Keyboard.Modifiers & ModifierKeys.Shift) == 0;
-                if (ctrlDown != this._enabled)
+                if (ctrlDown != this.enabled_)
                 {
                     this.Enabled = ctrlDown;
                 }
-                return this._enabled;
+                return this.enabled_;
             }
 
             set
             {
-                bool oldVal = this._enabled;
-                this._enabled = value;
-                if (oldVal != this._enabled)
+                bool oldVal = this.enabled_;
+                this.enabled_ = value;
+                if (oldVal != this.enabled_)
                 {
                     this.CtrlKeyStateChanged?.Invoke(this, new EventArgs());
                 }

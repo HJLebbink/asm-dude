@@ -79,20 +79,20 @@ namespace AsmDude.HighlightWord
     /// </summary>
     internal sealed class HighlightWordTagger : ITagger<HighlightWordTag>
     {
-        private readonly ITextView _view;
-        private readonly ITextBuffer _sourceBuffer;
-        private readonly ITextSearchService _textSearchService;
+        private readonly ITextView view_;
+        private readonly ITextBuffer sourceBuffer_;
+        private readonly ITextSearchService textSearchService_;
 
-        private ITextStructureNavigator _textStructureNavigator { get; set; }
+        private ITextStructureNavigator textStructureNavigator_ { get; set; }
 
-        private readonly object _updateLock = new object();
+        private readonly object updateLock_ = new object();
 
         // The current set of words to highlight
-        private NormalizedSnapshotSpanCollection _wordSpans;
+        private NormalizedSnapshotSpanCollection wordSpans_;
 
         private string CurrentWord { get; set; }
 
-        private SnapshotSpan? _currentWordSpan;
+        private SnapshotSpan? currentWordSpan_;
 
         private string NewWord { get; set; }
 
@@ -103,24 +103,24 @@ namespace AsmDude.HighlightWord
 
         public HighlightWordTagger(ITextView view, ITextBuffer buffer, ITextSearchService textSearchService, ITextStructureNavigator textStructureNavigator)
         {
-            this._view = view ?? throw new ArgumentNullException(nameof(view));
-            this._sourceBuffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
-            this._textSearchService = textSearchService ?? throw new ArgumentNullException(nameof(textSearchService));
-            this._textStructureNavigator = textStructureNavigator ?? throw new ArgumentNullException(nameof(textStructureNavigator));
+            this.view_ = view ?? throw new ArgumentNullException(nameof(view));
+            this.sourceBuffer_ = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this.textSearchService_ = textSearchService ?? throw new ArgumentNullException(nameof(textSearchService));
+            this.textStructureNavigator_ = textStructureNavigator ?? throw new ArgumentNullException(nameof(textStructureNavigator));
 
             if (buffer.CurrentSnapshot.LineCount < AsmDudeToolsStatic.MaxFileLines)
             {
-                this._wordSpans = new NormalizedSnapshotSpanCollection();
+                this.wordSpans_ = new NormalizedSnapshotSpanCollection();
 
                 this.CurrentWord = null;
-                this._currentWordSpan = null;
+                this.currentWordSpan_ = null;
                 this.NewWord = null;
                 this.NewWordSpan = null;
 
                 // Subscribe to both change events in the view - any time the view is updated
                 // or the caret is moved, we refresh our list of highlighted words.
-                this._view.Caret.PositionChanged += this.CaretPositionChanged;
-                this._view.LayoutChanged += this.ViewLayoutChanged;
+                this.view_.Caret.PositionChanged += this.CaretPositionChanged;
+                this.view_.LayoutChanged += this.ViewLayoutChanged;
             }
             else
             {
@@ -140,7 +140,7 @@ namespace AsmDude.HighlightWord
                 // If a new snapshot wasn't generated, then skip this layout
                 if (e.NewViewState.EditSnapshot != e.OldViewState.EditSnapshot)
                 {
-                    this.UpdateAtCaretPosition(this._view.Caret.Position);
+                    this.UpdateAtCaretPosition(this.view_.Caret.Position);
                 }
             }
         }
@@ -161,9 +161,9 @@ namespace AsmDude.HighlightWord
         /// </summary>
         private void UpdateAtCaretPosition(CaretPosition caretPosition)
         {
-            SnapshotPoint? point = caretPosition.Point.GetPoint(this._sourceBuffer, caretPosition.Affinity);
+            SnapshotPoint? point = caretPosition.Point.GetPoint(this.sourceBuffer_, caretPosition.Affinity);
 
-            TextExtent? newWordExtend = this._textStructureNavigator.GetExtentOfWord(point.Value);
+            TextExtent? newWordExtend = this.textStructureNavigator_.GetExtentOfWord(point.Value);
             //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Word_Adornments. word={1}", this.ToString(), newWordExtend.ToString()));
 
             // If the new cursor position is still within the current word (and on the same snapshot),
@@ -242,7 +242,7 @@ namespace AsmDude.HighlightWord
                     List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
                     try
                     {
-                        wordSpans.AddRange(this._textSearchService.FindAll(findData));
+                        wordSpans.AddRange(this.textSearchService_.FindAll(findData));
                     }
                     catch (Exception e2)
                     {
@@ -276,17 +276,17 @@ namespace AsmDude.HighlightWord
         /// </summary>
         private void SynchronousUpdate(SnapshotPoint currentRequest, NormalizedSnapshotSpanCollection newSpans, string newCurrentWord, SnapshotSpan? newCurrentWordSpan)
         {
-            lock (this._updateLock)
+            lock (this.updateLock_)
             {
                 if (currentRequest != this.RequestedPoint)
                 {
                     return;
                 }
-                this._wordSpans = newSpans;
+                this.wordSpans_ = newSpans;
                 this.CurrentWord = newCurrentWord;
-                this._currentWordSpan = newCurrentWordSpan;
+                this.currentWordSpan_ = newCurrentWordSpan;
 
-                this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, 0, this._sourceBuffer.CurrentSnapshot.Length)));
+                this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this.sourceBuffer_.CurrentSnapshot, 0, this.sourceBuffer_.CurrentSnapshot.Length)));
             }
         }
 
@@ -304,15 +304,15 @@ namespace AsmDude.HighlightWord
             {
                 yield break;
             }
-            if ((spans.Count == 0) || (this._wordSpans.Count == 0))
+            if ((spans.Count == 0) || (this.wordSpans_.Count == 0))
             {
                 yield break;
             }
 
             // Hold on to a "snapshot" of the word spans and current word, so that we maintain the same
             // collection throughout
-            SnapshotSpan currentWordLocal = this._currentWordSpan.Value;
-            NormalizedSnapshotSpanCollection wordSpansLocal = this._wordSpans;
+            SnapshotSpan currentWordLocal = this.currentWordSpan_.Value;
+            NormalizedSnapshotSpanCollection wordSpansLocal = this.wordSpans_;
 
             // If the requested snapshot isn't the same as the one our words are on, translate our spans
             // to the expected snapshot

@@ -154,6 +154,7 @@ namespace AsmSim
             Console.WriteLine("dFlow=" + dFlow.ToString(sFlow));
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private static void TestSIMD()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>

@@ -29,17 +29,17 @@ namespace AsmDude.Tools
 
     public struct PerformanceItem : IEquatable<PerformanceItem>
     {
-        public MicroArch _microArch;
-        public Mnemonic _instr;
-        public string _args;
+        public MicroArch microArch_;
+        public Mnemonic instr_;
+        public string args_;
 
-        public string _mu_Ops_Merged;
-        public string _mu_Ops_Fused;
-        public string _mu_Ops_Port;
+        public string mu_Ops_Merged_;
+        public string mu_Ops_Fused_;
+        public string mu_Ops_Port_;
 
-        public string _latency;
-        public string _throughput;
-        public string _remark;
+        public string latency_;
+        public string throughput_;
+        public string remark_;
 
         public override bool Equals(object obj)
         {
@@ -51,13 +51,13 @@ namespace AsmDude.Tools
             else
             {
                 PerformanceItem p = (PerformanceItem)obj;
-                return (this._microArch == p._microArch) && (this._instr == p._instr) && (this._args == p._args);
+                return (this.microArch_ == p.microArch_) && (this.instr_ == p.instr_) && (this.args_ == p.args_);
             }
         }
 
         public override int GetHashCode()
         {
-            return this._microArch.GetHashCode() ^ this._instr.GetHashCode() ^ this._args.GetHashCode();
+            return this.microArch_.GetHashCode() ^ this.instr_.GetHashCode() ^ this.args_.GetHashCode();
         }
 
         public static bool operator ==(PerformanceItem left, PerformanceItem right)
@@ -78,11 +78,11 @@ namespace AsmDude.Tools
 
     public class PerformanceStore
     {
-        private readonly IList<PerformanceItem> _data;
+        private readonly IList<PerformanceItem> data_;
 
         public PerformanceStore(string path)
         {
-            this._data = new List<PerformanceItem>();
+            this.data_ = new List<PerformanceItem>();
 
             if (Settings.Default.PerformanceInfo_On)
             {
@@ -120,9 +120,9 @@ namespace AsmDude.Tools
 
         public IEnumerable<PerformanceItem> GetPerformance(Mnemonic mnemonic, MicroArch selectedArchitectures)
         {
-            foreach (PerformanceItem item in this._data)
+            foreach (PerformanceItem item in this.data_)
             {
-                if ((item._instr == mnemonic) && selectedArchitectures.HasFlag(item._microArch))
+                if ((item.instr_ == mnemonic) && selectedArchitectures.HasFlag(item.microArch_))
                 {
                     yield return item;
                 }
@@ -176,17 +176,17 @@ namespace AsmDude.Tools
                                 }
                                 foreach (Mnemonic m in mnemonics)
                                 {
-                                    this._data.Add(new PerformanceItem()
+                                    this.data_.Add(new PerformanceItem()
                                     {
-                                        _microArch = microArch,
-                                        _instr = m,
-                                        _args = columns[1],
-                                        _mu_Ops_Fused = columns[2],
-                                        _mu_Ops_Merged = columns[3],
-                                        _mu_Ops_Port = columns[4],
-                                        _latency = columns[5],
-                                        _throughput = columns[6],
-                                        _remark = columns[7],
+                                        microArch_ = microArch,
+                                        instr_ = m,
+                                        args_ = columns[1],
+                                        mu_Ops_Fused_ = columns[2],
+                                        mu_Ops_Merged_ = columns[3],
+                                        mu_Ops_Port_ = columns[4],
+                                        latency_ = columns[5],
+                                        throughput_ = columns[6],
+                                        remark_ = columns[7],
                                     });
                                 }
                             }

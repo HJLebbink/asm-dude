@@ -46,10 +46,10 @@ namespace AsmDude.AsmDoc
     /// </summary>
     internal sealed class AsmDocMouseHandler : MouseProcessorBase
     {
-        private readonly IWpfTextView _view;
-        private readonly CtrlKeyState _state;
-        private readonly ITagAggregator<AsmTokenTag> _aggregator2;
-        private readonly AsmDudeTools _asmDudeTools;
+        private readonly IWpfTextView view_;
+        private readonly CtrlKeyState state_;
+        private readonly ITagAggregator<AsmTokenTag> aggregator2_;
+        private readonly AsmDudeTools asmDudeTools_;
 
         public AsmDocMouseHandler(
             IWpfTextView view,
@@ -58,18 +58,18 @@ namespace AsmDude.AsmDoc
             AsmDudeTools asmDudeTools)
         {
             AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:constructor: file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(view.TextBuffer)));
-            this._view = view ?? throw new ArgumentNullException(nameof(view));
-            this._state = state ?? throw new ArgumentNullException(nameof(state));
-            this._aggregator2 = AsmDudeToolsStatic.GetOrCreate_Aggregator(view.TextBuffer, aggregatorFactory);
-            this._asmDudeTools = asmDudeTools ?? throw new ArgumentNullException(nameof(asmDudeTools));
+            this.view_ = view ?? throw new ArgumentNullException(nameof(view));
+            this.state_ = state ?? throw new ArgumentNullException(nameof(state));
+            this.aggregator2_ = AsmDudeToolsStatic.GetOrCreate_Aggregator(view.TextBuffer, aggregatorFactory);
+            this.asmDudeTools_ = asmDudeTools ?? throw new ArgumentNullException(nameof(asmDudeTools));
 
-            this._state.CtrlKeyStateChanged += (sender, args) =>
+            this.state_.CtrlKeyStateChanged += (sender, args) =>
             {
                 if (Settings.Default.AsmDoc_On)
                 {
-                    if (this._state.Enabled)
+                    if (this.state_.Enabled)
                     {
-                        this.TryHighlightItemUnderMouse(this.RelativeToView(Mouse.PrimaryDevice.GetPosition(this._view.VisualElement)));
+                        this.TryHighlightItemUnderMouse(this.RelativeToView(Mouse.PrimaryDevice.GetPosition(this.view_.VisualElement)));
                     }
                     else
                     {
@@ -79,12 +79,12 @@ namespace AsmDude.AsmDoc
             };
 
             // Some other points to clear the highlight span:
-            this._view.LostAggregateFocus += (sender, args) =>
+            this.view_.LostAggregateFocus += (sender, args) =>
             {
                 AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: LostAggregateFocus", this.ToString()));
                 this.Set_Highlight_Span(null);
             };
-            this._view.VisualElement.MouseLeave += (sender, args) =>
+            this.view_.VisualElement.MouseLeave += (sender, args) =>
             {
                 AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: MouseLeave", this.ToString()));
                 this.Set_Highlight_Span(null);
@@ -95,28 +95,28 @@ namespace AsmDude.AsmDoc
 
         // Remember the location of the mouse on left button down, so we only handle left button up
         // if the mouse has stayed in a single location.
-        private Point? _mouseDownAnchorPoint;
+        private Point? mouseDownAnchorPoint_;
 
         public override void PostprocessMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            this._mouseDownAnchorPoint = this.RelativeToView(e.GetPosition(this._view.VisualElement));
+            this.mouseDownAnchorPoint_ = this.RelativeToView(e.GetPosition(this.view_.VisualElement));
         }
 
         public override void PreprocessMouseMove(MouseEventArgs e)
         {
             if (Settings.Default.AsmDoc_On)
             {
-                if (!this._mouseDownAnchorPoint.HasValue && this._state.Enabled && (e.LeftButton == MouseButtonState.Released))
+                if (!this.mouseDownAnchorPoint_.HasValue && this.state_.Enabled && (e.LeftButton == MouseButtonState.Released))
                 {
-                    this.TryHighlightItemUnderMouse(this.RelativeToView(e.GetPosition(this._view.VisualElement)));
+                    this.TryHighlightItemUnderMouse(this.RelativeToView(e.GetPosition(this.view_.VisualElement)));
                 }
-                else if (this._mouseDownAnchorPoint.HasValue)
+                else if (this.mouseDownAnchorPoint_.HasValue)
                 {
                     // Check and see if this is a drag; if so, clear out the highlight.
-                    Point currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
-                    if (this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
+                    Point currentMousePosition = this.RelativeToView(e.GetPosition(this.view_.VisualElement));
+                    if (this.InDragOperation(this.mouseDownAnchorPoint_.Value, currentMousePosition))
                     {
-                        this._mouseDownAnchorPoint = null;
+                        this.mouseDownAnchorPoint_ = null;
                         this.Set_Highlight_Span(null);
                     }
                 }
@@ -133,7 +133,7 @@ namespace AsmDude.AsmDoc
         public override void PreprocessMouseLeave(MouseEventArgs e)
         {
             AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: PreprocessMouseLeave; position={1}", this.ToString(), e));
-            this._mouseDownAnchorPoint = null;
+            this.mouseDownAnchorPoint_ = null;
         }
 
         public override void PreprocessMouseUp(MouseButtonEventArgs e)
@@ -142,15 +142,15 @@ namespace AsmDude.AsmDoc
             {
                 try
                 {
-                    if (this._mouseDownAnchorPoint.HasValue && this._state.Enabled)
+                    if (this.mouseDownAnchorPoint_.HasValue && this.state_.Enabled)
                     {
-                        Point currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
+                        Point currentMousePosition = this.RelativeToView(e.GetPosition(this.view_.VisualElement));
 
-                        if (!this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
+                        if (!this.InDragOperation(this.mouseDownAnchorPoint_.Value, currentMousePosition))
                         {
-                            this._state.Enabled = false;
+                            this.state_.Enabled = false;
 
-                            ITextViewLine line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(currentMousePosition.Y);
+                            ITextViewLine line = this.view_.TextViewLines.GetTextViewLineContainingYCoordinate(currentMousePosition.Y);
                             SnapshotPoint? bufferPosition = line.GetBufferPositionFromXCoordinate(currentMousePosition.X);
                             string keyword = AsmDudeToolsStatic.Get_Keyword_Str(bufferPosition);
                             if (keyword != null)
@@ -159,11 +159,11 @@ namespace AsmDude.AsmDoc
                                 System.Runtime.CompilerServices.ConfiguredTaskAwaitable<bool> result = this.Dispatch_Goto_DocAsync(mnemonic).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                             }
                             this.Set_Highlight_Span(null);
-                            this._view.Selection.Clear();
+                            this.view_.Selection.Clear();
                             e.Handled = true;
                         }
                     }
-                    this._mouseDownAnchorPoint = null;
+                    this.mouseDownAnchorPoint_ = null;
                 }
                 catch (Exception ex)
                 {
@@ -178,7 +178,7 @@ namespace AsmDude.AsmDoc
 
         private Point RelativeToView(Point position)
         {
-            return new Point(position.X + this._view.ViewportLeft, position.Y + this._view.ViewportTop);
+            return new Point(position.X + this.view_.ViewportLeft, position.Y + this.view_.ViewportTop);
         }
 
         private bool TryHighlightItemUnderMouse(Point position)
@@ -192,7 +192,7 @@ namespace AsmDude.AsmDoc
             bool updated = false;
             try
             {
-                ITextViewLine line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
+                ITextViewLine line = this.view_.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
                 if (line == null)
                 {
                     return false;
@@ -212,7 +212,7 @@ namespace AsmDude.AsmDoc
                     return true;
                 }
 
-                (AsmTokenTag tag, SnapshotSpan? keywordSpan) = AsmDudeToolsStatic.GetAsmTokenTag(this._aggregator2, triggerPoint);
+                (AsmTokenTag tag, SnapshotSpan? keywordSpan) = AsmDudeToolsStatic.GetAsmTokenTag(this.aggregator2_, triggerPoint);
                 if (keywordSpan.HasValue)
                 {
                     switch (tag.Type)
@@ -251,16 +251,16 @@ namespace AsmDude.AsmDoc
         {
             get
             {
-                AsmDocUnderlineTagger classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
+                AsmDocUnderlineTagger classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this.view_);
                 return ((classifier != null) && classifier.CurrentUnderlineSpan.HasValue)
-                    ? classifier.CurrentUnderlineSpan.Value.TranslateTo(this._view.TextSnapshot, SpanTrackingMode.EdgeExclusive)
+                    ? classifier.CurrentUnderlineSpan.Value.TranslateTo(this.view_.TextSnapshot, SpanTrackingMode.EdgeExclusive)
                     : (SnapshotSpan?)null;
             }
         }
 
         private bool Set_Highlight_Span(SnapshotSpan? span)
         {
-            AsmDocUnderlineTagger classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
+            AsmDocUnderlineTagger classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this.view_);
             if (classifier != null)
             {
                 Mouse.OverrideCursor = span.HasValue ? Cursors.Hand : null;
@@ -279,7 +279,7 @@ namespace AsmDude.AsmDoc
 
         private string Get_Url(Mnemonic mnemonic)
         {
-            string reference = this._asmDudeTools.Get_Url(mnemonic);
+            string reference = this.asmDudeTools_.Get_Url(mnemonic);
             if (reference == null)
             {
                 return null;

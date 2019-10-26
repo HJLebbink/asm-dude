@@ -38,18 +38,18 @@ namespace AsmDude
 
     public sealed class AsmDudeTools : IDisposable
     {
-        private XmlDocument _xmlData;
-        private IDictionary<string, AsmTokenType> _type;
-        private IDictionary<string, AssemblerEnum> _assembler;
-        private IDictionary<string, Arch> _arch;
-        private IDictionary<string, string> _description;
-        private readonly ISet<Mnemonic> _mnemonics_switched_on;
-        private readonly ISet<Rn> _register_switched_on;
+        private XmlDocument xmlData_;
+        private IDictionary<string, AsmTokenType> type_;
+        private IDictionary<string, AssemblerEnum> assembler_;
+        private IDictionary<string, Arch> arch_;
+        private IDictionary<string, string> description_;
+        private readonly ISet<Mnemonic> mnemonics_switched_on_;
+        private readonly ISet<Rn> register_switched_on_;
 
-        private readonly ErrorListProvider _errorListProvider;
-        private readonly MnemonicStore _mnemonicStore;
-        private readonly PerformanceStore _performanceStore;
-        private readonly SmartThreadPool _threadPool;
+        private readonly ErrorListProvider errorListProvider_;
+        private readonly MnemonicStore mnemonicStore_;
+        private readonly PerformanceStore performanceStore_;
+        private readonly SmartThreadPool threadPool_;
 
         #region Singleton Stuff
         private static readonly Lazy<AsmDudeTools> Lazy = new Lazy<AsmDudeTools>(() => new AsmDudeTools());
@@ -76,7 +76,7 @@ namespace AsmDude
 
             IServiceProvider a = Package.GetGlobalService(typeof(System.IServiceProvider)) as IServiceProvider;
 
-            this._errorListProvider = new ErrorListProvider(a)
+            this.errorListProvider_ = new ErrorListProvider(a)
             {
                 ProviderName = "Asm Errors",
                 ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode),
@@ -84,26 +84,26 @@ namespace AsmDude
 
             #endregion
 
-            this._threadPool = new SmartThreadPool();
+            this.threadPool_ = new SmartThreadPool();
 
             #region load Signature Store and Performance Store
             string path = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar;
             {
                 string filename_Regular = path + "signature-may2019.txt";
                 string filename_Hand = path + "signature-hand-1.txt";
-                this._mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand);
+                this.mnemonicStore_ = new MnemonicStore(filename_Regular, filename_Hand);
             }
             {
-                this._performanceStore = new PerformanceStore(path + "Performance" + Path.DirectorySeparatorChar);
+                this.performanceStore_ = new PerformanceStore(path + "Performance" + Path.DirectorySeparatorChar);
             }
             #endregion
 
             this.Init_Data();
 
-            this._mnemonics_switched_on = new HashSet<Mnemonic>();
+            this.mnemonics_switched_on_ = new HashSet<Mnemonic>();
             this.UpdateMnemonicSwitchedOn();
 
-            this._register_switched_on = new HashSet<Rn>();
+            this.register_switched_on_ = new HashSet<Rn>();
             this.UpdateRegisterSwitchedOn();
 
             #region Experiments
@@ -119,7 +119,7 @@ namespace AsmDude
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
                 {
-                    IEnumerable<AsmSignatureElement> intel = this._mnemonicStore.GetSignatures(mnemonic);
+                    IEnumerable<AsmSignatureElement> intel = this.mnemonicStore_.GetSignatures(mnemonic);
                     IEnumerable<AsmSignatureElement> nasm = store2.GetSignatures(mnemonic);
 
                     signaturesIntel.Clear();
@@ -232,9 +232,9 @@ namespace AsmDude
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
                 {
                     string keyword = mnemonic.ToString();
-                    if (this._description.ContainsKey(keyword))
+                    if (this.description_.ContainsKey(keyword))
                     {
-                        string description = this._description[keyword];
+                        string description = this.description_[keyword];
                         string reference = this.Get_Url(mnemonic);
 
                         this.Mnemonic_Store.SetHtmlRef(mnemonic, reference);
@@ -248,11 +248,11 @@ namespace AsmDude
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
                 {
-                    if (!this._mnemonicStore.HasElement(mnemonic))
+                    if (!this.mnemonicStore_.HasElement(mnemonic))
                     {
                         AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor: mnemonic " + mnemonic + " is not present");
                     }
-                    foreach (AsmSignatureElement e in this._mnemonicStore.GetSignatures(mnemonic))
+                    foreach (AsmSignatureElement e in this.mnemonicStore_.GetSignatures(mnemonic))
                     {
                         foreach (string s in e.Arch_Str.Split(','))
                         {
@@ -272,17 +272,17 @@ namespace AsmDude
 
         public bool MnemonicSwitchedOn(Mnemonic mnemonic)
         {
-            return this._mnemonics_switched_on.Contains(mnemonic);
+            return this.mnemonics_switched_on_.Contains(mnemonic);
         }
 
         public IEnumerable<Mnemonic> Get_Allowed_Mnemonics()
         {
-            return this._mnemonics_switched_on;
+            return this.mnemonics_switched_on_;
         }
 
         public void UpdateMnemonicSwitchedOn()
         {
-            this._mnemonics_switched_on.Clear();
+            this.mnemonics_switched_on_.Clear();
             ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
             {
@@ -290,7 +290,7 @@ namespace AsmDude
                 {
                     if (selectedArchs.Contains(a))
                     {
-                        this._mnemonics_switched_on.Add(mnemonic);
+                        this.mnemonics_switched_on_.Add(mnemonic);
                         break;
                     }
                 }
@@ -299,17 +299,17 @@ namespace AsmDude
 
         public bool RegisterSwitchedOn(Rn reg)
         {
-            return this._register_switched_on.Contains(reg);
+            return this.register_switched_on_.Contains(reg);
         }
 
         public IEnumerable<Rn> Get_Allowed_Registers()
         {
-            return this._register_switched_on;
+            return this.register_switched_on_;
         }
 
         public void UpdateRegisterSwitchedOn()
         {
-            this._register_switched_on.Clear();
+            this.register_switched_on_.Clear();
             ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
             foreach (Rn reg in Enum.GetValues(typeof(Rn)))
             {
@@ -317,29 +317,29 @@ namespace AsmDude
                 {
                     if (selectedArchs.Contains(RegisterTools.GetArch(reg)))
                     {
-                        this._register_switched_on.Add(reg);
+                        this.register_switched_on_.Add(reg);
                     }
                 }
             }
         }
 
-        public ErrorListProvider Error_List_Provider { get { return this._errorListProvider; } }
+        public ErrorListProvider Error_List_Provider { get { return this.errorListProvider_; } }
 
-        public MnemonicStore Mnemonic_Store { get { return this._mnemonicStore; } }
+        public MnemonicStore Mnemonic_Store { get { return this.mnemonicStore_; } }
 
-        public PerformanceStore Performance_Store { get { return this._performanceStore; } }
+        public PerformanceStore Performance_Store { get { return this.performanceStore_; } }
 
-        public SmartThreadPool Thread_Pool { get { return this._threadPool; } }
+        public SmartThreadPool Thread_Pool { get { return this.threadPool_; } }
 
         /// <summary>Get the collection of Keywords (in CAPITALS), but NOT mnemonics and registers</summary>
         public IEnumerable<string> Get_Keywords()
         {
-            if (this._type == null)
+            if (this.type_ == null)
             {
                 this.Init_Data();
             }
 
-            return this._type.Keys;
+            return this.type_.Keys;
         }
 
         public AsmTokenType Get_Token_Type_Att(string keyword)
@@ -383,7 +383,7 @@ namespace AsmDude
             }
             #endregion
 
-            return this._type.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
+            return this.type_.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
         }
 
         public AsmTokenType Get_Token_Type_Intel(string keyword)
@@ -405,7 +405,7 @@ namespace AsmDude
                     ? AsmTokenType.Register
                     : AsmTokenType.Register; //TODO
             }
-            return this._type.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
+            return this.type_.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
         }
 
         public AssemblerEnum Get_Assembler(string keyword)
@@ -413,7 +413,7 @@ namespace AsmDude
             Contract.Requires(keyword != null);
             Contract.Requires(keyword == keyword.ToUpperInvariant());
 
-            return this._assembler.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
+            return this.assembler_.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
         }
 
         /// <summary>
@@ -432,7 +432,7 @@ namespace AsmDude
             Contract.Requires(keyword != null);
             Contract.Requires(keyword == keyword.ToUpperInvariant());
 
-            return this._description.TryGetValue(keyword, out string description) ? description : string.Empty;
+            return this.description_.TryGetValue(keyword, out string description) ? description : string.Empty;
         }
 
         /// <summary>
@@ -443,14 +443,14 @@ namespace AsmDude
             Contract.Requires(keyword != null);
             Contract.Requires(keyword == keyword.ToUpperInvariant());
 
-            return this._arch.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
+            return this.arch_.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
         }
 
         public void Invalidate_Data()
         {
-            this._xmlData = null;
-            this._type = null;
-            this._description = null;
+            this.xmlData_ = null;
+            this.type_ = null;
+            this.description_ = null;
         }
 
         #endregion Public Methods
@@ -458,10 +458,10 @@ namespace AsmDude
 
         private void Init_Data()
         {
-            this._type = new Dictionary<string, AsmTokenType>();
-            this._arch = new Dictionary<string, Arch>();
-            this._assembler = new Dictionary<string, AssemblerEnum>();
-            this._description = new Dictionary<string, string>();
+            this.type_ = new Dictionary<string, AsmTokenType>();
+            this.arch_ = new Dictionary<string, Arch>();
+            this.assembler_ = new Dictionary<string, AssemblerEnum>();
+            this.description_ = new Dictionary<string, string>();
             // fill the dictionary with keywords
             XmlDocument xmlDoc = this.Get_Xml_Data();
             foreach (XmlNode node in xmlDoc.SelectNodes("//misc"))
@@ -474,9 +474,9 @@ namespace AsmDude
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this._type[name] = AsmTokenType.Misc;
-                    this._arch[name] = Retrieve_Arch(node);
-                    this._description[name] = Retrieve_Description(node);
+                    this.type_[name] = AsmTokenType.Misc;
+                    this.arch_[name] = Retrieve_Arch(node);
+                    this.description_[name] = Retrieve_Description(node);
                 }
             }
 
@@ -490,10 +490,10 @@ namespace AsmDude
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this._type[name] = AsmTokenType.Directive;
-                    this._arch[name] = Retrieve_Arch(node);
-                    this._assembler[name] = Retrieve_Assembler(node);
-                    this._description[name] = Retrieve_Description(node);
+                    this.type_[name] = AsmTokenType.Directive;
+                    this.arch_[name] = Retrieve_Arch(node);
+                    this.assembler_[name] = Retrieve_Assembler(node);
+                    this.description_[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//register"))
@@ -507,8 +507,8 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
                     //this._type[name] = AsmTokenType.Register;
-                    this._arch[name] = Retrieve_Arch(node);
-                    this._description[name] = Retrieve_Description(node);
+                    this.arch_[name] = Retrieve_Arch(node);
+                    this.description_[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined1"))
@@ -521,8 +521,8 @@ namespace AsmDude
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this._type[name] = AsmTokenType.UserDefined1;
-                    this._description[name] = Retrieve_Description(node);
+                    this.type_[name] = AsmTokenType.UserDefined1;
+                    this.description_[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined2"))
@@ -535,8 +535,8 @@ namespace AsmDude
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this._type[name] = AsmTokenType.UserDefined2;
-                    this._description[name] = Retrieve_Description(node);
+                    this.type_[name] = AsmTokenType.UserDefined2;
+                    this.description_[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined3"))
@@ -549,8 +549,8 @@ namespace AsmDude
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this._type[name] = AsmTokenType.UserDefined3;
-                    this._description[name] = Retrieve_Description(node);
+                    this.type_[name] = AsmTokenType.UserDefined3;
+                    this.description_[name] = Retrieve_Description(node);
                 }
             }
         }
@@ -597,14 +597,14 @@ namespace AsmDude
         private XmlDocument Get_Xml_Data()
         {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getXmlData", this.ToString()));
-            if (this._xmlData == null)
+            if (this.xmlData_ == null)
             {
                 string filename = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar + "AsmDudeData.xml";
                 Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: AsmDudeTools:getXmlData: going to load file \"{0}\"", filename));
                 try
                 {
-                    this._xmlData = new XmlDocument();
-                    this._xmlData.Load(filename);
+                    this.xmlData_ = new XmlDocument();
+                    this.xmlData_.Load(filename);
                 }
                 catch (FileNotFoundException)
                 {
@@ -619,13 +619,13 @@ namespace AsmDude
                     AsmDudeToolsStatic.Output_ERROR("AsmTokenTagger: error while reading file \"" + filename + "\"." + e);
                 }
             }
-            return this._xmlData;
+            return this.xmlData_;
         }
 
         public void Dispose()
         {
-            this._errorListProvider.Dispose();
-            this._threadPool.Dispose();
+            this.errorListProvider_.Dispose();
+            this.threadPool_.Dispose();
         }
 
         #endregion

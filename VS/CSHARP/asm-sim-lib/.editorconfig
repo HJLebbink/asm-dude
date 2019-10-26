@@ -122,3 +122,12 @@ dotnet_diagnostic.IDE0047.severity = none
 
 # SA1119: Statement should not use unnecessary parenthesis
 dotnet_diagnostic.SA1119.severity = none
+
+# SA1404: Code analysis suppression should have justification
+dotnet_diagnostic.SA1404.severity = none
+
+# SA1601: Partial elements should be documented
+dotnet_diagnostic.SA1601.severity = silent
+
+# SA1602: Enumeration items should be documented
+dotnet_diagnostic.SA1602.severity = silent

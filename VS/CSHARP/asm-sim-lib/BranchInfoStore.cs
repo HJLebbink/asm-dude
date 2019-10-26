@@ -32,31 +32,31 @@ namespace AsmSim
     public class BranchInfoStore
     {
         #region Fields
-        private readonly Context _ctx;
-        private IDictionary<string, BranchInfo> _branchInfo;
+        private readonly Context ctx_;
+        private IDictionary<string, BranchInfo> branchInfo_;
         #endregion
 
         #region Constructors
         public BranchInfoStore(Context ctx)
         {
-            this._ctx = ctx;
+            this.ctx_ = ctx;
         }
         #endregion
 
         #region Getters
-        public int Count { get { return (this._branchInfo == null) ? 0 : this._branchInfo.Count; } }
+        public int Count { get { return (this.branchInfo_ == null) ? 0 : this.branchInfo_.Count; } }
 
         public IEnumerable<BranchInfo> Values
         {
             get
             {
-                if (this._branchInfo == null)
+                if (this.branchInfo_ == null)
                 {
                     yield break;
                 }
                 else
                 {
-                    foreach (BranchInfo e in this._branchInfo.Values)
+                    foreach (BranchInfo e in this.branchInfo_.Values)
                     {
                         yield return e;
                     }
@@ -69,7 +69,7 @@ namespace AsmSim
         #region Setters
         public void Clear()
         {
-            this._branchInfo?.Clear();
+            this.branchInfo_?.Clear();
         }
         #endregion
 
@@ -88,16 +88,16 @@ namespace AsmSim
 
             IList<string> sharedKeys = new List<string>();
 
-            if ((store1._branchInfo != null) && (store2._branchInfo != null))
+            if ((store1.branchInfo_ != null) && (store2.branchInfo_ != null))
             {
-                ICollection<string> keys1 = store1._branchInfo.Keys;
-                ICollection<string> keys2 = store2._branchInfo.Keys;
+                ICollection<string> keys1 = store1.branchInfo_.Keys;
+                ICollection<string> keys2 = store2.branchInfo_.Keys;
 
                 foreach (string key in keys1)
                 {
                     if (keys2.Contains(key))
                     {
-                        if (store1._branchInfo[key].BranchTaken != store2._branchInfo[key].BranchTaken)
+                        if (store1.branchInfo_[key].BranchTaken != store2.branchInfo_[key].BranchTaken)
                         {
                             sharedKeys.Add(key);
                         }
@@ -129,16 +129,16 @@ namespace AsmSim
             BranchInfoStore mergeBranchStore = new BranchInfoStore(ctx);
             if (sharedKeys.Count == 0)
             {
-                if (store1._branchInfo != null)
+                if (store1.branchInfo_ != null)
                 {
-                    foreach (KeyValuePair<string, BranchInfo> element in store1._branchInfo)
+                    foreach (KeyValuePair<string, BranchInfo> element in store1.branchInfo_)
                     {
                         mergeBranchStore.Add(element.Value, true);
                     }
                 }
-                if (store2._branchInfo != null)
+                if (store2.branchInfo_ != null)
                 {
-                    foreach (KeyValuePair<string, BranchInfo> element in store2._branchInfo)
+                    foreach (KeyValuePair<string, BranchInfo> element in store2.branchInfo_)
                     {
                         if (!mergeBranchStore.ContainsKey(element.Key))
                         {
@@ -153,14 +153,14 @@ namespace AsmSim
                 //only use the first sharedKey
 
                 string key = sharedKeys[0];
-                foreach (KeyValuePair<string, BranchInfo> element in store1._branchInfo)
+                foreach (KeyValuePair<string, BranchInfo> element in store1.branchInfo_)
                 {
                     if (!element.Key.Equals(key, StringComparison.Ordinal))
                     {
                         mergeBranchStore.Add(element.Value, true);
                     }
                 }
-                foreach (KeyValuePair<string, BranchInfo> element in store2._branchInfo)
+                foreach (KeyValuePair<string, BranchInfo> element in store2.branchInfo_)
                 {
                     if (!element.Key.Equals(key, StringComparison.Ordinal))
                     {
@@ -177,18 +177,18 @@ namespace AsmSim
 
         public bool ContainsKey(string key)
         {
-            return (this._branchInfo == null) ? false : this._branchInfo.ContainsKey(key);
+            return (this.branchInfo_ == null) ? false : this.branchInfo_.ContainsKey(key);
         }
 
         public void RemoveKey(string branchInfoKey)
         {
-            this._branchInfo.Remove(branchInfoKey);
+            this.branchInfo_.Remove(branchInfoKey);
         }
 
         public void Remove(BranchInfo branchInfo)
         {
             Contract.Requires(branchInfo != null);
-            this._branchInfo.Remove(branchInfo.Key);
+            this.branchInfo_.Remove(branchInfo.Key);
         }
 
         public void Add(BranchInfo branchInfo, bool translate)
@@ -198,21 +198,21 @@ namespace AsmSim
                 return;
             }
 
-            if (this._branchInfo == null)
+            if (this.branchInfo_ == null)
             {
-                this._branchInfo = new Dictionary<string, BranchInfo>();
+                this.branchInfo_ = new Dictionary<string, BranchInfo>();
             }
 
-            if (!this._branchInfo.ContainsKey(branchInfo.Key))
+            if (!this.branchInfo_.ContainsKey(branchInfo.Key))
             {
                 //Console.WriteLine("INFO: AddBranchInfo: key=" + branchInfo.key);
                 if (translate)
                 {
-                    this._branchInfo.Add(branchInfo.Key, branchInfo.Translate(this._ctx));
+                    this.branchInfo_.Add(branchInfo.Key, branchInfo.Translate(this.ctx_));
                 }
                 else
                 {
-                    this._branchInfo.Add(branchInfo.Key, branchInfo);
+                    this.branchInfo_.Add(branchInfo.Key, branchInfo);
                 }
             }
         }
@@ -233,13 +233,13 @@ namespace AsmSim
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            if ((this._branchInfo != null) && (this._branchInfo.Count > 0))
+            if ((this.branchInfo_ != null) && (this.branchInfo_.Count > 0))
             {
                 sb.AppendLine("Branch control flow constraints:");
                 int i = 0;
-                foreach (KeyValuePair<string, BranchInfo> entry in this._branchInfo)
+                foreach (KeyValuePair<string, BranchInfo> entry in this.branchInfo_)
                 {
-                    BoolExpr e = entry.Value.GetData(this._ctx);
+                    BoolExpr e = entry.Value.GetData(this.ctx_);
                     sb.AppendLine(string.Format("   {0}: {1}", i, ToolsZ3.ToString(e)));
                     i++;
                 }

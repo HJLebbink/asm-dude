@@ -36,23 +36,23 @@ namespace AsmSim
         public static readonly char LINENUMBER_SEPARATOR = '!';
         private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
 
-        private readonly Tools _tools;
+        private readonly Tools tools_;
 
-        private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _parsed_Code_A;
-        private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _parsed_Code_B;
-        private bool _use_Parsed_Code_A;
+        private readonly IList<(string label, Mnemonic mnemonic, string[] args)> parsed_Code_A_;
+        private readonly IList<(string label, Mnemonic mnemonic, string[] args)> parsed_Code_B_;
+        private bool use_Parsed_Code_A_;
 
-        private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> _graph;
+        private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> graph_;
 
         /// <summary>Constructor that creates an empty CFlow</summary>
         public StaticFlow(Tools tools)
         {
             //Console.WriteLine("INFO: CFlow: constructor");
-            this._tools = tools;
-            this._use_Parsed_Code_A = true;
-            this._parsed_Code_A = new List<(string label, Mnemonic mnemonic, string[] args)>();
-            this._parsed_Code_B = new List<(string label, Mnemonic mnemonic, string[] args)>();
-            this._graph = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // allowParallesEdges is true because of conditional jumps to the next line
+            this.tools_ = tools;
+            this.use_Parsed_Code_A_ = true;
+            this.parsed_Code_A_ = new List<(string label, Mnemonic mnemonic, string[] args)>();
+            this.parsed_Code_B_ = new List<(string label, Mnemonic mnemonic, string[] args)>();
+            this.graph_ = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // allowParallesEdges is true because of conditional jumps to the next line
         }
 
         #region Getters
@@ -73,7 +73,7 @@ namespace AsmSim
             for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
             {
                 (Mnemonic mnemonic, string[] args) content = this.Get_Line(lineNumber);
-                using (Mnemonics.OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, this._tools))
+                using (Mnemonics.OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, this.tools_))
                 {
                     if (opcodeBase != null)
                     {
@@ -109,7 +109,7 @@ namespace AsmSim
         {
             if (false)
             {
-                return Tools.CreateKey(this._tools.Rand);
+                return Tools.CreateKey(this.tools_.Rand);
             }
             else
             {
@@ -127,7 +127,7 @@ namespace AsmSim
             }
             else
             {
-                string key1 = Tools.CreateKey(this._tools.Rand);
+                string key1 = Tools.CreateKey(this.tools_.Rand);
                 string key2 = key1 + "B";
                 return (key1: key1, key2: key2);
             }
@@ -176,22 +176,22 @@ namespace AsmSim
 
         public bool Has_Prev_LineNumber(int lineNumber)
         {
-            return !this._graph.IsInEdgesEmpty(lineNumber);
+            return !this.graph_.IsInEdgesEmpty(lineNumber);
         }
 
         public bool Has_Next_LineNumber(int lineNumber)
         {
-            return !this._graph.IsOutEdgesEmpty(lineNumber);
+            return !this.graph_.IsOutEdgesEmpty(lineNumber);
         }
 
         public int Number_Prev_LineNumbers(int lineNumber)
         {
-            return this._graph.InDegree(lineNumber);
+            return this.graph_.InDegree(lineNumber);
         }
 
         public int Number_Next_LineNumbers(int lineNumber)
         {
-            return this._graph.OutDegree(lineNumber);
+            return this.graph_.OutDegree(lineNumber);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace AsmSim
         /// </summary>
         public IEnumerable<(int lineNumber, bool isBranch)> Get_Prev_LineNumber(int lineNumber)
         {
-            foreach (TaggedEdge<int, bool> v in this._graph.InEdges(lineNumber))
+            foreach (TaggedEdge<int, bool> v in this.graph_.InEdges(lineNumber))
             {
                 yield return (v.Source, v.Tag);
             }
@@ -210,7 +210,7 @@ namespace AsmSim
             int regular = -1;
             int branch = -1;
 
-            foreach (TaggedEdge<int, bool> v in this._graph.OutEdges(lineNumber))
+            foreach (TaggedEdge<int, bool> v in this.graph_.OutEdges(lineNumber))
             {
                 if (v.Tag)
                 {
@@ -303,13 +303,13 @@ namespace AsmSim
         /// <summary>A BranchPoint is an code line that has two next states (that need not be different)</summary>
         public bool Is_Branch_Point(int lineNumber)
         {
-            return this._graph.OutDegree(lineNumber) > 1;
+            return this.graph_.OutDegree(lineNumber) > 1;
         }
 
         /// <summary>A MergePoint is a code line which has at least two control flows that merge into this line</summary>
         public bool Is_Merge_Point(int lineNumber)
         {
-            return this._graph.InDegree(lineNumber) > 1;
+            return this.graph_.InDegree(lineNumber) > 1;
         }
 
         #endregion
@@ -322,7 +322,7 @@ namespace AsmSim
             Contract.Requires(programStr != null);
 
             //Console.WriteLine("INFO: CFlow:Update_Lines");
-            this._use_Parsed_Code_A = !this._use_Parsed_Code_A;
+            this.use_Parsed_Code_A_ = !this.use_Parsed_Code_A_;
 
             #region Parse to find all labels
             IDictionary<string, int> labels = this.GetLabels(programStr);
@@ -343,7 +343,7 @@ namespace AsmSim
             IList<(string label, Mnemonic mnemonic, string[] args)> current = this.Current;
 
             current.Clear();
-            this._graph.Clear();
+            this.graph_.Clear();
 
             #region Populate IncomingLines
             {
@@ -429,23 +429,23 @@ namespace AsmSim
 
                 if (c.mnemonic == Mnemonic.NONE) // found an empty line
                 {
-                    int outDegree = this._graph.OutDegree(lineNumber);
+                    int outDegree = this.graph_.OutDegree(lineNumber);
                     if (outDegree == 0)
                     {
-                        this._graph.RemoveVertex(lineNumber);
+                        this.graph_.RemoveVertex(lineNumber);
                     }
                     else if (outDegree == 1)
                     {
-                        TaggedEdge<int, bool> outEdge = this._graph.OutEdge(lineNumber, 0);
-                        this._graph.RemoveEdge(outEdge);
+                        TaggedEdge<int, bool> outEdge = this.graph_.OutEdge(lineNumber, 0);
+                        this.graph_.RemoveEdge(outEdge);
                         int next = outEdge.Target;
 
                         //Remove this empty line
-                        List<TaggedEdge<int, bool>> inEdges = new List<TaggedEdge<int, bool>>(this._graph.InEdges(lineNumber));
+                        List<TaggedEdge<int, bool>> inEdges = new List<TaggedEdge<int, bool>>(this.graph_.InEdges(lineNumber));
                         foreach (TaggedEdge<int, bool> e in inEdges)
                         {
-                            this._graph.AddEdge(new TaggedEdge<int, bool>(e.Source, next, e.Tag));
-                            this._graph.RemoveEdge(e);
+                            this.graph_.AddEdge(new TaggedEdge<int, bool>(e.Source, next, e.Tag));
+                            this.graph_.RemoveEdge(e);
                         }
                     }
                     else
@@ -519,32 +519,32 @@ namespace AsmSim
 
         private IList<(string label, Mnemonic mnemonic, string[] args)> Current
         {
-            get { return this._use_Parsed_Code_A ? this._parsed_Code_A : this._parsed_Code_B; }
+            get { return this.use_Parsed_Code_A_ ? this.parsed_Code_A_ : this.parsed_Code_B_; }
         }
 
         private IList<(string label, Mnemonic mnemonic, string[] args)> Previous
         {
-            get { return this._use_Parsed_Code_A ? this._parsed_Code_B : this._parsed_Code_A; }
+            get { return this.use_Parsed_Code_A_ ? this.parsed_Code_B_ : this.parsed_Code_A_; }
         }
 
         private void Add_Edge(int jumpFrom, int jumpTo, bool isBranch)
         {
             //Console.WriteLine("INFO: from " + jumpFrom + " to " + jumpTo + " (branch " + isBranch + ")");
-            if (!this._graph.ContainsVertex(jumpFrom))
+            if (!this.graph_.ContainsVertex(jumpFrom))
             {
-                this._graph.AddVertex(jumpFrom);
+                this.graph_.AddVertex(jumpFrom);
             }
 
-            if (!this._graph.ContainsVertex(jumpTo))
+            if (!this.graph_.ContainsVertex(jumpTo))
             {
-                this._graph.AddVertex(jumpTo);
+                this.graph_.AddVertex(jumpTo);
             }
 
             //if (this._graph.ContainsEdge(jumpFrom, jumpTo)) {
             //    Console.WriteLine("INFO: Edge already exists: from " + jumpFrom + " to " + jumpTo + " (branch " + isBranch + ")");
             //}
 
-            this._graph.AddEdge(new TaggedEdge<int, bool>(jumpFrom, jumpTo, isBranch));
+            this.graph_.AddEdge(new TaggedEdge<int, bool>(jumpFrom, jumpTo, isBranch));
         }
 
         private (int regularLineNumber, int branchLineNumber) Static_Jump(Mnemonic mnemonic, string[] args, int lineNumber)

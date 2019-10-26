@@ -44,11 +44,11 @@ namespace AsmDude.QuickInfo
      //internal sealed class QuickInfoSource : IAsyncQuickInfoSource //XYZZY NEW
     internal sealed class AsmQuickInfoSource : IQuickInfoSource //XYZZY OLD
     {
-        private readonly ITextBuffer _textBuffer;
-        private readonly ITagAggregator<AsmTokenTag> _aggregator;
-        private readonly LabelGraph _labelGraph;
-        private readonly AsmSimulator _asmSimulator;
-        private readonly AsmDudeTools _asmDudeTools;
+        private readonly ITextBuffer textBuffer_;
+        private readonly ITagAggregator<AsmTokenTag> aggregator_;
+        private readonly LabelGraph labelGraph_;
+        private readonly AsmSimulator asmSimulator_;
+        private readonly AsmDudeTools asmDudeTools_;
 
         public object CSharpEditorResources { get; private set; }
 
@@ -58,11 +58,11 @@ namespace AsmDude.QuickInfo
                 LabelGraph labelGraph,
                 AsmSimulator asmSimulator)
         {
-            this._textBuffer = textBuffer ?? throw new ArgumentNullException(nameof(textBuffer));
-            this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(textBuffer, aggregatorFactory);
-            this._labelGraph = labelGraph ?? throw new ArgumentNullException(nameof(labelGraph));
-            this._asmSimulator = asmSimulator ?? throw new ArgumentNullException(nameof(asmSimulator));
-            this._asmDudeTools = AsmDudeTools.Instance;
+            this.textBuffer_ = textBuffer ?? throw new ArgumentNullException(nameof(textBuffer));
+            this.aggregator_ = AsmDudeToolsStatic.GetOrCreate_Aggregator(textBuffer, aggregatorFactory);
+            this.labelGraph_ = labelGraph ?? throw new ArgumentNullException(nameof(labelGraph));
+            this.asmSimulator_ = asmSimulator ?? throw new ArgumentNullException(nameof(asmSimulator));
+            this.asmDudeTools_ = AsmDudeTools.Instance;
         }
 
         /// <summary>Determine which pieces of Quickinfo content should be displayed</summary>
@@ -71,7 +71,7 @@ namespace AsmDude.QuickInfo
             applicableToSpan = null;
             try
             {
-                string contentType = this._textBuffer.ContentType.DisplayName;
+                string contentType = this.textBuffer_.ContentType.DisplayName;
                 if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
                 {
                     this.Handle(session, quickInfoContent, out applicableToSpan);
@@ -90,11 +90,11 @@ namespace AsmDude.QuickInfo
         public void AugmentQuickInfoSession_BUG(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) //XYZZY OLD
         {
             applicableToSpan = null;
-            SnapshotPoint? triggerPoint = session.GetTriggerPoint(this._textBuffer.CurrentSnapshot);
+            SnapshotPoint? triggerPoint = session.GetTriggerPoint(this.textBuffer_.CurrentSnapshot);
             if (triggerPoint != null)
             {
                 ITextSnapshotLine line = triggerPoint.Value.GetContainingLine();
-                applicableToSpan = this._textBuffer.CurrentSnapshot.CreateTrackingSpan(line.Extent, SpanTrackingMode.EdgeInclusive);
+                applicableToSpan = this.textBuffer_.CurrentSnapshot.CreateTrackingSpan(line.Extent, SpanTrackingMode.EdgeInclusive);
                 quickInfoContent.Add(new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor()));
             }
         }
@@ -111,7 +111,7 @@ namespace AsmDude.QuickInfo
             applicableToSpan = null;
             DateTime time1 = DateTime.Now;
 
-            ITextSnapshot snapshot = this._textBuffer.CurrentSnapshot;
+            ITextSnapshot snapshot = this.textBuffer_.CurrentSnapshot;
             SnapshotPoint? triggerPoint = session.GetTriggerPoint(snapshot);
             if (!triggerPoint.HasValue)
             {
@@ -121,7 +121,7 @@ namespace AsmDude.QuickInfo
 
             Brush foreground = AsmDudeToolsStatic.GetFontColor();
 
-            (AsmTokenTag tag, SnapshotSpan? keywordSpan) = AsmDudeToolsStatic.GetAsmTokenTag(this._aggregator, triggerPoint.Value);
+            (AsmTokenTag tag, SnapshotSpan? keywordSpan) = AsmDudeToolsStatic.GetAsmTokenTag(this.aggregator_, triggerPoint.Value);
             if (keywordSpan.HasValue)
             {
                 SnapshotSpan tagSpan = keywordSpan.Value;
@@ -140,7 +140,7 @@ namespace AsmDude.QuickInfo
                             description.Inlines.Add(Make_Run1("Keyword ", foreground));
                             description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Misc))));
 
-                            string descr = this._asmDudeTools.Get_Description(keyword_upcase);
+                            string descr = this.asmDudeTools_.Get_Description(keyword_upcase);
                             if (descr.Length > 0)
                             {
                                 if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
@@ -161,7 +161,7 @@ namespace AsmDude.QuickInfo
                             description.Inlines.Add(Make_Run1("Directive ", foreground));
                             description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Directive))));
 
-                            string descr = this._asmDudeTools.Get_Description(keyword_upcase);
+                            string descr = this.asmDudeTools_.Get_Description(keyword_upcase);
                             if (descr.Length > 0)
                             {
                                 if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
@@ -185,11 +185,11 @@ namespace AsmDude.QuickInfo
                             }
 
                             Rn reg = RegisterTools.ParseRn(keyword_upcase, true);
-                            if (this._asmDudeTools.RegisterSwitchedOn(reg))
+                            if (this.asmDudeTools_.RegisterSwitchedOn(reg))
                             {
                                 RegisterTooltipWindow registerTooltipWindow = new RegisterTooltipWindow(foreground);
-                                registerTooltipWindow.SetDescription(reg, this._asmDudeTools);
-                                registerTooltipWindow.SetAsmSim(this._asmSimulator, reg, lineNumber, true);
+                                registerTooltipWindow.SetDescription(reg, this.asmDudeTools_);
+                                registerTooltipWindow.SetAsmSim(this.asmSimulator_, reg, lineNumber, true);
                                 quickInfoContent.Add(registerTooltipWindow);
                             }
                             break;
@@ -203,10 +203,10 @@ namespace AsmDude.QuickInfo
                             {
                                 Session = session, // set the owner of this windows such that we can manually close this window
                             };
-                            instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
-                            instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools);
+                            instructionTooltipWindow.SetDescription(mnemonic, this.asmDudeTools_);
+                            instructionTooltipWindow.SetPerformanceInfo(mnemonic, this.asmDudeTools_);
                             int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
-                            instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
+                            instructionTooltipWindow.SetAsmSim(this.asmSimulator_, lineNumber, true);
                             quickInfoContent.Add(instructionTooltipWindow);
                             break;
                         }
@@ -306,7 +306,7 @@ namespace AsmDude.QuickInfo
                             description.Inlines.Add(Make_Run1("User defined 1: ", foreground));
                             description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined1))));
 
-                            string descr = this._asmDudeTools.Get_Description(keyword_upcase);
+                            string descr = this.asmDudeTools_.Get_Description(keyword_upcase);
                             if (descr.Length > 0)
                             {
                                 if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
@@ -327,7 +327,7 @@ namespace AsmDude.QuickInfo
                             description.Inlines.Add(Make_Run1("User defined 2: ", foreground));
                             description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined2))));
 
-                            string descr = this._asmDudeTools.Get_Description(keyword_upcase);
+                            string descr = this.asmDudeTools_.Get_Description(keyword_upcase);
                             if (descr.Length > 0)
                             {
                                 if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
@@ -348,7 +348,7 @@ namespace AsmDude.QuickInfo
                             description.Inlines.Add(Make_Run1("User defined 3: ", foreground));
                             description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined3))));
 
-                            string descr = this._asmDudeTools.Get_Description(keyword_upcase);
+                            string descr = this.asmDudeTools_.Get_Description(keyword_upcase);
                             if (descr.Length > 0)
                             {
                                 if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
@@ -415,10 +415,10 @@ namespace AsmDude.QuickInfo
 
         private string Get_Label_Description(string label)
         {
-            if (this._labelGraph.Enabled)
+            if (this.labelGraph_.Enabled)
             {
                 StringBuilder sb = new StringBuilder();
-                SortedSet<uint> labelDefs = this._labelGraph.Get_Label_Def_Linenumbers(label);
+                SortedSet<uint> labelDefs = this.labelGraph_.Get_Label_Def_Linenumbers(label);
                 if (labelDefs.Count > 1)
                 {
                     sb.AppendLine(string.Empty);
@@ -426,9 +426,9 @@ namespace AsmDude.QuickInfo
                 foreach (uint id in labelDefs)
                 {
                     int lineNumber = LabelGraph.Get_Linenumber(id);
-                    string filename = Path.GetFileName(this._labelGraph.Get_Filename(id));
+                    string filename = Path.GetFileName(this.labelGraph_.Get_Filename(id));
                     string lineContent = (LabelGraph.Is_From_Main_File(id))
-                        ? " :" + this._textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText()
+                        ? " :" + this.textBuffer_.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText()
                         : string.Empty;
                     sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format(AsmDudeToolsStatic.CultureUI, "Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                 }
@@ -443,12 +443,12 @@ namespace AsmDude.QuickInfo
 
         private string Get_Label_Def_Description(string full_Qualified_Label, string label)
         {
-            if (!this._labelGraph.Enabled)
+            if (!this.labelGraph_.Enabled)
             {
                 return "Label analysis is disabled";
             }
 
-            SortedSet<uint> usage = this._labelGraph.Label_Used_At_Info(full_Qualified_Label, label);
+            SortedSet<uint> usage = this.labelGraph_.Label_Used_At_Info(full_Qualified_Label, label);
             if (usage.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
@@ -459,11 +459,11 @@ namespace AsmDude.QuickInfo
                 foreach (uint id in usage)
                 {
                     int lineNumber = LabelGraph.Get_Linenumber(id);
-                    string filename = Path.GetFileName(this._labelGraph.Get_Filename(id));
+                    string filename = Path.GetFileName(this.labelGraph_.Get_Filename(id));
                     string lineContent;
                     if (LabelGraph.Is_From_Main_File(id))
                     {
-                        lineContent = " :" + this._textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                        lineContent = " :" + this.textBuffer_.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                     }
                     else
                     {
@@ -509,17 +509,17 @@ namespace AsmDude.QuickInfo
             object textContainer = TextContainerProp.GetValue(tb);
 
             TextEditorWrapper editor = new TextEditorWrapper(textContainer, tb, false);
-            IsReadOnlyProp.SetValue(editor._editor, true);
-            TextViewProp.SetValue(editor._editor, TextContainerTextViewProp.GetValue(textContainer));
+            IsReadOnlyProp.SetValue(editor.editor_, true);
+            TextViewProp.SetValue(editor.editor_, TextContainerTextViewProp.GetValue(textContainer));
 
             return editor;
         }
 
-        private readonly object _editor;
+        private readonly object editor_;
 
         public TextEditorWrapper(object textContainer, FrameworkElement uiScope, bool isUndoEnabled)
         {
-            this._editor = Activator.CreateInstance(TextEditorType, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.CreateInstance,
+            this.editor_ = Activator.CreateInstance(TextEditorType, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.CreateInstance,
                 null, new[] { textContainer, uiScope, isUndoEnabled }, null);
         }
     }
@@ -535,11 +535,11 @@ namespace AsmDude.QuickInfo
             FocusVisualStyleProperty.OverrideMetadata(typeof(SelectableTextBlock), new FrameworkPropertyMetadata((object)null));
         }
 
-        private readonly TextEditorWrapper _editor;
+        private readonly TextEditorWrapper editor_;
 
         public SelectableTextBlock()
         {
-            this._editor = TextEditorWrapper.CreateFor(this);
+            this.editor_ = TextEditorWrapper.CreateFor(this);
         }
     }
 }

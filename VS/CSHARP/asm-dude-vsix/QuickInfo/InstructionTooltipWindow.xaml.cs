@@ -36,10 +36,10 @@ namespace AsmDude.QuickInfo
 
     public partial class InstructionTooltipWindow : IInteractiveQuickInfoContent
     {
-        private readonly Brush _foreground;
-        private IList<TextBox> _itemsOnPage;
-        private int _lineNumber;
-        private AsmSimulator _asmSimulator;
+        private readonly Brush foreground_;
+        private IList<TextBox> itemsOnPage_;
+        private int lineNumber_;
+        private AsmSimulator asmSimulator_;
 
         internal AsmQuickInfoController Owner { get; set; }
 
@@ -47,7 +47,7 @@ namespace AsmDude.QuickInfo
 
         public InstructionTooltipWindow(Brush foreground)
         {
-            this._foreground = foreground;
+            this.foreground_ = foreground;
             this.InitializeComponent();
 
             this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
@@ -102,13 +102,13 @@ namespace AsmDude.QuickInfo
             Contract.Requires(asmDudeTools != null);
             string mnemonicStr = mnemonic.ToString();
 
-            this.Description.Inlines.Add(new Run("Mnemonic ") { FontWeight = FontWeights.Bold, Foreground = this._foreground });
+            this.Description.Inlines.Add(new Run("Mnemonic ") { FontWeight = FontWeights.Bold, Foreground = this.foreground_ });
             this.Description.Inlines.Add(new Run(mnemonicStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(AsmSourceTools.IsJump(mnemonic) ? Settings.Default.SyntaxHighlighting_Jump : Settings.Default.SyntaxHighlighting_Opcode)) });
 
             string archStr = ":" + ArchTools.ToString(asmDudeTools.Mnemonic_Store.GetArch(mnemonic)) + " ";
             string descr = asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
             string full_Descr = AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.MaxNumberOfCharsInToolTips);
-            this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this._foreground });
+            this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this.foreground_ });
         }
 
         public void SetPerformanceInfo(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
@@ -139,7 +139,7 @@ namespace AsmDude.QuickInfo
                             FontFamily = family,
                             FontStyle = FontStyles.Italic,
                             FontWeight = FontWeights.Bold,
-                            Foreground = this._foreground,
+                            Foreground = this.foreground_,
                         });
                         this.Performance.Inlines.Add(new Run(string.Format(
                             AsmDudeToolsStatic.CultureUI,
@@ -149,23 +149,23 @@ namespace AsmDude.QuickInfo
                             FontFamily = family,
                             FontStyle = FontStyles.Italic,
                             FontWeight = FontWeights.Bold,
-                            Foreground = this._foreground,
+                            Foreground = this.foreground_,
                         });
                     }
                     this.Performance.Inlines.Add(new Run(string.Format(
                         AsmDudeToolsStatic.CultureUI,
                         "\n" + format,
-                        item._microArch + " ",
-                        item._instr + " " + item._args + " ",
-                        item._mu_Ops_Fused + " ",
-                        item._mu_Ops_Merged + " ",
-                        item._mu_Ops_Port + " ",
-                        item._latency + " ",
-                        item._throughput + " ",
-                        item._remark))
+                        item.microArch_ + " ",
+                        item.instr_ + " " + item.args_ + " ",
+                        item.mu_Ops_Fused_ + " ",
+                        item.mu_Ops_Merged_ + " ",
+                        item.mu_Ops_Port_ + " ",
+                        item.latency_ + " ",
+                        item.throughput_ + " ",
+                        item.remark_))
                     {
                         FontFamily = family,
-                        Foreground = this._foreground,
+                        Foreground = this.foreground_,
                     });
                 }
                 this.PerformanceExpander.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
@@ -177,19 +177,19 @@ namespace AsmDude.QuickInfo
         {
             Contract.Requires(asmSimulator != null);
 
-            this._asmSimulator = asmSimulator;
-            this._lineNumber = lineNumber;
+            this.asmSimulator_ = asmSimulator;
+            this.lineNumber_ = lineNumber;
 
             bool empty = true;
 
-            if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip)
+            if (this.asmSimulator_.Enabled & Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip)
             {
-                this._itemsOnPage = new List<TextBox>();
+                this.itemsOnPage_ = new List<TextBox>();
 
                 this.AsmSimGridExpander.IsExpanded = isExpanded;
                 this.AsmSimGridExpanderNumeration.Text = Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration;
 
-                (IEnumerable<Rn> readReg1, IEnumerable<Rn> writeReg1, Flags readFlag, Flags writeFlag, bool memRead, bool memWrite) = this._asmSimulator.Get_Usage(lineNumber);
+                (IEnumerable<Rn> readReg1, IEnumerable<Rn> writeReg1, Flags readFlag, Flags writeFlag, bool memRead, bool memWrite) = this.asmSimulator_.Get_Usage(lineNumber);
                 HashSet<Rn> readReg = new HashSet<Rn>(readReg1);
                 HashSet<Rn> writeReg = new HashSet<Rn>(writeReg1);
 
@@ -257,13 +257,13 @@ namespace AsmDude.QuickInfo
                 }
                 //AsmDudeToolsStatic.Output_INFO("AsmSimGridExpanderNumeration:SelectionChanged: numeration="+ numeration);
 
-                foreach (TextBox textBox in this._itemsOnPage)
+                foreach (TextBox textBox in this.itemsOnPage_)
                 {
                     ButtonInfo info = textBox.Tag as ButtonInfo;
 
                     string content = (info.Reg == Rn.NOREG)
-                        ? this._asmSimulator.Get_Flag_Value_If_Already_Computed(info.Flag, this._lineNumber, info.Before)
-                        : this._asmSimulator.Get_Register_Value_If_Already_Computed(info.Reg, this._lineNumber, info.Before, numeration);
+                        ? this.asmSimulator_.Get_Flag_Value_If_Already_Computed(info.Flag, this.lineNumber_, info.Before)
+                        : this.asmSimulator_.Get_Register_Value_If_Already_Computed(info.Reg, this.lineNumber_, info.Before, numeration);
 
                     if (content != null)
                     {
@@ -302,7 +302,7 @@ namespace AsmDude.QuickInfo
                     FontFamily = f,
                     FontStyle = FontStyles.Italic,
                     FontWeight = FontWeights.Bold,
-                    Foreground = this._foreground,
+                    Foreground = this.foreground_,
                 };
                 this.AsmSimGrid.Children.Add(textBlock);
                 Grid.SetRow(textBlock, row);
@@ -315,7 +315,7 @@ namespace AsmDude.QuickInfo
                     FontFamily = f,
                     FontStyle = FontStyles.Italic,
                     FontWeight = FontWeights.Bold,
-                    Foreground = this._foreground,
+                    Foreground = this.foreground_,
                 };
                 this.AsmSimGrid.Children.Add(textBlock);
                 Grid.SetRow(textBlock, row);
@@ -332,26 +332,26 @@ namespace AsmDude.QuickInfo
                 TextBox textBox = new TextBox()
                 {
                     FontFamily = f,
-                    Foreground = this._foreground,
+                    Foreground = this.foreground_,
                     Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
                     IsReadOnly = true,
                     TextWrapping = TextWrapping.Wrap,
                     Tag = new ButtonInfo(null, reg, isBefore),
                 };
-                this._itemsOnPage.Add(textBox);
+                this.itemsOnPage_.Add(textBox);
                 this.AsmSimGrid.Children.Add(textBox);
                 Grid.SetRow(textBox, row);
                 Grid.SetColumn(textBox, column);
 
-                string register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, isBefore, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false));
+                string register_Content = this.asmSimulator_.Get_Register_Value_If_Already_Computed(reg, this.lineNumber_, isBefore, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false));
                 if (register_Content == null)
                 {
                     textBox.Visibility = Visibility.Collapsed;
                     Button button = new Button()
                     {
                         Content = "Determine " + reg.ToString(),
-                        Foreground = this._foreground,
+                        Foreground = this.foreground_,
                         Visibility = Visibility.Visible,
                         Tag = new ButtonInfo(textBox, reg, isBefore),
                     };
@@ -378,7 +378,7 @@ namespace AsmDude.QuickInfo
                 TextBox textBlock = new TextBox()
                 {
                     FontFamily = f,
-                    Foreground = this._foreground,
+                    Foreground = this.foreground_,
                     Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
                     IsReadOnly = true,
@@ -388,14 +388,14 @@ namespace AsmDude.QuickInfo
                 Grid.SetRow(textBlock, row);
                 Grid.SetColumn(textBlock, column);
 
-                string flag_Content = this._asmSimulator.Get_Flag_Value_If_Already_Computed(flag, this._lineNumber, isBefore);
+                string flag_Content = this.asmSimulator_.Get_Flag_Value_If_Already_Computed(flag, this.lineNumber_, isBefore);
                 if (flag_Content == null)
                 {
                     textBlock.Visibility = Visibility.Collapsed;
                     Button button = new Button()
                     {
                         Content = "Determine " + flag.ToString(),
-                        Foreground = this._foreground,
+                        Foreground = this.foreground_,
                         Visibility = Visibility.Visible,
                         Tag = new ButtonInfo(textBlock, flag, isBefore),
                     };
@@ -427,7 +427,7 @@ namespace AsmDude.QuickInfo
                 return;
             }
 
-            if (this._asmSimulator == null)
+            if (this.asmSimulator_ == null)
             {
                 return;
             }
@@ -441,8 +441,8 @@ namespace AsmDude.QuickInfo
 
                 ButtonInfo info = (ButtonInfo)button.Tag;
                 info.Text.Text = (info.Reg == Rn.NOREG)
-                    ? info.Flag.ToString() + " = " + this._asmSimulator.Get_Flag_Value_and_Block(info.Flag, this._lineNumber, info.Before)
-                    : info.Reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.Reg, this._lineNumber, info.Before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false));
+                    ? info.Flag.ToString() + " = " + this.asmSimulator_.Get_Flag_Value_and_Block(info.Flag, this.lineNumber_, info.Before)
+                    : info.Reg.ToString() + " = " + this.asmSimulator_.Get_Register_Value_and_Block(info.Reg, this.lineNumber_, info.Before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false));
 
                 info.Text.Visibility = Visibility.Visible;
                 button.Visibility = Visibility.Collapsed;
