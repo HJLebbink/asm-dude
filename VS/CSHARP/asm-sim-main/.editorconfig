@@ -41,3 +41,6 @@ dotnet_diagnostic.SA1633.severity = silent
 
 # SA1649: File name should match first type name
 dotnet_diagnostic.SA1649.severity = silent
+
+# SA1300: Element should begin with upper-case letter
+dotnet_diagnostic.SA1300.severity = none

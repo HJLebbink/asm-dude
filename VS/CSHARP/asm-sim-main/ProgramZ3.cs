@@ -31,6 +31,7 @@ namespace AsmSim
     using Microsoft.Z3;
     using QuickGraph;
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     internal class AsmSimMain
     {
         private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
@@ -54,6 +55,7 @@ namespace AsmSim
             if (true)
             {
                 TestMemorySpeed();
+                TestMemorySpeed2();
             }
             // TestDynamicFlow();
             // TestSIMD();
@@ -69,12 +71,12 @@ namespace AsmSim
 
             if (false)
             {
-                AsmSourceTools.SpeedTestMnemonic();
+                AsmSourceTools.SpeedTestMnemonicParsing();
             }
 
             if (false)
             {
-                AsmSourceTools.SpeedTestRegister();
+                AsmSourceTools.SpeedTestRegisterParsing();
             }
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
@@ -154,7 +156,6 @@ namespace AsmSim
             Console.WriteLine("dFlow=" + dFlow.ToString(sFlow));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private static void TestSIMD()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
@@ -187,6 +188,90 @@ namespace AsmSim
 
         private static void TestMemorySpeed()
         {
+            /*
+            string line1 = "mov qword ptr [rax], rbx";
+            string line2 = "mov rcx, qword ptr [rax]";
+             *
+            (declare-const RAX!0 (_ BitVec 64))
+            (declare-const RAX!1 (_ BitVec 64))
+            (declare-const RAX!2 (_ BitVec 64))
+
+            (declare-const RBX!0 (_ BitVec 64))
+            (declare-const RBX!1 (_ BitVec 64))
+            (declare-const RBX!2 (_ BitVec 64))
+
+            (declare-const RCX!0 (_ BitVec 64))
+            (declare-const RCX!1 (_ BitVec 64))
+            (declare-const RCX!2 (_ BitVec 64))
+
+            (declare-fun MEM!0 () (Array (_ BitVec 64) (_ BitVec 8)))
+            (declare-fun MEM!1 () (Array (_ BitVec 64) (_ BitVec 8)))
+            (declare-fun MEM!2 () (Array (_ BitVec 64) (_ BitVec 8)))
+
+            (assert (= RAX!1 RAX!0))
+            (assert (= RBX!1 RBX!0))
+            (assert (= RCX!1 RCX!0))
+            (assert (let ((a!1 (store (store (store MEM!0 RAX!0 ((_ extract 7 0) RBX!0)) (bvadd #x0000000000000001 RAX!0) ((_ extract 15 8) RBX!0)) (bvadd #x0000000000000002 RAX!0) ((_ extract 23 16) RBX!0)))) (let ((a!2 (store (store (store a!1 (bvadd #x0000000000000003 RAX!0) ((_ extract 31 24) RBX!0)) (bvadd #x0000000000000004 RAX!0) ((_ extract 39 32) RBX!0)) (bvadd #x0000000000000005 RAX!0) ((_ extract 47 40) RBX!0)))) (= MEM!1 (store (store a!2 (bvadd #x0000000000000006 RAX!0) ((_ extract 55 48) RBX!0)) (bvadd #x0000000000000007 RAX!0) ((_ extract 63 56) RBX!0))))))
+
+            (assert (= RAX!2 RAX!1))
+            (assert (= RBX!2 RBX!1))
+            (assert (let ((a!1 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000002)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000001)) (select MEM!1 RAX!1))))) (let ((a!2 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000004)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000003)) a!1)))) (let ((a!3 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000006)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000005)) a!2)))) (= RCX!2 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000007)) a!3))))))
+            (assert (= MEM!2 MEM!1))
+             */
+
+            // Solver solver = ctx.MkSolver("QF_ABV");
+            // Solver solver = ctx.MkSolver("QF_BV");
+            // Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
+            // Solver solver = ctx.MkSolver(ctx.MkTactic("simplify"));
+            // Solver solver = ctx.MkSimpleSolver();
+
+            ArrayExpr store_mem_method1_LOCAL(Context ctx, ArrayExpr member_before, BitVecExpr destination_reg, BitVecExpr source_reg)
+            {
+                ArrayExpr memX0 = ctx.MkStore(member_before, ctx.MkBVAdd(ctx.MkBV(0, 64), destination_reg), ctx.MkExtract((1 * 8) - 1, 0 * 8, source_reg));
+                ArrayExpr memX1 = ctx.MkStore(memX0, ctx.MkBVAdd(ctx.MkBV(1, 64), destination_reg), ctx.MkExtract((2 * 8) - 1, 1 * 8, source_reg));
+                ArrayExpr memX2 = ctx.MkStore(memX1, ctx.MkBVAdd(ctx.MkBV(2, 64), destination_reg), ctx.MkExtract((3 * 8) - 1, 2 * 8, source_reg));
+                ArrayExpr memX3 = ctx.MkStore(memX2, ctx.MkBVAdd(ctx.MkBV(3, 64), destination_reg), ctx.MkExtract((4 * 8) - 1, 3 * 8, source_reg));
+                ArrayExpr memX4 = ctx.MkStore(memX3, ctx.MkBVAdd(ctx.MkBV(4, 64), destination_reg), ctx.MkExtract((5 * 8) - 1, 4 * 8, source_reg));
+                ArrayExpr memX5 = ctx.MkStore(memX4, ctx.MkBVAdd(ctx.MkBV(5, 64), destination_reg), ctx.MkExtract((6 * 8) - 1, 5 * 8, source_reg));
+                ArrayExpr memX6 = ctx.MkStore(memX5, ctx.MkBVAdd(ctx.MkBV(6, 64), destination_reg), ctx.MkExtract((7 * 8) - 1, 6 * 8, source_reg));
+                ArrayExpr memX7 = ctx.MkStore(memX6, ctx.MkBVAdd(ctx.MkBV(7, 64), destination_reg), ctx.MkExtract((8 * 8) - 1, 7 * 8, source_reg));
+                return memX7;
+            }
+
+            void store_mem_method2_LOCAL(Context ctx, Solver solver, ArrayExpr mem_before, ArrayExpr mem_after, BitVecExpr destination_reg, BitVecExpr source_reg)
+            {
+                ArrayExpr mem1_0 = ctx.MkArrayConst("MEM!1-0", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_1 = ctx.MkArrayConst("MEM!1-1", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_2 = ctx.MkArrayConst("MEM!1-2", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_3 = ctx.MkArrayConst("MEM!1-3", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_4 = ctx.MkArrayConst("MEM!1-4", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_5 = ctx.MkArrayConst("MEM!1-5", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_6 = ctx.MkArrayConst("MEM!1-6", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+
+                solver.Assert(ctx.MkEq(mem1_0, ctx.MkStore(mem_before, ctx.MkBVAdd(ctx.MkBV(0, 64), destination_reg), ctx.MkExtract((1 * 8) - 1, 0 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_1, ctx.MkStore(mem1_0, ctx.MkBVAdd(ctx.MkBV(1, 64), destination_reg), ctx.MkExtract((2 * 8) - 1, 1 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_2, ctx.MkStore(mem1_1, ctx.MkBVAdd(ctx.MkBV(2, 64), destination_reg), ctx.MkExtract((3 * 8) - 1, 2 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_3, ctx.MkStore(mem1_2, ctx.MkBVAdd(ctx.MkBV(3, 64), destination_reg), ctx.MkExtract((4 * 8) - 1, 3 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_4, ctx.MkStore(mem1_3, ctx.MkBVAdd(ctx.MkBV(4, 64), destination_reg), ctx.MkExtract((5 * 8) - 1, 4 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_5, ctx.MkStore(mem1_4, ctx.MkBVAdd(ctx.MkBV(5, 64), destination_reg), ctx.MkExtract((6 * 8) - 1, 5 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_6, ctx.MkStore(mem1_5, ctx.MkBVAdd(ctx.MkBV(6, 64), destination_reg), ctx.MkExtract((7 * 8) - 1, 6 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem_after, ctx.MkStore(mem1_6, ctx.MkBVAdd(ctx.MkBV(7, 64), destination_reg), ctx.MkExtract((8 * 8) - 1, 7 * 8, source_reg))));
+            }
+
+            BitVecExpr retrieve_mem_method_LOCAL(Context ctx, ArrayExpr mem1, BitVecExpr rax1)
+            {
+                BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
+                BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
+                BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
+                BitVecExpr y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
+                BitVecExpr y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
+                BitVecExpr y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
+                BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
+                BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
+                BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
+                return y;
+            }
+
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
@@ -196,42 +281,6 @@ namespace AsmSim
             };
             using (Context ctx = new Context(settings))
             {
-                /*
-                string line1 = "mov qword ptr [rax], rbx";
-                string line2 = "mov rcx, qword ptr [rax]";
-                 *
-                (declare-const RAX!0 (_ BitVec 64))
-                (declare-const RAX!1 (_ BitVec 64))
-                (declare-const RAX!2 (_ BitVec 64))
-
-                (declare-const RBX!0 (_ BitVec 64))
-                (declare-const RBX!1 (_ BitVec 64))
-                (declare-const RBX!2 (_ BitVec 64))
-
-                (declare-const RCX!0 (_ BitVec 64))
-                (declare-const RCX!1 (_ BitVec 64))
-                (declare-const RCX!2 (_ BitVec 64))
-
-                (declare-fun MEM!0 () (Array (_ BitVec 64) (_ BitVec 8)))
-                (declare-fun MEM!1 () (Array (_ BitVec 64) (_ BitVec 8)))
-                (declare-fun MEM!2 () (Array (_ BitVec 64) (_ BitVec 8)))
-
-                (assert (= RAX!1 RAX!0))
-                (assert (= RBX!1 RBX!0))
-                (assert (= RCX!1 RCX!0))
-                (assert (let ((a!1 (store (store (store MEM!0 RAX!0 ((_ extract 7 0) RBX!0)) (bvadd #x0000000000000001 RAX!0) ((_ extract 15 8) RBX!0)) (bvadd #x0000000000000002 RAX!0) ((_ extract 23 16) RBX!0)))) (let ((a!2 (store (store (store a!1 (bvadd #x0000000000000003 RAX!0) ((_ extract 31 24) RBX!0)) (bvadd #x0000000000000004 RAX!0) ((_ extract 39 32) RBX!0)) (bvadd #x0000000000000005 RAX!0) ((_ extract 47 40) RBX!0)))) (= MEM!1 (store (store a!2 (bvadd #x0000000000000006 RAX!0) ((_ extract 55 48) RBX!0)) (bvadd #x0000000000000007 RAX!0) ((_ extract 63 56) RBX!0))))))
-
-                (assert (= RAX!2 RAX!1))
-                (assert (= RBX!2 RBX!1))
-                (assert (let ((a!1 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000002)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000001)) (select MEM!1 RAX!1))))) (let ((a!2 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000004)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000003)) a!1)))) (let ((a!3 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000006)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000005)) a!2)))) (= RCX!2 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000007)) a!3))))))
-                (assert (= MEM!2 MEM!1))
-                 */
-
-                // Solver solver = ctx.MkSolver("QF_ABV");
-                // Solver solver = ctx.MkSolver("QF_BV");
-                // Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
-                // Solver solver = ctx.MkSolver(ctx.MkTactic("simplify"));
-                // Solver solver = ctx.MkSimpleSolver();
                 Solver solver = ctx.MkSolver();
 
                 #region Create 3 64bit-registers and 1 64-bit memory location, at 3 time stamps
@@ -255,74 +304,34 @@ namespace AsmSim
                 if (false)
                 {
                     #region mov qword ptr [rax], rbx
-
-                    solver.Assert(ctx.MkEq(rax1, rax0));
-                    solver.Assert(ctx.MkEq(rbx1, rbx0));
-                    solver.Assert(ctx.MkEq(rcx1, rcx0));
-                    ArrayExpr memX0 = ctx.MkStore(mem0, ctx.MkBVAdd(ctx.MkBV(0, 64), rax0), ctx.MkExtract((1 * 8) - 1, 0 * 8, rbx0));
-                    ArrayExpr memX1 = ctx.MkStore(memX0, ctx.MkBVAdd(ctx.MkBV(1, 64), rax0), ctx.MkExtract((2 * 8) - 1, 1 * 8, rbx0));
-                    ArrayExpr memX2 = ctx.MkStore(memX1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax0), ctx.MkExtract((3 * 8) - 1, 2 * 8, rbx0));
-                    ArrayExpr memX3 = ctx.MkStore(memX2, ctx.MkBVAdd(ctx.MkBV(3, 64), rax0), ctx.MkExtract((4 * 8) - 1, 3 * 8, rbx0));
-                    ArrayExpr memX4 = ctx.MkStore(memX3, ctx.MkBVAdd(ctx.MkBV(4, 64), rax0), ctx.MkExtract((5 * 8) - 1, 4 * 8, rbx0));
-                    ArrayExpr memX5 = ctx.MkStore(memX4, ctx.MkBVAdd(ctx.MkBV(5, 64), rax0), ctx.MkExtract((6 * 8) - 1, 5 * 8, rbx0));
-                    ArrayExpr memX6 = ctx.MkStore(memX5, ctx.MkBVAdd(ctx.MkBV(6, 64), rax0), ctx.MkExtract((7 * 8) - 1, 6 * 8, rbx0));
-                    ArrayExpr memX7 = ctx.MkStore(memX6, ctx.MkBVAdd(ctx.MkBV(7, 64), rax0), ctx.MkExtract((8 * 8) - 1, 7 * 8, rbx0));
-                    solver.Assert(ctx.MkEq(mem1, memX7));
-
+                    solver.Assert(ctx.MkEq(rax1, rax0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rbx1, rbx0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rcx1, rcx0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(mem1, store_mem_method1_LOCAL(ctx, mem0, rax0, rbx0)));
                     #endregion
+
                     #region mov rcx, qword ptr [rax]
                     solver.Assert(ctx.MkEq(rax2, rax1)); // rax at t=2 is equal to rax at t=1, although we do not know the exact value
                     solver.Assert(ctx.MkEq(rbx2, rbx1)); // rbx at t=2 is equal to rbx at t=1, although we do not know the exact value
-
-                    BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
-                    solver.Assert(ctx.MkEq(rcx2, y));
-                    solver.Assert(ctx.MkEq(mem2, mem1));
+                    solver.Assert(ctx.MkEq(rcx2, retrieve_mem_method_LOCAL(ctx, mem1, rax1))); // mov rcx, qword ptr [rax]
+                    solver.Assert(ctx.MkEq(mem2, mem1)); // unchanged memory state
                     #endregion
                 }
                 else
                 {
-                    solver.Assert(ctx.MkEq(rax1, rax0));
-                    solver.Assert(ctx.MkEq(rbx1, rbx0));
-                    solver.Assert(ctx.MkEq(rcx1, rcx0));
+                    #region mov qword ptr [rax], rbx
+                    solver.Assert(ctx.MkEq(rax1, rax0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rbx1, rbx0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rcx1, rcx0)); // unchanged register state
+                    store_mem_method2_LOCAL(ctx, solver, mem0, mem1, rax0, rbx0);
+                    #endregion
 
-                    ArrayExpr mem1_0 = ctx.MkArrayConst("MEM!1-0", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
-                    ArrayExpr mem1_1 = ctx.MkArrayConst("MEM!1-1", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
-                    ArrayExpr mem1_2 = ctx.MkArrayConst("MEM!1-2", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
-                    ArrayExpr mem1_3 = ctx.MkArrayConst("MEM!1-3", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
-                    ArrayExpr mem1_4 = ctx.MkArrayConst("MEM!1-4", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
-                    ArrayExpr mem1_5 = ctx.MkArrayConst("MEM!1-5", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
-                    ArrayExpr mem1_6 = ctx.MkArrayConst("MEM!1-6", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
-
-                    solver.Assert(ctx.MkEq(mem1_0, ctx.MkStore(mem0, ctx.MkBVAdd(ctx.MkBV(0, 64), rax0), ctx.MkExtract((1 * 8) - 1, 0 * 8, rbx0))));
-                    solver.Assert(ctx.MkEq(mem1_1, ctx.MkStore(mem1_0, ctx.MkBVAdd(ctx.MkBV(1, 64), rax0), ctx.MkExtract((2 * 8) - 1, 1 * 8, rbx0))));
-                    solver.Assert(ctx.MkEq(mem1_2, ctx.MkStore(mem1_1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax0), ctx.MkExtract((3 * 8) - 1, 2 * 8, rbx0))));
-                    solver.Assert(ctx.MkEq(mem1_3, ctx.MkStore(mem1_2, ctx.MkBVAdd(ctx.MkBV(3, 64), rax0), ctx.MkExtract((4 * 8) - 1, 3 * 8, rbx0))));
-                    solver.Assert(ctx.MkEq(mem1_4, ctx.MkStore(mem1_3, ctx.MkBVAdd(ctx.MkBV(4, 64), rax0), ctx.MkExtract((5 * 8) - 1, 4 * 8, rbx0))));
-                    solver.Assert(ctx.MkEq(mem1_5, ctx.MkStore(mem1_4, ctx.MkBVAdd(ctx.MkBV(5, 64), rax0), ctx.MkExtract((6 * 8) - 1, 5 * 8, rbx0))));
-                    solver.Assert(ctx.MkEq(mem1_6, ctx.MkStore(mem1_5, ctx.MkBVAdd(ctx.MkBV(6, 64), rax0), ctx.MkExtract((7 * 8) - 1, 6 * 8, rbx0))));
-                    solver.Assert(ctx.MkEq(mem1, ctx.MkStore(mem1_6, ctx.MkBVAdd(ctx.MkBV(7, 64), rax0), ctx.MkExtract((8 * 8) - 1, 7 * 8, rbx0))));
-
-                    solver.Assert(ctx.MkEq(rax2, rax1));
-                    solver.Assert(ctx.MkEq(rbx2, rbx1));
-                    BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
-                    BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
-                    solver.Assert(ctx.MkEq(rcx2, y));
-                    solver.Assert(ctx.MkEq(mem2, mem1));
+                    #region mov rcx, qword ptr [rax]
+                    solver.Assert(ctx.MkEq(rax2, rax1)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rbx2, rbx1)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rcx2, retrieve_mem_method_LOCAL(ctx, mem1, rax1))); // mov rcx, qword ptr [rax]
+                    solver.Assert(ctx.MkEq(mem2, mem1)); // unchanged memory state
+                    #endregion
                 }
                 // Console.WriteLine(solver);
                 Console.WriteLine("========================");
@@ -453,6 +462,277 @@ namespace AsmSim
             }
         }
 
+        private static void TestMemorySpeed2()
+        {
+            ArrayExpr store_mem_method1_LOCAL(Context ctx, ArrayExpr member_before, BitVecExpr destination_reg, BitVecExpr source_reg)
+            {
+                ArrayExpr memX0 = ctx.MkStore(member_before, ctx.MkBVAdd(ctx.MkBV(0, 64), destination_reg), ctx.MkExtract((1 * 8) - 1, 0 * 8, source_reg));
+                ArrayExpr memX1 = ctx.MkStore(memX0, ctx.MkBVAdd(ctx.MkBV(1, 64), destination_reg), ctx.MkExtract((2 * 8) - 1, 1 * 8, source_reg));
+                ArrayExpr memX2 = ctx.MkStore(memX1, ctx.MkBVAdd(ctx.MkBV(2, 64), destination_reg), ctx.MkExtract((3 * 8) - 1, 2 * 8, source_reg));
+                ArrayExpr memX3 = ctx.MkStore(memX2, ctx.MkBVAdd(ctx.MkBV(3, 64), destination_reg), ctx.MkExtract((4 * 8) - 1, 3 * 8, source_reg));
+                ArrayExpr memX4 = ctx.MkStore(memX3, ctx.MkBVAdd(ctx.MkBV(4, 64), destination_reg), ctx.MkExtract((5 * 8) - 1, 4 * 8, source_reg));
+                ArrayExpr memX5 = ctx.MkStore(memX4, ctx.MkBVAdd(ctx.MkBV(5, 64), destination_reg), ctx.MkExtract((6 * 8) - 1, 5 * 8, source_reg));
+                ArrayExpr memX6 = ctx.MkStore(memX5, ctx.MkBVAdd(ctx.MkBV(6, 64), destination_reg), ctx.MkExtract((7 * 8) - 1, 6 * 8, source_reg));
+                ArrayExpr memX7 = ctx.MkStore(memX6, ctx.MkBVAdd(ctx.MkBV(7, 64), destination_reg), ctx.MkExtract((8 * 8) - 1, 7 * 8, source_reg));
+                return memX7;
+            }
+
+            void store_mem_method2_LOCAL(Context ctx, Solver solver, ArrayExpr mem_before, ArrayExpr mem_after, BitVecExpr destination_reg, BitVecExpr source_reg)
+            {
+                ArrayExpr mem1_0 = ctx.MkArrayConst("MEM!1-0", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_1 = ctx.MkArrayConst("MEM!1-1", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_2 = ctx.MkArrayConst("MEM!1-2", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_3 = ctx.MkArrayConst("MEM!1-3", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_4 = ctx.MkArrayConst("MEM!1-4", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_5 = ctx.MkArrayConst("MEM!1-5", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_6 = ctx.MkArrayConst("MEM!1-6", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+
+                solver.Assert(ctx.MkEq(mem1_0, ctx.MkStore(mem_before, ctx.MkBVAdd(ctx.MkBV(0, 64), destination_reg), ctx.MkExtract((1 * 8) - 1, 0 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_1, ctx.MkStore(mem1_0, ctx.MkBVAdd(ctx.MkBV(1, 64), destination_reg), ctx.MkExtract((2 * 8) - 1, 1 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_2, ctx.MkStore(mem1_1, ctx.MkBVAdd(ctx.MkBV(2, 64), destination_reg), ctx.MkExtract((3 * 8) - 1, 2 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_3, ctx.MkStore(mem1_2, ctx.MkBVAdd(ctx.MkBV(3, 64), destination_reg), ctx.MkExtract((4 * 8) - 1, 3 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_4, ctx.MkStore(mem1_3, ctx.MkBVAdd(ctx.MkBV(4, 64), destination_reg), ctx.MkExtract((5 * 8) - 1, 4 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_5, ctx.MkStore(mem1_4, ctx.MkBVAdd(ctx.MkBV(5, 64), destination_reg), ctx.MkExtract((6 * 8) - 1, 5 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem1_6, ctx.MkStore(mem1_5, ctx.MkBVAdd(ctx.MkBV(6, 64), destination_reg), ctx.MkExtract((7 * 8) - 1, 6 * 8, source_reg))));
+                solver.Assert(ctx.MkEq(mem_after, ctx.MkStore(mem1_6, ctx.MkBVAdd(ctx.MkBV(7, 64), destination_reg), ctx.MkExtract((8 * 8) - 1, 7 * 8, source_reg))));
+            }
+
+            BitVecExpr retrieve_mem_method_LOCAL(Context ctx, ArrayExpr mem1, BitVecExpr rax1)
+            {
+                BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
+                BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
+                BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
+                BitVecExpr y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
+                BitVecExpr y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
+                BitVecExpr y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
+                BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
+                BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
+                BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
+                return y;
+            }
+
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "60000" },        // 60000=1min
+            };
+            using (Context ctx = new Context(settings))
+            {
+                Solver solver = ctx.MkSolver();
+
+                #region Create 3 64bit-registers and 1 64-bit memory location, at 3 time stamps
+                BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
+                BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
+                BitVecExpr rax2 = ctx.MkBVConst("RAX!2", 64);
+                BitVecExpr rax3 = ctx.MkBVConst("RAX!3", 64);
+                BitVecExpr rax4 = ctx.MkBVConst("RAX!4", 64);
+
+                BitVecExpr rbx0 = ctx.MkBVConst("RBX!0", 64);
+                BitVecExpr rbx1 = ctx.MkBVConst("RBX!1", 64);
+                BitVecExpr rbx2 = ctx.MkBVConst("RBX!2", 64);
+                BitVecExpr rbx3 = ctx.MkBVConst("RBX!3", 64);
+                BitVecExpr rbx4 = ctx.MkBVConst("RBX!4", 64);
+
+                BitVecExpr rcx0 = ctx.MkBVConst("RCX!0", 64);
+                BitVecExpr rcx1 = ctx.MkBVConst("RCX!1", 64);
+                BitVecExpr rcx2 = ctx.MkBVConst("RCX!2", 64);
+                BitVecExpr rcx3 = ctx.MkBVConst("RCX!3", 64);
+                BitVecExpr rcx4 = ctx.MkBVConst("RCX!4", 64);
+
+                BitVecExpr rdx0 = ctx.MkBVConst("RDX!0", 64);
+                BitVecExpr rdx1 = ctx.MkBVConst("RDX!1", 64);
+                BitVecExpr rdx2 = ctx.MkBVConst("RDX!2", 64);
+                BitVecExpr rdx3 = ctx.MkBVConst("RDX!3", 64);
+                BitVecExpr rdx4 = ctx.MkBVConst("RDX!4", 64);
+
+                ArrayExpr mem0 = ctx.MkArrayConst("MEM!0", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1 = ctx.MkArrayConst("MEM!1", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem2 = ctx.MkArrayConst("MEM!2", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem3 = ctx.MkArrayConst("MEM!3", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem4 = ctx.MkArrayConst("MEM!4", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                #endregion
+
+                if (true)
+                {
+                    #region mov qword ptr [rax], rbx
+                    solver.Assert(ctx.MkEq(rax1, rax0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rbx1, rbx0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rcx1, rcx0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rdx1, rdx0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(mem1, store_mem_method1_LOCAL(ctx, mem0, rax0, rbx0))); // mov qword ptr [rax], rbx
+                    #endregion
+
+                    #region mov rcx, qword ptr [rax]
+                    solver.Assert(ctx.MkEq(rax2, rax1)); // rax at t=2 is equal to rax at t=1, although we do not know the exact value
+                    solver.Assert(ctx.MkEq(rbx2, rbx1)); // rbx at t=2 is equal to rbx at t=1, although we do not know the exact value
+                    solver.Assert(ctx.MkEq(rcx2, retrieve_mem_method_LOCAL(ctx, mem1, rax1))); // mov rcx, qword ptr [rax]
+                    solver.Assert(ctx.MkEq(rdx2, rdx1)); // unchanged register state
+                    solver.Assert(ctx.MkEq(mem2, mem1)); // unchanged memory state
+                    #endregion
+
+                    #region mov qword ptr [rdx], rcx
+                    solver.Assert(ctx.MkEq(rax3, rax2)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rbx3, rbx2)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rcx3, rcx2)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rdx3, rdx2)); // unchanged register state
+                    solver.Assert(ctx.MkEq(mem3, store_mem_method1_LOCAL(ctx, mem2, rdx2, rbx2))); // mov qword ptr [rdx], rcx
+                    #endregion
+
+                    #region mov rax, qword ptr [rdx]
+                    solver.Assert(ctx.MkEq(rax4, retrieve_mem_method_LOCAL(ctx, mem3, rdx3))); // mov rax, qword ptr [rdx]
+                    solver.Assert(ctx.MkEq(rbx4, rbx3)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rcx4, rcx3)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rdx4, rdx3)); // unchanged register state
+                    solver.Assert(ctx.MkEq(mem4, mem3)); // unchanged memory state
+                    #endregion
+                }
+                else
+                {
+                    #region mov qword ptr [rax], rbx
+                    solver.Assert(ctx.MkEq(rax1, rax0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rbx1, rbx0)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rcx1, rcx0)); // unchanged register state
+                    store_mem_method2_LOCAL(ctx, solver, mem0, mem1, rax0, rbx0);
+                    #endregion
+
+                    #region mov rcx, qword ptr [rax]
+                    solver.Assert(ctx.MkEq(rax2, rax1)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rbx2, rbx1)); // unchanged register state
+                    solver.Assert(ctx.MkEq(rcx2, retrieve_mem_method_LOCAL(ctx, mem1, rax1))); // mov rcx, qword ptr [rax]
+                    solver.Assert(ctx.MkEq(mem2, mem1)); // unchanged memory state
+                    #endregion
+                }
+                // Console.WriteLine(solver);
+                Console.WriteLine("========================");
+
+                bool method1 = false;
+                bool method2 = false;
+
+                BoolExpr[] constraints = solver.Assertions;
+                {
+                    BoolExpr t = ctx.MkNot(ctx.MkEq(rax4, rdx4));
+                    Console.WriteLine("test=" + t);
+                    Status status;
+                    DateTime startTime = DateTime.Now;
+                    if (method1)
+                    {
+                        solver.Reset();
+                        solver.Assert(constraints);
+                        solver.Assert(t);
+                        status = solver.Check();
+                    }
+                    else if (method2)
+                    {
+                        solver.Push();
+                        solver.Assert(t);
+                        status = solver.Check();
+                    }
+                    else
+                    {
+                        status = solver.Check(t);
+                    }
+                    double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
+                    Console.WriteLine("Status Neg = " + status + ": Elapsed time " + elapsedSec + " sec");
+                    // Console.WriteLine(solver);
+                    Console.WriteLine("========================");
+
+                    if (method1)
+                    {
+                        // do nothing
+                    }
+                    else if (method2)
+                    {
+                        solver.Pop();
+                    }
+                    else
+                    {
+                        // do nothing
+                    }
+                }
+                {
+                    BoolExpr t = ctx.MkEq(rax4, rdx4);
+                    Console.WriteLine("test=" + t);
+                    Status status;
+                    DateTime startTime = DateTime.Now;
+                    if (method1)
+                    {
+                        solver.Reset();
+                        solver.Assert(constraints);
+                        solver.Assert(t);
+                        status = solver.Check();
+                    }
+                    else if (method2)
+                    {
+                        solver.Push();
+                        solver.Assert(t);
+                        status = solver.Check();
+                    }
+                    else
+                    {
+                        status = solver.Check(t);
+                    }
+                    double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
+                    Console.WriteLine("Status Pos = " + status + ": Elapsed time " + elapsedSec + " sec");
+                    // Console.WriteLine(solver);
+                    Console.WriteLine("========================");
+                    if (method1)
+                    {
+                        // do nothing
+                    }
+                    else if (method2)
+                    {
+                        solver.Pop();
+                    }
+                    else
+                    {
+                        // do nothing
+                    }
+                }
+                {
+                    BoolExpr t = ctx.MkNot(ctx.MkEq(rax4, rdx4));
+                    Console.WriteLine("test=" + t);
+                    Status status;
+                    DateTime startTime = DateTime.Now;
+                    if (method1)
+                    {
+                        solver.Reset();
+                        solver.Assert(constraints);
+                        solver.Assert(t);
+                        status = solver.Check();
+                    }
+                    else if (method2)
+                    {
+                        solver.Push();
+                        solver.Assert(t);
+                        status = solver.Check();
+                    }
+                    else
+                    {
+                        status = solver.Check(t);
+                    }
+                    double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
+                    Console.WriteLine("Status Neg = " + status + ": Elapsed time " + elapsedSec + " sec");
+                    // Console.WriteLine(solver);
+                    Console.WriteLine("========================");
+
+                    if (method1)
+                    {
+                        // do nothing
+                    }
+                    else if (method2)
+                    {
+                        solver.Pop();
+                    }
+                    else
+                    {
+                        // do nothing
+                    }
+                }
+            }
+        }
+
         private static void TestGraph()
         {
             BidirectionalGraph<long, TaggedEdge<long, bool>> graph = new BidirectionalGraph<long, TaggedEdge<long, bool>>(false);
@@ -541,7 +821,6 @@ namespace AsmSim
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private static void Test_Rep()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
@@ -1615,7 +1894,6 @@ namespace AsmSim
             GC.Collect();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private static void Test_NullReference_Bsf_1()
         {
             bool logToDisplay = true;
