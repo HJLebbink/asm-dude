@@ -130,7 +130,7 @@ namespace AsmDude.Tools
                     { "unsat-core", "false" },    // enable generation of unsat cores
                     { "model", "false" },         // enable model generation
                     { "proof", "false" },         // enable proof generation
-                    { "timeout", Settings.Default.AsmSim_Z3_Timeout_MS.ToString() },
+                    { "timeout", Settings.Default.AsmSim_Z3_Timeout_MS.ToString(CultureInfo.InvariantCulture) },
                 };
                 this.Tools = new AsmSim.Tools(settings);
                 if (Settings.Default.AsmSim_64_Bits)
@@ -266,7 +266,7 @@ namespace AsmDude.Tools
                 bool changed;
                 lock (this._resetLock)
                 {
-                    string program_upcase = this._buffer.CurrentSnapshot.GetText().ToUpper(CultureInfo.InvariantCulture);
+                    string program_upcase = this._buffer.CurrentSnapshot.GetText().ToUpperInvariant();
                     string[] lines_upcase = program_upcase.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
                     #region Restrict input to max number of lines
@@ -277,14 +277,14 @@ namespace AsmDude.Tools
                     #endregion
 
                     StringBuilder sb = new StringBuilder();
-                    string pragmaKeyword = Settings.Default.AsmSim_Pragma_Assume.ToUpper(CultureInfo.InvariantCulture);
-                    int pragmaKeywordLength = pragmaKeyword.Length;
+                    string pragmaKeyword_upcase = Settings.Default.AsmSim_Pragma_Assume.ToUpperInvariant();
+                    int pragmaKeywordLength = pragmaKeyword_upcase.Length;
 
                     for (int lineNumber = 0; lineNumber < lines_upcase.Length; ++lineNumber)
                     {
                         #region Handle Pragma Assume
                         string line = lines_upcase[lineNumber];
-                        int startPos = line.IndexOf(pragmaKeyword);
+                        int startPos = line.IndexOf(pragmaKeyword_upcase, StringComparison.Ordinal);
                         if (startPos != -1)
                         {
                             line = line.Substring(startPos + pragmaKeywordLength);
@@ -305,7 +305,9 @@ namespace AsmDude.Tools
                     this._threadPool2.Cancel(false);
 
                     AsmDudeToolsStatic.Output_INFO("AsmSimulator:Schedule_Reset_Async: going to start an new reset thread.");
+#pragma warning disable IDE0009 // Member access should be qualified.
                     this._thread_Result = this._threadPool2.QueueWorkItem(Reset_Private, WorkItemPriority.Lowest);
+#pragma warning restore IDE0009 // Member access should be qualified.
                 }
                 else
                 {

@@ -91,7 +91,7 @@ namespace AsmDude
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
-                string line_upcase = containingLine.GetText().ToUpper(CultureInfo.InvariantCulture);
+                string line_upcase = containingLine.GetText().ToUpperInvariant();
                 List<(int beginPos, int length, bool isLabel)> pos = new List<(int beginPos, int length, bool isLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_upcase));
 
                 int offset = containingLine.Start.Position;
@@ -171,7 +171,7 @@ namespace AsmDude
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._register);
                                             }
-                                            else if (AsmSourceTools.Evaluate_Constant(asmToken2, true).Valid)
+                                            else if (AsmSourceTools.Evaluate_Constant(asmToken2, true).valid)
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                             }
@@ -186,15 +186,15 @@ namespace AsmDude
                             }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
-                                if (AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
+                                if (AsmSourceTools.Evaluate_Constant(asmToken, true).valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }
-                                else if (asmToken.StartsWith("$"))
+                                else if (asmToken.StartsWith("$", StringComparison.Ordinal))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }
-                                else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
+                                else if (asmToken.StartsWith("\"", StringComparison.Ordinal) && asmToken.EndsWith("\"", StringComparison.Ordinal))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }
@@ -238,7 +238,7 @@ namespace AsmDude
             //{
             //    return true;
             //}
-            if (token.EndsWith("H"))
+            if (token.EndsWith("H", StringComparison.Ordinal))
             {
                 return true;
             }
@@ -259,7 +259,7 @@ namespace AsmDude
                 {
                     return false;
                 }
-                if (line.StartsWith("0X0"))
+                if (line.StartsWith("0X0", StringComparison.Ordinal))
                 {
                     return false;
                 }

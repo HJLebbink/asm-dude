@@ -20,18 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Diagnostics.Contracts;
-using System.Globalization;
-using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-
 namespace AsmTools
 {
+    using System;
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
+    using System.Linq;
+    using Microsoft.CodeAnalysis.CSharp.Scripting;
+
     public static class ExpressionEvaluator
     {
         /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
-        public static (bool Valid, ulong Value, int NBits) Parse_Constant(string str, bool isCapitals = false)
+        public static (bool valid, ulong value, int nBits) Parse_Constant(string str, bool isCapitals = false)
         {
             Contract.Requires(str != null);
 
@@ -48,11 +48,11 @@ namespace AsmTools
 
             if (!isCapitals)
             {
-                str = str.ToUpper(CultureInfo.InvariantCulture);
+                str = str.ToUpperInvariant();
             }
             str = str.Trim();
 
-            if (str.StartsWith("-"))
+            if (str.StartsWith("-", StringComparison.Ordinal))
             {
                 token2 = str;
                 isDecimal = true;
@@ -177,22 +177,22 @@ namespace AsmTools
             }
 
             int nBits = parsedSuccessfully ? AsmSourceTools.NBitsStorageNeeded(value, isNegative) : -1;
-            return (Valid: parsedSuccessfully, Value: value, NBits: nBits);
+            return (valid: parsedSuccessfully, value: value, nBits: nBits);
         }
 
-        public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string str, bool isCapitals = false)
+        public static (bool valid, ulong value, int nBits) Evaluate_Constant(string str, bool isCapitals = false)
         {
             Contract.Requires(str != null);
 
             // 1] test whether str has digits, if it has none it is not a constant
             if (!str.Any(char.IsDigit))
             {
-                return (false, 0, -1);
+                return (valid: false, value: 0, nBits: -1);
             }
 
             // 2] test whether str is a constant
-            (bool Valid, ulong Value, int NBits) v = Parse_Constant(str, isCapitals);
-            if (v.Valid)
+            (bool valid, ulong value, int nBits) v = Parse_Constant(str, isCapitals);
+            if (v.valid)
             {
                 return v;
             }
@@ -207,13 +207,15 @@ namespace AsmTools
                     System.Threading.Tasks.Task<ulong> t = CSharpScript.EvaluateAsync<ulong>(str);
                     ulong value = t.Result;
                     bool isNegative = false;
-                    return (true, value, AsmSourceTools.NBitsStorageNeeded(value, isNegative));
+                    return (valid: true, value: value, nBits: AsmSourceTools.NBitsStorageNeeded(value, isNegative));
                 }
                 catch (Exception)
-                { }
+                {
+                    // Do nothing
+                }
             }
-            // 4] don't know what it is but it is not likely to be an constant.
-            return (false, 0, -1);
+            // 4] don't know what it is but it is not likely to be a constant.
+            return (valid: false, value: 0, nBits: -1);
         }
     }
 }

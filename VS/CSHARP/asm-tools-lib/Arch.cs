@@ -25,7 +25,6 @@ namespace AsmTools
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Globalization;
     using System.Text;
 
     public enum Arch

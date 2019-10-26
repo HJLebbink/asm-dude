@@ -132,6 +132,7 @@ namespace AsmDude.QuickInfo
                     {
                         first = false;
                         this.Performance.Inlines.Add(new Run(string.Format(
+                            AsmDudeToolsStatic.CultureUI,
                             format,
                             string.Empty, string.Empty, "µOps", "µOps", "µOps", string.Empty, string.Empty, string.Empty))
                         {
@@ -141,6 +142,7 @@ namespace AsmDude.QuickInfo
                             Foreground = this._foreground,
                         });
                         this.Performance.Inlines.Add(new Run(string.Format(
+                            AsmDudeToolsStatic.CultureUI,
                             "\n" + format,
                             "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", string.Empty))
                         {
@@ -151,6 +153,7 @@ namespace AsmDude.QuickInfo
                         });
                     }
                     this.Performance.Inlines.Add(new Run(string.Format(
+                        AsmDudeToolsStatic.CultureUI,
                         "\n" + format,
                         item._microArch + " ",
                         item._instr + " " + item._args + " ",

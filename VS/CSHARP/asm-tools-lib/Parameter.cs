@@ -24,7 +24,7 @@ namespace AsmTools
 {
     public class AsmParameters
     {
-        public bool assume_initial_known_mem;
+        private bool assume_initial_known_mem;
         public bool mode_64bit;
         public bool mode_32bit;
         public bool mode_16bit;

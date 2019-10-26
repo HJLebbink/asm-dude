@@ -188,7 +188,7 @@ namespace unit_tests
             }
             {
                 ulong i = 1ul;
-                string s = "0x" + i.ToString("X", Culture); ;
+                string s = "0x" + i.ToString("X", Culture);
                 (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, value, s);
@@ -386,7 +386,6 @@ namespace unit_tests
             for (int i = 0; i < bases32.Length; ++i)
             {
                 Rn b = bases32[i];
-
                 {
                     string str = "[" + b + "]";
                     (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
@@ -400,7 +399,6 @@ namespace unit_tests
                 for (int j = 0; j < index32.Length; ++j)
                 {
                     Rn idx = index32[j];
-
                     {
                         string str = "[" + b + "+" + idx + "]";
                         (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);

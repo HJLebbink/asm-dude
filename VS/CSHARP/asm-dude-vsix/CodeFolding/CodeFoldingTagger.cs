@@ -279,9 +279,9 @@ namespace AsmDude.CodeFolding
                 {
                     if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                     {
-                        string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper(CultureInfo.InvariantCulture);
+                        string tokenStr_upcase = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpperInvariant();
                         //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
-                        switch (tokenStr)
+                        switch (tokenStr_upcase)
                         {
                             case "SEGMENT":
                             case "MACRO":
@@ -318,9 +318,9 @@ namespace AsmDude.CodeFolding
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
-                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper(CultureInfo.InvariantCulture);
+                    string tokenStr_upcase = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpperInvariant();
                     //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
-                    switch (tokenStr)
+                    switch (tokenStr_upcase)
                     {
                         case "STRUC":
                         case "ISTRUC":
@@ -371,8 +371,8 @@ namespace AsmDude.CodeFolding
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
-                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper(CultureInfo.InvariantCulture);
-                    switch (tokenStr)
+                    string tokenStr_upcase = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpperInvariant();
+                    switch (tokenStr_upcase)
                     {
                         case "ENDS": // end token for SEGMENT
                         case "ENDP": // end token for PROC
@@ -381,7 +381,7 @@ namespace AsmDude.CodeFolding
                         case ".ENDIF": // end token for .IF
                         case ".ENDW": // end token for .WHILE
                             {
-                                return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
+                                return lineContent.IndexOf(tokenStr_upcase, StringComparison.OrdinalIgnoreCase);
                             }
                         default: break;
                     }

@@ -114,7 +114,7 @@ namespace AsmDude
                     {
                         SnapshotSpan labelDefSpan = NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan);
                         //AsmDudeToolsStatic.Output_INFO("MasmTokenTagger:GetTags: found label " + asmToken +" at line "+containingLine.LineNumber);
-                        if (asmToken.Equals("@@"))
+                        if (asmToken.Equals("@@", StringComparison.Ordinal))
                         {
                             // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
                         }
@@ -203,12 +203,12 @@ namespace AsmDude
                             }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
-                                if (AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
+                                if (AsmSourceTools.Evaluate_Constant(asmToken, true).valid)
                                 //if (AsmTools.AsmSourceTools.Parse_Constant(asmToken, true).Valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }
-                                else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
+                                else if (asmToken.StartsWith("\"", StringComparison.Ordinal) && asmToken.EndsWith("\"", StringComparison.Ordinal))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }
@@ -373,7 +373,7 @@ namespace AsmDude
                     {
                         SnapshotSpan labelDefSpan = NasmIntelTokenTagger.New_Span(current, offset, curSpan);
                         //AsmDudeToolsStatic.Output_INFO("MasmTokenTagger:GetTags: found label " + asmToken +" at line "+containingLine.LineNumber);
-                        if (asmToken.Equals("@@"))
+                        if (asmToken.Equals("@@", StringComparison.Ordinal))
                         {
                             // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
                         }
@@ -464,12 +464,12 @@ namespace AsmDude
                             }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
-                                //if (AsmTools.AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
-                                if (AsmSourceTools.Parse_Constant(asmToken, true).Valid)
+                                //if (AsmTools.AsmSourceTools.Evaluate_Constant(asmToken, true).valid)
+                                if (AsmSourceTools.Parse_Constant(asmToken, true).valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this._constant);
                                 }
-                                else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
+                                else if (asmToken.StartsWith("\"", StringComparison.Ordinal) && asmToken.EndsWith("\"", StringComparison.Ordinal))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this._constant);
                                 }
@@ -534,7 +534,7 @@ namespace AsmDude
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this._directive);
 
-                                    if (asmToken.Equals("INVOKE"))
+                                    if (asmToken.Equals("INVOKE", StringComparison.Ordinal))
                                     {
                                         { // go to the next word
                                             if (needToAdvance)
@@ -597,8 +597,8 @@ namespace AsmDude
                 IList<(int, int, bool)> positions = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
                 if (positions.Count > 1)
                 {
-                    string keywordStr = AsmSourceTools.Keyword(positions[1], line).ToUpper(CultureInfo.InvariantCulture);
-                    switch (keywordStr)
+                    string keywordStr_upcase = AsmSourceTools.Keyword(positions[1], line).ToUpperInvariant();
+                    switch (keywordStr_upcase)
                     {
                         case "PROC": return AsmSourceTools.Keyword(positions[0], line);
                         case "ENDP": return null;

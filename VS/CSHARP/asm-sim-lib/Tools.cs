@@ -8,20 +8,20 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 namespace AsmSim
 {
-    // The above copyright notice and this permission notice shall be included in all
-    // copies or substantial portions of the Software.
-
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    // SOFTWARE.
-
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -81,13 +81,7 @@ namespace AsmSim
         public static string Reg_Name(Rn reg, string key)
         {
             Contract.Requires(key != null);
-
-            if (RegisterTools.Is_SIMD_Register(reg))
-            {
-                return "SIMD" + key;
-            }
-
-            return reg.ToString() + key;
+            return (RegisterTools.Is_SIMD_Register(reg)) ? ("SIMD" + key) : (reg.ToString() + key);
         }
 
         public static string Reg_Name_Fresh(Rn reg, Random rand)
@@ -321,11 +315,12 @@ namespace AsmSim
                 if (baseReg != Rn.NOREG)
                 {
                     BitVecExpr baseRegister;
+                    BitVecExpr keyBitVector = Create_Key(baseReg, key, ctx);
                     switch (RegisterTools.NBits(baseReg))
                     {
-                        case 64: baseRegister = Create_Key(baseReg, key, ctx); break;
-                        case 32: baseRegister = ctx.MkZeroExt(32, Create_Key(baseReg, key, ctx)); break;
-                        case 16: baseRegister = ctx.MkZeroExt(48, Create_Key(baseReg, key, ctx)); break;
+                        case 64: baseRegister = keyBitVector; break;
+                        case 32: baseRegister = ctx.MkZeroExt(32, keyBitVector); break;
+                        case 16: baseRegister = ctx.MkZeroExt(48, keyBitVector); break;
                         default: throw new Exception();
                     }
                     //Console.WriteLine("baseRegister.NBits = " + baseRegister.SortSize + "; address.NBits = " + address.SortSize);
@@ -386,16 +381,18 @@ namespace AsmSim
             Contract.Requires(ctx != null);
             Contract.Requires(nBytes > 0, "Number of bytes has to larger than zero. nBytes=" + nBytes);
 
-            ArrayExpr mem = Create_Mem_Key(key, ctx);
-            BitVecExpr result = ctx.MkSelect(mem, address) as BitVecExpr;
-
-            for (uint i = 1; i < nBytes; ++i)
+            using (ArrayExpr mem = Create_Mem_Key(key, ctx))
             {
-                BitVecExpr result2 = ctx.MkSelect(mem, ctx.MkBVAdd(address, ctx.MkBV(i, 64))) as BitVecExpr;
-                result = ctx.MkConcat(result2, result);
+                BitVecExpr result = ctx.MkSelect(mem, address) as BitVecExpr;
+
+                for (uint i = 1; i < nBytes; ++i)
+                {
+                    BitVecExpr result2 = ctx.MkSelect(mem, ctx.MkBVAdd(address, ctx.MkBV(i, 64))) as BitVecExpr;
+                    result = ctx.MkConcat(result2, result);
+                }
+                Debug.Assert(result.SortSize == (nBytes * 8));
+                return result;
             }
-            Debug.Assert(result.SortSize == (nBytes * 8));
-            return result;
         }
 
         public static ArrayExpr Set_Value_To_Mem(BitVecExpr value, BitVecExpr address, string key, Context ctx)
@@ -404,20 +401,17 @@ namespace AsmSim
             Contract.Requires(address != null);
             Contract.Requires(ctx != null);
 
-            if (address.SortSize < 64)
-            {
-                address = ctx.MkZeroExt(64 - address.SortSize, address);
-            }
-            Debug.Assert(address != null);
-            Debug.Assert(address.SortSize == 64);
+            BitVecExpr address2 = (address.SortSize < 64) ? ctx.MkZeroExt(64 - address.SortSize, address) : address;
+            Contract.Assume(address2 != null);
+            Contract.Assume(address2.SortSize == 64);
 
             uint nBytes = value.SortSize >> 3;
             ArrayExpr mem = Create_Mem_Key(key, ctx);
 
             for (uint i = 0; i < nBytes; ++i)
             {
-                BitVecExpr address2 = ctx.MkBVAdd(address, ctx.MkBV(i, 64));
-                mem = ctx.MkStore(mem, address2, ctx.MkExtract((8 * (i + 1)) - 1, 8 * i, value));
+                BitVecExpr address3 = ctx.MkBVAdd(address2, ctx.MkBV(i, 64));
+                mem = ctx.MkStore(mem, address3, ctx.MkExtract((8 * (i + 1)) - 1, 8 * i, value));
             }
             return mem;
         }

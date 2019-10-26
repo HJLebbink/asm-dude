@@ -123,18 +123,18 @@ namespace AsmDude
                 #region
                 ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
                 string partialKeyword = applicableTo.GetText(snapshot);
-                bool useCapitals = AsmDudeToolsStatic.Is_All_Upper(partialKeyword);
+                bool useCapitals = AsmDudeToolsStatic.Is_All_upcase(partialKeyword);
 
                 string lineStr = line.GetText();
                 (string label, Mnemonic mnemonic, string[] args, string remark) t = AsmSourceTools.ParseLine(lineStr);
                 Mnemonic mnemonic = t.mnemonic;
-                string previousKeyword = AsmDudeToolsStatic.Get_Previous_Keyword(line.Start, start).ToUpper(CultureInfo.InvariantCulture);
+                string previousKeyword_upcase = AsmDudeToolsStatic.Get_Previous_Keyword(line.Start, start).ToUpperInvariant();
 
                 //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentCompletionSession. lineStr=\"{1}\"; previousKeyword=\"{2}\"", this.ToString(), lineStr, previousKeyword));
 
                 if (mnemonic == Mnemonic.NONE)
                 {
-                    if (previousKeyword.Equals("INVOKE")) //TODO INVOKE is a MASM keyword not a NASM one...
+                    if (previousKeyword_upcase.Equals("INVOKE", StringComparison.Ordinal)) //TODO INVOKE is a MASM keyword not a NASM one...
                     {
                         // Suggest a label
                         IEnumerable<Completion> completions = this.Label_Completions(useCapitals, false);
@@ -177,7 +177,7 @@ namespace AsmDude
                 { // the current line contains a mnemonic
                     //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; mnemonic=" + mnemonic+ "; previousKeyword="+ previousKeyword);
 
-                    if (AsmSourceTools.IsJump(AsmSourceTools.ParseMnemonic(previousKeyword, true)))
+                    if (AsmSourceTools.IsJump(AsmSourceTools.ParseMnemonic(previousKeyword_upcase, true)))
                     {
                         //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
@@ -187,7 +187,7 @@ namespace AsmDude
                             completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                         }
                     }
-                    else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR"))
+                    else if (previousKeyword_upcase.Equals("SHORT", StringComparison.Ordinal) || previousKeyword_upcase.Equals("NEAR", StringComparison.Ordinal))
                     {
                         // Suggest a label
                         IEnumerable<Completion> completions = this.Label_Completions(useCapitals, false);
@@ -263,7 +263,7 @@ namespace AsmDude
                     //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
-                    string insertionText = useCapitals ? keyword : keyword.ToLower(CultureInfo.InvariantCulture);
+                    string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
                     string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
@@ -383,7 +383,7 @@ namespace AsmDude
                 {
                     string keyword = mnemonic.ToString();
                     string description = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic).First().Documentation;
-                    string insertionText = useCapitals ? keyword : keyword.ToLower(CultureInfo.InvariantCulture);
+                    string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
                     string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic));
                     string descriptionStr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
                     descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;

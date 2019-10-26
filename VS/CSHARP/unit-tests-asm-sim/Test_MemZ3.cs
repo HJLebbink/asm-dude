@@ -25,13 +25,13 @@ namespace unit_tests_asm_z3
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Globalization;
     using AsmSim;
     using AsmTools;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.Z3;
 
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     public class Test_MemZ3
     {
         private const bool LogToDisplay = AsmTestTools.LOG_TO_DISPLAY;

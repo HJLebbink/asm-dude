@@ -24,7 +24,6 @@ namespace AsmSim
 
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
@@ -988,6 +987,7 @@ namespace AsmSim
             this._mem_Full = memContent.Translate(this._ctx) as ArrayExpr;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set_Mem_Unknown()
         {
             this.Set_Mem(Tools.Create_Mem_Key_Fresh(this._tools.Rand, this._ctx));

@@ -1,4 +1,26 @@
-﻿namespace unit_tests_asm_z3
+﻿// The MIT License (MIT)
+//
+// Copyright (c) 2019 Henk-Jan Lebbink
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+namespace unit_tests_asm_z3
 {
     using System;
     using System.Collections.Generic;
@@ -44,15 +66,15 @@
             Assert.AreEqual((8, 8), sFlow.Get_Next_LineNumber(7));
             Assert.AreEqual((9, -1), sFlow.Get_Next_LineNumber(8));
 
-            List<(int LineNumber, bool IsBranch)> p0 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(0));
-            List<(int LineNumber, bool IsBranch)> p1 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(1));
-            List<(int LineNumber, bool IsBranch)> p2 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(2));
-            List<(int LineNumber, bool IsBranch)> p3 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(3));
-            List<(int LineNumber, bool IsBranch)> p4 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(4));
-            List<(int LineNumber, bool IsBranch)> p5 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(5));
-            List<(int LineNumber, bool IsBranch)> p6 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(6));
-            List<(int LineNumber, bool IsBranch)> p7 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(7));
-            List<(int LineNumber, bool IsBranch)> p8 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(8));
+            List<(int lineNumber, bool isBranch)> p0 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(0));
+            List<(int lineNumber, bool isBranch)> p1 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(1));
+            List<(int lineNumber, bool isBranch)> p2 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(2));
+            List<(int lineNumber, bool isBranch)> p3 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(3));
+            List<(int lineNumber, bool isBranch)> p4 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(4));
+            List<(int lineNumber, bool isBranch)> p5 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(5));
+            List<(int lineNumber, bool isBranch)> p6 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(6));
+            List<(int lineNumber, bool isBranch)> p7 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(7));
+            List<(int lineNumber, bool isBranch)> p8 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(8));
 
             Assert.AreEqual(0, p0.Count);
             Assert.AreEqual(1, p1.Count);
@@ -100,16 +122,16 @@
 
             #region Retrieve Data
 
-            (int Regular, int Branch) n0 = sFlow.Get_Next_LineNumber(0);
-            (int Regular, int Branch) n1 = sFlow.Get_Next_LineNumber(1);
-            (int Regular, int Branch) n2 = sFlow.Get_Next_LineNumber(2);
-            (int Regular, int Branch) n3 = sFlow.Get_Next_LineNumber(3);
-            (int Regular, int Branch) n4 = sFlow.Get_Next_LineNumber(4);
-            (int Regular, int Branch) n5 = sFlow.Get_Next_LineNumber(5);
-            (int Regular, int Branch) n6 = sFlow.Get_Next_LineNumber(6);
-            (int Regular, int Branch) n7 = sFlow.Get_Next_LineNumber(7);
-            (int Regular, int Branch) n8 = sFlow.Get_Next_LineNumber(8);
-            (int Regular, int Branch) n9 = sFlow.Get_Next_LineNumber(9);
+            (int regular, int branch) n0 = sFlow.Get_Next_LineNumber(0);
+            (int regular, int branch) n1 = sFlow.Get_Next_LineNumber(1);
+            (int regular, int branch) n2 = sFlow.Get_Next_LineNumber(2);
+            (int regular, int branch) n3 = sFlow.Get_Next_LineNumber(3);
+            (int regular, int branch) n4 = sFlow.Get_Next_LineNumber(4);
+            (int regular, int branch) n5 = sFlow.Get_Next_LineNumber(5);
+            (int regular, int branch) n6 = sFlow.Get_Next_LineNumber(6);
+            (int regular, int branch) n7 = sFlow.Get_Next_LineNumber(7);
+            (int regular, int branch) n8 = sFlow.Get_Next_LineNumber(8);
+            (int regular, int branch) n9 = sFlow.Get_Next_LineNumber(9);
             // var n10 = sFlow.Get_Next_LineNumber(10);
 
             Console.WriteLine("n0 = " + string.Join(",", n0));
@@ -124,16 +146,16 @@
             Console.WriteLine("n9 = " + string.Join(",", n9));
             // Console.WriteLine("n10 = " + string.Join(",", n10));
 
-            List<(int LineNumber, bool IsBranch)> p0 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(0));
-            List<(int LineNumber, bool IsBranch)> p1 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(1));
-            List<(int LineNumber, bool IsBranch)> p2 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(2));
-            List<(int LineNumber, bool IsBranch)> p3 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(3));
-            List<(int LineNumber, bool IsBranch)> p4 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(4));
-            List<(int LineNumber, bool IsBranch)> p5 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(5));
-            List<(int LineNumber, bool IsBranch)> p6 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(6));
-            List<(int LineNumber, bool IsBranch)> p7 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(7));
-            List<(int LineNumber, bool IsBranch)> p8 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(8));
-            List<(int LineNumber, bool IsBranch)> p9 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(9));
+            List<(int lineNumber, bool isBranch)> p0 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(0));
+            List<(int lineNumber, bool isBranch)> p1 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(1));
+            List<(int lineNumber, bool isBranch)> p2 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(2));
+            List<(int lineNumber, bool isBranch)> p3 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(3));
+            List<(int lineNumber, bool isBranch)> p4 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(4));
+            List<(int lineNumber, bool isBranch)> p5 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(5));
+            List<(int lineNumber, bool isBranch)> p6 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(6));
+            List<(int lineNumber, bool isBranch)> p7 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(7));
+            List<(int lineNumber, bool isBranch)> p8 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(8));
+            List<(int lineNumber, bool isBranch)> p9 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(9));
             // var p10 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(10));
 
             Console.WriteLine("p0 = " + string.Join(",", p0));

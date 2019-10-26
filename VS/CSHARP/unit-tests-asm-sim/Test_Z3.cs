@@ -29,6 +29,7 @@ namespace unit_tests_asm_z3
     using Microsoft.Z3;
 
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     public class Test_Z3
     {
         /*

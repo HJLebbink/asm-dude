@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Globalization;
-using AsmTools;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace unit_tests_asm_tools
 {
+    using System;
+    using System.Globalization;
+    using AsmTools;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class Test_Operand
     {
@@ -215,4 +215,3 @@ namespace unit_tests_asm_tools
         }
     }
 }
-

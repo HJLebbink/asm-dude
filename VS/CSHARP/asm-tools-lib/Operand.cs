@@ -34,7 +34,7 @@ namespace AsmTools
 
         public int NBits { get; set; }
 
-        private readonly (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) _mem;
+        private readonly (Rn baseReg, Rn indexReg, int scale, long displacement) _mem;
         public readonly string ErrorMessage;
 
         /// <summary>constructor</summary>
@@ -64,36 +64,36 @@ namespace AsmTools
                     Replace("{1TO16}", string.Empty)
                 : token2 = token;
 
-            (bool Valid, Rn Reg, int NBits) t0 = RegisterTools.ToRn(token2, true);
-            if (t0.Valid)
+            (bool valid, Rn reg, int nBits) t0 = RegisterTools.ToRn(token2, true);
+            if (t0.valid)
             {
                 this._type = Ot1.reg;
-                this._rn = t0.Reg;
-                this.NBits = t0.NBits;
+                this._rn = t0.reg;
+                this.NBits = t0.nBits;
             }
             else
             {
                 this._rn = Rn.NOREG;
 
-                (bool Valid, ulong Value, int NBits) t1 = AsmSourceTools.Evaluate_Constant(token2, true);
-                if (t1.Valid)
+                (bool valid, ulong value, int nBits) = AsmSourceTools.Evaluate_Constant(token2, true);
+                if (valid)
                 {
                     this._type = Ot1.imm;
-                    this._imm = t1.Value;
-                    this.NBits = t1.NBits;
+                    this._imm = value;
+                    this.NBits = nBits;
                 }
                 else
                 {
-                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) t2 = AsmSourceTools.Parse_Mem_Operand(token2, true);
-                    if (t2.Valid)
+                    (bool valid2, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits2, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(token2, true);
+                    if (valid2)
                     {
                         this._type = Ot1.mem;
-                        this._mem = (t2.BaseReg, t2.IndexReg, t2.Scale, t2.Displacement);
-                        this.NBits = t2.NBits;
+                        this._mem = (baseReg, indexReg, scale, displacement);
+                        this.NBits = nBits2;
                     }
                     else
                     {
-                        this.ErrorMessage = t2.ErrorMessage;
+                        this.ErrorMessage = errorMessage;
                         this._type = Ot1.UNKNOWN;
                         this.NBits = -1;
                     }
@@ -114,7 +114,7 @@ namespace AsmTools
         public ulong Imm { get { return this._imm; } }
 
         /// <summary> Gets tup with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
-        public (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) Mem { get { return this._mem; } }
+        public (Rn baseReg, Rn indexReg, int scale, long displacement) Mem { get { return this._mem; } }
 
         /// <summary> Sign Extend the imm to the provided number of bits;</summary>
         public void SignExtend(int nBits)

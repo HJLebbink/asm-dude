@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Diagnostics.Contracts;
-
 namespace AsmTools
 {
+    using System;
+    using System.Diagnostics.Contracts;
+
     [Flags]
     public enum MicroArch
     {

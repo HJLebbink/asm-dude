@@ -340,6 +340,11 @@
     <PackageReference Include="LoadingIndicators.WPF">
       <Version>0.0.1</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers">
+      <Version>2.9.6</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp">
       <Version>3.4.0-beta2-final</Version>
     </PackageReference>
@@ -363,7 +368,7 @@
       <Version>1.2.0-beta2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp">
-      <Version>4.6.0</Version>
+      <Version>4.7.0-preview1.19504.10</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.CoreUtility">
       <Version>14.3.25407</Version>

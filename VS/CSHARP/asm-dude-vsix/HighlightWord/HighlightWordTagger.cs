@@ -173,7 +173,7 @@ namespace AsmDude.HighlightWord
                 string newWord = newWordExtend.Value.Span.GetText().Trim();
                 //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Word_Adornments. caretPoisition={1}; point={2}; newWordExtend={3}", this.ToString(), caretPosition, point, newWordExtend));
 
-                if ((this.CurrentWord != null) && newWord.Equals(this.CurrentWord))
+                if ((this.CurrentWord != null) && newWord.Equals(this.CurrentWord, StringComparison.Ordinal))
                 {
                     return;
                 }

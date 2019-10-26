@@ -1,13 +1,35 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using System.Numerics;
-using AsmSim;
-using AsmTools;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Z3;
+﻿// The MIT License (MIT)
+//
+// Copyright (c) 2019 Henk-Jan Lebbink
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 namespace unit_tests_asm_z3
 {
+    using System;
+    using System.Diagnostics.Contracts;
+    using System.Numerics;
+    using AsmSim;
+    using AsmTools;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Microsoft.Z3;
+
     public static class AsmTestTools
     {
 #if DEBUG
@@ -189,7 +211,7 @@ namespace unit_tests_asm_z3
 
             string state1Str = state1.ToStringRegs(string.Empty) + state1.ToStringFlags(string.Empty);
             string state2Str = state2.ToStringRegs(string.Empty) + state2.ToStringFlags(string.Empty);
-            if (state1Str.Equals(state2Str))
+            if (state1Str.Equals(state2Str, StringComparison.Ordinal))
             {
                 // ok
             }
@@ -267,12 +289,10 @@ namespace unit_tests_asm_z3
                 AreEqual(expectedTvArray, actualTvArray);
             }
         }
+
         /// <summary>
         /// Test whether the provided registers are equal in the provided state
         /// </summary>
-        /// <param name="reg1"></param>
-        /// <param name="reg2"></param>
-        /// <param name="state"></param>
         public static void AreEqual(Rn reg1, Rn reg2, State state)
         {
             Contract.Requires(state != null);
@@ -295,13 +315,11 @@ namespace unit_tests_asm_z3
                 }
             }
         }
+
         /// <summary>
         /// Test whether the provided registers are unrelated in the provided state. That is, whether the
         /// equality of the two registers is unknown in the provided state.
         /// </summary>
-        /// <param name="reg1"></param>
-        /// <param name="reg2"></param>
-        /// <param name="state"></param>
         public static void AreUnrelated(Rn reg1, Rn reg2, State state)
         {
             Contract.Requires(state != null);

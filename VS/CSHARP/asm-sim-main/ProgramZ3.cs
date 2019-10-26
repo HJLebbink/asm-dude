@@ -540,6 +540,7 @@ namespace AsmSim
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private static void Test_Rep()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
@@ -1613,6 +1614,7 @@ namespace AsmSim
             GC.Collect();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private static void Test_NullReference_Bsf_1()
         {
             bool logToDisplay = true;

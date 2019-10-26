@@ -24,7 +24,6 @@ namespace AsmDude.SignatureHelp
 {
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Globalization;
     using System.Text;
     using AsmDude.Tools;
     using AsmTools;
@@ -641,7 +640,7 @@ namespace AsmDude.SignatureHelp
         public static bool Is_Allowed_Misc(string misc, ISet<AsmSignatureEnum> allowedOperands)
         {
             Contract.Requires(misc != null);
-            Contract.Requires(misc == misc.ToUpper(CultureInfo.InvariantCulture));
+            Contract.Requires(misc == misc.ToUpperInvariant());
             Contract.Requires(allowedOperands != null);
 
             switch (misc)

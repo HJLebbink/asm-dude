@@ -24,7 +24,6 @@ namespace unit_tests_asm_z3
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using AsmSim;
     using AsmTools;
     using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -24,7 +24,6 @@ namespace AsmSim
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;

@@ -24,7 +24,6 @@ namespace AsmTools
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
 
     public enum RegisterType
     {
@@ -58,12 +57,12 @@ namespace AsmTools
             }
         }
 
-        public static (bool Valid, Rn Reg, int NBits) ToRn(string str, bool isCapitals = false)
+        public static (bool valid, Rn reg, int nBits) ToRn(string str, bool isCapitals = false)
         {
             Rn rn = ParseRn(str, isCapitals);
             return (rn == Rn.NOREG)
-                ? (Valid: false, Reg: Rn.NOREG, NBits: 0)
-                : (Valid: true, Reg: rn, NBits: NBits(rn));
+                ? (valid: false, reg: Rn.NOREG, nBits: 0)
+                : (valid: true, reg: rn, nBits: NBits(rn));
         }
 
         public static Rn ParseRn(string str, bool strIsCapitals = false)

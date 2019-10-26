@@ -26,7 +26,6 @@ namespace AsmTools
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
-    using System.Globalization;
 
     public enum Mnemonic
     {
@@ -2499,12 +2498,12 @@ namespace AsmTools
             Contract.Requires(str != null);
 
 #if DEBUG
-            if (strIsCapitals && (str != str.ToUpper(CultureInfo.InvariantCulture)))
+            if (strIsCapitals && (str != str.ToUpperInvariant()))
             {
                 throw new Exception();
             }
 #endif
-            return (strIsCapitals) ? str : str.ToUpper(CultureInfo.InvariantCulture);
+            return (strIsCapitals) ? str : str.ToUpperInvariant();
         }
 
         private static AttType ParseAttType(char c)

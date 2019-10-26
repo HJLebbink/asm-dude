@@ -67,12 +67,21 @@ namespace AsmDude
             ThreadHelper.ThrowIfNotOnUIThread();
 
             #region Initialize ErrorListProvider
-            IServiceProvider serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-            this._errorListProvider = new ErrorListProvider(serviceProvider)
+
+            //this._errorListProvider = new ErrorListProvider(new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider))
+            //{
+            //    ProviderName = "Asm Errors",
+            //    ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode),
+            //};
+
+            IServiceProvider a = Package.GetGlobalService(typeof(System.IServiceProvider)) as IServiceProvider;
+
+            this._errorListProvider = new ErrorListProvider(a)
             {
                 ProviderName = "Asm Errors",
                 ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode),
             };
+
             #endregion
 
             this._threadPool = new SmartThreadPool();
@@ -336,7 +345,7 @@ namespace AsmDude
         public AsmTokenType Get_Token_Type_Att(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+            Contract.Requires(keyword == keyword.ToUpperInvariant());
 
             int length = keyword.Length;
             Contract.Requires(length > 0);
@@ -380,7 +389,7 @@ namespace AsmDude
         public AsmTokenType Get_Token_Type_Intel(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+            Contract.Requires(keyword == keyword.ToUpperInvariant());
 
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
@@ -402,7 +411,7 @@ namespace AsmDude
         public AssemblerEnum Get_Assembler(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+            Contract.Requires(keyword == keyword.ToUpperInvariant());
 
             return this._assembler.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
         }
@@ -421,7 +430,7 @@ namespace AsmDude
         public string Get_Description(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+            Contract.Requires(keyword == keyword.ToUpperInvariant());
 
             return this._description.TryGetValue(keyword, out string description) ? description : string.Empty;
         }
@@ -432,7 +441,7 @@ namespace AsmDude
         public Arch Get_Architecture(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+            Contract.Requires(keyword == keyword.ToUpperInvariant());
 
             return this._arch.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
         }
@@ -464,7 +473,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
+                    string name = nameAttribute.Value.ToUpperInvariant();
                     this._type[name] = AsmTokenType.Misc;
                     this._arch[name] = Retrieve_Arch(node);
                     this._description[name] = Retrieve_Description(node);
@@ -480,7 +489,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
+                    string name = nameAttribute.Value.ToUpperInvariant();
                     this._type[name] = AsmTokenType.Directive;
                     this._arch[name] = Retrieve_Arch(node);
                     this._assembler[name] = Retrieve_Assembler(node);
@@ -496,7 +505,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
+                    string name = nameAttribute.Value.ToUpperInvariant();
                     //this._type[name] = AsmTokenType.Register;
                     this._arch[name] = Retrieve_Arch(node);
                     this._description[name] = Retrieve_Description(node);
@@ -511,7 +520,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
+                    string name = nameAttribute.Value.ToUpperInvariant();
                     this._type[name] = AsmTokenType.UserDefined1;
                     this._description[name] = Retrieve_Description(node);
                 }
@@ -525,7 +534,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
+                    string name = nameAttribute.Value.ToUpperInvariant();
                     this._type[name] = AsmTokenType.UserDefined2;
                     this._description[name] = Retrieve_Description(node);
                 }
@@ -539,7 +548,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
+                    string name = nameAttribute.Value.ToUpperInvariant();
                     this._type[name] = AsmTokenType.UserDefined3;
                     this._description[name] = Retrieve_Description(node);
                 }

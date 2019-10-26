@@ -24,7 +24,6 @@ namespace AsmDude.Squiggles
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
     using System.Text;
     using System.Windows;
@@ -346,7 +345,7 @@ namespace AsmDude.Squiggles
             int startPos = -1;
             for (int i = 0; i < lineContent.Length - lengthKeyword; ++i)
             {
-                if (lineContent.Substring(i, lengthKeyword).Equals(keyword))
+                if (lineContent.Substring(i, lengthKeyword).Equals(keyword, StringComparison.Ordinal))
                 {
                     startPos = i;
                     break;
@@ -544,12 +543,12 @@ namespace AsmDude.Squiggles
                 try
                 {
                     //TODO why the upper here?
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper(CultureInfo.InvariantCulture);
+                    string lineContent_upcase = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpperInvariant();
                     ErrorTask errorTask = new ErrorTask()
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.SYNTAX_ERROR,
                         Line = lineNumber,
-                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Column = Get_Keyword_Begin_End(lineContent_upcase, keyword),
                         Text = "Syntax Error: " + message,
                         ErrorCategory = TaskErrorCategory.Error,
                         Document = AsmDudeToolsStatic.GetFilenameAsync(this._sourceBuffer).Result,
@@ -571,12 +570,12 @@ namespace AsmDude.Squiggles
                 try
                 {
                     //TODO why the upper here?
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper(CultureInfo.InvariantCulture);
+                    string lineContent_upcase = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpperInvariant();
                     ErrorTask errorTask = new ErrorTask()
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.USAGE_OF_UNDEFINED,
                         Line = lineNumber,
-                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Column = Get_Keyword_Begin_End(lineContent_upcase, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
                         Document = AsmDudeToolsStatic.GetFilenameAsync(this._sourceBuffer).Result,
@@ -598,12 +597,12 @@ namespace AsmDude.Squiggles
                 try
                 {
                     //TODO why the upper here?
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper(CultureInfo.InvariantCulture);
+                    string lineContent_upcase = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpperInvariant();
                     ErrorTask errorTask = new ErrorTask()
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.REDUNDANT,
                         Line = lineNumber,
-                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Column = Get_Keyword_Begin_End(lineContent_upcase, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
                         Document = AsmDudeToolsStatic.GetFilenameAsync(this._sourceBuffer).Result,
@@ -625,12 +624,12 @@ namespace AsmDude.Squiggles
                 try
                 {
                     //TODO why the upper here?
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper(CultureInfo.InvariantCulture);
+                    string lineContent_upcase = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpperInvariant();
                     ErrorTask errorTask = new ErrorTask()
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.UNREACHABLE,
                         Line = lineNumber,
-                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Column = Get_Keyword_Begin_End(lineContent_upcase, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
                         Document = AsmDudeToolsStatic.GetFilenameAsync(this._sourceBuffer).Result,

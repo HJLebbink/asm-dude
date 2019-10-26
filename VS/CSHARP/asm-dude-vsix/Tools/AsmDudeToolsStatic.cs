@@ -166,7 +166,7 @@ namespace AsmDude.Tools
 
             for (int i = 0; i < Math.Min(snapshot.LineCount, nLinesMax); ++i)
             {
-                string line_upcase = snapshot.GetLineFromLineNumber(i).GetText().ToUpper(CultureInfo.InvariantCulture);
+                string line_upcase = snapshot.GetLineFromLineNumber(i).GetText().ToUpperInvariant();
                 Output_INFO(string.Format(CultureUI, "{0}:Guess_Intel_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_upcase));
 
                 List<string> keywords_upcase = AsmSourceTools.SplitIntoKeywordsList(line_upcase);
@@ -222,7 +222,7 @@ namespace AsmDude.Tools
 
             for (int i = 0; i < Math.Min(snapshot.LineCount, nLinesMax); ++i)
             {
-                string line_upcase = snapshot.GetLineFromLineNumber(i).GetText().ToUpper(CultureInfo.InvariantCulture);
+                string line_upcase = snapshot.GetLineFromLineNumber(i).GetText().ToUpperInvariant();
                 //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Masm_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
 
                 List<string> keywords_upcase = AsmSourceTools.SplitIntoKeywordsList(line_upcase);
@@ -836,7 +836,7 @@ namespace AsmDude.Tools
             return AsmSourceTools.GetPreviousKeyword(beginPos, endPos, begin.GetContainingLine().GetText());
         }
 
-        public static bool Is_All_Upper(string input)
+        public static bool Is_All_upcase(string input)
         {
             Contract.Requires(input != null);
 

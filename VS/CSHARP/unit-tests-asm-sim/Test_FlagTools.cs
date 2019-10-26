@@ -28,6 +28,7 @@ namespace unit_tests_asm_z3
     using Microsoft.Z3;
 
     [TestClass]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     public class Test_FlagTools
     {
         private Context CreateContext()
@@ -69,12 +70,9 @@ namespace unit_tests_asm_z3
                 BitVecExpr aExpr = ctx.MkBV(a, nBits);
                 BitVecExpr bExpr = ctx.MkBV(b, nBits);
 
-                using (BoolExpr resultExpr = ToolsFlags.Create_OF_Add(aExpr, bExpr, nBits, ctx).Simplify() as BoolExpr)
-                {
-                    Assert.IsTrue(AsmTestTools.Calc_OF_Add(nBits, a, b) ? resultExpr.IsTrue : resultExpr.IsFalse);
-                }
+                BoolExpr resultExpr = ToolsFlags.Create_OF_Add(aExpr, bExpr, nBits, ctx).Simplify() as BoolExpr;
+                Assert.IsTrue(AsmTestTools.Calc_OF_Add(nBits, a, b) ? resultExpr.IsTrue : resultExpr.IsFalse);
             }
-            ctx.Dispose();
         }
     }
 }

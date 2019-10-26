@@ -148,7 +148,7 @@ namespace AsmDude.Tools
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {
-                    if ((line.Length > 0) && (!line.StartsWith(";")))
+                    if ((line.Length > 0) && (!line.StartsWith(";", StringComparison.Ordinal)))
                     {
                         string[] columns = line.Split('\t');
                         if (columns.Length == 4)
@@ -255,7 +255,7 @@ namespace AsmDude.Tools
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {
-                    if ((line.Length > 0) && (!line.StartsWith(";")))
+                    if ((line.Length > 0) && (!line.StartsWith(";", StringComparison.Ordinal)))
                     {
                         string[] columns = line.Split('\t');
                         if (columns.Length == 4)

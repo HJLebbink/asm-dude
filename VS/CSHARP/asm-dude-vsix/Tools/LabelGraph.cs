@@ -26,7 +26,6 @@ namespace AsmDude.Tools
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Globalization;
     using System.IO;
     using Amib.Threading;
     using AsmDude.SyntaxHighlighting;
@@ -327,13 +326,13 @@ namespace AsmDude.Tools
                     results.UnionWith(lines);
                 }
             }
-            if (full_Qualified_Label.Equals(label))
+            if (full_Qualified_Label.Equals(label, StringComparison.Ordinal))
             {
                 AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
                 foreach (KeyValuePair<string, IList<uint>> entry in this._usedAt)
                 {
                     string regular_Label = AsmDudeToolsStatic.Retrieve_Regular_Label(entry.Key, usedAssember);
-                    if (label.Equals(regular_Label))
+                    if (label.Equals(regular_Label, StringComparison.Ordinal))
                     {
                         results.UnionWith(entry.Value);
                     }
@@ -525,7 +524,7 @@ namespace AsmDude.Tools
                             string label = Get_Text(buffer, asmTokenTag);
                             string extra_Tag_Info = asmTokenTag.Tag.Misc;
 
-                            if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO))
+                            if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO, StringComparison.Ordinal))
                             {
                                 //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
                                 Add_To_Dictionary(label, id, this._defAt_PROTO);
@@ -553,8 +552,8 @@ namespace AsmDude.Tools
                         }
                     case AsmTokenType.Directive:
                         {
-                            string directive_upper = Get_Text(buffer, asmTokenTag).ToUpper(CultureInfo.InvariantCulture);
-                            switch (directive_upper)
+                            string directive_upcase = Get_Text(buffer, asmTokenTag).ToUpperInvariant();
+                            switch (directive_upcase)
                             {
                                 case "%INCLUDE":
                                 case "INCLUDE":
@@ -610,11 +609,11 @@ namespace AsmDude.Tools
                 }
                 if (includeFilename.Length > 2)
                 {
-                    if (includeFilename.StartsWith("[") && includeFilename.EndsWith("]"))
+                    if (includeFilename.StartsWith("[", StringComparison.Ordinal) && includeFilename.EndsWith("]", StringComparison.Ordinal))
                     {
                         includeFilename = includeFilename.Substring(1, includeFilename.Length - 2);
                     }
-                    else if (includeFilename.StartsWith("\"") && includeFilename.EndsWith("\""))
+                    else if (includeFilename.StartsWith("\"", StringComparison.Ordinal) && includeFilename.EndsWith("\"", StringComparison.Ordinal))
                     {
                         includeFilename = includeFilename.Substring(1, includeFilename.Length - 2);
                     }

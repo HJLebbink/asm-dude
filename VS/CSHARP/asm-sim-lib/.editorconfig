@@ -116,3 +116,9 @@ dotnet_diagnostic.CA1031.severity = silent
 
 # CA1716: Identifiers should not match keywords
 dotnet_diagnostic.CA1716.severity = silent
+
+# IDE0047: Remove unnecessary parentheses
+dotnet_diagnostic.IDE0047.severity = none
+
+# SA1119: Statement should not use unnecessary parenthesis
+dotnet_diagnostic.SA1119.severity = none

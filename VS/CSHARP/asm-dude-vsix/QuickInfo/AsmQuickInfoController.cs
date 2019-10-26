@@ -20,11 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// thib is a typppo
+
 namespace AsmDude.QuickInfo
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
     using AsmDude.SyntaxHighlighting;
@@ -145,7 +146,7 @@ namespace AsmDude.QuickInfo
             {
                 SnapshotSpan tagSpan = keywordSpan.Value;
                 string keyword = tagSpan.GetText();
-                string keywordUpper = keyword.ToUpper(CultureInfo.InvariantCulture);
+                string keyword_upcase = keyword.ToUpperInvariant();
 
                 //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:ToolTipLegacy: keyword=\"{1}\"; type={2}; file=\"{3}\"", this.ToString(), keyword, tag.Type, AsmDudeToolsStatic.GetFilename(this._textView.TextBuffer)));
                 ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeInclusive);
@@ -162,7 +163,7 @@ namespace AsmDude.QuickInfo
                     case AsmTokenType.Mnemonic: // intentional fall through
                     case AsmTokenType.Jump:
                         {
-                            (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
+                            (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keyword_upcase, true);
 
                             InstructionTooltipWindow instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor())
                             {

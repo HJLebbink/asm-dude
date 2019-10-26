@@ -706,7 +706,7 @@ namespace AsmSim
 
         public sealed class NotImplemented : OpcodeBase
         {
-            public NotImplemented(Mnemonic _, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
+            public NotImplemented(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.NOP, args, keys, t)
             {
                 this.SyntaxError = "Not implemented";
