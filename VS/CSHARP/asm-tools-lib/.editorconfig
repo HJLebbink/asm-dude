@@ -113,3 +113,6 @@ dotnet_diagnostic.SA1516.severity = none
 
 # SA1649: File name should match first type name
 dotnet_diagnostic.SA1649.severity = silent
+
+# SA1214: Readonly fields should appear before non-readonly fields
+dotnet_diagnostic.SA1214.severity = none

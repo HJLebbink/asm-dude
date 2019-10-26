@@ -24,6 +24,7 @@ namespace unit_tests_asm_z3
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Numerics; // for BigInt
     using AsmSim;
     using AsmTools;
@@ -64,7 +65,7 @@ namespace unit_tests_asm_z3
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", timeOut.ToString() },
+                { "timeout", timeOut.ToString(CultureInfo.InvariantCulture) },
                 { "parallel", "true" },
             };
             return new Tools(settings);

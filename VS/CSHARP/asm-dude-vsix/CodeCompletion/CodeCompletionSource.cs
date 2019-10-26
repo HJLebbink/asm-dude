@@ -433,7 +433,7 @@ namespace AsmDude
                         //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
 
                         // by default, the entry.Key is with capitals
-                        string insertionText = useCapitals ? keyword : keyword.ToLower(CultureInfo.InvariantCulture);
+                        string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
                         string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                         string descriptionStr = this.asmDudeTools_.Get_Description(keyword);
                         descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;

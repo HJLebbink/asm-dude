@@ -100,7 +100,7 @@ namespace AsmSim
         private static void VizFormatVertex(object sender, FormatVertexEventArgs<string> e)
         {
             Contract.Requires(e != null);
-            e.VertexFormatter.Label = e.Vertex.ToString();
+            e.VertexFormatter.Label = e.Vertex.ToString(CultureInfo.InvariantCulture);
         }
 
         private sealed class FileDotEngine : IDotEngine

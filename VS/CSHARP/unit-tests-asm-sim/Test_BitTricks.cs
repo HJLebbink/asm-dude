@@ -24,6 +24,7 @@ namespace unit_tests_asm_z3
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using AsmSim;
     using AsmTools;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -58,7 +59,7 @@ namespace unit_tests_asm_z3
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "true" },          // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", timeOut.ToString() },
+                { "timeout", timeOut.ToString(CultureInfo.InvariantCulture) },
             };
             return new Tools(settings);
         }
@@ -119,7 +120,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(sFlow));
             }
 
-            State state = dFlow.EndState;
+            State state = dFlow.Create_EndState;
         }
 
         [TestMethod]

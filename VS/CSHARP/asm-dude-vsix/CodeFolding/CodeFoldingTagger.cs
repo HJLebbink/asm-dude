@@ -531,6 +531,7 @@ namespace AsmDude.CodeFolding
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         private static void Add_Start_Region(
             string lineContent,
             int regionStart,
@@ -579,6 +580,7 @@ namespace AsmDude.CodeFolding
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         private static void Add_End_Region(
             string lineContent,
             int regionEnd,

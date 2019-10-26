@@ -131,3 +131,12 @@ dotnet_diagnostic.SA1601.severity = silent
 
 # SA1602: Enumeration items should be documented
 dotnet_diagnostic.SA1602.severity = silent
+
+# CA1051: Do not declare visible instance fields
+dotnet_diagnostic.CA1051.severity = none
+
+# SA1307: Accessible fields should begin with upper-case letter
+dotnet_diagnostic.SA1307.severity = none
+
+# IDE0060: Remove unused parameter
+dotnet_code_quality_unused_parameters = all:silent

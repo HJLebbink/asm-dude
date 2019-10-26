@@ -106,7 +106,7 @@ namespace AsmSim
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", timeOut.ToString() },
+                { "timeout", timeOut.ToString(CultureInfo.InvariantCulture) },
             };
             return new Tools(settings);
         }
@@ -777,7 +777,7 @@ namespace AsmSim
                     tools.Quiet = false;
                     DynamicFlow tree1 = new DynamicFlow(tools);
                     tree1.Reset(sFlow1, false);
-                    Console.WriteLine(tree1.EndState);
+                    Console.WriteLine(tree1.Create_EndState);
                 }
                 if (false)
                 {
@@ -809,7 +809,7 @@ namespace AsmSim
                         State state_FirstLine = tree0.Create_States_Before(lineNumber_JZ, 0);
                         BranchInfo branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), true);
 
-                        State state0 = tree0.EndState;
+                        State state0 = tree0.Create_EndState;
                         state0.BranchInfoStore.Add(branchInfo, true);
                         Console.WriteLine("State0:" + state0);
                     }
@@ -822,7 +822,7 @@ namespace AsmSim
                         State state_FirstLine = tree1.Create_States_Before(lineNumber_JZ, 0);
                         BranchInfo branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), false);
 
-                        State state1 = tree1.EndState;
+                        State state1 = tree1.Create_EndState;
                         state1.BranchInfoStore.Add(branchInfo, true);
                         Console.WriteLine("State1:" + state1);
                     }
@@ -852,8 +852,8 @@ namespace AsmSim
                     DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
 
                     // Console.WriteLine(tree1.ToString(flow1));
-                    State state1 = tree1.EndState;
-                    State state2 = tree2.EndState;
+                    State state1 = tree1.Create_EndState;
+                    State state2 = tree2.Create_EndState;
 
                     Console.WriteLine("state1:" + state1);
                     Console.WriteLine("state2:" + state2);
@@ -882,8 +882,8 @@ namespace AsmSim
 
                     // Console.WriteLine(tree1.ToString(flow1));
 
-                    State state1 = tree1.Leafs.ElementAt(0);
-                    State state2 = tree2.Leafs.ElementAt(0);
+                    State state1 = tree1.Create_Leafs.ElementAt(0);
+                    State state2 = tree2.Create_Leafs.ElementAt(0);
 
                     Console.WriteLine("state1:" + state1);
                     Console.WriteLine("state2:" + state2);
@@ -1020,7 +1020,7 @@ namespace AsmSim
                 }
                 if (true)
                 {
-                    State endState = dFlow.EndState;
+                    State endState = dFlow.Create_EndState;
                     Console.WriteLine("in endState we know:\n" + endState);
                 }
             }

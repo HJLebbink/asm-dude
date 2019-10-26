@@ -33,7 +33,7 @@ namespace unit_tests_asm_z3
     public class Test_State
     {
         private const bool LogToDisplay = AsmTestTools.LOG_TO_DISPLAY;
-        private static readonly CultureInfo Culture = CultureInfo.CurrentCulture;
+        private static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
 
         private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {

@@ -435,6 +435,7 @@ namespace AsmSim
                     State result2 = new State(result, prev, true);
                     if (counter > 2)
                     {
+                        //TODO HJ 26 okt 2019 investigate dispose
                         result.Dispose();
                     }
 
