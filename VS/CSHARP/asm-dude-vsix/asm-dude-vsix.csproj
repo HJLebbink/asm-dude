@@ -47,7 +47,7 @@
     <AssemblyName>AsmDude</AssemblyName>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
@@ -417,7 +417,7 @@
       <Version>1.2.0-beta2</Version>
     </PackageReference>
     <PackageReference Include="System.ComponentModel.Composition">
-      <Version>4.6.0</Version>
+      <Version>4.7.0-preview1.19504.10</Version>
     </PackageReference>
     <PackageReference Include="System.Drawing.Primitives">
       <Version>4.3.0</Version>

@@ -3843,7 +3843,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_PushPop_64bit_3()
         {
-            Tools tools = this.CreateTools(10000); // 1000=10sec
+            Tools tools = this.CreateTools(40000); // 10000=10sec
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3857,6 +3857,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
+                if (LogToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
                 AsmTestTools.AreUnrelated(Rn.RAX, Rn.RBX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -3872,7 +3876,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_PushPop_64bit_4()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = this.CreateTools(40000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;

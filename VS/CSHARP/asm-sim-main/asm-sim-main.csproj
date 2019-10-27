@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>asm_sim_main</RootNamespace>
     <AssemblyName>asm-sim-main</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -122,7 +122,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="System.Drawing.Common">
-      <Version>4.6.0</Version>
+      <Version>4.7.0-preview1.19504.10</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
