@@ -799,7 +799,7 @@ namespace AsmSim
 
                             BoolExpr bc = null;
                             {
-                                using (Context ctx = new Context(this.tools_.Settings))
+                                using (Context ctx = new Context(this.tools_.ContextSettings))
                                 {
                                     string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this.graph_);
                                     BranchInfo branchInfo = Get_Branch_Condition_LOCAL(branchKey);

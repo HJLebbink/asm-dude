@@ -106,7 +106,7 @@ namespace AsmSim
                 this.args_ = args;
                 this.tools_ = t;
                 this.keys_ = keys;
-                this.ctx_ = new Context(t.Settings);
+                this.ctx_ = new Context(t.ContextSettings);
             }
 
             public abstract void Execute();

@@ -77,19 +77,22 @@ namespace AsmSim
         private State(Tools tools)
         {
             this.tools_ = new Tools(tools);
-            this.ctx_ = new Context(this.tools_.Settings); // housekeeping in Dispose();
-            this.Solver = MakeSolver(this.ctx_);
-            this.Solver_U = MakeSolver(this.ctx_);
+            this.ctx_ = new Context(this.tools_.ContextSettings); // housekeeping in Dispose();
+            this.Solver = MakeSolver(this.ctx_, this.tools_.SolverSetting);
+            this.Solver_U = MakeSolver(this.ctx_, this.tools_.SolverSetting);
             this.branchInfoStore_ = new BranchInfoStore(this.ctx_);
             this.cached_Reg_Values_ = new Dictionary<Rn, Tv[]>();
             this.cached_Flag_Values_ = new Dictionary<Flags, Tv>();
         }
 
-        public static Solver MakeSolver(Context ctx)
+        public static Solver MakeSolver(Context ctx, string solverSetting = "qfbv")
         {
             Contract.Requires(ctx != null);
 
-            Solver s = ctx.MkSolver(ctx.MkTactic("qfbv"));
+            Solver s = (string.IsNullOrEmpty(solverSetting))
+                ? ctx.MkSolver()
+                : ctx.MkSolver(ctx.MkTactic(solverSetting));
+
             //Params p = ctx.MkParams();
             //p.Add("mbqi", false); // use Model-based Quantifier Instantiation
             //s.Parameters = p;
@@ -897,22 +900,14 @@ namespace AsmSim
             if (this.Solver.NumAssertions > 0)
             {
                 sb.AppendLine(identStr + "Current Value constraints:");
-                for (int i = 0; i < (int)this.Solver.NumAssertions; ++i)
-                {
-                    BoolExpr e = this.Solver.Assertions[i];
-                    sb.AppendLine(identStr + string.Format(Culture, "   {0}: {1}", i, ToolsZ3.ToString(e)));
-                }
+                sb.AppendLine(ToolsZ3.ToString(this.Solver, identStr));
             }
             if (this.Tools.ShowUndefConstraints)
             {
                 //if (this.Solver_U.NumAssertions > 0)
                 {
                     sb.AppendLine(identStr + "Current Undef constraints:");
-                    for (int i = 0; i < (int)this.Solver_U.NumAssertions; ++i)
-                    {
-                        BoolExpr e = this.Solver_U.Assertions[i];
-                        sb.AppendLine(identStr + string.Format(Culture, "   {0}: {1}", i, ToolsZ3.ToString(e)));
-                    }
+                    sb.AppendLine(ToolsZ3.ToString(this.Solver_U, identStr));
                 }
             }
             sb.AppendLine(this.BranchInfoStore.ToString());

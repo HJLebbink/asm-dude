@@ -68,8 +68,8 @@ namespace AsmSim
                 Tools tools = state.Tools;
                 string nextKey = Tools.CreateKey(tools.Rand);
                 string nextKeyBranch = "DUMMY_NOT_USED";
-                (string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (state.HeadKey, nextKey, nextKeyBranch), tools))
+                (string label, Mnemonic mnemonic, string[] args, string remark) = AsmSourceTools.ParseLine(line);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(mnemonic, args, (state.HeadKey, nextKey, nextKeyBranch), tools))
                 {
                     if (opcodeBase == null)
                     {

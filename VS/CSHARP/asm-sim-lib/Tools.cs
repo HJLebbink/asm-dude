@@ -39,13 +39,13 @@ namespace AsmSim
         public bool ShowUndefConstraints { get; set; }
 
         public Tools()
-            : this(new Dictionary<string, string>()) { }
+            : this(new Dictionary<string, string>(), string.Empty) { }
 
         public Tools(Tools other)
         {
             Contract.Requires(other != null);
 
-            this.Settings = new Dictionary<string, string>(other.Settings);
+            this.ContextSettings = new Dictionary<string, string>(other.ContextSettings);
             this.rand_ = other.Rand; //new Random();
             this.p_ = other.p_;
             this.Quiet = other.Quiet;
@@ -53,9 +53,10 @@ namespace AsmSim
             this.StateConfig = other.StateConfig;
         }
 
-        public Tools(Dictionary<string, string> settings)
+        public Tools(Dictionary<string, string> contextSettings, string solverSetting = "")
         {
-            this.Settings = settings;
+            this.ContextSettings = contextSettings;
+            this.SolverSetting = solverSetting;
             this.rand_ = new Random();
             this.p_ = new AsmParameters();
             this.Quiet = true;
@@ -64,7 +65,9 @@ namespace AsmSim
             this.StateConfig.GetRegOn();
         }
 
-        public Dictionary<string, string> Settings { get; private set; }
+        public Dictionary<string, string> ContextSettings { get; private set; }
+
+        public string SolverSetting { get; private set; }
 
         public Random Rand { get { return this.rand_; } }
 

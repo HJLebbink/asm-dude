@@ -132,7 +132,7 @@ namespace AsmSim
             this.prevKey_Branch_ = null;
             this.nextKey_ = nextKey;
             this.tools_ = tools;
-            this.ctx_ = new Context(tools.Settings); // housekeeping in Dispose();
+            this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
             this.Empty = true;
         }
 
@@ -144,7 +144,7 @@ namespace AsmSim
             Contract.Requires(tools != null);
             Contract.Requires(branchCondition != null);
 
-            this.ctx_ = new Context(tools.Settings); // housekeeping in Dispose();
+            this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
             this.branch_Condition_ = branchCondition.Translate(this.ctx_) as BoolExpr;
             this.prevKey_Regular_ = prevKey_Regular;
             this.prevKey_Branch_ = prevKey_Branch;

@@ -25,6 +25,7 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Text;
     using AsmTools;
     using Microsoft.Z3;
@@ -426,6 +427,19 @@ namespace AsmSim
             {
                 return System.Text.RegularExpressions.Regex.Replace(e.ToString(), @"\s+", " ");
             }
+        }
+
+        public static string ToString(Solver solver, string identStr)
+        {
+            Contract.Requires(solver != null);
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < (int)solver.NumAssertions; ++i)
+            {
+                BoolExpr e = solver.Assertions[i];
+                sb.AppendLine(identStr + string.Format(CultureInfo.InvariantCulture, "   {0}: {1}", i, ToolsZ3.ToString(e)));
+            }
+            return sb.ToString();
         }
 
         #region Print Methods
@@ -986,8 +1000,6 @@ namespace AsmSim
 
         private static Tv GetTv_Method2(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx)
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>();
-
             bool tvTrue;
             {
                 using (Solver s = State.MakeSolver(ctx))
