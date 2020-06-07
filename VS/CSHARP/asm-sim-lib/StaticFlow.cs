@@ -29,7 +29,7 @@ namespace AsmSim
     using System.Linq;
     using System.Text;
     using AsmTools;
-    using QuickGraph;
+    using QuikGraph;
 
     public class StaticFlow
     {

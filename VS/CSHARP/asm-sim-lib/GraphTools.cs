@@ -26,7 +26,7 @@ namespace AsmSim
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
-    using QuickGraph;
+    using QuikGraph;
 
     public static class GraphTools<Tag>
     {

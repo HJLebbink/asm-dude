@@ -29,7 +29,7 @@ namespace AsmSim
     using System.Reflection;
     using AsmTools;
     using Microsoft.Z3;
-    using QuickGraph;
+    using QuikGraph;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     internal class AsmSimMain

@@ -27,9 +27,9 @@ namespace AsmSim
     using System.Globalization;
     using System.IO;
     using System.Windows.Forms;
-    using QuickGraph;
-    using QuickGraph.Graphviz;
-    using QuickGraph.Graphviz.Dot;
+    using QuikGraph;
+    using QuikGraph.Graphviz;
+    using QuikGraph.Graphviz.Dot;
 
     public static class DotVisualizer
     {
@@ -94,13 +94,13 @@ namespace AsmSim
             {
                 Value = e.Edge.Tag,
             };
-            e.EdgeFormatter.Label = label;
+            e.EdgeFormat.Label = label;
         }
 
         private static void VizFormatVertex(object sender, FormatVertexEventArgs<string> e)
         {
             Contract.Requires(e != null);
-            e.VertexFormatter.Label = e.Vertex.ToString(CultureInfo.InvariantCulture);
+            e.VertexFormat.Label = e.Vertex.ToString(CultureInfo.InvariantCulture);
         }
 
         private sealed class FileDotEngine : IDotEngine

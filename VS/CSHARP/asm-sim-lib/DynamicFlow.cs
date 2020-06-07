@@ -29,7 +29,7 @@ namespace AsmSim
     using System.Text;
     using AsmTools;
     using Microsoft.Z3;
-    using QuickGraph;
+    using QuikGraph;
 
     public class DynamicFlow : IDisposable
     {
