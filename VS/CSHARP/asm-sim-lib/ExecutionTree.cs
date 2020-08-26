@@ -24,7 +24,7 @@ namespace AsmSim
 {
     using System;
     using System.Collections.Generic;
-    using QuickGraph;
+    using QuikGraph;
 
     public class ExecutionTree : IDisposable
     {
