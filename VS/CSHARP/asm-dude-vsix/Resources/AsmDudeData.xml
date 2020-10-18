@@ -47,13 +47,13 @@
 
   <directives>
     <directive name="ADDR" tool="MASM">
-      <description>TODO</description>
+      <description>Operator used exclusively with INVOKE to pass the address of a variable to a procedure.</description>
     </directive>
     <directive name="OFFSET" tool="MASM">
-      <description>TODO</description>
+      <description>Returns the address of a variable.</description>
     </directive>
     <directive name="PTR" tool="MASM">
-      <description>TODO</description>
+      <description>Specifies a type for a memory address.</description>
     </directive>
     <directive name="DB" tool="MASM, NASM">
       <description>Pseudo-Instruction declaring initialized data. Byte (1 byte, 8 bit). DB is a synonym of BYTE</description>
