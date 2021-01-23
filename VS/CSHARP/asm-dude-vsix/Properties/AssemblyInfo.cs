@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2019 Henk-Jan Lebbink
+// Copyright (c) 2021 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ using AsmDude;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lebbink")]
 [assembly: AssemblyProduct("AsmDude")]
-[assembly: AssemblyCopyright("Copyright © Henk-Jan Lebbink 2019")]
+[assembly: AssemblyCopyright("Copyright © Henk-Jan Lebbink 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

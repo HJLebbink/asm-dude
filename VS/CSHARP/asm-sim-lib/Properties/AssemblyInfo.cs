@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("asm-sim-lib")]
-[assembly: AssemblyCopyright("Copyright ©  Henk-Jan Lebbink 2017")]
+[assembly: AssemblyCopyright("Copyright © Henk-Jan Lebbink 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

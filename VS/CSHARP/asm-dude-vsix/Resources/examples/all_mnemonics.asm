@@ -4866,7 +4866,7 @@
         #endregion
 
 
-		#region Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2017)
+		#region Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2021)
         
 		VPERMT2W
 		VPERMT2D
