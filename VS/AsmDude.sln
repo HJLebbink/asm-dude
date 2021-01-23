@@ -36,6 +36,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "intel-doc-2-md", "Python\in
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "intel-doc-2-data", "CSHARP\intel-doc-2-data\intel-doc-2-data.csproj", "{16019732-E6FC-4299-B075-4B5537A7FDB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-annotate", "CSHARP\asm-annotate\asm-annotate.csproj", "{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -280,6 +282,26 @@ Global
 		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|x64.Build.0 = Release|Any CPU
 		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|x86.ActiveCfg = Release|Any CPU
 		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|x86.Build.0 = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|ARM.Build.0 = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|x64.Build.0 = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|x86.Build.0 = Debug|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|ARM.ActiveCfg = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|ARM.Build.0 = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|ARM64.Build.0 = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|x64.ActiveCfg = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|x64.Build.0 = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|x86.ActiveCfg = Release|Any CPU
+		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
