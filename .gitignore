@@ -33,3 +33,4 @@ VS/Python/intel-doc-2-md/resources/architecture-instruction-set-extensions-progr
 VS/CSHARP/asm-dude-vsix/Resources/Performance/instruction_tables.ods
 
 #VS/CSHARP/asm-sim-lib/libs/*
+**/.idea/*

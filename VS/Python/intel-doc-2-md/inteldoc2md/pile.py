@@ -16,7 +16,7 @@ import re
 from operator import itemgetter, attrgetter
 
 
-class Pile(object):
+class MyPile(object):
 	def __init__(self):
 		self.verticals = []
 		self.horizontals = []

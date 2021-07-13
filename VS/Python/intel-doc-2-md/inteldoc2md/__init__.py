@@ -1,2 +1,2 @@
-from parser import Parser
-from writer import Writer
+from inteldoc2md.parser import Parser
+from inteldoc2md.writer import Writer
