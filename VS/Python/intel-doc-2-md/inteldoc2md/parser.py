@@ -1,4 +1,4 @@
-# -*- coding: utf8 -*-
+
 
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
@@ -34,7 +34,7 @@ class Parser(object):
 			if (page_counter >= page_num_start): 
 				self._interpreter.process_page(page)
 				layout = self._device.get_result()
-				print 'page no.' + str(page_counter) + '; extracted page no.' + str(layout.pageid)
+				print('page no.' + str(page_counter) + '; extracted page no.' + str(layout.pageid))
 				self._pages[counter] = layout
 				counter = counter + 1
 
@@ -53,10 +53,10 @@ class Parser(object):
 
 
 	def _read_file(self, filename):
-		print 'going to read file '+filename
+		print('going to read file '+filename)
 		parser = PDFParser(open(filename, 'rb'))
 		document = PDFDocument(parser)
-		print 'done reading file '+filename
+		print('done reading file '+filename)
 		return document
 
 
@@ -69,7 +69,7 @@ class Parser(object):
 
 
 	def _parse_page(self, page):
-		print 'parsing page '+str(page.pageid)
+		print('parsing page '+str(page.pageid))
 		pile = Pile()
 		pile.parse_layout(page)
 		piles = pile.split_piles()

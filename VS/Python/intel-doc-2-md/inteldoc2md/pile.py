@@ -1,4 +1,3 @@
-# -*- coding: utf8 -*-
 
 from pdfminer.layout import LTFigure
 from pdfminer.layout import LTTextBox
@@ -60,7 +59,7 @@ class Pile(object):
 					self._adjust_to_close(obj, self.horizontals, 'y0', self._SEARCH_DISTANCE_HORIZONTAL)
 					self.horizontals.append(obj)
 			elif type(obj) == LTImage:
-				print 'Pile:parse_layout: type='+str(type(obj))+'; content = '+ obj.get_text().encode('utf8').strip()
+				print('Pile:parse_layout: type='+str(type(obj))+'; content = '+ obj.get_text().encode('utf8').strip())
 				self.images.append(obj)
 			elif type(obj) == LTCurve:
 				#print 'Pile:parse_layout: type='+str(type(obj))+'; content = '+ obj.get_text().encode('utf8').strip()
@@ -72,7 +71,7 @@ class Pile(object):
 				#print 'Pile:parse_layout: type='+str(type(obj))+'; content = '+ obj.get_text().encode('utf8').strip()
 				pass
 			else:
-				print 'Pile:parse_layout: Unrecognized type: ' + str(type(obj))
+				print('Pile:parse_layout: Unrecognized type: ' + str(type(obj)))
 
 	@staticmethod
 	def get_key(x):
@@ -442,7 +441,7 @@ class Pile(object):
 				elif state.type == 'exceptions':
 					if re.search('\#', content):
 						if re.search('\(\#', content): 
-							print 'Pile:_gen_paragraph_markdown: not changing "(#"'
+							print('Pile:_gen_paragraph_markdown: not changing "(#"')
 							#pass
 						else:
 							content = content.replace('\#', '<p>#')
@@ -515,10 +514,10 @@ class Pile(object):
 	def _in_range(self, left, top, right, bottom, obj):
 
 		if (obj.x0 >= obj.x1):
-			print 'Pile:_in_range: empty x'
+			print('Pile:_in_range: empty x')
 			return False
 		if (obj.y0 >= obj.y1): 
-			print 'Pile:_in_range: empty y'
+			print('Pile:_in_range: empty y')
 			return False
 
 		left_range = (left - self._SEARCH_DISTANCE_VERTICAL) <= obj.x0

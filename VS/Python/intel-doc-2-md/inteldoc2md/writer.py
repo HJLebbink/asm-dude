@@ -1,4 +1,3 @@
-# -*- coding: utf8 -*-
 
 import os
 import re
@@ -14,7 +13,7 @@ class State(object):
 class Writer(object):
 
 	def __init__(self):
-		self.source = 'Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (May 2019)'
+		self.source = 'Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (December 2020)'
 		#self.source = 'Intel® Architecture Software Developer\'s Manual (May 2018)'
 
 
@@ -93,7 +92,7 @@ class Writer(object):
 		markdown = Writer._cleanup_hyphens(markdown)
 
 		filename = './output/' + str(instruction).replace('/', '_').replace(' ', '_') + '.md'
-		print 'writing ' + filename
+		print('writing ' + filename)
 		fwrite = open(filename, 'w')
 
 		now = datetime.datetime.now()

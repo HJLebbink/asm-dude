@@ -8,5 +8,5 @@ pdftk A=325462-sdm-vol-1-2abcd-3abcd.pdf cat A590-1134 A1142-1841 A1847-2451 A24
 ##pdftk A=architecture-instruction-set-extensions-programming-reference.pdf cat A56-125 output selection-ext.pdf
 ##pdftk A=architecture-instruction-set-extensions-programming-reference.pdf cat A52-100 A102-109 output selection-ext.pdf
 
-pdftk A=architecture-instruction-set-extensions-programming-reference.pdf cat A62-133 output selection-ext.pdf
+pdftk A=architecture-instruction-set-extensions-programming-reference.pdf cat A66-93 A106-119 output selection-ext.pdf
 
