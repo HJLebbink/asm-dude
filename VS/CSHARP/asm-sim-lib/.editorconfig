@@ -143,3 +143,6 @@ dotnet_code_quality_unused_parameters = all:silent
 
 # CA1000: Do not declare static members on generic types
 dotnet_diagnostic.CA1000.severity = silent
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = silent

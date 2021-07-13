@@ -52,7 +52,7 @@ namespace AsmSim
             // TestMnemonic();
             // Test_Rep();
             // Test_Usage();
-            if (true)
+            if (false)
             {
                 TestMemorySpeed_mov_mov();
                 TestMemorySpeed_push_pop();
@@ -77,6 +77,11 @@ namespace AsmSim
             if (false)
             {
                 AsmSourceTools.SpeedTestRegisterParsing();
+            }
+
+            if (true)
+            {
+                TestTactic();
             }
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
@@ -758,6 +763,52 @@ namespace AsmSim
             Console.WriteLine(ToString(rootVertex, 0));
 
             // graph.
+        }
+
+        /// <summary>
+        /// (declare-fun x () Int)
+        /// (assert (>= x 2))
+        /// (assert (>= x 3))
+        /// (apply (then ctx-solver-simplify propagate-values(par-then (repeat (or-else split-clause skip)) propagate-ineqs)))
+        /// yields:
+        /// (goals (goal (>= x 3) :precision precise :depth 3))
+        /// </summary>
+        private static void TestTactic()
+        {
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "20000" },
+            };
+
+            using (Context ctx = new Context(settings))
+            {
+                IntExpr x = ctx.MkIntConst("x");
+                BoolExpr y = ctx.MkOr(ctx.MkGt(x, ctx.MkInt(6)), ctx.MkGt(x, ctx.MkInt(12)));
+                Console.WriteLine("y  = " + y.ToString());
+                Console.WriteLine("z0 = " + y.Simplify().ToString());
+
+                Tactic ctx_solver_simplify = ctx.MkTactic("ctx-solver-simplify");
+                Tactic propagate_values = ctx.MkTactic("propagate-values");
+                Tactic split_clause = ctx.MkTactic("split-clause");
+                Tactic propagate_ineqs = ctx.MkTactic("propagate-ineqs");
+                Tactic skip = ctx.MkTactic("skip");
+
+                Tactic tactic = ctx.AndThen(ctx_solver_simplify, ctx.AndThen(propagate_values, ctx.AndThen(ctx.Repeat(ctx.OrElse(split_clause, skip), 10), propagate_ineqs)));
+                Goal goal = ctx.MkGoal();
+                goal.Assert(y);
+                ApplyResult apply_result = tactic.Apply(goal);
+
+                foreach (Goal subgoal in apply_result.Subgoals)
+                {
+                    foreach (BoolExpr e in subgoal.Formulas)
+                    {
+                        Console.WriteLine("z1 = " + e.ToString());
+                    }
+                }
+            }
         }
 
         private static void TestMem2()

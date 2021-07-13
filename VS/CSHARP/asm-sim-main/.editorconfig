@@ -44,3 +44,6 @@ dotnet_diagnostic.SA1649.severity = silent
 
 # SA1300: Element should begin with upper-case letter
 dotnet_diagnostic.SA1300.severity = none
+
+# IDE0051: Remove unused private members
+dotnet_diagnostic.IDE0051.severity = none
