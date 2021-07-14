@@ -47,3 +47,9 @@ dotnet_diagnostic.SA1300.severity = none
 
 # IDE0051: Remove unused private members
 dotnet_diagnostic.IDE0051.severity = none
+
+# SA1005: Single line comments should begin with single space
+dotnet_diagnostic.SA1005.severity = none
+
+# SA1316: Tuple element names should use correct casing
+dotnet_diagnostic.SA1316.severity = none

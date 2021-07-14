@@ -125,7 +125,7 @@ namespace AsmTools
             StringBuilder sb = new StringBuilder();
             foreach (Flags flag in GetFlags(flags))
             {
-                sb.Append(flag).Append("|");
+                sb.Append(flag).Append('|');
             }
             if (sb.Length > 1)
             {

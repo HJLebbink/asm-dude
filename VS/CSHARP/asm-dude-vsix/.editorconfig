@@ -155,3 +155,9 @@ dotnet_diagnostic.SA1404.severity = none
 
 # IDE0060: Remove unused parameter
 dotnet_code_quality_unused_parameters = all:silent
+
+# SA1316: Tuple element names should use correct casing
+dotnet_diagnostic.SA1316.severity = none
+
+# CA1805: Do not initialize unnecessarily
+dotnet_diagnostic.CA1805.severity = silent

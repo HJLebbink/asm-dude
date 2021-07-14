@@ -46,7 +46,7 @@ dotnet_diagnostic.SA1513.severity = none
 dotnet_diagnostic.SA1611.severity = silent
 
 # SA1615: Element return value should be documented
-dotnet_diagnostic.SA1615.severity = silent
+dotnet_diagnostic.SA1615.severity = none
 
 # SA1629: Documentation text should end with a period
 dotnet_diagnostic.SA1629.severity = silent
@@ -116,3 +116,6 @@ dotnet_diagnostic.SA1649.severity = silent
 
 # SA1214: Readonly fields should appear before non-readonly fields
 dotnet_diagnostic.SA1214.severity = none
+
+# SA1316: Tuple element names should use correct casing
+dotnet_diagnostic.SA1316.severity = none

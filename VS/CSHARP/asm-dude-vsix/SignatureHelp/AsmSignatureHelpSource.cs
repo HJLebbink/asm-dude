@@ -164,7 +164,7 @@ namespace AsmDude.SignatureHelp
 
             StringBuilder sb = new StringBuilder();
             sb.Append(signatureElement.mnemonic.ToString());
-            sb.Append(" ");
+            sb.Append(' ');
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
 
             for (int i = 0; i < nOperands; ++i)

@@ -65,3 +65,9 @@ dotnet_diagnostic.SA1633.severity = none
 
 # SA1404: Code analysis suppression should have justification
 dotnet_diagnostic.SA1404.severity = none
+
+# SA1316: Tuple element names should use correct casing
+dotnet_diagnostic.SA1316.severity = none
+
+# SA1005: Single line comments should begin with single space
+dotnet_diagnostic.SA1005.severity = none

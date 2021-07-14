@@ -369,7 +369,7 @@ namespace intel_doc_2_data
             IList<Arch> Results = new List<Arch>();
             foreach (string s in str.Replace(",", " ").Split(' '))
             {
-                Arch a = ArchTools.ParseArch(s.Trim(), false);
+                Arch a = ArchTools.ParseArch(s.Trim(), false, false);
                 if (a != Arch.ARCH_NONE)
                 {
                     Results.Add(a);

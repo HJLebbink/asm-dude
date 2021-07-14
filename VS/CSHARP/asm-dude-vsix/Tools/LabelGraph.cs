@@ -311,6 +311,7 @@ namespace AsmDude.Tools
         public SortedSet<uint> Label_Used_At_Info(string full_Qualified_Label, string label)
         {
             Contract.Requires(full_Qualified_Label != null);
+            Contract.Requires(label != null);
 
             //AsmDudeToolsStatic.Output_INFO("LabelGraph:Label_Used_At_Info: full_Qualified_Label=" + full_Qualified_Label + "; label=" + label);
             SortedSet<uint> results = new SortedSet<uint>();

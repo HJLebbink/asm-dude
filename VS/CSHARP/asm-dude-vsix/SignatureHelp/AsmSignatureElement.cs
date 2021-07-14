@@ -223,11 +223,11 @@ namespace AsmDude.SignatureHelp
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(this.mnemonic_);
-            sb.Append(" ");
+            sb.Append(' ');
             foreach (string op in this.operandDoc_)
             {
                 sb.Append(op);
-                sb.Append(",");
+                sb.Append(',');
             }
             sb.Length--;
             return sb.ToString();

@@ -37,7 +37,7 @@ namespace AsmSim
         private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
 
         [STAThread]
-        private static void Main(string[] args)
+        private static void Main()
         {
             DateTime startTime = DateTime.Now;
             Assembly thisAssem = typeof(AsmSimMain).Assembly;
@@ -289,7 +289,6 @@ namespace AsmSim
                 // Solver solver = ctx.MkSolver();
                 Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
 
-
                 #region Create 3 64bit-registers and 1 64-bit memory location, at 3 time stamps
                 BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
                 BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
@@ -539,7 +538,6 @@ namespace AsmSim
    //4: (= RBX!6DE3EBEB4605B058(concat(select MEM!3D50632C10EAA838(bvadd #x000000000000000f RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000e RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000d RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000c RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000b RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000a RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x0000000000000009 RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x0000000000000008 RSP!3D50632C10EAA838))))
    //5: (= RSP!6DE3EBEB4605B058(bvadd #x0000000000000008 RSP!3D50632C10EAA838))
    //6: (= MEM!6DE3EBEB4605B058 MEM!3D50632C10EAA838)
-
 
             using (Context ctx = new Context(settings))
             {

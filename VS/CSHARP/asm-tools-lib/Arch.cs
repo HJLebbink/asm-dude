@@ -452,7 +452,7 @@ namespace AsmTools
             foreach (Arch arch in archs)
             {
                 sb.Append(ToString(arch));
-                sb.Append(",");
+                sb.Append(',');
                 empty = false;
             }
             if (empty)
