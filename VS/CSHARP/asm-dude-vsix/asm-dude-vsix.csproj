@@ -433,7 +433,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <PropertyGroup>
