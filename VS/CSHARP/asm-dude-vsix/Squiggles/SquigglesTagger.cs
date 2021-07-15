@@ -376,7 +376,7 @@ namespace AsmDude.Squiggles
             #region Remove stale error tasks from the error list
             for (int i = errorTasks.Count - 1; i >= 0; --i)
             {
-                Task task = errorTasks[i];
+                TaskListItem task = errorTasks[i];
                 if (((AsmMessageEnum)task.SubcategoryIndex == error) && (task.Line == lineNumber))
                 {
                     errorTasks.RemoveAt(i);

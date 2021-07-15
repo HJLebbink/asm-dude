@@ -1,0 +1,537 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>14.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{95D2A763-7D1A-46D7-81BA-A55C34B86D4E}</ProjectGuid>
+    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AsmDude</RootNamespace>
+    <AssemblyName>AsmDude-vs2022</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>$(ProgramFiles)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
+    <CopyVsixExtensionLocation>
+    </CopyVsixExtensionLocation>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>CS0162</NoWarn>
+    <LangVersion>7</LangVersion>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>$(ProgramFiles)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
+    <CopyVsixExtensionLocation>
+    </CopyVsixExtensionLocation>
+    <NoWarn>CS0162</NoWarn>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\asm-dude-vsix\Key.snk">
+      <Link>Key.snk</Link>
+    </None>
+    <None Include="..\asm-dude-vsix\Resources\Performance\Broadwell.tsv">
+      <Link>Resources\Performance\Broadwell.tsv</Link>
+    </None>
+    <None Include="..\asm-dude-vsix\Resources\Performance\Haswell.tsv">
+      <Link>Resources\Performance\Haswell.tsv</Link>
+    </None>
+    <None Include="..\asm-dude-vsix\Resources\Performance\Instructions-Translations.tsv">
+      <Link>Resources\Performance\Instructions-Translations.tsv</Link>
+    </None>
+    <None Include="..\asm-dude-vsix\Resources\Performance\instruction_tables.ods">
+      <Link>Resources\Performance\instruction_tables.ods</Link>
+    </None>
+    <None Include="..\asm-dude-vsix\Resources\Performance\IvyBridge.tsv">
+      <Link>Resources\Performance\IvyBridge.tsv</Link>
+    </None>
+    <None Include="..\asm-dude-vsix\Resources\Performance\Skylake.tsv">
+      <Link>Resources\Performance\Skylake.tsv</Link>
+    </None>
+    <None Include="..\asm-dude-vsix\Resources\Performance\SkylakeX.tsv">
+      <Link>Resources\Performance\SkylakeX.tsv</Link>
+    </None>
+    <None Include="..\asm-dude-vsix\Settings.settings">
+      <Link>Settings.settings</Link>
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\AsmDocClassificationDefinition.cs">
+      <Link>AsmDoc\AsmDocClassificationDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\AsmDocClassificationFormat.cs">
+      <Link>AsmDoc\AsmDocClassificationFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\AsmDocKeyProcessor.cs">
+      <Link>AsmDoc\AsmDocKeyProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\AsmDocKeyProcessorProvider.cs">
+      <Link>AsmDoc\AsmDocKeyProcessorProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\AsmDocMouseHandler.cs">
+      <Link>AsmDoc\AsmDocMouseHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\AsmDocMouseHandlerProvider.cs">
+      <Link>AsmDoc\AsmDocMouseHandlerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\AsmDocUnderlineTagger.cs">
+      <Link>AsmDoc\AsmDocUnderlineTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\AsmDocUnderlineTaggerProvider.cs">
+      <Link>AsmDoc\AsmDocUnderlineTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDoc\CtrlKeyState.cs">
+      <Link>AsmDoc\CtrlKeyState.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\AsmDudePackage.cs">
+      <Link>AsmDudePackage.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\BraceMatching\BraceMatchingTagger.cs">
+      <Link>BraceMatching\BraceMatchingTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\BraceMatching\BraceMatchingTaggerProvider.cs">
+      <Link>BraceMatching\BraceMatchingTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\ClearMefCache\ClearMefCache.cs">
+      <Link>ClearMefCache\ClearMefCache.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\ClearMefCache\ComponentModelExtensions.cs">
+      <Link>ClearMefCache\ComponentModelExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\CodeCompletion\CodeCompletionCommandFilter.cs">
+      <Link>CodeCompletion\CodeCompletionCommandFilter.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\CodeCompletion\CodeCompletionSource.cs">
+      <Link>CodeCompletion\CodeCompletionSource.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\CodeCompletion\CodeCompletionSourceProvider.cs">
+      <Link>CodeCompletion\CodeCompletionSourceProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\CodeCompletion\VsTextViewCreationListener.cs">
+      <Link>CodeCompletion\VsTextViewCreationListener.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\CodeFolding\CodeFoldingTagger.cs">
+      <Link>CodeFolding\CodeFoldingTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\CodeFolding\CodeFoldingTaggerProvider.cs">
+      <Link>CodeFolding\CodeFoldingTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\HighlightWord\HighlightWordTagger.cs">
+      <Link>HighlightWord\HighlightWordTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\HighlightWord\HighlightWordTaggerProvider.cs">
+      <Link>HighlightWord\HighlightWordTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\OptionsPage\AsmDudeOptionPageUI.xaml.cs">
+      <Link>OptionsPage\AsmDudeOptionPageUI.xaml.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\OptionsPage\AsmDudeOptionsPage.cs">
+      <Link>OptionsPage\AsmDudeOptionsPage.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Properties\Guids.cs">
+      <Link>Properties\Guids.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\QuickInfo\AsmQuickInfoController.cs">
+      <Link>QuickInfo\AsmQuickInfoController.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\QuickInfo\AsmQuickInfoControllerProvider.cs">
+      <Link>QuickInfo\AsmQuickInfoControllerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\QuickInfo\AsmQuickInfoSource.cs">
+      <Link>QuickInfo\AsmQuickInfoSource.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\QuickInfo\AsmQuickInfoSourceProvider.cs">
+      <Link>QuickInfo\AsmQuickInfoSourceProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\QuickInfo\ButtonInfo.cs">
+      <Link>QuickInfo\ButtonInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\QuickInfo\InstructionTooltipWindow.xaml.cs">
+      <Link>QuickInfo\InstructionTooltipWindow.xaml.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\QuickInfo\RegisterTooltipWindow.xaml.cs">
+      <Link>QuickInfo\RegisterTooltipWindow.xaml.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\QuickInfo\TextBoxWindow.xaml.cs">
+      <Link>QuickInfo\TextBoxWindow.xaml.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Settings.cs">
+      <Link>Settings.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Settings.Designer.cs">
+      <Link>Settings.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Settings1.Designer.cs">
+      <Link>Settings1.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SignatureHelp\AsmParameter.cs">
+      <Link>SignatureHelp\AsmParameter.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SignatureHelp\AsmSignature.cs">
+      <Link>SignatureHelp\AsmSignature.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SignatureHelp\AsmSignatureElement.cs">
+      <Link>SignatureHelp\AsmSignatureElement.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SignatureHelp\AsmSignatureEnum.cs">
+      <Link>SignatureHelp\AsmSignatureEnum.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SignatureHelp\AsmSignatureHelpCommandFilter.cs">
+      <Link>SignatureHelp\AsmSignatureHelpCommandFilter.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SignatureHelp\AsmSignatureHelpCommandProvider.cs">
+      <Link>SignatureHelp\AsmSignatureHelpCommandProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SignatureHelp\AsmSignatureHelpSource.cs">
+      <Link>SignatureHelp\AsmSignatureHelpSource.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SignatureHelp\AsmSignatureHelpSourceProvider.cs">
+      <Link>SignatureHelp\AsmSignatureHelpSourceProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Squiggles\SquigglesTagger.cs">
+      <Link>Squiggles\SquigglesTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Squiggles\SquigglesTaggerProvider.cs">
+      <Link>Squiggles\SquigglesTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmClassificationDefinition.cs">
+      <Link>SyntaxHighlighting\AsmClassificationDefinition.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmClassificationFormat.cs">
+      <Link>SyntaxHighlighting\AsmClassificationFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmContentTypeProvider.cs">
+      <Link>SyntaxHighlighting\AsmContentTypeProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmDisassemblyTaggerProvider.cs">
+      <Link>SyntaxHighlighting\AsmDisassemblyTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmDisassemblyTokenTagProvider.cs">
+      <Link>SyntaxHighlighting\AsmDisassemblyTokenTagProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmTagger.cs">
+      <Link>SyntaxHighlighting\AsmTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmTaggerProvider.cs">
+      <Link>SyntaxHighlighting\AsmTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmTokenTag.cs">
+      <Link>SyntaxHighlighting\AsmTokenTag.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmTokenTaggerProvider.cs">
+      <Link>SyntaxHighlighting\AsmTokenTaggerProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\AsmTokenTypes.cs">
+      <Link>SyntaxHighlighting\AsmTokenTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\MasmDisassemblyTokenTagger.cs">
+      <Link>SyntaxHighlighting\MasmDisassemblyTokenTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\MasmTokenTagger.cs">
+      <Link>SyntaxHighlighting\MasmTokenTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\NasmAttDisassemblyTokenTagger.cs">
+      <Link>SyntaxHighlighting\NasmAttDisassemblyTokenTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\NasmAttTokenTagger.cs">
+      <Link>SyntaxHighlighting\NasmAttTokenTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\SyntaxHighlighting\NasmIntelTokenTagger.cs">
+      <Link>SyntaxHighlighting\NasmIntelTokenTagger.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\ApplicationInformation.cs">
+      <Link>Tools\ApplicationInformation.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\AsmDudeTools.cs">
+      <Link>Tools\AsmDudeTools.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\AsmDudeToolsStatic.cs">
+      <Link>Tools\AsmDudeToolsStatic.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\AsmMessageEnum.cs">
+      <Link>Tools\AsmMessageEnum.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\AsmSimulator.cs">
+      <Link>Tools\AsmSimulator.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\Delay.cs">
+      <Link>Tools\Delay.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\LabelGraph.cs">
+      <Link>Tools\LabelGraph.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\LineUpdatedEventArgs.cs">
+      <Link>Tools\LineUpdatedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\MnemonicStore.cs">
+      <Link>Tools\MnemonicStore.cs</Link>
+    </Compile>
+    <Compile Include="..\asm-dude-vsix\Tools\PerformanceStore.cs">
+      <Link>Tools\PerformanceStore.cs</Link>
+    </Compile>
+    <Compile Include="source.extension.cs">
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj">
+      <Project>{e0d833c8-652e-4026-bdc1-13568940b1a8}</Project>
+      <Name>asm-sim-lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj">
+      <Project>{9f5c800f-83f8-4866-ae3c-97602b39c536}</Project>
+      <Name>asm-tools-lib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit">
+      <Version>4.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="LoadingIndicators.WPF">
+      <Version>0.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers">
+      <Version>3.3.2</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp">
+      <Version>4.0.0-1.final</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting">
+      <Version>4.0.0-1.final</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
+      <Version>5.0.3</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting">
+      <Version>4.0.0-1.final</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Composition.Analyzers">
+      <Version>1.2.0-beta2</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CSharp">
+      <Version>4.7.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility">
+      <Version>17.0.82-g2ecf33c7f7</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Editor">
+      <Version>17.0.82-g2ecf33c7f7</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Interop">
+      <Version>17.0.0-previews-1-31410-258</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense">
+      <Version>17.0.82-g2ecf33c7f7</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
+      <Version>17.0.0-previews-1-31410-258</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI">
+      <Version>17.0.82-g2ecf33c7f7</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf">
+      <Version>17.0.82-g2ecf33c7f7</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Threading">
+      <Version>17.0.17-alpha</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
+      <Version>17.0.17-alpha</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Xaml">
+      <Version>4.0.0.1</Version>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </PackageReference>
+    <PackageReference Include="QuickGraph">
+      <Version>3.6.61119.7</Version>
+    </PackageReference>
+    <PackageReference Include="SmartThreadPool.dll">
+      <Version>2.2.6</Version>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers">
+      <Version>1.2.0-beta.354</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="System.Collections.Immutable.Analyzers">
+      <Version>1.2.0-beta2</Version>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.Composition">
+      <Version>6.0.0-preview.6.21352.12</Version>
+    </PackageReference>
+    <PackageReference Include="System.Drawing.Primitives">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime">
+      <Version>4.3.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks.Analyzers">
+      <Version>1.2.0-beta2</Version>
+    </PackageReference>
+    <PackageReference Include="System.Xml.ReaderWriter">
+      <Version>4.3.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="..\asm-dude-vsix\AsmDudePackage.ico">
+      <Link>AsmDudePackage.ico</Link>
+    </Content>
+    <Content Include="..\asm-dude-vsix\libz3.dll">
+      <Link>libz3.dll</Link>
+    </Content>
+    <Content Include="..\asm-dude-vsix\LICENSE.txt">
+      <Link>LICENSE.txt</Link>
+    </Content>
+    <Content Include="..\asm-dude-vsix\Microsoft.Z3.dll">
+      <Link>Microsoft.Z3.dll</Link>
+    </Content>
+    <Content Include="..\asm-dude-vsix\Resources\AsmDudeData.xml">
+      <Link>Resources\AsmDudeData.xml</Link>
+    </Content>
+    <Content Include="..\asm-dude-vsix\Resources\signature-dec2018.txt">
+      <Link>Resources\signature-dec2018.txt</Link>
+    </Content>
+    <Content Include="..\asm-dude-vsix\Resources\signature-hand-1.txt">
+      <Link>Resources\signature-hand-1.txt</Link>
+    </Content>
+    <Content Include="..\asm-dude-vsix\Resources\signature-may2019.txt">
+      <Link>Resources\signature-may2019.txt</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\asm-dude-vsix\VsPackage.resx">
+      <Link>VsPackage.resx</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="..\asm-dude-vsix\OptionsPage\AsmDudeOptionPageUI.xaml">
+      <Link>OptionsPage\AsmDudeOptionPageUI.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\asm-dude-vsix\QuickInfo\InstructionTooltipWindow.xaml">
+      <Link>QuickInfo\InstructionTooltipWindow.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\asm-dude-vsix\QuickInfo\RegisterTooltipWindow.xaml">
+      <Link>QuickInfo\RegisterTooltipWindow.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\asm-dude-vsix\QuickInfo\TextBoxWindow.xaml">
+      <Link>QuickInfo\TextBoxWindow.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <PropertyGroup>
+    <UseCodebase>true</UseCodebase>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RegisterOutputPackage>true</RegisterOutputPackage>
+    <RegisterWithCodebase>true</RegisterWithCodebase>
+    <GacTargetOutput>true</GacTargetOutput>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
+</Project>
