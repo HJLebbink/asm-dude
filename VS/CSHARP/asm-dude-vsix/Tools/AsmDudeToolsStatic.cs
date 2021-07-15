@@ -584,7 +584,7 @@ namespace AsmDude.Tools
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            TaskListItem task = sender as TaskListItem;
+            Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
 
             if (task == null)
             {
@@ -859,7 +859,7 @@ namespace AsmDude.Tools
 
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i)
             {
-                TaskListItem t = errorListProvider.Tasks[i];
+                Microsoft.VisualStudio.Shell.Task t = errorListProvider.Tasks[i];
                 if (t.Text.Equals(msg, StringComparison.Ordinal))
                 {
                     return;

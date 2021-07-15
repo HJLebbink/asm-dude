@@ -15,30 +15,21 @@
         <InstallationTarget Version="[15.0,17.0)" Id="Microsoft.VisualStudio.Enterprise">
             <ProductArchitecture>x86</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Version="[15.0,18.0)" Id="Microsoft.VisualStudio.Enterprise">
-            <ProductArchitecture>amd64</ProductArchitecture>
-        </InstallationTarget>
         <InstallationTarget Version="[15.0,17.0)" Id="Microsoft.VisualStudio.Pro">
             <ProductArchitecture>x86</ProductArchitecture>
-        </InstallationTarget>
-        <InstallationTarget Version="[15.0,18.0)" Id="Microsoft.VisualStudio.Pro">
-            <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
         <InstallationTarget Version="[15.0,17.0)" Id="Microsoft.VisualStudio.Community">
             <ProductArchitecture>x86</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Version="[15.0,18.0)" Id="Microsoft.VisualStudio.Community">
-            <ProductArchitecture>amd64</ProductArchitecture>
-        </InstallationTarget>
     </Installation>
     <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.2,)" d:InstallSource="Download" />
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7.2,)" d:InstallSource="Download" />
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.Net.Component.4.7.2.TargetingPack" Version="[15.6.27406,18.0)" DisplayName=".NET Framework 4.7.2 targeting pack" />
+        <Prerequisite Id="Microsoft.Net.Component.4.7.2.TargetingPack" Version="[15.6.27406,17.0)" DisplayName=".NET Framework 4.7.2 targeting pack" />
     </Prerequisites>
 </PackageManifest>
