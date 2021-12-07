@@ -97,13 +97,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="AsmDudePackage.ico" />
-    <Content Include="libz3.dll">
+    <Content Include="..\asm-sim-lib\libs\z3-4.8.6-x86-win\bin\libz3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+      <Link>libz3.dll</Link>
     </Content>
-    <Content Include="Microsoft.Z3.dll">
+    <Content Include="..\asm-sim-lib\libs\z3-4.8.6-x86-win\bin\Microsoft.Z3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+      <Link>Microsoft.Z3.dll</Link>
     </Content>
     <Content Include="Resources\AsmDudeData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
