@@ -165,8 +165,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="libz3.dll">
+    <Content Include="..\asm-sim-lib\libs\z3-4.8.6-x64-win\bin\libz3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>libz3.dll</Link>
     </Content>
   </ItemGroup>
   <ItemGroup>
