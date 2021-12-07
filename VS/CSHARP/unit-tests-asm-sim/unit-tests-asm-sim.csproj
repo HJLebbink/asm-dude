@@ -163,17 +163,12 @@
     <PackageReference Include="System.Threading.Tasks.Analyzers">
       <Version>1.2.0-beta2</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\asm-sim-lib\libs\z3-4.8.6-x64-win\bin\libz3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Link>libz3.dll</Link>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Z3">
-      <HintPath>..\asm-sim-lib\libs\z3-4.8.6-x64-win\bin\Microsoft.Z3.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.Z3" Condition="'$(Platform)' != 'x86'">
+      <Version>4.8.14</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Z3.x86" Condition="'$(Platform)' == 'x86'">
+      <Version>4.8.15</Version>
+    </PackageReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

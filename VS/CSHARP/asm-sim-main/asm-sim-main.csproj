@@ -84,10 +84,12 @@
     <NoWarn>CS0162</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Z3, Version=4.8.6.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\asm-sim-lib\libs\z3-4.8.6-x64-win\bin\Microsoft.Z3.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.Z3" Condition="'$(Platform)' != 'x86'">
+      <Version>4.8.14</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Z3.x86" Condition="'$(Platform)' == 'x86'">
+      <Version>4.8.15</Version>
+    </PackageReference>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
@@ -162,11 +164,6 @@
       <Project>{e0d833c8-652e-4026-bdc1-13568940b1a8}</Project>
       <Name>asm-sim-lib</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="libz3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
