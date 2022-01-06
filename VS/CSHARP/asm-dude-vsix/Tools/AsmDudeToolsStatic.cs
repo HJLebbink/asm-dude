@@ -584,7 +584,8 @@ namespace AsmDude.Tools
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
+            TaskListItem task = sender as TaskListItem; // code for .NET Framework 4.8; not for 4.7.2
+            //Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task; // code for 4.7.1; not for 4.8
 
             if (task == null)
             {
@@ -652,8 +653,10 @@ namespace AsmDude.Tools
             try
             {
                 string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                string filenameDll = "AsmDude.dll";
-                return fullPath.Substring(0, fullPath.Length - filenameDll.Length);
+                string filenameDll = "AsmDude-vs2022.dll";
+                string result = fullPath.Substring(0, fullPath.Length - filenameDll.Length);
+                Output_INFO("install path " + result);
+                return result;
             }
             catch (Exception)
             {
@@ -859,7 +862,7 @@ namespace AsmDude.Tools
 
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i)
             {
-                Microsoft.VisualStudio.Shell.Task t = errorListProvider.Tasks[i];
+                var t = errorListProvider.Tasks[i];
                 if (t.Text.Equals(msg, StringComparison.Ordinal))
                 {
                     return;
