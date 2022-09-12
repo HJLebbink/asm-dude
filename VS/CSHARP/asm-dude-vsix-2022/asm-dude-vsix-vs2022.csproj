@@ -532,6 +532,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.VCProjectEngine, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>

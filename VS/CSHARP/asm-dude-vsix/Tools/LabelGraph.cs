@@ -30,10 +30,13 @@ namespace AsmDude.Tools
     using Amib.Threading;
     using AsmDude.SyntaxHighlighting;
     using AsmTools;
+    using EnvDTE;
     using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Tagging;
     using Microsoft.VisualStudio.Utilities;
+    using Microsoft.VisualStudio.VCProjectEngine;
 
     public sealed class LabelGraph
     {
@@ -603,6 +606,34 @@ namespace AsmDude.Tools
         {
             try
             {
+                string currentPath = Path.GetDirectoryName(this.thisFilename_);
+                //AsmDudeToolsStatic.Output_INFO(currentPath);
+                List<string> includePaths = new List<string>
+                {
+                    currentPath,
+                };
+                DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+                Projects projects = dte.Solution.Projects;
+                if (projects.Count != 0)
+                {
+                    VCProject project = (VCProject)projects.Item(1).Object;
+                    VCConfiguration cfg = project.ActiveConfiguration;
+                    if (cfg != null)
+                    {
+                        string includePathStr = cfg.GetEvaluatedPropertyValue("IncludePath");
+                        //AsmDudeToolsStatic.Output_INFO(includePathStr);
+                        string[] includePathinVS = includePathStr.Split(';');
+                        foreach (string includePath in includePathinVS)
+                        {
+                            if (includePath.Length > 1)
+                            {
+                                //AsmDudeToolsStatic.Output_INFO(includePath);
+                                includePaths.Add(includePath);
+                            }
+                        }
+                    }
+                }
+                //AsmDudeToolsStatic.Output_INFO(includePaths.Count.ToString());
                 if (includeFilename.Length < 1)
                 {
                     //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
@@ -619,12 +650,24 @@ namespace AsmDude.Tools
                         includeFilename = includeFilename.Substring(1, includeFilename.Length - 2);
                     }
                 }
-                string filePath = Path.GetDirectoryName(this.thisFilename_) + Path.DirectorySeparatorChar + includeFilename;
+                bool existFlag = false;
+                string filePath = string.Empty;
+                foreach (string includePath in includePaths)
+                {
+                    filePath = includePath + Path.DirectorySeparatorChar + includeFilename;
+                    //AsmDudeToolsStatic.Output_INFO(filePath);
+                    if (File.Exists(filePath))
+                    {
+                        existFlag = true;
+                        break;
+                    }
+                }
+                //string filePath = Path.GetDirectoryName(this.thisFilename_) + Path.DirectorySeparatorChar + includeFilename;
 
-                if (!File.Exists(filePath))
+                if (!existFlag)
                 {
                     //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
-                    this.undefined_includes_.Add((include_filename: includeFilename, path: filePath, source_filename: currentFilename, lineNumber: lineNumber));
+                    this.undefined_includes_.Add((include_filename: includeFilename, path: currentPath + Path.DirectorySeparatorChar + includeFilename, source_filename: currentFilename, lineNumber: lineNumber));
                 }
                 else
                 {
