@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -106,7 +106,12 @@ namespace AsmSim
                 this.args_ = args;
                 this.tools_ = t;
                 this.keys_ = keys;
-                this.ctx_ = new Context(t.ContextSettings);
+                try {
+                    this.ctx_ = new Context(t.ContextSettings);
+                } catch
+                {
+                    //TODO
+                }
             }
 
             public abstract void Execute();

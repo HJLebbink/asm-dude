@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// thib is a typppo
-
 namespace AsmDude.QuickInfo
 {
     using System;
@@ -39,8 +37,7 @@ namespace AsmDude.QuickInfo
     internal sealed class AsmQuickInfoController : IIntellisenseController
     {
         private readonly IList<ITextBuffer> subjectBuffers_;
-        private readonly IQuickInfoBroker quickInfoBroker_; //XYZZY OLD
-        //private readonly IAsyncQuickInfoBroker quickInfoBroker_; //XYZZY NEW
+        private readonly IAsyncQuickInfoBroker quickInfoBroker_;
         private readonly ITagAggregator<AsmTokenTag> aggregator_;
         private ITextView textView_;
 
@@ -50,7 +47,7 @@ namespace AsmDude.QuickInfo
         internal AsmQuickInfoController(
             ITextView textView,
             IList<ITextBuffer> subjectBuffers,
-            IQuickInfoBroker quickInfoBroker,
+            IAsyncQuickInfoBroker quickInfoBroker,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
             AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:constructor; file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(textView.TextBuffer)));

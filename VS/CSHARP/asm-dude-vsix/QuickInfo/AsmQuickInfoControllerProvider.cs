@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ namespace AsmDude.QuickInfo
         private readonly IBufferTagAggregatorFactoryService aggregatorFactory_ = null;
 
         [Import]
-        private readonly IQuickInfoBroker quickInfoBroker_ = null;
+        private readonly IAsyncQuickInfoBroker quickInfoBroker_ = null;
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {

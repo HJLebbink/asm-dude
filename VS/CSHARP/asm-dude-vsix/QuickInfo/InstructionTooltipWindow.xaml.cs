@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ namespace AsmDude.QuickInfo
 
         internal AsmQuickInfoController Owner { get; set; }
 
-        internal IQuickInfoSession Session { get; set; }
+        internal IAsyncQuickInfoSession Session { get; set; }
 
         public InstructionTooltipWindow(Brush foreground)
         {
@@ -58,7 +58,7 @@ namespace AsmDude.QuickInfo
         {
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click");
             this.Owner?.CloseToolTip();
-            this.Session?.Dismiss();
+            this.Session?.DismissAsync();
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click: owner and session are null");
         }
 

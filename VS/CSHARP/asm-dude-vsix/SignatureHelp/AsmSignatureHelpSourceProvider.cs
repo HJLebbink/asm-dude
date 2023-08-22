@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,9 @@ namespace AsmDude.SignatureHelp
 
     [Export(typeof(ISignatureHelpSourceProvider))]
     [Name("Signature Help source")]
-    [Order(Before = "default")]
+    [Order(Before = "High")]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
+    //[TextViewRole(PredefinedTextViewRoles.Document)]
     internal class AsmSignatureHelpSourceProvider : ISignatureHelpSourceProvider
     {
         public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer)

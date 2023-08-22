@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ namespace AsmDude.SignatureHelp
 
         public AsmSignatureHelpSource(ITextBuffer buffer)
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource:constructor");
+            AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource:constructor");
             this.buffer_ = buffer ?? throw new ArgumentNullException(nameof(buffer));
             this.store_ = AsmDudeTools.Instance.Mnemonic_Store;
         }
@@ -96,7 +96,7 @@ namespace AsmDude.SignatureHelp
 
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures)
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession");
+            AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
             //if (true) return;
             if (!Settings.Default.SignatureHelp_On)

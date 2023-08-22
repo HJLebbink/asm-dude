@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,7 @@ namespace AsmDude.SignatureHelp
             {
                 if (pguidCmdGroup == VSConstants.VSStd2K)
                 {
-                    //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Exec: nCmdID={1}; nCmdexecopt={2}", this.ToString(), nCmdID, nCmdexecopt));
+                    AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Exec: nCmdID={1}; nCmdexecopt={2}", this.ToString(), nCmdID, nCmdexecopt));
 
                     if (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN)
                     { // return typed

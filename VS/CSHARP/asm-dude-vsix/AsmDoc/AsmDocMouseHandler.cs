@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -81,12 +81,12 @@ namespace AsmDude.AsmDoc
             // Some other points to clear the highlight span:
             this.view_.LostAggregateFocus += (sender, args) =>
             {
-                AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: LostAggregateFocus", this.ToString()));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: LostAggregateFocus", this.ToString()));
                 this.Set_Highlight_Span(null);
             };
             this.view_.VisualElement.MouseLeave += (sender, args) =>
             {
-                AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: MouseLeave", this.ToString()));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: MouseLeave", this.ToString()));
                 this.Set_Highlight_Span(null);
             };
         }
