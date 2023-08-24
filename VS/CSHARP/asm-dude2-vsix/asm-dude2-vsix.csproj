@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <LangVersion>latest</LangVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{416A6209-7BD1-4BCD-B3CC-76F95864CF93}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AsmDude2</RootNamespace>
+    <AssemblyName>AsmDude2</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+    <UseCodebase>true</UseCodebase>
+    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
+    <StartAction>Program</StartAction>
+    <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SignatureHelp\AsmParameter.cs" />
+    <Compile Include="SignatureHelp\AsmSignature.cs" />
+    <Compile Include="SignatureHelp\AsmSignatureElement.cs" />
+    <Compile Include="SignatureHelp\AsmSignatureEnum.cs" />
+    <Compile Include="SyntaxHighlighting\AsmClassificationDefinition.cs" />
+    <Compile Include="SyntaxHighlighting\AsmClassificationFormat.cs" />
+    <Compile Include="SyntaxHighlighting\AsmContentTypeProvider.cs" />
+    <Compile Include="SyntaxHighlighting\AsmDisassemblyTaggerProvider.cs" />
+    <Compile Include="SyntaxHighlighting\AsmDisassemblyTokenTagProvider.cs" />
+    <Compile Include="AsmDude2Package.cs" />
+    <Compile Include="AsmLanguageClient.cs" />
+    <Compile Include="SyntaxHighlighting\AsmTagger.cs" />
+    <Compile Include="SyntaxHighlighting\AsmTaggerProvider.cs" />
+    <Compile Include="SyntaxHighlighting\AsmTokenTag.cs" />
+    <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
+    <Compile Include="SyntaxHighlighting\AsmTokenTypes.cs" />
+    <Compile Include="SyntaxHighlighting\MasmDisassemblyTokenTagger.cs" />
+    <Compile Include="SyntaxHighlighting\MasmTokenTagger.cs" />
+    <Compile Include="SyntaxHighlighting\NasmAttDisassemblyTokenTagger.cs" />
+    <Compile Include="SyntaxHighlighting\NasmAttTokenTagger.cs" />
+    <Compile Include="SyntaxHighlighting\NasmIntelTokenTagger.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="source.extension.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\ApplicationInformation.cs" />
+    <Compile Include="Tools\AsmDudeTools.cs" />
+    <Compile Include="Tools\AsmDudeToolsStatic.cs" />
+    <Compile Include="Tools\AsmMessageEnum.cs" />
+    <Compile Include="Tools\AsmSimulator.cs" />
+    <Compile Include="Tools\Delay.cs" />
+    <Compile Include="Tools\LabelGraph.cs" />
+    <Compile Include="Tools\LineUpdatedEventArgs.cs" />
+    <Compile Include="Tools\MnemonicStore.cs" />
+    <Compile Include="Tools\PerformanceStore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\images\asm.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\images\AsmDude.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="AsmDude2Config.pkgdef">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AsmLanguageExtensionSettings.json">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\signature-hand-1.txt">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\signature-may2019.txt">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\examples\data.foo" />
+    <Content Include="Resources\Performance\Broadwell.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Performance\Haswell.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Performance\Instructions-Translations.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Performance\IvyBridge.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Performance\Skylake.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Performance\SkylakeX.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <None Include="Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+      <Generator>VsixManifestGenerator</Generator>
+      <LastGenOutput>source.extension.cs</LastGenOutput>
+    </None>
+    <Content Include="Resources\AsmDudeData.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\examples\all_mnemonics.asm" />
+    <Content Include="Resources\examples\example.asm" />
+    <Content Include="Resources\examples\example_att.s" />
+    <Content Include="Resources\examples\example_masm.asm" />
+    <Content Include="Resources\examples\example_masm2.asm" />
+    <Content Include="Resources\examples\example_nasm.asm" />
+    <Content Include="Resources\examples\example_semantic_analysis.asm" />
+    <Content Include="Resources\examples\example_semantic_analysis2.asm" />
+    <Content Include="Resources\examples\nn.asm" />
+    <Content Include="Resources\examples\TextFile1.asm" />
+    <Content Include="LICENSE.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Design" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.430" ExcludeAssets="Runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Client">
+      <Version>17.7.20</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5232" />
+    <PackageReference Include="SmartThreadPool.dll">
+      <Version>2.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.Composition">
+      <Version>7.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Drawing.Primitives">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Xml.ReaderWriter">
+      <Version>4.3.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj">
+      <Project>{e0d833c8-652e-4026-bdc1-13568940b1a8}</Project>
+      <Name>asm-sim-lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj">
+      <Project>{9f5c800f-83f8-4866-ae3c-97602b39c536}</Project>
+      <Name>asm-tools-lib</Name>
+    </ProjectReference>
+	<ProjectReference Include="..\asm-language-server-with-UI\LanguageServerWithUI.csproj">
+	    <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	    <VsixSubPath>Server</VsixSubPath>
+	</ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

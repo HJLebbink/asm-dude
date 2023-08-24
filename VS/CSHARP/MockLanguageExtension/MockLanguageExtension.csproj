@@ -1,0 +1,94 @@
+﻿<Project>
+	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<OutputType>Library</OutputType>
+		<OutputSubPath>MockLSPs\MockLanguageExtension</OutputSubPath>
+		<UseCodebase>true</UseCodebase>
+		<NoWarn>CA1001,CA1052,CA1507,CA1812,CA2007,CS1591,NU1605,VSTHRD100</NoWarn>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+
+		<!-- VSIX configuration -->
+		<GeneratePkgDefFile>true</GeneratePkgDefFile>
+		<IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+		<IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
+		<IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
+		<CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+		<CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
+		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+		<GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+		<VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+		<DeployExtension>True</DeployExtension>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<StartAction>Program</StartAction>
+		<StartProgram>$(DevenvDir)devenv.exe</StartProgram>
+		<StartArguments>/rootSuffix Exp</StartArguments>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="MockLanguageExtensionSettings.pkgdef" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="MockLanguageExtensionSettings.pkgdef">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		  <IncludeInVsix>true</IncludeInVsix>
+		</Content>
+		<Content Include="Resources\CustomCommand.png" />
+		<Content Include="Resources\CustomCommandPackage.ico" />
+		<VSCTCompile Include="CustomCommandPackage.vsct">
+			<ResourceName>Menus.ctmenu</ResourceName>
+		</VSCTCompile>
+		<Content Include="MockLanguageExtensionSettings.json">
+			<IncludeInVSIX>true</IncludeInVSIX>
+		</Content>
+		<None Include="source.extension.vsixmanifest" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Client" Version="17.1.68" />
+		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.1.8" />
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.1.4054">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<Reference Include="System.Design" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LanguageServerWithUI\LanguageServerWithUI.csproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<VsixSubPath>Server</VsixSubPath>
+		</ProjectReference>
+	</ItemGroup>
+
+	<Target Name="IncludeLanguageServers" BeforeTargets="GetVsixSourceItems">
+		<ItemGroup>
+			<Content Include="$(BaseOutputPath)\..\..\LanguageServerWithUI\bin\$(Configuration)\net472\*.*" Visible="false">
+				<IncludeInVSIX>true</IncludeInVSIX>
+				<VsixSubPath>Server</VsixSubPath>
+			</Content>
+		</ItemGroup>
+	</Target>
+
+	<!-- We shouldn't package the client definition dll with the extension -->
+	<Target Name="RemoveClientDefinition" AfterTargets="GetVsixSourceItems">
+		<ItemGroup>
+			<VsixSourceItem Remove="@(VsixSourceItem)" Condition=" '%(FileName)%(Extension)' == 'Microsoft.VisualStudio.LanguageServer.Client.dll' " />
+		</ItemGroup>
+	</Target>
+
+	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+	<Import Project="$(VSToolsPath)\vssdk\Microsoft.VSSDK.targets" Condition="'$(VSToolsPath)' != ''" />
+
+</Project>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="4f792145-bd77-482d-bd0e-fcc7ac281c8d" Version="2.0.0.0" Language="en-US" Publisher="Henk-Jan Lebbink" />
+        <DisplayName>AsmDude2</DisplayName>
+        <Description xml:space="preserve">Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window </Description>
+        <MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>
+        <License>LICENSE.txt</License>
+        <GettingStartedGuide>https://github.com/HJLebbink/asm-dude</GettingStartedGuide>
+        <Icon>Resources\images\asm.png</Icon>
+        <PreviewImage>Resources\images\AsmDude.bmp</PreviewImage>
+        <Tags>Assembly, Assembler, ASM, Syntax Highlighting, Code Completion, Disassembly Window, Code Analysis, x86_64, SSE, AVX, AVX2, AVX512</Tags>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="AsmDude2Config.pkgdef" />
+    </Assets>
+</PackageManifest>

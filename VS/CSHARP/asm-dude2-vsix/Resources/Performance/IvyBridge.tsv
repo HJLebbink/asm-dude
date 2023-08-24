@@ -1,0 +1,642 @@
+;Intel Ivy Bridge							
+;List of instruction timings and ?op breakdown							
+							
+;Explanation of column headings:							
+;Operands:	i = immediate data, r = register, mm = 64 bit mmx register, x = 128 bit xmm register, (x)mm = mmx or xmm register, y = 256 bit ymm register, same = same register for both operands. m = memory operand, m32 = 32-bit memory operand, etc. 						
+;?ops fused domain:	The number of ?ops at the decode, rename, allocate and retirement stages in the pipeline. Fused ?ops count as one.						
+;?ops unfused domain:	The number of ?ops for each execution port. Fused ?ops count as two. Fused macro-ops count as one. The instruction has ?op fusion if the sum of the numbers listed under p015 + p23 + p4 exceeds the number listed under ?ops fused domain. A number indicated as 1+ under a read or write port means a 256-bit read or write operation using two clock cycles for handling 128 bits each cycle. The port cannot receive another read or write 發p in the second clock cycle, but a read port can receive an address-calculation 發p in the second clock cycle. An x under p0, p1 or p5 means that at least one of the ?ops listed under p015 can optionally go to this port. For example, a 1 under p015 and an x under p0 and p5 means one ?op which can go to either port 0 or port 5, whichever is vacant first. A value listed under p015 but nothing under p0, p1 and p5 means that it is not known which of the three ports these ?ops go to.						
+;p015:	The total number of ?ops going to port 0, 1 and 5.						
+;p0:	The number of ?ops going to port 0 (execution units).						
+;p1:	The number of ?ops going to port 1 (execution units). 						
+;p5:	The number of ?ops going to port 5 (execution units). 						
+;p23:	The number of ?ops going to port 2 or 3 (memory read or address calculation).						
+;p4:	The number of ?ops going to port 4 (memory write data).						
+;Latency:	This is the delay that the instruction generates in a dependency chain. The numbers are minimum values. Cache misses, misalignment, and exceptions may increase the clock counts considerably. Where hyperthreading is enabled, the use of the same execution units in the other thread leads to inferior performance. Denormal numbers, NANs and infinity do not increase the latency. The time unit used is core clock cycles, not the reference clock cycles given by the time stamp counter.						
+;Reciprocal throughput:	The average number of core clock cycles per instruction for a series of independent instructions of the same kind in the same thread.						
+;The latencies and throughputs listed below for addition and multiplication using full size YMM registers are obtained only after a warm-up period of a thousand instructions or more. The latencies may be one or two clock cycles longer and the reciprocal throughputs double the values for shorter sequences of code. There is no warm-up effect when vectors are 128 bits wide or less.						
+							
+;Instruction	Operands	?ops fused domain	發ps unfused domain 	發ps each port 	Latency	Reci-procal through-put	
+							
+;Move instructions							
+MOV	r,i	1	todo	todo	1	0.33	
+MOV	r8/16,r8/16	1	todo	todo	1	0.33	
+MOV	r32/64,r32/64	1	todo	todo	0-1	0.25	may be elimin.
+MOV	r8/16,m8/16	1	todo	todo	2	0.5	
+MOV	r32/64,m32/64	1	todo	todo	2	0.5	
+MOV	r,m	1	todo	todo	2	1	64 b abs address
+MOV	m,r	1	todo	todo	3	1	
+MOV	m,i	1	todo	todo		1	
+MOVNTI	m,r	2	todo	todo	~340	1	
+MOVSX MOVSXD	r,r	1	todo	todo	1	0.33	
+MOVZX	r16,r8	1	todo	todo	1	0.33	
+MOVZX	r32/64,r8	1	todo	todo	0-1	0.25	may be elimin.
+MOVZX	r32/64,r16	1	todo	todo	1	0.33	
+MOVSX MOVZX	r16,m8	2	todo	todo	3	0.5	
+MOVSX MOVZX MOVSXD	r32/64,m	1	todo	todo	2	0.5	
+CMOVcc	r,r	2	todo	todo	2	0.67	
+CMOVcc	r,m	2	todo	todo		~0.8	
+XCHG	r,r	3	todo	todo	2	1	
+XCHG	r,m	7	todo	todo	25		implicit lock
+XLAT		3	todo	todo	7	1	
+PUSH	r	1	todo	todo	3	1	
+PUSH	i	1	todo	todo		1	
+PUSH	m	2	todo	todo		1	
+PUSH	(E/R)SP	2	todo	todo	3	1	
+PUSHF(D/Q)		3	todo	todo		1	
+PUSHA(D)		19	todo	todo		8	not 64 bit
+POP	r	1	todo	todo	2	0.5	
+POP	(E/R)SP	3	todo	todo		0.5	
+POP	m	2	todo	todo		1	
+POPF(D/Q)		9	todo	todo		18	
+POPA(D)		18	todo	todo		9	not 64 bit
+LAHF SAHF		1	todo	todo	1	1	
+SALC		3	todo	todo	1	1	not 64 bit
+LEA	r16,m	2	todo	todo	2-4	1	
+LEA	r32/64,m	1	todo	todo	1	0.5	1-2 components
+LEA	r32/64,m	1	todo	todo	3	1	3 components or RIP
+BSWAP	r32	1	todo	todo	1	1	
+BSWAP	r64	2	todo	todo	2	1	
+PREFETCHNTA 	m	1	todo	todo		43	
+PREFETCHT0/1/2 	m	1	todo	todo		43	
+LFENCE		2	todo	todo		4	
+MFENCE		3	todo	todo		36	
+SFENCE		2	todo	todo		6	
+
+;Arithmetic instructions			todo	todo			
+ADD SUB	r,r/i	1	todo	todo	1	0.33	
+ADD SUB	r,m	1	todo	todo		0.5	
+ADD SUB	m,r/i	2	todo	todo	6	1	
+ADC SBB	r,r/i	2	todo	todo	2	1	
+ADC SBB	r,m	2	todo	todo	2	1	
+ADC SBB	m,r/i	4	todo	todo	7-8	2	
+CMP 	r,r/i	1	todo	todo	1	0.33	
+CMP 	m,r/i	1	todo	todo	1	0.5	
+INC DEC NEG NOT	r	1	todo	todo	1	0.33	
+INC DEC NEG NOT	m	3	todo	todo	6	1	
+AAA AAS		2	todo	todo	4		not 64 bit
+DAA DAS		3	todo	todo	4		not 64 bit
+AAD		3	todo	todo	2		not 64 bit
+AAM		8	todo	todo	20	8	not 64 bit
+MUL IMUL	r8	1	todo	todo	3	1	
+MUL IMUL	r16	4	todo	todo	4	2	
+MUL IMUL	r32	3	todo	todo	4	2	
+MUL IMUL	r64	2	todo	todo	3	1	
+IMUL	r,r	1	todo	todo	3	1	
+IMUL	r16,r16,i	2	todo	todo	4	1	
+IMUL	r32,r32,i	1	todo	todo	3	1	
+IMUL	r64,r64,i	1	todo	todo	3	1	
+MUL IMUL	m8	1	todo	todo	3	1	
+MUL IMUL	m16	4	todo	todo		2	
+MUL IMUL	m32	3	todo	todo		2	
+MUL IMUL	m64	2	todo	todo		2	
+IMUL	r,m	1	todo	todo		1	
+IMUL	r16,m16,i	2	todo	todo		1	
+IMUL	r32,m32,i	1	todo	todo		1	
+IMUL	r64,m64,i	1	todo	todo		1	
+DIV	r8	11	todo	todo	19-22	9	
+DIV	r16	11	todo	todo	20-24	10	
+DIV	r32	10	todo	todo	19-27	11	
+DIV	r64	35-57	todo	todo	29-94	22-76	
+IDIV	r8	11	todo	todo	20-23	8	
+IDIV	r16	11	todo	todo	20-24	8	
+IDIV	r32	9	todo	todo	19-26	8-11	
+IDIV	r64	59-134	todo	todo	28-103	26-88	
+CBW		1	todo	todo	1	0.33	
+CWDE		1	todo	todo	1		
+CDQE		1	todo	todo	1		
+CWD		2	todo	todo	1		
+CDQ		1	todo	todo	1		
+CQO		1	todo	todo	1	0.5	
+POPCNT	r,r	1	todo	todo	3	1	SSE4.2
+POPCNT	r,m	1	todo	todo		1	SSE4.2
+CRC32	r,r	1	todo	todo	3	1	SSE4.2
+CRC32	r,m	1	todo	todo			SSE4.2
+
+;Logic instructions			todo	todo			
+AND OR XOR	r,r/i	1	todo	todo	1	0.33	
+AND OR XOR	r,m	1	todo	todo		0.5	
+AND OR XOR	m,r/i	2	todo	todo	6	1	
+TEST	r,r/i	1	todo	todo	1	0.33	
+TEST	m,r/i	1	todo	todo		0.5	
+SHR SHL SAR	r,i	1	todo	todo	1	0.5	
+SHR SHL SAR	m,i	3	todo	todo		2	
+SHR SHL SAR	r,cl	2	todo	todo	1	1	
+SHR SHL SAR	m,cl	5	todo	todo		4	
+ROR ROL	r,1	2	todo	todo	1	1	short form
+ROR ROL	r,i	1	todo	todo	1	0.5	
+ROR ROL	m,i	4	todo	todo		2	
+ROR ROL	r,cl	2	todo	todo	1	1	
+ROR ROL	m,cl	5	todo	todo		4	
+RCL RCR	r,1	3	todo	todo	2	2	
+RCL RCR	r,i	8	todo	todo	5	5	
+RCL RCR	m,i	11	todo	todo		6	
+RCL RCR	r,cl	8	todo	todo	5	5	
+RCL RCR	m,cl	11	todo	todo		6	
+SHRD SHLD	r,r,i	1	todo	todo	1	0.5	
+SHRD SHLD	m,r,i	3	todo	todo		2	
+SHRD SHLD	r,r,cl	4	todo	todo	2	2	
+SHRD SHLD	m,r,cl	5	todo	todo		4	
+BT	r,r/i	1	todo	todo	1	0.5	
+BT	m,r	10	todo	todo		5	
+BT	m,i	2	todo	todo		0.5	
+BTR BTS BTC	r,r/i	1	todo	todo	1	0.5	
+BTR BTS BTC	m,r	11	todo	todo		5	
+BTR BTS BTC	m,i	3	todo	todo		2	
+BSF BSR	r,r	1	todo	todo	3	1	
+BSF BSR	r,m	1	todo	todo		1	
+SETcc	r	1	todo	todo	1	0.5	
+SETcc	m	2	todo	todo		1	
+CLC		1	todo	todo		0.25	
+STC CMC		1	todo	todo	1	0.33	
+CLD STD		3	todo	todo		4	
+
+;Control transfer instructions			todo	todo			
+JMP	short/near	1	todo	todo	0	2	
+JMP	r	1	todo	todo	0	2	
+JMP	m	1	todo	todo	0	2	
+Conditional jump	short/near	1	todo	todo	0	1-2	fast if no jump
+;Fused arithmetic and branch		1	todo	todo	0	1-2	fast if no jump
+J(E/R)CXZ	short	2	todo	todo		1-2	
+LOOP	short	7	todo	todo		4-5	
+LOOP(N)E	short	11	todo	todo		6	
+CALL	near	2	todo	todo		2	
+CALL	r	2	todo	todo		2	
+CALL	m	3	todo	todo		2	
+RET		2	todo	todo		2	
+RET	i	3	todo	todo		2	
+BOUND	r,m	15	todo	todo		7	not 64 bit
+INTO		4	todo	todo		6	not 64 bit
+
+;String instructions			todo	todo			
+LODS		3	todo	todo		1	
+;REP LODS		~5n	todo	todo	~2n		
+STOS		3	todo	todo		1	
+;REP STOS		many	todo	todo	n		worst case
+;REP STOS		many	todo	todo	1/16B		best case
+MOVS		5	todo	todo		4	
+;REP MOVS		2n	todo	todo	n		worst case
+;REP MOVS		4/16B	todo	todo	1/16B		best case
+SCAS		3	todo	todo		1	
+;REP SCAS		~6n	todo	todo	~2n		
+CMPS		5	todo	todo		4	
+;REP CMPS		~8n	todo	todo	~2n		
+
+;Synchronization instructions			todo	todo			
+XADD	m,r	4	todo	todo	7		
+;LOCK XADD	m,r	8	todo	todo	22		
+;LOCK ADD	m,r	7	todo	todo	22		
+CMPXCHG	m,r	5	todo	todo	7		
+;LOCK CMPXCHG	m,r	9	todo	todo	22		
+CMPXCHG8B	m,r	14	todo	todo	7		
+;LOCK CMPXCHG8B	m,r	18	todo	todo	22		
+CMPXCHG16B	m,r	22	todo	todo	16		
+;LOCK CMPXCHG16B	m,r	24	todo	todo	27		
+
+;Other			todo	todo			
+;NOP		1	todo	todo		0.25	
+PAUSE		7	todo	todo		10	
+ENTER	a,0	12	todo	todo		8	
+ENTER	a,b	45+7b	todo	todo	84+3b		
+LEAVE		3	todo	todo		6	
+XGETBV		8	todo	todo		9	XGETBV
+CPUID		37-82	todo	todo	100-340		
+RDTSC		21	todo	todo		27	
+RDPMC		35	todo	todo		39	
+RDRAND	r	13	todo	todo		104-117	RDRAND
+
+;Floating point x87 instructions			todo	todo			
+;Instruction	Operands	?ops fused domain	todo	todo	Latency	Reci-procal through-put	Comments
+
+;Move instructions			todo	todo			
+FLD	r	1	todo	todo	1	1	
+FLD	m32/64	1	todo	todo	3	1	
+FLD	m80	4	todo	todo	5	2	
+FBLD	m80	43	todo	todo	45	21	
+FST(P)	r	1	todo	todo	1	1	
+FST(P)	m32/m64	1	todo	todo	4	1	
+FSTP	m80	7	todo	todo	5	5	
+FBSTP	m80	243	todo	todo		252	
+FXCH	r	1	todo	todo	0	0.5	
+FILD	m	1	todo	todo	6	1	
+FIST(P)	m	3	todo	todo	7	1	
+FISTTP	m	3	todo	todo	7	2	SSE3
+FLDZ		1	todo	todo			
+FLD1		2	todo	todo			
+FLDPI FLDL2E etc.		2	todo	todo		2	
+FCMOVcc	r	3	todo	todo	2	2	
+FNSTSW	AX	2	todo	todo	4	1	
+FNSTSW	m16	2	todo	todo		1	
+FLDCW	m16	3	todo	todo		3	
+FNSTCW	m16	2	todo	todo		1	
+FINCSTP FDECSTP		1	todo	todo	1	1	
+FFREE(P)	r	1	todo	todo		1	
+FNSAVE	m	143	todo	todo		167	
+FRSTOR	m	90	todo	todo		162	
+
+;Arithmetic instructions			todo	todo			
+FADD(P) FSUB(R)(P)	r	1	todo	todo	3	1	
+FADD(P) FSUB(R)(P)	m	2	todo	todo		1	
+FMUL(P)	r	1	todo	todo	5	1	
+FMUL(P)	m	2	todo	todo		1	
+FDIV(R)(P)	r	1	todo	todo	10-24	8-18	
+FDIV(R)(P)	m	2	todo	todo		8-18	
+FABS		1	todo	todo	1	1	
+FCHS		1	todo	todo	1	1	
+FCOM(P) FUCOM	r	1	todo	todo	3	1	
+FCOM(P) FUCOM	m	1	todo	todo		1	
+FCOMPP FUCOMPP		2	todo	todo	4	1	
+FCOMI(P) FUCOMI(P)	r	3	todo	todo	5	1	
+FIADD FISUB(R)	m	2	todo	todo		2	
+FIMUL	m	2	todo	todo		2	
+FIDIV(R)	m	2	todo	todo			
+FICOM(P)	m	2	todo	todo		2	
+FTST		1	todo	todo		1	
+FXAM		2	todo	todo		2	
+FPREM		28	todo	todo	21-26	12	
+FPREM1		41	todo	todo	27-50	19	
+FRNDINT		17	todo	todo	22	11	
+
+;Math			todo	todo			
+FSCALE		25	todo	todo	49	49	
+FXTRACT		17	todo	todo	10	10	
+FSQRT		1	todo	todo	10-23	8-17	
+FSIN		21-78	todo	todo	47-106	47-106	
+FCOS		23-100	todo	todo	48-115	48-115	
+FSINCOS		20-110	todo	todo	50-123	50-123	
+F2XM1		16-23	todo	todo	~68	~68	
+FYL2X 		42	todo	todo	90-106		
+FYL2XP1		56	todo	todo	82		
+FPTAN		102	todo	todo	130		
+FPATAN		28-72	todo	todo	94-150		
+
+;Other			todo	todo			
+FNOP		1	todo	todo		1	
+WAIT		2	todo	todo		1	
+FNCLEX		5	todo	todo		22	
+FNINIT		26	todo	todo		80	
+
+;Integer MMX and XMM instructions			todo	todo			
+;Instruction	Operands	?ops fused domain	todo	todo	Latency	Reci-procal through-put	Comments
+
+;Move instructions			todo	todo			
+MOVD	r32/64,(x)mm	1	todo	todo	1	1	
+MOVD	m32/64,(x)mm	1	todo	todo	3	1	
+MOVD	(x)mm,r32/64	1	todo	todo	1	1	
+MOVD	(x)mm,m32/64	1	todo	todo	3	0.5	
+MOVQ	(x)mm,(x)mm	1	todo	todo	1	0.33	
+MOVQ	(x)mm,m64	1	todo	todo	3	0.5	
+MOVQ	m64, (x)mm	1	todo	todo	3	1	
+MOVDQA MOVDQU	x,x	1	todo	todo	0-1	0.25	eliminat.
+MOVDQA MOVDQU	x, m128	1	todo	todo	3	0.5	
+MOVDQA MOVDQU	m128, x	1	todo	todo	3	1	
+LDDQU	x, m128	1	todo	todo	3	0.5	SSE3
+MOVDQ2Q	mm, x	2	todo	todo	1	1	
+MOVQ2DQ	x,mm	1	todo	todo	1	0.33	
+MOVNTQ	m64,mm	1	todo	todo	~360	1	
+MOVNTDQ	m128,x	1	todo	todo	~360	1	
+MOVNTDQA	x, m128	1	todo	todo	3	0.5	SSE4.1
+PACKSSWB/DW PACKUSWB	mm,mm	1	todo	todo	1	1	
+PACKSSWB/DW PACKUSWB	mm,m64	1	todo	todo		1	
+PACKSSWB/DW PACKUSWB	x,x	1	todo	todo	1	0.5	
+PACKSSWB/DW PACKUSWB	x,m128	1	todo	todo	1	0.5	
+PACKUSDW	x,x	1	todo	todo	1	0.5	SSE4.1
+PACKUSDW	x,m	1	todo	todo		0.5	SSE4.1
+PUNPCKH/LBW/WD/DQ	(x)mm,(x)mm	1	todo	todo	1	0.5	
+PUNPCKH/LBW/WD/DQ	(x)mm,m	1	todo	todo		0.5	
+PUNPCKH/LQDQ	x,x	1	todo	todo	1	0.5	
+PUNPCKH/LQDQ	x, m128	2	todo	todo		0.5	
+PMOVSX/ZXBW	x,x	1	todo	todo	1	0.5	SSE4.1
+PMOVSX/ZXBW	x,m64	1	todo	todo		0.5	SSE4.1
+PMOVSX/ZXBD	x,x	1	todo	todo	1	0.5	SSE4.1
+PMOVSX/ZXBD	x,m32	1	todo	todo		0.5	SSE4.1
+PMOVSX/ZXBQ	x,x	1	todo	todo	1	0.5	SSE4.1
+PMOVSX/ZXBQ	x,m16	1	todo	todo		0.5	SSE4.1
+PMOVSX/ZXWD	x,x	1	todo	todo	1	0.5	SSE4.1
+PMOVSX/ZXWD	x,m64	1	todo	todo		0.5	SSE4.1
+PMOVSX/ZXWQ	x,x	1	todo	todo	1	0.5	SSE4.1
+PMOVSX/ZXWQ	x,m32	1	todo	todo		0.5	SSE4.1
+PMOVSX/ZXDQ	x,x	1	todo	todo	1	0.5	SSE4.1
+PMOVSX/ZXDQ	x,m64	1	todo	todo		0.5	SSE4.1
+PSHUFB	(x)mm,(x)mm	1	todo	todo	1	0.5	SSSE3
+PSHUFB	(x)mm,m	2	todo	todo		0.5	SSSE3
+PSHUFW 	mm,mm,i	1	todo	todo	1	0.5	
+PSHUFW 	mm,m64,i	2	todo	todo		0.5	
+PSHUFD	xmm,x,i	1	todo	todo	1	0.5	
+PSHUFD	x,m128,i	2	todo	todo		0.5	
+PSHUFL/HW	x,x,i	1	todo	todo	1	0.5	
+PSHUFL/HW	x, m128,i	2	todo	todo		0.5	
+PALIGNR 	(x)mm,(x)mm,i	1	todo	todo	1	0.5	SSSE3
+PALIGNR	(x)mm,m,i	2	todo	todo		0.5	SSSE3
+PBLENDVB	x,x,xmm0	2	todo	todo	2	1	SSE4.1
+PBLENDVB	x,m,xmm0	3	todo	todo		1	SSE4.1
+PBLENDW	x,x,i	1	todo	todo	1	0.5	SSE4.1
+PBLENDW	x,m,i	2	todo	todo		0.5	SSE4.1
+MASKMOVQ	mm,mm	4	todo	todo		1	
+MASKMOVDQU	x,x	10	todo	todo		6	
+PMOVMSKB	r32,(x)mm	1	todo	todo	2	1	
+PEXTRB	r32,x,i	2	todo	todo	2	1	SSE4.1
+PEXTRB	m8,x,i	2	todo	todo		1	SSE4.1
+PEXTRW 	r32,(x)mm,i	2	todo	todo	2	1	
+PEXTRW	m16,(x)mm,i	2	todo	todo		1	SSE4.1
+PEXTRD	r32,x,i	2	todo	todo	2	1	SSE4.1
+PEXTRD	m32,x,i	2	todo	todo		1	SSE4.1
+PEXTRQ	r64,x,i	2	todo	todo	2	1	SSE4.1
+PEXTRQ	m64,x,i	2	todo	todo		1	
+PINSRB	x,r32,i	2	todo	todo	2	1	SSE4.1
+PINSRB	x,m8,i	2	todo	todo		0.5	SSE4.1
+PINSRW 	(x)mm,r32,i	2	todo	todo	2	1	
+PINSRW 	(x)mm,m16,i	2	todo	todo		0.5	
+PINSRD	x,r32,i	2	todo	todo	2	1	SSE4.1
+PINSRD	x,m32,i	2	todo	todo		0.5	SSE4.1
+PINSRQ	x,r64,i	2	todo	todo	2	1	SSE4.1
+PINSRQ	x,m64,i	2	todo	todo		0.5	SSE4.1
+
+;Arithmetic instructions			todo	todo			
+PADD/SUB(U,S)B/W/D/Q	(x)mm, (x)mm	1	todo	todo	1	0.5	
+PADD/SUB(U,S)B/W/D/Q	(x)mm,m	1	todo	todo		0.5	
+PHADD/SUB(S)W/D	(x)mm, (x)mm	3	todo	todo	3	1.5	SSSE3
+PHADD/SUB(S)W/D	(x)mm,m64	4	todo	todo		1.5	SSSE3
+PCMPEQ/GTB/W/D	(x)mm,(x)mm	1	todo	todo	1	0.5	
+PCMPEQ/GTB/W/D	(x)mm,m	1	todo	todo		0.5	
+PCMPEQQ	x,x	1	todo	todo	1	0.5	SSE4.1
+PCMPEQQ	x,m128	1	todo	todo		0.5	SSE4.1
+PCMPGTQ	x,x	1	todo	todo	5	1	SSE4.2
+PCMPGTQ	x,m128	1	todo	todo		1	SSE4.2
+PMULL/HW PMULHUW	(x)mm,(x)mm	1	todo	todo	5	1	
+PMULL/HW PMULHUW	(x)mm,m	1	todo	todo		1	
+PMULHRSW	(x)mm,(x)mm	1	todo	todo	5	1	SSSE3
+PMULHRSW	(x)mm,m	1	todo	todo		1	SSSE3
+PMULLD	x,x	1	todo	todo	5	1	SSE4.1
+PMULLD	x,m128	2	todo	todo		1	SSE4.1
+PMULDQ	x,x	1	todo	todo	5	1	SSE4.1
+PMULDQ	x,m128	1	todo	todo		1	SSE4.1
+PMULUDQ	(x)mm,(x)mm	1	todo	todo	5	1	
+PMULUDQ	(x)mm,m	1	todo	todo		1	
+PMADDWD	(x)mm,(x)mm	1	todo	todo	5	1	
+PMADDWD	(x)mm,m	1	todo	todo		1	
+PMADDUBSW	(x)mm,(x)mm	1	todo	todo	5	1	SSSE3
+PMADDUBSW	(x)mm,m	1	todo	todo		1	SSSE3
+PAVGB/W	(x)mm,(x)mm	1	todo	todo	1	0.5	
+PAVGB/W	(x)mm,m	1	todo	todo		0.5	
+PMIN/MAXSB	x,x	1	todo	todo	1	0.5	SSE4.1
+PMIN/MAXSB	x,m128	1	todo	todo		0.5	SSE4.1
+PMIN/MAXUB	(x)mm,(x)mm	1	todo	todo	1	0.5	
+PMIN/MAXUB	(x)mm,m	1	todo	todo		0.5	
+PMIN/MAXSW	(x)mm,(x)mm	1	todo	todo	1	0.5	
+PMIN/MAXSW	(x)mm,m	1	todo	todo		0.5	
+PMIN/MAXUW	x,x	1	todo	todo	1	0.5	SSE4.1
+PMIN/MAXUW	x,m	1	todo	todo		0.5	SSE4.1
+PMIN/MAXU/SD	x,x	1	todo	todo	1	0.5	SSE4.1
+PMIN/MAXU/SD	x,m128	1	todo	todo		0.5	SSE4.1
+PHMINPOSUW	x,x	1	todo	todo	5	1	SSE4.1
+PHMINPOSUW	x,m128	1	todo	todo		1	SSE4.1
+PABSB/W/D	(x)mm,(x)mm	1	todo	todo	1	0.5	SSSE3
+PABSB/W/D	(x)mm,m	1	todo	todo		0.5	SSSE3
+PSIGNB/W/D	(x)mm,(x)mm	1	todo	todo	1	0.5	SSSE3
+PSIGNB/W/D	(x)mm,m	1	todo	todo		0.5	SSSE3
+PSADBW	(x)mm,(x)mm	1	todo	todo	5	1	
+PSADBW	(x)mm,m	1	todo	todo		1	
+MPSADBW	x,x,i	3	todo	todo	6	1	SSE4.1
+MPSADBW	x,m,i	4	todo	todo		1	SSE4.1
+
+;Logic instructions			todo	todo			
+PAND(N) POR PXOR	(x)mm,(x)mm	1	todo	todo	1	0.33	
+PAND(N) POR PXOR	(x)mm,m	1	todo	todo		0.5	
+PTEST	x,x	2	todo	todo	1	1	SSE4.1
+PTEST	x,m128	3	todo	todo		1	SSE4.1
+PSLL/RL/RAW/D/Q	mm,mm/i	1	todo	todo	1	1	
+PSLL/RL/RAW/D/Q	mm,m64	1	todo	todo		1	
+PSLL/RL/RAW/D/Q	xmm,i	1	todo	todo	1	1	
+PSLL/RL/RAW/D/Q	x,x	2	todo	todo	2	1	
+PSLL/RL/RAW/D/Q	x,m128	3	todo	todo		1	
+PSLL/RLDQ	x,i	1	todo	todo	1	0.5	
+
+;String instructions			todo	todo			
+PCMPESTRI	x,x,i	8	todo	todo	4	4	SSE4.2
+PCMPESTRI	x,m128,i	8	todo	todo		4	SSE4.2
+PCMPESTRM	x,x,i	8	todo	todo	12	4	SSE4.2
+PCMPESTRM	x,m128,i	8	todo	todo		4	SSE4.2
+PCMPISTRI	x,x,i	3	todo	todo	3		SSE4.2
+PCMPISTRI	x,m128,i	4	todo	todo		3	SSE4.2
+PCMPISTRM	x,x,i	3	todo	todo	11		SSE4.2
+PCMPISTRM	x,m128,i	4	todo	todo		3	SSE4.2
+
+;Encryption instructions			todo	todo			
+PCLMULQDQ	x,x,i	18	todo	todo	14	8	CLMUL
+PCLMULQDQ	x,m,i	18	todo	todo		8	CLMUL
+AESDEC, AESDECLAST, AESENC, AESENCLAST	x,x	2	todo	todo	4	1	AES
+AESDEC, AESDECLAST, AESENC, AESENCLAST	x,m	3	todo	todo		1	AES
+AESIMC	x,x	2	todo	todo	14	2	AES
+AESIMC	x,m	3	todo	todo		2	AES
+AESKEYGENASSIST	x,x,i	11	todo	todo	10	8	AES
+AESKEYGENASSIST	x,m,i	11	todo	todo		7	AES
+
+;Other			todo	todo			
+EMMS		31	todo	todo		18	
+
+;Floating point XMM and YMM instructions			todo	todo			
+;Instruction	Operands	?ops fused domain	todo	todo	Latency	Reci-procal through-put	Comments
+
+;Move instructions			todo	todo			
+MOVAPS/D	x,x	1	todo	todo	0-1	?1	elimin.
+VMOVAPS/D	y,y	1	todo	todo	0-1	?1	elimin.
+MOVAPS/D MOVUPS/D	x,m128	1	todo	todo	3	0.5	
+VMOVAPS/D VMOVUPS/D	y,m256	1	todo	todo	4	1	AVX
+MOVAPS/D MOVUPS/D	m128,x	1	todo	todo	3	1	
+VMOVAPS/D VMOVUPS/D	m256,y	1	todo	todo	4	2	AVX
+MOVSS/D	x,x	1	todo	todo	1	1	
+MOVSS/D	x,m32/64	1	todo	todo	3	0.5	
+MOVSS/D	m32/64,x	1	todo	todo	3	1	
+MOVHPS/D MOVLPS/D	x,m64	2	todo	todo	4	1	
+MOVH/LPS/D	m64,x	2	todo	todo	3	1	
+MOVLHPS MOVHLPS	x,x	1	todo	todo	1	1	
+MOVMSKPS/D	r32,x	1	todo	todo	2	1	
+VMOVMSKPS/D	r32,y	1	todo	todo	2	1	
+MOVNTPS/D	m128,x	1	todo	todo	~380	1	
+VMOVNTPS/D	m256,y	1	todo	todo	~380	2	AVX
+SHUFPS/D	x,x,i	1	todo	todo	1	1	
+SHUFPS/D	x,m128,i	2	todo	todo		1	
+VSHUFPS/D	y,y,y,i	1	todo	todo	1	1	AVX
+VSHUFPS/D	y, y,m256,i	2	todo	todo		1	AVX
+VPERMILPS/PD	x,x,x/i	1	todo	todo	1	1	AVX
+VPERMILPS/PD	y,y,y/i	1	todo	todo	1	1	AVX
+VPERMILPS/PD	x,x,m	2	todo	todo		1	AVX
+VPERMILPS/PD	y,y,m	2	todo	todo		1	AVX
+VPERMILPS/PD	x,m,i	2	todo	todo		1	AVX
+VPERMILPS/PD	y,m,i	2	todo	todo		1	AVX
+VPERM2F128	y,y,y,i	1	todo	todo	2	1	AVX
+VPERM2F128	y,y,m,i	2	todo	todo		1	AVX
+BLENDPS/PD	x,x,i	1	todo	todo	1	0.5	SSE4.1
+BLENDPS/PD	x,m128,i	2	todo	todo		0.5	SSE4.1
+VBLENDPS/PD	y,y,i	1	todo	todo	1	0.5	AVX
+VBLENDPS/PD	y,m256,i	2	todo	todo		1	AVX
+BLENDVPS/PD	x,x,xmm0	2	todo	todo	2	1	SSE4.1
+BLENDVPS/PD	x,m,xmm0	3	todo	todo		1	SSE4.1
+VBLENDVPS/PD	y,y,y,y	2	todo	todo	2	1	AVX
+VBLENDVPS/PD	y,y,m,y	3	todo	todo		1	AVX
+MOVDDUP	x,x	1	todo	todo	1	1	SSE3
+MOVDDUP	x,m64	1	todo	todo	3	0.5	SSE3
+VMOVDDUP	y,y	1	todo	todo	1	1	AVX
+VMOVDDUP	y,m256	1	todo	todo	3	1	AVX
+VBROADCASTSS	x,m32	1	todo	todo	4	0.5	AVX
+VBROADCASTSS	y,m32	2	todo	todo	5	1	AVX
+VBROADCASTSD	y,m64	2	todo	todo	5	1	AVX
+VBROADCASTF128	y,m128	2	todo	todo	5	1	AVX
+MOVSH/LDUP	x,x	1	todo	todo	1	1	SSE3
+MOVSH/LDUP	x,m128	1	todo	todo	3	0.5	SSE3
+VMOVSH/LDUP	y,y	1	todo	todo	1	1	AVX
+VMOVSH/LDUP	y,m256	1	todo	todo		1	AVX
+UNPCKH/LPS/D	x,x	1	todo	todo	1	1	SSE3
+UNPCKH/LPS/D	x,m128	1	todo	todo		1	SSE3
+VUNPCKH/LPS/D	y,y,y	1	todo	todo	1	1	AVX
+VUNPCKH/LPS/D	y,y,m256	1	todo	todo		1	AVX
+EXTRACTPS	r32,x,i	2	todo	todo	2	1	SSE4.1
+EXTRACTPS	m32,x,i	3	todo	todo		1	SSE4.1
+VEXTRACTF128	x,y,i	1	todo	todo	2	1	AVX
+VEXTRACTF128	m128,y,i	2	todo	todo	4	1	AVX
+INSERTPS	x,x,i	1	todo	todo	1	1	SSE4.1
+INSERTPS	x,m32,i	2	todo	todo		1	SSE4.1
+VINSERTF128	y,y,x,i	1	todo	todo	2	1	AVX
+VINSERTF128	y,y,m128,i	2	todo	todo	4	1	AVX
+VMASKMOVPS/D	x,x,m128	3	todo	todo	4	1	AVX
+VMASKMOVPS/D	y,y,m256	3	todo	todo	5	1	AVX
+VMASKMOVPS/D	m128,x,x	4	todo	todo		1	AVX
+VMASKMOVPS/D	m256,y,y	4	todo	todo		2	AVX
+
+;Conversion			todo	todo			
+CVTPD2PS	x,x	2	todo	todo	4	1	
+CVTPD2PS	x,m128	2	todo	todo		1	
+VCVTPD2PS	x,y	2	todo	todo	4	1	AVX
+VCVTPD2PS	x,m256	2	todo	todo		1	AVX
+CVTSD2SS	x,x	2	todo	todo	4	1	
+CVTSD2SS	x,m64	2	todo	todo		1	
+CVTPS2PD	x,x	2	todo	todo	1	1	
+CVTPS2PD	x,m64	2	todo	todo		1	
+VCVTPS2PD	y,x	2	todo	todo	4	1	AVX
+VCVTPS2PD	y,m128	3	todo	todo		1	AVX
+CVTSS2SD	x,x	2	todo	todo	2	1	
+CVTSS2SD	x,m32	2	todo	todo		1	
+CVTDQ2PS	x,x	1	todo	todo	3	1	
+CVTDQ2PS	x,m128	1	todo	todo		1	
+VCVTDQ2PS	y,y	1	todo	todo	3	1	AVX
+VCVTDQ2PS	y,m256	1	todo	todo		1	AVX
+CVT(T)PS2DQ	x,x	1	todo	todo	3	1	
+CVT(T)PS2DQ	x,m128	1	todo	todo		1	
+VCVT(T)PS2DQ	y,y	1	todo	todo	3	1	AVX
+VCVT(T)PS2DQ	y,m256	1	todo	todo		1	AVX
+CVTDQ2PD	x,x	2	todo	todo	4	1	
+CVTDQ2PD	x,m64	2	todo	todo		1	
+VCVTDQ2PD	y,x	2	todo	todo	5	1	AVX
+VCVTDQ2PD	y,m128	2	todo	todo		1	AVX
+CVT(T)PD2DQ	x,x	2	todo	todo	4	1	
+CVT(T)PD2DQ	x,m128	2	todo	todo		1	
+VCVT(T)PD2DQ	x,y	2	todo	todo	5	1	AVX
+VCVT(T)PD2DQ	x,m256	2	todo	todo		1	AVX
+CVTPI2PS	x,mm	1	todo	todo	4		
+CVTPI2PS	x,m64	1	todo	todo		3	
+CVT(T)PS2PI	mm,x	2	todo	todo	4	1	
+CVT(T)PS2PI	mm,m128	2	todo	todo		1	
+CVTPI2PD	x,mm	2	todo	todo	4	1	
+CVTPI2PD	x,m64	2	todo	todo		1	
+CVT(T)PD2PI	mm,x	2	todo	todo	4	1	
+CVT(T)PD2PI	mm,m128	2	todo	todo		1	
+CVTSI2SS	x,r32	2	todo	todo	4	3	
+CVTSI2SS	x,m32	1	todo	todo		3	
+CVT(T)SS2SI	r32,x	2	todo	todo	4	1	
+CVT(T)SS2SI	r32,m32	2	todo	todo		1	
+CVTSI2SD	x,r32	2	todo	todo	4	3	
+CVTSI2SD	x,m32	2	todo	todo		3	
+CVT(T)SD2SI	r32,x	2	todo	todo	4	1	
+CVT(T)SD2SI	r32,m64	2	todo	todo		1	
+VCVTPS2PH	x,v,i	3	todo	todo	10	1	F16C
+VCVTPS2PH	m,v,i	3	todo	todo		1	F16C
+VCVTPH2PS	v,x	2	todo	todo	6	1	F16C
+VCVTPH2PS	v,m	2	todo	todo		1	F16C
+
+;Arithmetic			todo	todo			
+ADDSS/D SUBSS/D	x,x	1	todo	todo	3	1	
+ADDSS/D SUBSS/D	x,m32/64	1	todo	todo		1	
+ADDPS/D SUBPS/D	x,x	1	todo	todo	3	1	
+ADDPS/D SUBPS/D	x,m128	1	todo	todo		1	
+VADDPS/D VSUBPS/D	y,y,y	1	todo	todo	3	1	AVX
+VADDPS/D VSUBPS/D	y,y,m256	1	todo	todo		1	AVX
+ADDSUBPS/D	x,x	1	todo	todo	3	1	SSE3
+ADDSUBPS/D	x,m128	1	todo	todo		1	SSE3
+VADDSUBPS/D	y,y,y	1	todo	todo	3	1	AVX
+VADDSUBPS/D	y,y,m256	1	todo	todo		1	AVX
+HADDPS/D HSUBPS/D	x,x	3	todo	todo	5	2	SSE3
+HADDPS/D HSUBPS/D	x,m128	4	todo	todo		2	SSE3
+VHADDPS/D VHSUBPS/D	y,y,y	3	todo	todo	5	2	AVX
+VHADDPS/D VHSUBPS/D	y,y,m256	4	todo	todo		2	AVX
+MULSS MULPS	x,x	1	todo	todo	5	1	
+MULSS MULPS	x,m	1	todo	todo		1	
+VMULPS	y,y,y	1	todo	todo	5	1	AVX
+VMULPS	y,y,m256	1	todo	todo		1	AVX
+MULSD MULPD	x,x	1	todo	todo	5	1	
+MULSD MULPD	x,m	1	todo	todo		1	
+VMULPD	y,y,y	1	todo	todo	5	1	AVX
+VMULPD	y,y,m256	1	todo	todo		1	AVX
+DIVSS DIVPS	x,x	1	todo	todo	10-13	7	
+DIVSS DIVPS	x,m	1	todo	todo		7	
+VDIVPS	y,y,y	3	todo	todo	19-21	14	AVX
+VDIVPS	y,y,m256	4	todo	todo		14	AVX
+DIVSD DIVPD	x,x	1	todo	todo	10-20	8-14	
+DIVSD DIVPD	x,m	1	todo	todo		8-14	
+VDIVPD	y,y,y	3	todo	todo	20-35	16-28	AVX
+VDIVPD	y,y,m256	4	todo	todo		16-28	AVX
+RCPSS/PS	x,x	1	todo	todo	5	1	
+RCPSS/PS	x,m128	1	todo	todo		1	
+VRCPPS	y,y	3	todo	todo	7	2	AVX
+VRCPPS	y,m256	4	todo	todo		2	AVX
+CMPccSS/D CMPccPS/D	x,x	1	todo	todo	3	1	
+CMPccSS/D CMPccPS/D	x,m128	2	todo	todo		1	
+VCMPccPS/D	y,y,y	1	todo	todo	3	1	AVX
+VCMPccPS/D	y,y,m256	2	todo	todo		1	AVX
+COMISS/D UCOMISS/D	x,x	2	todo	todo		1	
+COMISS/D UCOMISS/D	x,m32/64	2	todo	todo		1	
+MAXSS/D MINSS/D	x,x	1	todo	todo	3	1	
+MAXSS/D MINSS/D	x,m32/64	1	todo	todo		1	
+MAXPS/D MINPS/D	x,x	1	todo	todo	3	1	
+MAXPS/D MINPS/D	x,m128	1	todo	todo		1	
+VMAXPS/D VMINPS/D	y,y,y	1	todo	todo	3	1	AVX
+VMAXPS/D VMINPS/D	y,y,m256	1	todo	todo		1	AVX
+ROUNDSS/SD/PS/PD	x,x,i	1	todo	todo	3	1	SSE4.1
+ROUNDSS/SD/PS/PD	x,m128,i	2	todo	todo		1	SSE4.1
+VROUNDSS/SD/PS/PD	y,y,i	1	todo	todo	3	1	AVX
+VROUNDSS/SD/PS/PD	y,m256,i	2	todo	todo		1	AVX
+DPPS	x,x,i	4	todo	todo	12	2	SSE4.1
+DPPS	x,m128,i	6	todo	todo		4	SSE4.1
+VDPPS	y,y,y,i	4	todo	todo	12	2	AVX
+VDPPS	y,m256,i	6	todo	todo		4	AVX
+DPPD	x,x,i	3	todo	todo	9	1	SSE4.1
+DPPD	x,m128,i	4	todo	todo		1	SSE4.1
+
+;Math			todo	todo			
+SQRTSS/PS	x,x	1	todo	todo	11	7	
+SQRTSS/PS	x,m128	1	todo	todo		7	
+VSQRTPS	y,y	3	todo	todo	19	14	AVX
+VSQRTPS	y,m256	4	todo	todo		14	AVX
+SQRTSD/PD	x,x	1	todo	todo	16	8-14	
+SQRTSD/PD	x,m128	1	todo	todo		8-14	
+VSQRTPD	y,y	3	todo	todo	28	16-28	AVX
+VSQRTPD	y,m256	4	todo	todo		16-28	AVX
+RSQRTSS/PS	x,x	1	todo	todo	5	1	
+RSQRTSS/PS	x,m128	1	todo	todo		1	
+VRSQRTPS	y,y	3	todo	todo	7	2	AVX
+VRSQRTPS	y,m256	4	todo	todo		2	AVX
+
+;Logic			todo	todo			
+AND/ANDN/OR/XORPS/PD	x,x	1	todo	todo	1	1	
+AND/ANDN/OR/XORPS/PD	x,m128	1	todo	todo		1	
+VAND/ANDN/OR/XORPS/PD	y,y,y	1	todo	todo	1	1	AVX
+VAND/ANDN/OR/XORPS/PD	y,y,m256	1	todo	todo		1	AVX
+
+;Other			todo	todo			
+VZEROUPPER		4	todo	todo		1	AVX
+VZEROALL		12	todo	todo		11	32 bit
+VZEROALL		20	todo	todo		9	64 bit
+LDMXCSR	m32	3	todo	todo	6	3	
+STMXCSR	m32	3	todo	todo	7	1	
+FXSAVE	m4096	130	todo	todo		66	
+FXRSTOR	m4096	116	todo	todo		68	
+XSAVEOPT	m	100-161	todo	todo	60-500		

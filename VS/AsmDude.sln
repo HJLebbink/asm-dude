@@ -38,6 +38,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "intel-doc-2-data", "CSHARP\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asm-annotate", "CSHARP\asm-annotate\asm-annotate.csproj", "{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude2-vsix", "CSHARP\asm-dude2-vsix\asm-dude2-vsix.csproj", "{416A6209-7BD1-4BCD-B3CC-76F95864CF93}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanguageServerLibrary", "CSHARP\LanguageServerLibrary\LanguageServerLibrary.csproj", "{61F36DC8-2021-4B45-B9A6-86C3F8F6AE0A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanguageServerWithUI", "CSHARP\LanguageServerWithUI\LanguageServerWithUI.csproj", "{A177CC98-7EE7-41AE-B969-420D2D4C5F04}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockLanguageExtension", "CSHARP\MockLanguageExtension\MockLanguageExtension.csproj", "{BE03E11D-A0A6-4D21-9606-02E2AA4ED7A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -96,6 +104,22 @@ Global
 		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|x64.Build.0 = Debug|Any CPU
 		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|x64.ActiveCfg = Release|Any CPU
 		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Release|x64.Build.0 = Release|Any CPU
+		{416A6209-7BD1-4BCD-B3CC-76F95864CF93}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{416A6209-7BD1-4BCD-B3CC-76F95864CF93}.Debug|x64.Build.0 = Debug|Any CPU
+		{416A6209-7BD1-4BCD-B3CC-76F95864CF93}.Release|x64.ActiveCfg = Release|Any CPU
+		{416A6209-7BD1-4BCD-B3CC-76F95864CF93}.Release|x64.Build.0 = Release|Any CPU
+		{61F36DC8-2021-4B45-B9A6-86C3F8F6AE0A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{61F36DC8-2021-4B45-B9A6-86C3F8F6AE0A}.Debug|x64.Build.0 = Debug|Any CPU
+		{61F36DC8-2021-4B45-B9A6-86C3F8F6AE0A}.Release|x64.ActiveCfg = Release|Any CPU
+		{61F36DC8-2021-4B45-B9A6-86C3F8F6AE0A}.Release|x64.Build.0 = Release|Any CPU
+		{A177CC98-7EE7-41AE-B969-420D2D4C5F04}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A177CC98-7EE7-41AE-B969-420D2D4C5F04}.Debug|x64.Build.0 = Debug|Any CPU
+		{A177CC98-7EE7-41AE-B969-420D2D4C5F04}.Release|x64.ActiveCfg = Release|Any CPU
+		{A177CC98-7EE7-41AE-B969-420D2D4C5F04}.Release|x64.Build.0 = Release|Any CPU
+		{BE03E11D-A0A6-4D21-9606-02E2AA4ED7A5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BE03E11D-A0A6-4D21-9606-02E2AA4ED7A5}.Debug|x64.Build.0 = Debug|Any CPU
+		{BE03E11D-A0A6-4D21-9606-02E2AA4ED7A5}.Release|x64.ActiveCfg = Release|Any CPU
+		{BE03E11D-A0A6-4D21-9606-02E2AA4ED7A5}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
