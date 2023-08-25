@@ -29,9 +29,9 @@ namespace AsmDude2
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Xml;
     using System.Xml.XPath;
-    using Amib.Threading;
     using AsmDude2.SignatureHelp;
     using AsmDude2.Tools;
     using AsmTools;
@@ -50,7 +50,8 @@ namespace AsmDude2
         private readonly ErrorListProvider errorListProvider_;
         private readonly MnemonicStore mnemonicStore_;
         private readonly PerformanceStore performanceStore_;
-        private readonly SmartThreadPool threadPool_;
+        //private readonly ThreadPool threadPool_;
+
 
         #region Singleton Stuff
         private static readonly Lazy<AsmDude2Tools> Lazy = new Lazy<AsmDude2Tools>(() => new AsmDude2Tools());
@@ -85,7 +86,7 @@ namespace AsmDude2
 
             #endregion
 
-            this.threadPool_ = new SmartThreadPool();
+            //this.threadPool_ = new SmartThreadPool();
 
             #region load Signature Store and Performance Store
             string path = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar;
@@ -330,7 +331,7 @@ namespace AsmDude2
 
         public PerformanceStore Performance_Store { get { return this.performanceStore_; } }
 
-        public SmartThreadPool Thread_Pool { get { return this.threadPool_; } }
+        //public SmartThreadPool Thread_Pool { get { return this.threadPool_; } }
 
         /// <summary>Get the collection of Keywords (in CAPITALS), but NOT mnemonics and registers</summary>
         public IEnumerable<string> Get_Keywords()
@@ -649,7 +650,7 @@ namespace AsmDude2
             {
                 // free managed resources
                 this.errorListProvider_.Dispose();
-                this.threadPool_.Dispose();
+               //this.threadPool_.Dispose();
             }
             // free native resources if there are any.
         }

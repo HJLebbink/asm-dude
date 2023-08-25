@@ -28,7 +28,7 @@ namespace AsmDude2.Tools
     using System.Globalization;
     using System.Linq;
     using System.Text;
-    using Amib.Threading;
+    //using Amib.Threading;
     using AsmDude2.SyntaxHighlighting;
     using AsmSim;
     using AsmSim.Mnemonics;
@@ -59,9 +59,9 @@ namespace AsmDude2.Tools
 
         public bool Enabled { get; set; }
 
-        private readonly SmartThreadPool threadPool_;
-        private SmartThreadPool threadPool2_;
-        private IWorkItemResult thread_Result_;
+        //private readonly SmartThreadPool threadPool_;
+        //private SmartThreadPool threadPool2_;
+        //private IWorkItemResult thread_Result_;
         public readonly AsmSim.Tools Tools;
 
         private readonly Delay delay_;
@@ -106,8 +106,8 @@ namespace AsmDude2.Tools
                 this.syntax_Errors_ = new Dictionary<int, (string message, Mnemonic mnemonic)>();
                 this.isNotImplemented_ = new HashSet<int>();
 
-                this.threadPool_ = AsmDude2Tools.Instance.Thread_Pool;
-                this.threadPool2_ = new SmartThreadPool(60000, Settings.Default.AsmSim_Number_Of_Threads, 1);
+                //this.threadPool_ = AsmDude2Tools.Instance.Thread_Pool;
+                //this.threadPool2_ = new SmartThreadPool(60000, Settings.Default.AsmSim_Number_Of_Threads, 1);
                 Dictionary<string, string> settings = new Dictionary<string, string>
                 {
                     /*
@@ -148,7 +148,7 @@ namespace AsmDude2.Tools
                 this.sFlow_ = new StaticFlow(this.Tools);
                 this.dFlow_ = new DynamicFlow(this.Tools);
 
-                this.delay_ = new Delay(AsmDude2Package.MsSleepBeforeAsyncExecution, 1000, this.threadPool_);
+                //this.delay_ = new Delay(AsmDude2Package.MsSleepBeforeAsyncExecution, 1000, this.threadPool_);
 
                 // after a delay, reset this AsmSimulator
                 this.delay_.Done_Event += (o, i) => { this.Schedule_Reset_Async().ConfigureAwait(false); };
@@ -211,11 +211,11 @@ namespace AsmDude2.Tools
                     }
                     this.cached_States_Before_.Clear();
                 }
-                if (this.threadPool2_ != null)
-                {
-                    this.threadPool2_.Dispose();
-                    this.threadPool2_ = null;
-                }
+                //if (this.threadPool2_ != null)
+                //{
+                //    this.threadPool2_.Dispose();
+                //    this.threadPool2_ = null;
+                //}
                 if (this.dFlow_ != null)
                 {
                     this.dFlow_.Dispose();
@@ -260,6 +260,8 @@ namespace AsmDude2.Tools
 
         private async System.Threading.Tasks.Task Schedule_Reset_Async()
         {
+            /*
+
             System.Threading.Tasks.Task task = System.Threading.Tasks.Task.Run(() =>
             {
                 bool changed;
@@ -466,6 +468,7 @@ namespace AsmDude2.Tools
                 }
                 #endregion
             }
+            */
         }
         #endregion
 
@@ -889,7 +892,7 @@ namespace AsmDude2.Tools
             (State state, bool bussy) state = before ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
             if (state.bussy)
             {
-                this.threadPool2_.QueueWorkItem(Update_State_And_TvArray_LOCAL);
+                //this.threadPool2_.QueueWorkItem(Update_State_And_TvArray_LOCAL);
                 this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
                 return ("[I'm bussy and haven't acquired the state of line " + (lineNumber + 1) + " yet.]", true); // plus 1 for the lineNumber because lineNumber 0 is shown as lineNumber 1
             }
@@ -902,7 +905,7 @@ namespace AsmDude2.Tools
             Tv[] reg = state.state.GetTvArray_Cached(name);
             if (reg == null)
             {
-                this.threadPool2_.QueueWorkItem(Update_TvArray_LOCAL, state.state);
+                //this.threadPool2_.QueueWorkItem(Update_TvArray_LOCAL, state.state);
                 this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
                 return ("[I'm bussy determining the bits of " + name + ".]", true);
             }
@@ -1027,7 +1030,7 @@ namespace AsmDude2.Tools
                 if (async)
                 {
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_After: going to execute this in a different thread.");
-                    this.threadPool2_.QueueWorkItem(Calculate_State_After_LOCAL, WorkItemPriority.Lowest);
+                    //this.threadPool2_.QueueWorkItem(Calculate_State_After_LOCAL, WorkItemPriority.Lowest);
                     return (state: null, bussy: true);
                 }
                 else
@@ -1100,7 +1103,7 @@ namespace AsmDude2.Tools
                 if (async)
                 {
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_Before: going to execute this in a different thread.");
-                    this.threadPool2_.QueueWorkItem(Create_State_Before_LOCAL, WorkItemPriority.Lowest);
+                    //this.threadPool2_.QueueWorkItem(Create_State_Before_LOCAL, WorkItemPriority.Lowest);
                     return (state: null, bussy: true);
                 }
                 else
