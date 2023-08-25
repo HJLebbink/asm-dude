@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace LanguageServer
 {
     [DataContract]
-    class MockServerCapabilities : VSServerCapabilities
+    class AsmServerCapabilities : VSServerCapabilities
     {
         [DataMember(Name = "mock")]
         public bool Mock

@@ -39,6 +39,8 @@ namespace AsmDude2.Tools
 
         public MnemonicStore(string filename_RegularData, string filename_HandcraftedData)
         {
+            AsmDudeToolsStatic.Output_INFO("MnemonicStore: constructor: regularData = " + filename_RegularData + "; hHandcraftedData = " + filename_HandcraftedData);
+
             this.data_ = new Dictionary<Mnemonic, IList<AsmSignatureElement>>();
             this.arch_ = new Dictionary<Mnemonic, IList<Arch>>();
             this.htmlRef_ = new Dictionary<Mnemonic, string>();

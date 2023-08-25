@@ -1,40 +1,33 @@
-﻿using AsmDude2.Tools;
-
-using Microsoft.VisualStudio.LanguageServer.Client;
-using Microsoft.VisualStudio.Threading;
+﻿using Microsoft.VisualStudio.LanguageServer.Client;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
-
+using StreamJsonRpc;
 using System;
 using System.Collections.Generic;
-using System.Composition;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Reflection;
+using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Threading;
+using Newtonsoft.Json.Linq;
+using Task = System.Threading.Tasks.Task;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
+using System.ComponentModel.Composition;
+using AsmDude2.Tools;
 
 namespace AsmDude2
 {
     [ContentType(AsmDude2Package.AsmDudeContentType)]
     [Export(typeof(ILanguageClient))]
-    internal class AsmLanguageClient : ILanguageClient
+    [RunOnContext(RunningContext.RunOnHost)]
+    public class AsmLanguageClient : ILanguageClient, ILanguageClientCustomMessage2
     {
-        public string Name => "Asm Language Extension";
-
-        public IEnumerable<string> ConfigurationSections
+        public AsmLanguageClient()
         {
-            get
-            {
-                yield return "asm";
-            }
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: Entering constructor");
+            Instance = this;
         }
-
-        public object InitializationOptions => null;
-
-        public IEnumerable<string> FilesToWatch => null;
-
-        bool ILanguageClient.ShowNotificationOnInitializeFailed => throw new NotImplementedException();
 
         internal static AsmLanguageClient Instance
         {
@@ -42,61 +35,74 @@ namespace AsmDude2
             set;
         }
 
-        public AsmLanguageClient()
+        internal JsonRpc Rpc
         {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmLanguageClient: Entering constructor"));
-            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: Entering constructor");
-            AsmLanguageClient.Instance = this;
+            get;
+            set;
         }
 
         public event AsyncEventHandler<EventArgs> StartAsync;
         public event AsyncEventHandler<EventArgs> StopAsync;
 
-        event AsyncEventHandler<EventArgs> ILanguageClient.StartAsync
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
+        public string Name => "Asm Language Extension";
 
-            remove
+        public IEnumerable<string> ConfigurationSections
+        {
+            get
             {
-                throw new NotImplementedException();
+                AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: get ConfigurationSections");
+                yield return "foo";
             }
         }
 
-        event AsyncEventHandler<EventArgs> ILanguageClient.StopAsync
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
+        public object InitializationOptions => null;
 
-            remove
-            {
-                throw new NotImplementedException();
-            }
+        public IEnumerable<string> FilesToWatch => null;
+
+        public object MiddleLayer
+        {
+            get;
+            set;
         }
+
+        public object CustomMessageTarget => null;
+
+        public bool ShowNotificationOnInitializeFailed => true;
 
         public async Task<Connection> ActivateAsync(CancellationToken token)
         {
-            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: ActivateAsync");
-            await Task.Yield();
+            // Debugger.Launch();
 
-            ProcessStartInfo info = new ProcessStartInfo();
-            info.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Server", @"LanguageServerWithUI.exe");
-            info.Arguments = AsmDude2Package.AsmDudeContentType;
-            info.RedirectStandardInput = true;
-            info.RedirectStandardOutput = true;
-            info.UseShellExecute = false;
-            info.CreateNoWindow = true;
+            string programPath = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Server", "LanguageServerWithUI.exe");
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: ActivateAsync: configuring language server " + programPath);
 
-            Process process = new Process();
-            process.StartInfo = info;
+            ProcessStartInfo info = new ProcessStartInfo
+            {
+                FileName = programPath,
+                WorkingDirectory = Path.GetDirectoryName(programPath)
+            };
+
+            var stdInPipeName = @"output";
+            var stdOutPipeName = @"input";
+
+            var pipeAccessRule = new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
+            var pipeSecurity = new PipeSecurity();
+            pipeSecurity.AddAccessRule(pipeAccessRule);
+
+            var bufferSize = 256;
+            var readerPipe = new NamedPipeServerStream(stdInPipeName, PipeDirection.InOut, 4, PipeTransmissionMode.Message, PipeOptions.Asynchronous, bufferSize, bufferSize, pipeSecurity);
+            var writerPipe = new NamedPipeServerStream(stdOutPipeName, PipeDirection.InOut, 4, PipeTransmissionMode.Message, PipeOptions.Asynchronous, bufferSize, bufferSize, pipeSecurity);
+
+            Process process = new Process
+            {
+                StartInfo = info
+            };
 
             if (process.Start())
             {
-                return new Connection(process.StandardOutput.BaseStream, process.StandardInput.BaseStream);
+                await readerPipe.WaitForConnectionAsync(token);
+                await writerPipe.WaitForConnectionAsync(token);
+                return new Connection(readerPipe, writerPipe);
             }
 
             return null;
@@ -104,8 +110,18 @@ namespace AsmDude2
 
         public async Task OnLoadedAsync()
         {
-            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: OnLoadedAsync");
-            await StartAsync.InvokeAsync(this, EventArgs.Empty);
+            if (StartAsync != null)
+            {
+                await StartAsync.InvokeAsync(this, EventArgs.Empty);
+            }
+        }
+
+        public async Task StopServerAsync()
+        {
+            if (StopAsync != null)
+            {
+                await StopAsync.InvokeAsync(this, EventArgs.Empty);
+            }
         }
 
         public Task OnServerInitializedAsync()
@@ -113,9 +129,44 @@ namespace AsmDude2
             return Task.CompletedTask;
         }
 
+        public Task AttachForCustomMessageAsync(JsonRpc rpc)
+        {
+            this.Rpc = rpc;
+
+            return Task.CompletedTask;
+        }
+
         public Task<InitializationFailureContext> OnServerInitializeFailedAsync(ILanguageClientInitializationInfo initializationState)
         {
-            throw new NotImplementedException();
+            string message = "Oh no! Asm Language Client failed to activate, now we can't test LSP! :(";
+            string exception = initializationState.InitializationException?.ToString() ?? string.Empty;
+            message = $"{message}\n {exception}";
+
+            var failureContext = new InitializationFailureContext()
+            {
+                FailureMessage = message,
+            };
+
+            return Task.FromResult(failureContext);
+        }
+
+        internal class FooMiddleLayer : ILanguageClientMiddleLayer
+        {
+            public bool CanHandle(string methodName)
+            {
+                return methodName == Methods.TextDocumentCompletionName;
+            }
+
+            public Task HandleNotificationAsync(string methodName, JToken methodParam, Func<JToken, Task> sendNotification)
+            {
+                throw new NotImplementedException();
+            }
+
+            public async Task<JToken> HandleRequestAsync(string methodName, JToken methodParam, Func<JToken, Task<JToken>> sendRequest)
+            {
+                var result = await sendRequest(methodParam);
+                return result;
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ namespace AsmDude2.SignatureHelp
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
 
+    /*
     internal class AsmSignature : ISignature
     {
         private readonly ITextBuffer subjectBuffer_;
@@ -150,4 +151,5 @@ namespace AsmDude2.SignatureHelp
             internal set { this.printContent_ = value; }
         }
     }
+    */
 }

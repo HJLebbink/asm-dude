@@ -31,7 +31,7 @@ namespace AsmDude2
     using System.Linq;
     using System.Xml;
     using System.Xml.XPath;
-    using Amib.Threading;
+    //using Amib.Threading;
     using AsmDude2.SignatureHelp;
     using AsmDude2.Tools;
     using AsmTools;
@@ -50,7 +50,8 @@ namespace AsmDude2
         private readonly ErrorListProvider errorListProvider_;
         private readonly MnemonicStore mnemonicStore_;
         private readonly PerformanceStore performanceStore_;
-        private readonly SmartThreadPool threadPool_;
+        //private readonly SmartThreadPool threadPool_;
+
 
         #region Singleton Stuff
         private static readonly Lazy<AsmDude2Tools> Lazy = new Lazy<AsmDude2Tools>(() => new AsmDude2Tools());
@@ -63,7 +64,7 @@ namespace AsmDude2
         /// </summary>
         private AsmDude2Tools()
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor");
+            AsmDudeToolsStatic.Output_INFO("AsmDude2Tools: constructor");
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -85,17 +86,18 @@ namespace AsmDude2
 
             #endregion
 
-            this.threadPool_ = new SmartThreadPool();
+            //this.threadPool_ = new SmartThreadPool();
 
             #region load Signature Store and Performance Store
-            string path = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar;
+            string path = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Resources");
             {
-                string filename_Regular = path + "signature-may2019.txt";
-                string filename_Hand = path + "signature-hand-1.txt";
+                string filename_Regular = Path.Combine(path, "signature-may2019.txt");
+                string filename_Hand = Path.Combine(path, "signature-may2019.txt");
                 this.mnemonicStore_ = new MnemonicStore(filename_Regular, filename_Hand);
             }
             {
-                this.performanceStore_ = new PerformanceStore(path + "Performance" + Path.DirectorySeparatorChar);
+                string path_performance = Path.Combine(path, "Performance");
+                this.performanceStore_ = new PerformanceStore(path_performance);
             }
             #endregion
 
@@ -284,7 +286,7 @@ namespace AsmDude2
         public void UpdateMnemonicSwitchedOn()
         {
             this.mnemonics_switched_on_.Clear();
-            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
+            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Switched_On();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
             {
                 foreach (Arch a in this.Mnemonic_Store.GetArch(mnemonic))
@@ -311,7 +313,7 @@ namespace AsmDude2
         public void UpdateRegisterSwitchedOn()
         {
             this.register_switched_on_.Clear();
-            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
+            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Switched_On();
             foreach (Rn reg in Enum.GetValues(typeof(Rn)))
             {
                 if (reg != Rn.NOREG)
@@ -330,7 +332,7 @@ namespace AsmDude2
 
         public PerformanceStore Performance_Store { get { return this.performanceStore_; } }
 
-        public SmartThreadPool Thread_Pool { get { return this.threadPool_; } }
+        //public SmartThreadPool Thread_Pool { get { return this.threadPool_; } }
 
         /// <summary>Get the collection of Keywords (in CAPITALS), but NOT mnemonics and registers</summary>
         public IEnumerable<string> Get_Keywords()
@@ -601,7 +603,7 @@ namespace AsmDude2
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getXmlData", this.ToString()));
             if (this.xmlData_ == null)
             {
-                string filename = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar + "AsmDudeData.xml";
+                string filename = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Resources", "AsmDudeData.xml");
                 Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: AsmDudeTools:getXmlData: going to load file \"{0}\"", filename));
                 try
                 {
@@ -649,7 +651,7 @@ namespace AsmDude2
             {
                 // free managed resources
                 this.errorListProvider_.Dispose();
-                this.threadPool_.Dispose();
+                //this.threadPool_.Dispose();
             }
             // free native resources if there are any.
         }

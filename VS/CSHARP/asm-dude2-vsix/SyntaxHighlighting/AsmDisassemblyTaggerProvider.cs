@@ -91,11 +91,12 @@ namespace AsmDude2.SyntaxHighlighting
     using Microsoft.VisualStudio.Text.Tagging;
     using Microsoft.VisualStudio.Utilities;
 
+
     [Export(typeof(ITaggerProvider))]
     [ContentType(AsmDude2Package.DisassemblyContentType)]
     [TagType(typeof(ClassificationTag))]
     [Name("AsmDisassemblyTaggerProvider")]
-    [Order(After = Priority.High)]
+  //  [Order(After = Priority.High)]
     internal sealed class AsmDisassemblyTaggerProvider : ITaggerProvider
     {
         [Import]

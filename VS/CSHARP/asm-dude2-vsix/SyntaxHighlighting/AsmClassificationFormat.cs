@@ -32,7 +32,7 @@ namespace AsmDude2
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Mnemonic)]
     [Name(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic)]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(After = Priority.High)] //set the priority to be after the default classifiers
+    //[Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class OpcodeP : ClassificationFormatDefinition
     {
         public OpcodeP()

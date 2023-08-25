@@ -27,10 +27,13 @@ namespace AsmDude2.Tools
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Globalization;
+    using System.IO;
+    using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    //using System.Windows.Media.Imaging;
     using AsmDude2.SyntaxHighlighting;
     using AsmTools;
     using EnvDTE;
@@ -652,16 +655,7 @@ namespace AsmDude2.Tools
         /// </summary>
         public static string Get_Install_Path()
         {
-            try
-            {
-                string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-                string filenameDll = "AsmDude2.dll";
-                return fullPath.Substring(0, fullPath.Length - filenameDll.Length);
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
+            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         }
 
         /// <summary>Get the linenumber of the start of the provided span</summary>
@@ -753,7 +747,7 @@ namespace AsmDude2.Tools
             {
                 first_log_message = false;
 
-                StringBuilder sb = new();
+                StringBuilder sb = new StringBuilder();
                 //https://patorjk.com/software/taag/#p=display&f=Rectangles&t=AsmDude2
                 sb.Append("Welcome to\n");
                 sb.Append(" _____           ____        _     ___ \n");
@@ -922,7 +916,7 @@ namespace AsmDude2.Tools
             }
         }
 
-        public static ISet<Arch> Get_Arch_Swithed_On()
+        public static ISet<Arch> Get_Arch_Switched_On()
         {
             ISet<Arch> set = new HashSet<Arch>();
             foreach (Arch arch in Enum.GetValues(typeof(Arch)))
@@ -939,7 +933,7 @@ namespace AsmDude2.Tools
         {
             try
             {
-                return (arch == Arch.ARCH_NONE) ? true : (bool)Settings.Default[arch.ToString()];
+                return (arch == Arch.ARCH_NONE) || (bool)Settings.Default[arch.ToString()];
             }
             catch (Exception)
             {

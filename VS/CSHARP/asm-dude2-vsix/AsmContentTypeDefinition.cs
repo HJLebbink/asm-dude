@@ -4,31 +4,31 @@ using System.ComponentModel.Composition;
 
 namespace AsmDude2
 {
-    public class FooContentDefinition
+    public class AsmContentDefinition
     {
         [Export]
-        [Name("foo")]
+        [Name("asm!")]
         [BaseDefinition(CodeRemoteContentDefinition.CodeRemoteContentTypeName)]
-        internal static ContentTypeDefinition AsmContentType;
+        internal static ContentTypeDefinition asmContentTypeDefinition;
 
         [Export]
         [FileExtension(".asm")]
         [ContentType(AsmDude2Package.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType = null;
+        internal static FileExtensionToContentTypeDefinition asmFileExtensionDefinition;
 
         [Export]
         [FileExtension(".cod")]
         [ContentType(AsmDude2Package.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType_cod = null;
+        internal static FileExtensionToContentTypeDefinition asmFileExtensionDefinition_cod;
 
         [Export]
         [FileExtension(".inc")]
         [ContentType(AsmDude2Package.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType_inc = null;
+        internal static FileExtensionToContentTypeDefinition asmFileExtensionDefinition_inc;
 
         [Export]
         [FileExtension(".s")]
         [ContentType(AsmDude2Package.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType_s = null;
+        internal static FileExtensionToContentTypeDefinition asmFileExtensionDefinition_s;
     }
 }

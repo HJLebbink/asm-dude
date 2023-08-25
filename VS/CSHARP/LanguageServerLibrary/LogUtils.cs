@@ -7,10 +7,10 @@ namespace LanguageServer
     {
         public static TraceSource CreateTraceSource()
         {
-            var traceSource = new TraceSource("MockLanguageExtension", SourceLevels.Verbose | SourceLevels.ActivityTracing);
+            var traceSource = new TraceSource("AsmDude2", SourceLevels.Verbose | SourceLevels.ActivityTracing);
 
-            var traceFileDirectoryPath = Path.Combine(Path.GetTempPath(), "VisualStudio", "LSP");
-            var logFilePath = Path.Combine(traceFileDirectoryPath, "MockLog.svclog");
+            var traceFileDirectoryPath = Path.Combine(Path.GetTempPath(), "VisualStudio", "AsmDude2");
+            var logFilePath = Path.Combine(traceFileDirectoryPath, "log.svclog");
             var traceListener = new XmlWriterTraceListener(logFilePath);
 
             traceSource.Listeners.Add(traceListener);

@@ -25,6 +25,7 @@ namespace AsmDude2.SignatureHelp
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
 
+    /*
     internal class AsmParameter : IParameter
     {
         public AsmParameter(string documentation, Span locus, string name, ISignature signature)
@@ -46,4 +47,5 @@ namespace AsmDude2.SignatureHelp
 
         public Span PrettyPrintedLocus { get; private set; }
     }
+    */
 }

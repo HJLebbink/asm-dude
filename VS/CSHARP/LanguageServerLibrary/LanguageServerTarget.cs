@@ -59,7 +59,7 @@ namespace LanguageServer
         {
             this.traceSource.TraceEvent(TraceEventType.Information, 0, $"Received: {arg}");
 
-            var capabilities = new MockServerCapabilities();
+            var capabilities = new AsmServerCapabilities();
             capabilities.TextDocumentSync = new TextDocumentSyncOptions();
             capabilities.TextDocumentSync.OpenClose = true;
             capabilities.TextDocumentSync.Change = TextDocumentSyncKind.Full;
@@ -67,11 +67,11 @@ namespace LanguageServer
             capabilities.CompletionProvider.ResolveProvider = false;
             capabilities.CompletionProvider.TriggerCharacters = new string[] { ",", ".", "@" };
             capabilities.CompletionProvider.AllCommitCharacters = ServerCommitCharacterArray;
-            capabilities.SignatureHelpProvider = new MockSignatureHelpOptions()
+            capabilities.SignatureHelpProvider = new AsmSignatureHelpOptions()
             {
                 TriggerCharacters = new string[] { "(", "," },
                 RetriggerCharacters = new string[] { ")" },
-                MockSignatureHelp = true,
+                AsmSignatureHelp = true,
             };
             capabilities.RenameProvider = true;
             capabilities.FoldingRangeProvider = new FoldingRangeOptions();

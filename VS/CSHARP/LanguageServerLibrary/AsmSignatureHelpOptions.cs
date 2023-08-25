@@ -4,10 +4,10 @@ using System.Runtime.Serialization;
 namespace LanguageServer
 {
     [DataContract]
-    class MockSignatureHelpOptions : SignatureHelpOptions
+    class AsmSignatureHelpOptions : SignatureHelpOptions
     {
-        [DataMember(Name = "mockSignatureHelp")]
-        public bool MockSignatureHelp
+        [DataMember(Name = "asmSignatureHelp")]
+        public bool AsmSignatureHelp
         {
             get;
             set;

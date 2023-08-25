@@ -104,7 +104,7 @@ namespace AsmDude2.Tools
             this.hasDef_ = new HashSet<uint>();
             this.undefined_includes_ = new List<(string include_filename, string path, string source_filename, int lineNumber)>();
             this.thisFilename_ = AsmDudeToolsStatic.GetFilename(this.buffer_);
-            this.delay_ = new Delay(AsmDude2Package.MsSleepBeforeAsyncExecution, 100, AsmDude2Tools.Instance.Thread_Pool);
+            //this.delay_ = new Delay(AsmDude2Package.MsSleepBeforeAsyncExecution, 100, AsmDude2Tools.Instance.Thread_Pool);
 
             this.Enabled = Settings.Default.IntelliSense_Label_Analysis_On;
 
@@ -128,7 +128,7 @@ namespace AsmDude2.Tools
                         {
                             this.thread_Result_.Cancel();
                         }
-                        this.thread_Result_ = AsmDude2Tools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
+                        //this.thread_Result_ = AsmDude2Tools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
                     }
                 };
                 this.Reset();
