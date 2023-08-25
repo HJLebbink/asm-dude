@@ -16,9 +16,9 @@ using Task = System.Threading.Tasks.Task;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 using System.ComponentModel.Composition;
 
-namespace MockLanguageExtension
+namespace AsmDude2
 {
-    [ContentType("foo")]
+    [ContentType(AsmDude2Package.AsmDudeContentType)]
     [Export(typeof(ILanguageClient))]
     [RunOnContext(RunningContext.RunOnHost)]
     public class FooLanguageClient : ILanguageClient, ILanguageClientCustomMessage2

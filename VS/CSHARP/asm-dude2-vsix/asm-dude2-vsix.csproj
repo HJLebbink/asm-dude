@@ -206,10 +206,6 @@
       <Project>{9f5c800f-83f8-4866-ae3c-97602b39c536}</Project>
       <Name>asm-tools-lib</Name>
     </ProjectReference>
-	<ProjectReference Include="..\asm-language-server-with-UI\LanguageServerWithUI.csproj">
-	    <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-	    <VsixSubPath>Server</VsixSubPath>
-	</ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

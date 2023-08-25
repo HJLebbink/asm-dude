@@ -2,21 +2,33 @@
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace MockLanguageExtension
+namespace AsmDude2
 {
-#pragma warning disable 649
     public class FooContentDefinition
     {
         [Export]
         [Name("foo")]
         [BaseDefinition(CodeRemoteContentDefinition.CodeRemoteContentTypeName)]
-        internal static ContentTypeDefinition FooContentTypeDefinition;
-
+        internal static ContentTypeDefinition AsmContentType;
 
         [Export]
-        [FileExtension(".foo")]
-        [ContentType("foo")]
-        internal static FileExtensionToContentTypeDefinition FooFileExtensionDefinition;
+        [FileExtension(".asm")]
+        [ContentType(AsmDude2Package.AsmDudeContentType)]
+        internal static FileExtensionToContentTypeDefinition AsmFileType = null;
+
+        [Export]
+        [FileExtension(".cod")]
+        [ContentType(AsmDude2Package.AsmDudeContentType)]
+        internal static FileExtensionToContentTypeDefinition AsmFileType_cod = null;
+
+        [Export]
+        [FileExtension(".inc")]
+        [ContentType(AsmDude2Package.AsmDudeContentType)]
+        internal static FileExtensionToContentTypeDefinition AsmFileType_inc = null;
+
+        [Export]
+        [FileExtension(".s")]
+        [ContentType(AsmDude2Package.AsmDudeContentType)]
+        internal static FileExtensionToContentTypeDefinition AsmFileType_s = null;
     }
-#pragma warning restore 649
 }

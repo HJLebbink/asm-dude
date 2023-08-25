@@ -4,8 +4,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
+using AsmDude2.Tools;
+using System.Globalization;
+using System.Diagnostics;
 
-namespace MockLanguageExtension
+namespace AsmDude2
 {
     /// <summary>
     /// This package only loads when the FooLanguageClient.UiContextGuidString UI context is set.  This ensures that this extension is only loaded when the language server is activated.
@@ -14,20 +17,24 @@ namespace MockLanguageExtension
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string, PackageAutoLoadFlags.BackgroundLoad)]
-    [Guid(CustomCommandPackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class CustomCommandPackage : AsyncPackage
+    public sealed class AsmDude2Package : AsyncPackage
     {
-        /// <summary>
-        /// CustomCommandPackage GUID string.
-        /// </summary>
-        public const string PackageGuidString = "330ce502-4e1f-44b8-ab32-82a7ea71beeb";
+        #region Global Constants
+        public const string PackageGuidString = "4f792145-bd77-482d-bd0e-fcc7ac281c8d";
+        internal const string AsmDudeContentType = "asm2!";
+        internal const string DisassemblyContentType = "Disassembly";
+        internal const double SlowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
+        internal const double SlowShutdownThresholdSec = 4.0; // threshold to switch off components
+        internal const int MaxNumberOfCharsInToolTips = 150;
+        internal const int MsSleepBeforeAsyncExecution = 1000;
+        #endregion Global Constants
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CustomCommand"/> class.
-        /// </summary>
-        public CustomCommandPackage()
+        public AsmDude2Package()
         {
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
+            AsmDudeToolsStatic.Output_INFO("AsmDude2Package: Entering constructor");
         }
 
         #region Package Members
@@ -39,7 +46,7 @@ namespace MockLanguageExtension
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-
+            AsmDudeToolsStatic.Output_INFO("AsmDude2Package: InitializeAsync");
             CustomCommand.Initialize(this);
         }
 
