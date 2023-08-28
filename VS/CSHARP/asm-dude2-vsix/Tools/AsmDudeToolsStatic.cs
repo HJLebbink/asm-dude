@@ -787,8 +787,8 @@ namespace AsmDude2.Tools
             }
             else
             {
-                Guid paneGuid = new Guid("F97896F3-19AB-4E1F-A9C4-E11D489E5141");
-                outputWindow.CreatePane(paneGuid, "AsmDude", 1, 0);
+                Guid paneGuid = new Guid("F97896F3-19AB-4E1F-A9C4-E11D489E5142");
+                outputWindow.CreatePane(paneGuid, "AsmDude2", 1, 0);
                 outputWindow.GetPane(paneGuid, out IVsOutputWindowPane pane);
                 return pane;
             }

@@ -30,8 +30,6 @@ namespace LanguageServer
         private int highlightsDelay;
         private readonly Dictionary<VSTextDocumentIdentifier, int> diagnosticsResults;
 
-        private int counter = 100;
-
         public LanguageServer(Stream sender, Stream reader, List<DiagnosticsInfo> initialDiagnostics = null)
         {
             var jsonRpcTraceSource = LogUtils.CreateTraceSource();
@@ -207,6 +205,18 @@ namespace LanguageServer
             {
                 this.textDocument.Text = text;
                 this.textDocument.Version = version;
+
+                var x = new FoldingRange[] { new FoldingRange
+                {
+                    StartLine = 10,
+                    StartCharacter = 0,
+                    EndLine  = 15,
+                    EndCharacter = 0,
+                    Kind = FoldingRangeKind.Region,
+                    
+                } };
+
+                this.SetFoldingRanges(x);
             }
         }
 
@@ -757,6 +767,8 @@ namespace LanguageServer
             return result;
         }
 
+        #region Logging
+
         public void LogMessage(object arg)
         {
             this.LogMessage(arg, MessageType.Info);
@@ -764,7 +776,7 @@ namespace LanguageServer
 
         public void LogMessage(object arg, MessageType messageType)
         {
-            this.LogMessage(arg, "testing " + counter++, messageType);
+            this.LogMessage(arg, "BLAH", messageType);
         }
 
         public void LogMessage(object arg, string message, MessageType messageType)
@@ -798,6 +810,8 @@ namespace LanguageServer
 
             return await this.SendMethodRequestAsync(Methods.WindowShowMessageRequest, parameter);
         }
+
+        #endregion
 
         public void SendSettings(DidChangeConfigurationParams parameter)
         {

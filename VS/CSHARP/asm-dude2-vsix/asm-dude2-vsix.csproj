@@ -100,11 +100,9 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.507" />
-		<PackageReference Include="Microsoft.VisualStudio.Language" Version="17.1.386" />
-		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Client" Version="17.1.68" />
-		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.1.8" />
-		<PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="17.7.188" />
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.1.4054">
+		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.7.37357" />
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.6.2164">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
