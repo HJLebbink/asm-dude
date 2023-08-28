@@ -49,7 +49,7 @@ namespace AsmDude2.SignatureHelp
             this.mnemonic_ = mnem;
             this.operands_ = new List<IList<AsmSignatureEnum>>();
             this.arch_ = new List<Arch>();
-            this.reversed_Signature_ = AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
+            this.reversed_Signature_ = false;// AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
             {
                 string[] x = operandDoc.Split(' ');
                 if (x.Length > 1)
@@ -143,7 +143,7 @@ namespace AsmDude2.SignatureHelp
                         }
                         else
                         {
-                            AsmDudeToolsStatic.Output_INFO("Arch_Str: could not parse ARCH string \"" + arch2 + "\".");
+                            //AsmDudeToolsStatic.Output_INFO("Arch_Str: could not parse ARCH string \"" + arch2 + "\".");
                         }
                     }
                 }

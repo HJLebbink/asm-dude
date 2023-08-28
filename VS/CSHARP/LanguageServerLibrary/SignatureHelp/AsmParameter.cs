@@ -22,8 +22,8 @@
 
 namespace AsmDude2.SignatureHelp
 {
-    using Microsoft.VisualStudio.Language.Intellisense;
-    using Microsoft.VisualStudio.Text;
+    //using Microsoft.VisualStudio.Language.Intellisense;
+   // using Microsoft.VisualStudio.Text;
 
     /*
     internal class AsmParameter : IParameter

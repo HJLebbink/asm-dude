@@ -24,8 +24,8 @@ namespace AsmDude2.SignatureHelp
 {
     using System;
     using System.Collections.ObjectModel;
-    using Microsoft.VisualStudio.Language.Intellisense;
-    using Microsoft.VisualStudio.Text;
+   // using Microsoft.VisualStudio.Language.Intellisense;
+    //using Microsoft.VisualStudio.Text;
 
     /*
     internal class AsmSignature : ISignature

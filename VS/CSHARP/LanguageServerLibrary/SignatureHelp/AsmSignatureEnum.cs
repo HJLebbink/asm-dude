@@ -373,7 +373,7 @@ namespace AsmDude2.SignatureHelp
                 case "NONE": return new AsmSignatureEnum[] { AsmSignatureEnum.NONE };
 
                 default:
-                    AsmDudeToolsStatic.Output_INFO("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
+                    //AsmDudeToolsStatic.Output_INFO("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
                     return new AsmSignatureEnum[] { AsmSignatureEnum.UNKNOWN };
             }
         }
@@ -445,9 +445,8 @@ namespace AsmDude2.SignatureHelp
                 case AsmSignatureEnum.REG_SREG: return "segment register";
                 case AsmSignatureEnum.REG_DREG: return "debug register";
                 default:
-                    AsmDudeToolsStatic.Output_WARNING("SignatureStore:getDoc: add " + operandType);
+                    //AsmDudeToolsStatic.Output_WARNING("SignatureStore:getDoc: add " + operandType);
                     return operandType.ToString();
-                    break;
             }
         }
 
@@ -631,7 +630,7 @@ namespace AsmDude2.SignatureHelp
                 case AsmSignatureEnum.BNDREG: return op.IsReg && RegisterTools.IsBoundRegister(op.Rn);
 
                 default:
-                    AsmDudeToolsStatic.Output_WARNING("AsmSignatureTools:isAllowed: add " + operandType);
+                    //AsmDudeToolsStatic.Output_WARNING("AsmSignatureTools:isAllowed: add " + operandType);
                     break;
             }
             return true;
@@ -762,7 +761,7 @@ namespace AsmDude2.SignatureHelp
             switch (type)
             {
                 case RegisterType.UNKNOWN:
-                    AsmDudeToolsStatic.Output_INFO("AsmSignatureTools: isAllowedReg: registername " + regName + " could not be classified");
+                    //AsmDudeToolsStatic.Output_INFO("AsmSignatureTools: isAllowedReg: registername " + regName + " could not be classified");
                     break;
                 case RegisterType.BIT8:
                     if (allowedOperands.Contains(AsmSignatureEnum.R8))

@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.LanguageServer.Protocol;
+﻿using AsmDude2.Tools;
+
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -25,6 +28,7 @@ namespace LanguageServer
         private readonly LanguageServer server;
         private int completionItemsNumberRoot = 0;
         private readonly TraceSource traceSource;
+        private MnemonicStore mnemonicStore;
 
         public LanguageServerTarget(LanguageServer server, TraceSource traceSource)
         {
@@ -119,6 +123,19 @@ namespace LanguageServer
                     ImplementationProvider = false,
                 }
             };
+
+            #region load Signature Store and Performance Store
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "Resources");
+            {
+                string filename_Regular = Path.Combine(path, "signature-may2019.txt");
+                string filename_Hand = Path.Combine(path, "signature-may2019.txt");
+                this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.traceSource);
+            }
+            {
+                //string path_performance = Path.Combine(path, "Performance");
+                //this.performanceStore_ = new PerformanceStore(path_performance);
+            }
+            #endregion
 
             OnInitializeCompletion?.Invoke(this, new EventArgs());
 

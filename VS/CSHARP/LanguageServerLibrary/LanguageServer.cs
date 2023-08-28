@@ -162,7 +162,8 @@ namespace LanguageServer
         public void OnTextDocumentOpened(DidOpenTextDocumentParams messageParams)
         {
             this.textDocument = messageParams.TextDocument;
-
+            // following line gives an error in LSPClient.AsmDude2.AsmLanguageClient
+            //this.ShowMessage("text document is set to something!!", MessageType.Info); 
             SendDiagnostics();
         }
 

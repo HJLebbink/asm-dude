@@ -32,7 +32,7 @@ namespace AsmDude2
     using System.Xml;
     using System.Xml.XPath;
     //using Amib.Threading;
-    using AsmDude2.SignatureHelp;
+    //using AsmDude2.SignatureHelp;
     using AsmDude2.Tools;
     using AsmTools;
     using Microsoft.VisualStudio.Shell;
@@ -48,7 +48,7 @@ namespace AsmDude2
         private readonly ISet<Rn> register_switched_on_;
 
         private readonly ErrorListProvider errorListProvider_;
-        private readonly MnemonicStore mnemonicStore_;
+        //private readonly MnemonicStore mnemonicStore_;
         private readonly PerformanceStore performanceStore_;
         //private readonly SmartThreadPool threadPool_;
 
@@ -93,7 +93,7 @@ namespace AsmDude2
             {
                 string filename_Regular = Path.Combine(path, "signature-may2019.txt");
                 string filename_Hand = Path.Combine(path, "signature-may2019.txt");
-                this.mnemonicStore_ = new MnemonicStore(filename_Regular, filename_Hand);
+                //this.mnemonicStore_ = new MnemonicStore(filename_Regular, filename_Hand);
             }
             {
                 string path_performance = Path.Combine(path, "Performance");
@@ -110,7 +110,7 @@ namespace AsmDude2
             this.UpdateRegisterSwitchedOn();
 
             #region Experiments
-
+            /*
             if (false)
             {
                 string filename2 = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar + "mnemonics-nasm.txt";
@@ -268,6 +268,7 @@ namespace AsmDude2
                     AsmDudeToolsStatic.Output_INFO(s + ",");
                 }
             }
+            */
             #endregion
         }
 
@@ -289,14 +290,14 @@ namespace AsmDude2
             ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Switched_On();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
             {
-                foreach (Arch a in this.Mnemonic_Store.GetArch(mnemonic))
-                {
-                    if (selectedArchs.Contains(a))
-                    {
+                //foreach (Arch a in this.Mnemonic_Store.GetArch(mnemonic))
+               // {
+                    //if (selectedArchs.Contains(a))
+                   // {
                         this.mnemonics_switched_on_.Add(mnemonic);
-                        break;
-                    }
-                }
+                        //break;
+                   // }
+                //}
             }
         }
 
@@ -328,7 +329,7 @@ namespace AsmDude2
 
         public ErrorListProvider Error_List_Provider { get { return this.errorListProvider_; } }
 
-        public MnemonicStore Mnemonic_Store { get { return this.mnemonicStore_; } }
+        //public MnemonicStore Mnemonic_Store { get { return this.mnemonicStore_; } }
 
         public PerformanceStore Performance_Store { get { return this.performanceStore_; } }
 
@@ -424,7 +425,7 @@ namespace AsmDude2
         /// </summary>
         public string Get_Url(Mnemonic mnemonic)
         {
-            return this.Mnemonic_Store.GetHtmlRef(mnemonic);
+            return "TODO";// this.Mnemonic_Store.GetHtmlRef(mnemonic);
         }
 
         /// <summary>
