@@ -42,7 +42,7 @@ namespace LanguageServer
             {
                 TraceSource = jsonRpcTraceSource,
             };
-            this.rpc.TraceSource = jsonRpcTraceSource;
+            //this.rpc.TraceSource = jsonRpcTraceSource;
 
             ((JsonMessageFormatter)this.messageHandler.Formatter).JsonSerializer.Converters.Add(new VSExtensionConverter<TextDocumentIdentifier, VSTextDocumentIdentifier>());
 
@@ -56,6 +56,17 @@ namespace LanguageServer
 
             this.target.OnInitializeCompletion += OnTargetInitializeCompletion;
             this.target.OnInitialized += OnTargetInitialized;
+        }
+
+        private string[] TextDocumentLines
+        {
+            get;
+            set;
+        }
+
+        public string GetLine(int lineNumber, TextDocumentIdentifier id)
+        {
+            return this.TextDocumentLines[lineNumber];
         }
 
         public string CustomText
@@ -162,9 +173,8 @@ namespace LanguageServer
         public void OnTextDocumentOpened(DidOpenTextDocumentParams messageParams)
         {
             this.textDocument = messageParams.TextDocument;
-            // following line gives an error in LSPClient.AsmDude2.AsmLanguageClient
-            //this.ShowMessage("text document is set to something!!", MessageType.Info); 
-            SendDiagnostics();
+            this.TextDocumentLines = this.textDocument.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            this.SendDiagnostics();
         }
 
         public void OnTextDocumentClosed(DidCloseTextDocumentParams messageParams)
@@ -183,7 +193,7 @@ namespace LanguageServer
 
             if (pushDiagnostics)
             {
-                SendDiagnostics(sentDiagnostics);
+                this.SendDiagnostics(sentDiagnostics);
             }
         }
 
@@ -223,7 +233,7 @@ namespace LanguageServer
 
         public void SendDiagnostics()
         {
-            SendDiagnostics(this.diagnostics);
+            this.SendDiagnostics(this.diagnostics);
         }
 
         public void SendDiagnostics(List<DiagnosticsInfo> sentDiagnostics)
@@ -233,12 +243,10 @@ namespace LanguageServer
                 return;
             }
 
-            string[] lines = this.textDocument.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-
             List<Diagnostic> diagnostics = new List<Diagnostic>();
-            for (int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < this.TextDocumentLines.Length; i++)
             {
-                var line = lines[i];
+                var line = this.TextDocumentLines[i];
 
                 int j = 0;
                 while (j < line.Length)
@@ -284,13 +292,13 @@ namespace LanguageServer
                 return;
             }
 
-            string[] lines = this.textDocument.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            IReadOnlyList<Diagnostic> diagnostics = this.GetDocumentDiagnostics(this.TextDocumentLines, textDocumentIdentifier: null);
 
-            IReadOnlyList<Diagnostic> diagnostics = GetDocumentDiagnostics(lines, textDocumentIdentifier: null);
-
-            PublishDiagnosticParams parameter = new PublishDiagnosticParams();
-            parameter.Uri = uri;
-            parameter.Diagnostics = diagnostics.ToArray();
+            PublishDiagnosticParams parameter = new PublishDiagnosticParams
+            {
+                Uri = uri,
+                Diagnostics = diagnostics.ToArray()
+            };
 
             if (this.maxProblems > -1)
             {

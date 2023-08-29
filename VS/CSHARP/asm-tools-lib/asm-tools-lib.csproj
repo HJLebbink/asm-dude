@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Arch.cs" />
     <Compile Include="AsmSourceTools.cs" />
+    <Compile Include="AsmTokenTypes.cs" />
     <Compile Include="AssemblerEnum.cs" />
     <Compile Include="ExpressionEvaluator.cs" />
     <Compile Include="Flags.cs" />

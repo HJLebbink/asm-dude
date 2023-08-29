@@ -42,7 +42,7 @@ namespace AsmDude2.Tools
         public MnemonicStore(string filename_RegularData, string filename_HandcraftedData, TraceSource traceSource)
         {
             this.traceSource = traceSource;
-            this.Log_INFO("MnemonicStore: constructor: regularData = " + filename_RegularData + "; hHandcraftedData = " + filename_HandcraftedData);
+            this.LogInfo($"MnemonicStore: constructor: regularData = {filename_RegularData}; hHandcraftedData = {filename_HandcraftedData}");
 
             this.data_ = new Dictionary<Mnemonic, IList<AsmSignatureElement>>();
             this.arch_ = new Dictionary<Mnemonic, IList<Arch>>();
@@ -56,15 +56,15 @@ namespace AsmDude2.Tools
             }
         }
 
-        private void Log_INFO(string msg)
+        private void LogInfo(string msg)
         {
             this.traceSource.TraceEvent(TraceEventType.Information, 0, msg);
         }
-        private void Log_WARNING(string msg)
+        private void LogWarning(string msg)
         {
             this.traceSource.TraceEvent(TraceEventType.Warning, 0, msg);
         }
-        private void Log_ERROR(string msg)
+        private void LogError(string msg)
         {
             this.traceSource.TraceEvent(TraceEventType.Error, 0, msg);
         }
@@ -207,21 +207,21 @@ namespace AsmDude2.Tools
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0], false);
                             if (mnemonic == Mnemonic.NONE)
                             {
-                                this.Log_WARNING("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
+                                this.LogWarning("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                             }
                             else
                             {
                                 AsmSignatureElement se = new AsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
                                 if (this.Add(se))
                                 {
-                                    this.Log_WARNING("MnemonicStore:loadRegularData: signature already exists" + se.ToString());
+                                    this.LogWarning("MnemonicStore:loadRegularData: signature already exists" + se.ToString());
                                 }
                             }
                             #endregion
                         }
                         else
                         {
-                            this.Log_WARNING("MnemonicStore:loadRegularData: s.Length=" + columns.Length + "; funky line" + line);
+                            this.LogWarning("MnemonicStore:loadRegularData: s.Length=" + columns.Length + "; funky line" + line);
                         }
                     }
                 }
@@ -237,7 +237,7 @@ namespace AsmDude2.Tools
                         {
                             if (arch == Arch.ARCH_NONE)
                             {
-                                this.Log_WARNING("MnemonicStore:loadRegularData: found ARCH NONE.");
+                                this.LogWarning("MnemonicStore:loadRegularData: found ARCH NONE.");
                             }
                             else
                             {
@@ -256,11 +256,11 @@ namespace AsmDude2.Tools
             }
             catch (FileNotFoundException)
             {
-                this.Log_ERROR("MnemonicStore:loadRegularData: could not find file \"" + filename + "\".");
+                this.LogError("MnemonicStore:loadRegularData: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                this.Log_ERROR("MnemonicStore:loadRegularData: error while reading file \"" + filename + "\"." + e);
+                this.LogError("MnemonicStore:loadRegularData: error while reading file \"" + filename + "\"." + e);
             }
         }
 
@@ -282,7 +282,7 @@ namespace AsmDude2.Tools
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[1], false);
                             if (mnemonic == Mnemonic.NONE)
                             {
-                                this.Log_WARNING("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
+                                this.LogWarning("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                             }
                             else
                             {
@@ -306,7 +306,7 @@ namespace AsmDude2.Tools
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0], false);
                             if (mnemonic == Mnemonic.NONE)
                             {
-                                this.Log_WARNING("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
+                                this.LogWarning("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                             }
                             else
                             {
@@ -317,7 +317,7 @@ namespace AsmDude2.Tools
                         }
                         else
                         {
-                            this.Log_WARNING("MnemonicStore:loadHandcraftedData: s.Length=" + columns.Length + "; funky line" + line);
+                            this.LogWarning("MnemonicStore:loadHandcraftedData: s.Length=" + columns.Length + "; funky line" + line);
                         }
                     }
                 }
@@ -345,11 +345,11 @@ namespace AsmDude2.Tools
             }
             catch (FileNotFoundException)
             {
-                this.Log_ERROR("MnemonicStore:LoadHandcraftedData: could not find file \"" + filename + "\".");
+                this.LogError("MnemonicStore:LoadHandcraftedData: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                this.Log_ERROR("MnemonicStore:LoadHandcraftedData: error while reading file \"" + filename + "\"." + e);
+                this.LogError("MnemonicStore:LoadHandcraftedData: error while reading file \"" + filename + "\"." + e);
             }
         }
     }
