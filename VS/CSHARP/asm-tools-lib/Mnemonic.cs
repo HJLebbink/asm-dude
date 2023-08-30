@@ -2500,7 +2500,7 @@ namespace AsmTools
 #if DEBUG
             if (strIsCapitals && (str != str.ToUpperInvariant()))
             {
-                throw new Exception();
+                throw new Exception($"You promised me a string that is upper and you gave me one that is not. str=\"{str}\"");
             }
 #endif
             return (strIsCapitals) ? str : str.ToUpperInvariant();

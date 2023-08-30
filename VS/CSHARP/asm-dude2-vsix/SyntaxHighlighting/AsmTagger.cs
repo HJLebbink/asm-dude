@@ -100,19 +100,19 @@ namespace AsmDude2
                     NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(snapshot);
                     switch (tagSpan.Tag.Type)
                     {
-                        case AsmTokenType.Mnemonic: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.mnemonic_); break;
-                        case AsmTokenType.MnemonicOff: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.mnemonicOff_); break;
-                        case AsmTokenType.Register: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.register_); break;
-                        case AsmTokenType.Remark: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.remark_); break;
-                        case AsmTokenType.Directive: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.directive_); break;
-                        case AsmTokenType.Constant: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.constant_); break;
-                        case AsmTokenType.Jump: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.jump_); break;
-                        case AsmTokenType.Label: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.label_); break;
-                        case AsmTokenType.LabelDef: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.labelDef_); break;
-                        case AsmTokenType.Misc: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.misc_); break;
-                        case AsmTokenType.UserDefined1: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.userDefined1_); break;
-                        case AsmTokenType.UserDefined2: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.userDefined2_); break;
-                        case AsmTokenType.UserDefined3: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.userDefined3_); break;
+                        case AsmTools.AsmTokenType.Mnemonic: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.mnemonic_); break;
+                        case AsmTools.AsmTokenType.MnemonicOff: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.mnemonicOff_); break;
+                        case AsmTools.AsmTokenType.Register: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.register_); break;
+                        case AsmTools.AsmTokenType.Remark: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.remark_); break;
+                        case AsmTools.AsmTokenType.Directive: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.directive_); break;
+                        case AsmTools.AsmTokenType.Constant: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.constant_); break;
+                        case AsmTools.AsmTokenType.Jump: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.jump_); break;
+                        case AsmTools.AsmTokenType.Label: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.label_); break;
+                        case AsmTools.AsmTokenType.LabelDef: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.labelDef_); break;
+                        case AsmTools.AsmTokenType.Misc: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.misc_); break;
+                        case AsmTools.AsmTokenType.UserDefined1: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.userDefined1_); break;
+                        case AsmTools.AsmTokenType.UserDefined2: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.userDefined2_); break;
+                        case AsmTools.AsmTokenType.UserDefined3: yield return new TagSpan<ClassificationTag>(tagSpans[0], this.userDefined3_); break;
                         default:
                             break;
                     }

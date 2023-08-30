@@ -28,16 +28,16 @@ namespace AsmDude2.SyntaxHighlighting
     {
         public static readonly string MISC_KEYWORD_PROTO = "PROTO";
 
-        public AsmTokenType Type { get; private set; }
+        public AsmTools.AsmTokenType Type { get; private set; }
 
         public string Misc { get; private set; }
 
-        public AsmTokenTag(AsmTokenType type)
+        public AsmTokenTag(AsmTools.AsmTokenType type)
         {
             this.Type = type;
         }
 
-        public AsmTokenTag(AsmTokenType type, string misc)
+        public AsmTokenTag(AsmTools.AsmTokenType type, string misc)
         {
             this.Type = type;
             this.Misc = misc;

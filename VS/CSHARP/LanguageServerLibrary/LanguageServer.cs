@@ -42,7 +42,6 @@ namespace LanguageServer
             {
                 TraceSource = jsonRpcTraceSource,
             };
-            //this.rpc.TraceSource = jsonRpcTraceSource;
 
             ((JsonMessageFormatter)this.messageHandler.Formatter).JsonSerializer.Converters.Add(new VSExtensionConverter<TextDocumentIdentifier, VSTextDocumentIdentifier>());
 
@@ -174,12 +173,14 @@ namespace LanguageServer
         {
             this.textDocument = messageParams.TextDocument;
             this.TextDocumentLines = this.textDocument.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            this.UpdateFoldingRanges();
             this.SendDiagnostics();
         }
 
         public void OnTextDocumentClosed(DidCloseTextDocumentParams messageParams)
         {
             this.textDocument = null;
+            this.TextDocumentLines = null;
         }
 
         public void SendDiagnostics(List<DiagnosticsInfo> sentDiagnostics, bool pushDiagnostics)
@@ -210,6 +211,45 @@ namespace LanguageServer
             this.highlightsDelay = delay * 1000;
         }
 
+        private void UpdateFoldingRanges()
+        {
+            const string StartKeyword = "#REGION";
+            const string EndKeyword = "#ENDREGION";
+
+            var foldingRanges = new List<FoldingRange>();
+            var startLineNumbers = new Stack<int>();
+            var startCharacters = new Stack<int>();
+
+            for (int lineNumber = 0; lineNumber < this.TextDocumentLines.Length; ++lineNumber)
+            {
+                string line = this.TextDocumentLines[lineNumber].ToUpper();
+                int offsetRegion = line.IndexOf(StartKeyword); 
+                if (offsetRegion != -1) {
+                    startLineNumbers.Push(lineNumber);
+                    startCharacters.Push(offsetRegion);
+                }
+                else
+                {
+                    if (startLineNumbers.Count() > 0)
+                    {
+                        int offsetEndRegion = line.IndexOf(EndKeyword);
+                        if (offsetEndRegion != -1)
+                        {
+                            foldingRanges.Add(new FoldingRange
+                            {
+                                StartLine = startLineNumbers.Pop(),
+                                StartCharacter = startCharacters.Pop(),
+                                EndLine = lineNumber,
+                                EndCharacter = offsetEndRegion + EndKeyword.Length,
+                                Kind = FoldingRangeKind.Region,
+                            }) ;
+                        }
+                    }
+                }
+            }
+            this.SetFoldingRanges(foldingRanges);
+        }
+
         public void UpdateServerSideTextDocument(string text, int version)
         {
             if (this.textDocument != null)
@@ -217,17 +257,10 @@ namespace LanguageServer
                 this.textDocument.Text = text;
                 this.textDocument.Version = version;
 
-                var x = new FoldingRange[] { new FoldingRange
-                {
-                    StartLine = 10,
-                    StartCharacter = 0,
-                    EndLine  = 15,
-                    EndCharacter = 0,
-                    Kind = FoldingRangeKind.Region,
-                    
-                } };
+                //TODO only update the lines that have changed
+                this.TextDocumentLines = this.textDocument.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
-                this.SetFoldingRanges(x);
+                this.UpdateFoldingRanges();
             }
         }
 
@@ -769,9 +802,11 @@ namespace LanguageServer
 
         public VSProjectContextList GetProjectContexts()
         {
-            var result = new VSProjectContextList();
-            result.ProjectContexts = this.Contexts.ToArray();
-            result.DefaultIndex = 0;
+            var result = new VSProjectContextList
+            {
+                ProjectContexts = this.Contexts.ToArray(),
+                DefaultIndex = 0
+            };
 
             return result;
         }

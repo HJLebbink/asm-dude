@@ -45,7 +45,7 @@ namespace AsmDude2
         {
             await this.JoinableTaskFactory.SwitchToMainThreadAsync();
             AsmDudeToolsStatic.Output_INFO("AsmDude2Package: InitializeAsync");
-            CustomCommand.Initialize(this);
+            CustomCommand.Initialize(this); // NOTE note necessary
         }
 
         #endregion

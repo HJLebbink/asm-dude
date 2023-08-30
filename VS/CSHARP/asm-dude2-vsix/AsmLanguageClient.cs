@@ -112,6 +112,7 @@ namespace AsmDude2
         {
             if (StartAsync != null)
             {
+                AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: OnLoadedAsync");
                 await StartAsync.InvokeAsync(this, EventArgs.Empty);
             }
         }
@@ -120,31 +121,33 @@ namespace AsmDude2
         {
             if (StopAsync != null)
             {
+                AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: StopServerAsync");
                 await StopAsync.InvokeAsync(this, EventArgs.Empty);
             }
         }
 
         public Task OnServerInitializedAsync()
         {
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: OnServerInitializedAsync");
             return Task.CompletedTask;
         }
 
         public Task AttachForCustomMessageAsync(JsonRpc rpc)
         {
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: AttachForCustomMessageAsync");
             this.Rpc = rpc;
-
             return Task.CompletedTask;
         }
 
         public Task<InitializationFailureContext> OnServerInitializeFailedAsync(ILanguageClientInitializationInfo initializationState)
         {
-            string message = "Oh no! Asm Language Client failed to activate, now we can't test LSP! :(";
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: OnServerInitializeFailedAsync");
+            string message = "Asm Language Client failed to activate";
             string exception = initializationState.InitializationException?.ToString() ?? string.Empty;
-            message = $"{message}\n {exception}";
 
             var failureContext = new InitializationFailureContext()
             {
-                FailureMessage = message,
+                FailureMessage = $"{message}\n {exception}",
             };
 
             return Task.FromResult(failureContext);

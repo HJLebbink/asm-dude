@@ -20,10 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2.Tools
+namespace LanguageServer
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using AsmTools;
 
@@ -78,18 +79,21 @@ namespace AsmDude2.Tools
 
     public class PerformanceStore
     {
+        private readonly TraceSource traceSource;
         private readonly IList<PerformanceItem> data_;
 
-        public PerformanceStore(string path)
+        public PerformanceStore(string path, TraceSource traceSource)
         {
+            this.traceSource = traceSource;
             this.data_ = new List<PerformanceItem>();
 
-            if (AsmDude2.Settings.Default.PerformanceInfo_On)
+            //if (AsmDude2.Settings.Default.PerformanceInfo_On)
+            if (true)
             {
-                MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+                //MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+                MicroArch selectedMicroarchitures = MicroArch.SkylakeX | MicroArch.Haswell;
                 if (selectedMicroarchitures != MicroArch.NONE)
                 {
-
                     IDictionary<string, IList<Mnemonic>> translations = this.Load_Instruction_Translation(Path.Combine(path, "Instructions-Translations.tsv"));
                     if (selectedMicroarchitures.HasFlag(MicroArch.IvyBridge))
                     {
@@ -117,6 +121,19 @@ namespace AsmDude2.Tools
                     }
                 }
             }
+        }
+
+        private void LogInfo(string msg)
+        {
+            this.traceSource.TraceEvent(TraceEventType.Information, 0, msg);
+        }
+        private void LogWarning(string msg)
+        {
+            this.traceSource.TraceEvent(TraceEventType.Warning, 0, msg);
+        }
+        private void LogError(string msg)
+        {
+            this.traceSource.TraceEvent(TraceEventType.Error, 0, msg);
         }
 
         public IEnumerable<PerformanceItem> GetPerformance(Mnemonic mnemonic, MicroArch selectedArchitectures)
@@ -166,7 +183,7 @@ namespace AsmDude2.Tools
                                             }
                                             else
                                             {
-                                                AsmDudeToolsStatic.Output_WARNING("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line " + lineNumber + " with content \"" + line + "\".");
+                                                LogWarning("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line " + lineNumber + " with content \"" + line + "\".");
                                             }
                                         }
                                         else
@@ -194,7 +211,7 @@ namespace AsmDude2.Tools
                         }
                         else
                         {
-                            AsmDudeToolsStatic.Output_WARNING("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
+                            LogWarning("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
                         }
                     }
                     lineNumber++;
@@ -203,11 +220,11 @@ namespace AsmDude2.Tools
             }
             catch (FileNotFoundException)
             {
-                AsmDudeToolsStatic.Output_ERROR("PerformanceStore:LoadData: could not find file \"" + filename + "\".");
+                LogError("PerformanceStore:LoadData: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR("PerformanceStore:LoadData: error while reading file \"" + filename + "\"." + e);
+                LogError("PerformanceStore:LoadData: error while reading file \"" + filename + "\"." + e);
             }
         }
 
@@ -233,7 +250,7 @@ namespace AsmDude2.Tools
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr, false);
                                 if (mnemonic == Mnemonic.NONE)
                                 {
-                                    AsmDudeToolsStatic.Output_WARNING("PerformanceStore:Load_Instruction_Translation: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
+                                    LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
                                 }
                                 else
                                 {
@@ -243,7 +260,7 @@ namespace AsmDude2.Tools
                             //AsmDudeToolsStatic.Output_INFO("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
                             if (translations.ContainsKey(key))
                             {
-                                AsmDudeToolsStatic.Output_WARNING("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");
+                                LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");
                             }
                             else
                             {
@@ -256,11 +273,11 @@ namespace AsmDude2.Tools
             }
             catch (FileNotFoundException)
             {
-                AsmDudeToolsStatic.Output_ERROR("PerformanceStore:Load_Instruction_Translation: could not find file \"" + filename + "\".");
+                LogError("PerformanceStore:Load_Instruction_Translation: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR("PerformanceStore:Load_Instruction_Translation: error while reading file \"" + filename + "\"." + e);
+                LogError("PerformanceStore:Load_Instruction_Translation: error while reading file \"" + filename + "\"." + e);
             }
             return translations;
         }

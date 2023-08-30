@@ -31,8 +31,6 @@ namespace AsmDude2
     using System.Linq;
     using System.Xml;
     using System.Xml.XPath;
-    //using Amib.Threading;
-    //using AsmDude2.SignatureHelp;
     using AsmDude2.Tools;
     using AsmTools;
     using Microsoft.VisualStudio.Shell;
@@ -48,8 +46,6 @@ namespace AsmDude2
         private readonly ISet<Rn> register_switched_on_;
 
         private readonly ErrorListProvider errorListProvider_;
-        //private readonly MnemonicStore mnemonicStore_;
-        private readonly PerformanceStore performanceStore_;
         //private readonly SmartThreadPool threadPool_;
 
 
@@ -87,19 +83,6 @@ namespace AsmDude2
             #endregion
 
             //this.threadPool_ = new SmartThreadPool();
-
-            #region load Signature Store and Performance Store
-            string path = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Resources");
-            {
-                string filename_Regular = Path.Combine(path, "signature-may2019.txt");
-                string filename_Hand = Path.Combine(path, "signature-may2019.txt");
-                //this.mnemonicStore_ = new MnemonicStore(filename_Regular, filename_Hand);
-            }
-            {
-                string path_performance = Path.Combine(path, "Performance");
-                this.performanceStore_ = new PerformanceStore(path_performance);
-            }
-            #endregion
 
             this.Init_Data();
 
@@ -328,10 +311,6 @@ namespace AsmDude2
         }
 
         public ErrorListProvider Error_List_Provider { get { return this.errorListProvider_; } }
-
-        //public MnemonicStore Mnemonic_Store { get { return this.mnemonicStore_; } }
-
-        public PerformanceStore Performance_Store { get { return this.performanceStore_; } }
 
         //public SmartThreadPool Thread_Pool { get { return this.threadPool_; } }
 

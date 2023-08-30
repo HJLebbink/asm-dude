@@ -75,6 +75,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Arch.cs" />
+    <Compile Include="AsmSignatureEnum.cs" />
     <Compile Include="AsmSourceTools.cs" />
     <Compile Include="AsmTokenTypes.cs" />
     <Compile Include="AssemblerEnum.cs" />

@@ -20,12 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2.SignatureHelp
+namespace AsmSourceTools
 {
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Text;
-    using AsmDude2.Tools;
     using AsmTools;
 
     public enum AsmSignatureEnum
@@ -33,13 +32,13 @@ namespace AsmDude2.SignatureHelp
         NONE,
         UNKNOWN,
 
-        //memory operands
+        // memory operands
         MEM, M8, M16, M32, M64, M80, M128, M256, M512,
 
-        //register operands
+        // register operands
         R8, R16, R32, R64,
 
-        //specific register operands
+        // specific register operands
         REG_AL, REG_AX, REG_EAX, REG_RAX,
         REG_CL, REG_CX, REG_ECX, REG_RCX,
         REG_DX, REG_EDX,
@@ -373,7 +372,7 @@ namespace AsmDude2.SignatureHelp
                 case "NONE": return new AsmSignatureEnum[] { AsmSignatureEnum.NONE };
 
                 default:
-                    //AsmDudeToolsStatic.Output_INFO("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
+                    // AsmDudeToolsStatic.Output_INFO("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
                     return new AsmSignatureEnum[] { AsmSignatureEnum.UNKNOWN };
             }
         }
@@ -445,7 +444,7 @@ namespace AsmDude2.SignatureHelp
                 case AsmSignatureEnum.REG_SREG: return "segment register";
                 case AsmSignatureEnum.REG_DREG: return "debug register";
                 default:
-                    //AsmDudeToolsStatic.Output_WARNING("SignatureStore:getDoc: add " + operandType);
+                    // AsmDudeToolsStatic.Output_WARNING("SignatureStore:getDoc: add " + operandType);
                     return operandType.ToString();
             }
         }
@@ -630,7 +629,7 @@ namespace AsmDude2.SignatureHelp
                 case AsmSignatureEnum.BNDREG: return op.IsReg && RegisterTools.IsBoundRegister(op.Rn);
 
                 default:
-                    //AsmDudeToolsStatic.Output_WARNING("AsmSignatureTools:isAllowed: add " + operandType);
+                    // AsmDudeToolsStatic.Output_WARNING("AsmSignatureTools:isAllowed: add " + operandType);
                     break;
             }
             return true;
@@ -761,7 +760,7 @@ namespace AsmDude2.SignatureHelp
             switch (type)
             {
                 case RegisterType.UNKNOWN:
-                    //AsmDudeToolsStatic.Output_INFO("AsmSignatureTools: isAllowedReg: registername " + regName + " could not be classified");
+                    // AsmDudeToolsStatic.Output_INFO("AsmSignatureTools: isAllowedReg: registername " + regName + " could not be classified");
                     break;
                 case RegisterType.BIT8:
                     if (allowedOperands.Contains(AsmSignatureEnum.R8))
@@ -889,12 +888,37 @@ namespace AsmDude2.SignatureHelp
 
                     switch (regName)
                     {
-                        case Rn.CS: if (allowedOperands.Contains(AsmSignatureEnum.REG_CS)) { return true; } break;
-                        case Rn.DS: if (allowedOperands.Contains(AsmSignatureEnum.REG_DS)) { return true; } break;
-                        case Rn.ES: if (allowedOperands.Contains(AsmSignatureEnum.REG_ES)) { return true; } break;
-                        case Rn.SS: if (allowedOperands.Contains(AsmSignatureEnum.REG_SS)) { return true; } break;
-                        case Rn.FS: if (allowedOperands.Contains(AsmSignatureEnum.REG_FS)) { return true; } break;
-                        case Rn.GS: if (allowedOperands.Contains(AsmSignatureEnum.REG_GS)) { return true; } break;
+                        case Rn.CS:
+                            if (allowedOperands.Contains(AsmSignatureEnum.REG_CS))
+                            {
+                                return true;
+                            }
+                            break;
+                        case Rn.DS: if (allowedOperands.Contains(AsmSignatureEnum.REG_DS))
+                            {
+                                return true;
+                            }
+                            break;
+                        case Rn.ES: if (allowedOperands.Contains(AsmSignatureEnum.REG_ES))
+                            {
+                                return true;
+                            }
+                            break;
+                        case Rn.SS: if (allowedOperands.Contains(AsmSignatureEnum.REG_SS))
+                            {
+                                return true;
+                            }
+                            break;
+                        case Rn.FS: if (allowedOperands.Contains(AsmSignatureEnum.REG_FS))
+                            {
+                                return true;
+                            }
+                            break;
+                        case Rn.GS: if (allowedOperands.Contains(AsmSignatureEnum.REG_GS))
+                            {
+                                return true;
+                            }
+                            break;
                     }
                     break;
                 case RegisterType.CONTROL:

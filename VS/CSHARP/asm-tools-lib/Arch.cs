@@ -25,6 +25,7 @@ namespace AsmTools
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Linq;
     using System.Text;
 
     public enum Arch
@@ -355,6 +356,17 @@ namespace AsmTools
 
                     return Arch.ARCH_NONE;
             }
+        }
+
+        public static Arch[] ParseArchList(string str, bool strIsCapitals, bool warn)
+        {
+            var substrArray = str.Split(' ');
+            var result = new Arch[substrArray.Length];
+            for (int i = 0; i < substrArray.Length; ++i)
+            {
+                result[i] = ParseArch(substrArray[i], strIsCapitals, warn);
+            }
+            return result;
         }
 
         public static string ArchDocumentation(Arch arch)
