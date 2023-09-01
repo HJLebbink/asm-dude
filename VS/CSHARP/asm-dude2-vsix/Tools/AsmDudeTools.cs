@@ -86,12 +86,6 @@ namespace AsmDude2
 
             this.Init_Data();
 
-            this.mnemonics_switched_on_ = new HashSet<Mnemonic>();
-            this.UpdateMnemonicSwitchedOn();
-
-            this.register_switched_on_ = new HashSet<Rn>();
-            this.UpdateRegisterSwitchedOn();
-
             #region Experiments
             /*
             if (false)
@@ -257,59 +251,7 @@ namespace AsmDude2
 
         #region Public Methods
 
-        public bool MnemonicSwitchedOn(Mnemonic mnemonic)
-        {
-            return this.mnemonics_switched_on_.Contains(mnemonic);
-        }
-
-        public IEnumerable<Mnemonic> Get_Allowed_Mnemonics()
-        {
-            return this.mnemonics_switched_on_;
-        }
-
-        public void UpdateMnemonicSwitchedOn()
-        {
-            this.mnemonics_switched_on_.Clear();
-            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Switched_On();
-            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
-            {
-                //foreach (Arch a in this.Mnemonic_Store.GetArch(mnemonic))
-               // {
-                    //if (selectedArchs.Contains(a))
-                   // {
-                        this.mnemonics_switched_on_.Add(mnemonic);
-                        //break;
-                   // }
-                //}
-            }
-        }
-
-        public bool RegisterSwitchedOn(Rn reg)
-        {
-            return this.register_switched_on_.Contains(reg);
-        }
-
-        public IEnumerable<Rn> Get_Allowed_Registers()
-        {
-            return this.register_switched_on_;
-        }
-
-        public void UpdateRegisterSwitchedOn()
-        {
-            this.register_switched_on_.Clear();
-            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Switched_On();
-            foreach (Rn reg in Enum.GetValues(typeof(Rn)))
-            {
-                if (reg != Rn.NOREG)
-                {
-                    if (selectedArchs.Contains(RegisterTools.GetArch(reg)))
-                    {
-                        this.register_switched_on_.Add(reg);
-                    }
-                }
-            }
-        }
-
+ 
         public ErrorListProvider Error_List_Provider { get { return this.errorListProvider_; } }
 
         //public SmartThreadPool Thread_Pool { get { return this.threadPool_; } }
@@ -342,9 +284,10 @@ namespace AsmDude2
                 Rn reg = RegisterTools.ParseRn(keyword2, true);
                 if (reg != Rn.NOREG)
                 {
-                    return (this.RegisterSwitchedOn(reg))
-                       ? AsmTokenType.Register
-                       : AsmTokenType.Register; //TODO
+                    // return (this.RegisterSwitchedOn(reg))
+                    //    ? AsmTokenType.Register
+                    //    : AsmTokenType.Register; //TODO
+                    return AsmTokenType.Register; //TODO
                 }
             }
             #endregion
@@ -359,9 +302,12 @@ namespace AsmDude2
                 (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keyword, true);
                 if (mnemonic != Mnemonic.NONE)
                 {
-                    return (this.MnemonicSwitchedOn(mnemonic))
-                        ? AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
-                        : AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
+                    //TODO
+                    // return (this.MnemonicSwitchedOn(mnemonic))
+                    //     ? AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
+                    //     : AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
+
+                    return AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
                 }
             }
             #endregion
@@ -377,16 +323,20 @@ namespace AsmDude2
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
             {
-                return (this.MnemonicSwitchedOn(mnemonic))
-                    ? AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
-                    : AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
+                //TODO
+                //return (this.MnemonicSwitchedOn(mnemonic))
+                //    ? AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
+                //    : AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
+
+                return AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
             Rn reg = RegisterTools.ParseRn(keyword, true);
             if (reg != Rn.NOREG)
             {
-                return (this.RegisterSwitchedOn(reg))
-                    ? AsmTokenType.Register
-                    : AsmTokenType.Register; //TODO
+                //return (this.RegisterSwitchedOn(reg))
+                //    ? AsmTokenType.Register
+                //    : AsmTokenType.Register; //TODO
+                return AsmTokenType.Register;
             }
             return this.type_.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
         }

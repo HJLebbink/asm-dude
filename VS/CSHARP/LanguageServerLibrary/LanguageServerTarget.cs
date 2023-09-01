@@ -1,4 +1,26 @@
-﻿using AsmTools;
+﻿// The MIT License (MIT)
+//
+// Copyright (c) 2023 Henk-Jan Lebbink
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+using AsmTools;
 
 using LanguageServerLibrary;
 
@@ -19,6 +41,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web.UI.WebControls;
+
+using static Nerdbank.Streams.MultiplexingStream;
 
 namespace LanguageServer
 {
@@ -41,10 +65,13 @@ namespace LanguageServer
 
         private int version = 1;
         private readonly LanguageServer server;
-        private int completionItemsNumberRoot = 0;
         private readonly TraceSource traceSource;
+        private AsmDude2Options options;
         private MnemonicStore mnemonicStore;
         private PerformanceStore performanceStore;
+
+        private int completionItemsNumberRoot = 0;
+
 
         public LanguageServerTarget(LanguageServer server, TraceSource traceSource)
         {
@@ -131,6 +158,18 @@ namespace LanguageServer
         public object Initialize(JToken arg)
         {
             LogInfo($"Initialize: Received: {arg}");
+            var parameter = arg.ToObject<InitializeParams>();
+
+            if (parameter.InitializationOptions == null)
+            {
+                LogInfo($"Initialize: InitializationOptions is null");
+            } else
+            {
+                JToken jToken = parameter.InitializationOptions as JToken;
+                //LogInfo($"Initialize: Options: {jToken}");
+                this.options = jToken.ToObject<AsmDude2Options>();
+                this.server.options = this.options;
+            }
 
             var result = new InitializeResult
             {
@@ -187,20 +226,7 @@ namespace LanguageServer
                 }
             };
 
-            #region load Signature Store and Performance Store
-            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "Resources");
-            {
-                string filename_Regular = Path.Combine(path, "signature-may2019.txt");
-                string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
-                this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.traceSource);
-            }
-            {
-                string path_performance = Path.Combine(path, "Performance");
-                this.performanceStore = new PerformanceStore(path_performance, this.traceSource);
-            }
-            #endregion
-
-            OnInitializeCompletion?.Invoke(this, new EventArgs());
+            OnInitializeCompletion?.Invoke(this, EventArgs.Empty);
 
             LogInfo($"Initialize: Sent: {JToken.FromObject(result)}");
 
@@ -211,6 +237,21 @@ namespace LanguageServer
         public void Initialized(JToken arg)
         {
             LogInfo($"Initialized: Received: {arg}");
+
+            #region load Signature Store and Performance Store
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "Resources");
+            {
+                string filename_Regular = Path.Combine(path, "signature-may2019.txt");
+                string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
+                this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.traceSource, this.options);
+            }
+            
+            {
+                string path_performance = Path.Combine(path, "Performance");
+                this.performanceStore = new PerformanceStore(path_performance, this.traceSource, this.options);
+            }
+            #endregion
+
             this.OnInitialized?.Invoke(this, EventArgs.Empty);
         }
 
@@ -227,6 +268,9 @@ namespace LanguageServer
         public Hover OnHover(JToken arg)
         {
             LogInfo($"OnHover: Received: {arg}");
+            //LogInfo($"OnHover: maxProblems={this.server.maxProblems}");
+            //this.server.ShowMessage($"OnHover maxProblems={this.server.maxProblems}\"", MessageType.Error);
+
             var parameter = arg.ToObject<TextDocumentPositionParams>();
             string lineStr = this.server.GetLine(parameter.Position.Line, parameter.TextDocument);
             (int startPos, int endPos) = FindWordBoundary(parameter.Position.Character, lineStr);
@@ -240,7 +284,7 @@ namespace LanguageServer
             }
             string keyword = lineStr.Substring(startPos, length).ToUpperInvariant();
             string keyword_upcase = keyword;
-            string full_Descr = $"No match: keyword=\"{keyword}\"";
+            string full_Descr = $"No match: keyword=\"{keyword}\" maxProblems={this.server.maxProblems}";
             string performanceStr = "No performance info";
 
             //LogInfo($"OnHover: keyword={keyword}");

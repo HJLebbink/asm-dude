@@ -1,4 +1,28 @@
-﻿using Microsoft.VisualStudio.LanguageServer.Protocol;
+﻿// The MIT License (MIT)
+//
+// Copyright (c) 2023 Henk-Jan Lebbink
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+using AsmTools;
+
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 using Newtonsoft.Json.Linq;
 using StreamJsonRpc;
 using System;
@@ -10,13 +34,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace LanguageServer
 {
     public class LanguageServer : INotifyPropertyChanged
     {
-        private int maxProblems = -1;
+        public int maxProblems = 10;
+
         private readonly JsonRpc rpc;
         private readonly HeaderDelimitedMessageHandler messageHandler;
         private readonly LanguageServerTarget target;
@@ -29,19 +53,23 @@ namespace LanguageServer
         private int highlightChunkSize;
         private int highlightsDelay;
         private readonly Dictionary<VSTextDocumentIdentifier, int> diagnosticsResults;
+        private readonly TraceSource traceSource;
+        public AsmDude2Options options;
+
 
         public LanguageServer(Stream sender, Stream reader, List<DiagnosticsInfo> initialDiagnostics = null)
         {
-            var jsonRpcTraceSource = LogUtils.CreateTraceSource();
-            this.target = new LanguageServerTarget(this, jsonRpcTraceSource);
+            this.traceSource = LogUtils.CreateTraceSource();
+            this.target = new LanguageServerTarget(this, traceSource);
             this.messageHandler = new HeaderDelimitedMessageHandler(sender, reader);
             this.rpc = new JsonRpc(this.messageHandler, this.target);
             this.rpc.Disconnected += OnRpcDisconnected;
 
             this.rpc.ActivityTracingStrategy = new CorrelationManagerTracingStrategy()
             {
-                TraceSource = jsonRpcTraceSource,
+                TraceSource = traceSource,
             };
+            this.rpc.TraceSource = traceSource;
 
             ((JsonMessageFormatter)this.messageHandler.Formatter).JsonSerializer.Converters.Add(new VSExtensionConverter<TextDocumentIdentifier, VSTextDocumentIdentifier>());
 
@@ -166,6 +194,7 @@ namespace LanguageServer
 
         private void OnTargetInitialized(object sender, EventArgs e)
         {
+            LogInfo("LanguageServer: OnTargetInitialized");
             this.OnInitialized?.Invoke(this, EventArgs.Empty);
         }
 
@@ -213,7 +242,7 @@ namespace LanguageServer
 
         private void UpdateFoldingRanges()
         {
-            const string StartKeyword = "#REGION";
+            const string StartKeyword = "#REGION"; //TODO get from this.options
             const string EndKeyword = "#ENDREGION";
 
             var foldingRanges = new List<FoldingRange>();
@@ -813,6 +842,11 @@ namespace LanguageServer
 
         #region Logging
 
+        private void LogInfo(string message)
+        {
+            this.traceSource.TraceEvent(TraceEventType.Information, 0, message);
+        }
+
         public void LogMessage(object arg)
         {
             this.LogMessage(arg, MessageType.Info);
@@ -835,6 +869,7 @@ namespace LanguageServer
 
         public void ShowMessage(string message, MessageType messageType)
         {
+            //LogInfo($"LanguageServer: ShowMessage: message={message}; messageType={messageType.ToString()}");
             ShowMessageParams parameter = new ShowMessageParams
             {
                 Message = message,
@@ -857,6 +892,7 @@ namespace LanguageServer
 
         #endregion
 
+        // store incoming settings from VS
         public void SendSettings(DidChangeConfigurationParams parameter)
         {
             this.CurrentSettings = parameter.Settings.ToString();

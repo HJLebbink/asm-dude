@@ -80,18 +80,18 @@ namespace LanguageServer
     public class PerformanceStore
     {
         private readonly TraceSource traceSource;
+        private readonly AsmDude2Options options;
         private readonly IList<PerformanceItem> data_;
 
-        public PerformanceStore(string path, TraceSource traceSource)
+        public PerformanceStore(string path, TraceSource traceSource, AsmDude2Options options)
         {
             this.traceSource = traceSource;
+            this.options = options;
             this.data_ = new List<PerformanceItem>();
 
-            //if (AsmDude2.Settings.Default.PerformanceInfo_On)
-            if (true)
+            if (this.options.PerformanceInfo_On)
             {
-                //MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-                MicroArch selectedMicroarchitures = MicroArch.SkylakeX | MicroArch.Haswell;
+                MicroArch selectedMicroarchitures = this.options.Get_MicroArch_Switched_On();
                 if (selectedMicroarchitures != MicroArch.NONE)
                 {
                     IDictionary<string, IList<Mnemonic>> translations = this.Load_Instruction_Translation(Path.Combine(path, "Instructions-Translations.tsv"));

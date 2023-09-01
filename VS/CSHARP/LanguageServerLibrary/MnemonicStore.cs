@@ -43,10 +43,15 @@ namespace LanguageServer
         private readonly IDictionary<Mnemonic, string> htmlRef_;
         private readonly IDictionary<Mnemonic, string> description_;
         private readonly TraceSource traceSource;
+        private readonly AsmDude2Options options;
 
-        public MnemonicStore(string filename_RegularData, string filename_HandcraftedData, TraceSource traceSource)
+        private readonly ISet<Mnemonic> mnemonics_switched_on_;
+        private readonly ISet<Rn> register_switched_on_;
+
+        public MnemonicStore(string filename_RegularData, string filename_HandcraftedData, TraceSource traceSource, AsmDude2Options options)
         {
             this.traceSource = traceSource;
+            this.options = options;
             this.LogInfo($"MnemonicStore: constructor: regularData = {filename_RegularData}; hHandcraftedData = {filename_HandcraftedData}");
 
             this.data_ = new Dictionary<Mnemonic, IList<AsmSignatureInformation>>();
@@ -59,6 +64,12 @@ namespace LanguageServer
             {
                 this.LoadHandcraftedData(filename_HandcraftedData);
             }
+
+            this.mnemonics_switched_on_ = new HashSet<Mnemonic>();
+            this.UpdateMnemonicSwitchedOn();
+
+            this.register_switched_on_ = new HashSet<Rn>();
+            this.UpdateRegisterSwitchedOn();
         }
 
         private void LogInfo(string msg)
@@ -402,6 +413,59 @@ namespace LanguageServer
             catch (Exception e)
             {
                 this.LogError("MnemonicStore:LoadHandcraftedData: error while reading file \"" + filename + "\"." + e);
+            }
+        }
+
+        public bool MnemonicSwitchedOn(Mnemonic mnemonic)
+        {
+            return this.mnemonics_switched_on_.Contains(mnemonic);
+        }
+
+        public IEnumerable<Mnemonic> Get_Allowed_Mnemonics()
+        {
+            return this.mnemonics_switched_on_;
+        }
+
+        public void UpdateMnemonicSwitchedOn()
+        {
+            this.mnemonics_switched_on_.Clear();
+            ISet<Arch> selectedArchs = this.options.Get_Arch_Switched_On();
+            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
+            {
+                foreach (Arch a in this.GetArch(mnemonic))
+                {
+                    if (selectedArchs.Contains(a))
+                    {
+                        this.mnemonics_switched_on_.Add(mnemonic);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public bool RegisterSwitchedOn(Rn reg)
+        {
+            return this.register_switched_on_.Contains(reg);
+        }
+
+        public IEnumerable<Rn> Get_Allowed_Registers()
+        {
+            return this.register_switched_on_;
+        }
+
+        public void UpdateRegisterSwitchedOn()
+        {
+            this.register_switched_on_.Clear();
+            ISet<Arch> selectedArchs = this.options.Get_Arch_Switched_On();
+            foreach (Rn reg in Enum.GetValues(typeof(Rn)))
+            {
+                if (reg != Rn.NOREG)
+                {
+                    if (selectedArchs.Contains(RegisterTools.GetArch(reg)))
+                    {
+                        this.register_switched_on_.Add(reg);
+                    }
+                }
             }
         }
     }

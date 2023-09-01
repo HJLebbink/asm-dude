@@ -879,67 +879,7 @@ namespace AsmDude2.Tools
             //errorListProvider.Show(); // do not use BringToFront since that will select the error window.
         }
 
-        public static MicroArch Get_MicroArch_Switched_On()
-        {
-            MicroArch result = MicroArch.NONE;
-            foreach (MicroArch microArch in Enum.GetValues(typeof(MicroArch)))
-            {
-                if (Is_MicroArch_Switched_On(microArch))
-                {
-                    result |= microArch;
-                }
-            }
-            return result;
-        }
 
-        public static bool Is_MicroArch_Switched_On(MicroArch microArch)
-        {
-            switch (microArch)
-            {
-                case MicroArch.NONE: return false;
-                case MicroArch.SandyBridge: return Settings.Default.PerformanceInfo_SandyBridge_On;
-                case MicroArch.IvyBridge: return Settings.Default.PerformanceInfo_IvyBridge_On;
-                case MicroArch.Haswell: return Settings.Default.PerformanceInfo_Haswell_On;
-                case MicroArch.Broadwell: return Settings.Default.PerformanceInfo_Broadwell_On;
-                case MicroArch.Skylake: return Settings.Default.PerformanceInfo_Skylake_On;
-                case MicroArch.SkylakeX: return Settings.Default.PerformanceInfo_SkylakeX_On;
-                case MicroArch.Kabylake: return false;
-                case MicroArch.Cannonlake: return false;
-                case MicroArch.Icelake: return false;
-                case MicroArch.Tigerlake: return false;
-                case MicroArch.KnightsCorner: return false;
-                case MicroArch.KnightsLanding: return Settings.Default.PerformanceInfo_KnightsLanding_On;
-
-                default:
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:AsmDudeToolsStatic::Is_MicroArch_Switched_On: unsupported arch {0}", microArch));
-                    return false;
-            }
-        }
-
-        public static ISet<Arch> Get_Arch_Switched_On()
-        {
-            ISet<Arch> set = new HashSet<Arch>();
-            foreach (Arch arch in Enum.GetValues(typeof(Arch)))
-            {
-                if (Is_Arch_Switched_On(arch))
-                {
-                    set.Add(arch);
-                }
-            }
-            return set;
-        }
-
-        public static bool Is_Arch_Switched_On(Arch arch)
-        {
-            try
-            {
-                return (arch == Arch.ARCH_NONE) || (bool)Settings.Default[arch.ToString()];
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
 
         public static string Make_Full_Qualified_Label(string prefix, string label2, AssemblerEnum assembler)
         {

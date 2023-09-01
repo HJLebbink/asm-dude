@@ -91,7 +91,7 @@ namespace AsmDude2
         private async void MenuItemCallback(object sender, EventArgs e)
         {
             // Sends a custom message to the language server that is not part of the protocol.
-            var text = await AsmLanguageClient.Instance.Rpc.InvokeWithParameterObjectAsync<string>("GetText");
+            var text = await AsmLanguageClient.Instance.CustomMessageRpc.InvokeWithParameterObjectAsync<string>("GetText");
 
             string message = string.Format(CultureInfo.CurrentCulture, "Text from language server: {0}", text);
             string title = "CustomCommand";

@@ -47,6 +47,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="OptionsPage\AsmDudeOptionPageUI.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="MockLanguageExtensionSettings.pkgdef">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		  <IncludeInVsix>true</IncludeInVsix>
@@ -100,6 +104,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.507" />
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
 		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.7.37357" />
 		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.6.2164">
@@ -109,7 +114,12 @@
 		<PackageReference Include="SmartThreadPool.dll" Version="2.3.0" />
 		<PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
 		<PackageReference Include="System.Xml.ReaderWriter" Version="4.3.1" />
+		<Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
+		  <Generator>XamlIntelliSenseFileGenerator</Generator>
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Page>
 		<Reference Include="PresentationCore" />
+		<Reference Include="PresentationFramework" />
 		<Reference Include="System.Design" />
 	</ItemGroup>
 	<ItemGroup>
