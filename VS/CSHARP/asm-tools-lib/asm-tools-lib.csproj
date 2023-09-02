@@ -86,7 +86,7 @@
     <Compile Include="NumerationEnum.cs" />
     <Compile Include="Operand.cs" />
     <Compile Include="OperandType.cs" />
-    <Compile Include="AsmDude2Options.cs" />
+    <Compile Include="AsmLanguageServerOptions.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterName.cs" />

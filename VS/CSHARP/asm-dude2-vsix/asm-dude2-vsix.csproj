@@ -97,6 +97,7 @@
 			<ResourceName>Menus.ctmenu</ResourceName>
 		</VSCTCompile>
 		<Content Include="MockLanguageExtensionSettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<IncludeInVSIX>true</IncludeInVSIX>
 		</Content>
 		<None Include="source.extension.vsixmanifest" />

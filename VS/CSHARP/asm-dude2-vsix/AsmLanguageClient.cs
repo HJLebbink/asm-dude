@@ -68,7 +68,7 @@ namespace AsmDude2
         public event AsyncEventHandler<EventArgs> StartAsync;
         public event AsyncEventHandler<EventArgs> StopAsync;
 
-        public string Name => "Asm Language Extension";
+        public string Name => "AsmDude2";
 
         public IEnumerable<string> ConfigurationSections
         {
@@ -84,7 +84,7 @@ namespace AsmDude2
             get
             {
                 AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: get InitializationOptions");
-                var options = new AsmDude2Options
+                var options = new AsmLanguageServerOptions
                 {
                     SyntaxHighlighting_Opcode = Settings.Default.SyntaxHighlighting_Opcode,
                     SyntaxHighlighting_Register = Settings.Default.SyntaxHighlighting_Register,
@@ -247,6 +247,7 @@ namespace AsmDude2
                 return options;
             }
         }
+        
         public IEnumerable<string> FilesToWatch => null;
 
         public object CustomMessageTarget => null;
@@ -310,6 +311,13 @@ namespace AsmDude2
             }
         }
 
+        public async Task RestartServerAsync()
+        {
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: RestartServerAsync");
+            await StopServerAsync();
+            await OnLoadedAsync();
+        }
+
         public Task OnServerInitializedAsync()
         {
             AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: OnServerInitializedAsync");
@@ -358,7 +366,7 @@ namespace AsmDude2
 
             public bool CanHandle(string methodName)
             {
-                if (methodName == Methods.InitializedName)
+                if (methodName == Methods.InitializeName)
                 {
                     AsmDudeToolsStatic.Output_INFO($"DiagnosticsFilterMiddleLayer: CanHandle: methodName={methodName} is supported");
                     return true;
@@ -376,7 +384,7 @@ namespace AsmDude2
                     methodParam["diagnostics"] = new JArray(diagnosticsToFilter.Where(diagnostic => diagnostic.Value<int?>("severity") == 1));
                 }
 
-                if (methodName == Methods.InitializedName)
+                if (methodName == Methods.InitializeName)
                 {
                     AsmDudeToolsStatic.Output_INFO($"DiagnosticsFilterMiddleLayer: HandleNotificationAsync: methodName={methodName}; methodParam={methodParam}");
                 }

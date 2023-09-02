@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace LanguageServer
+namespace LanguageServerLibrary
 {
     using System;
     using System.Collections.Generic;
@@ -32,8 +32,6 @@ namespace LanguageServer
 
     using AsmTools;
 
-    using LanguageServerLibrary;
-
     using Microsoft.VisualStudio.LanguageServer.Protocol;
 
     public class MnemonicStore
@@ -43,12 +41,12 @@ namespace LanguageServer
         private readonly IDictionary<Mnemonic, string> htmlRef_;
         private readonly IDictionary<Mnemonic, string> description_;
         private readonly TraceSource traceSource;
-        private readonly AsmDude2Options options;
+        private readonly AsmLanguageServerOptions options;
 
         private readonly ISet<Mnemonic> mnemonics_switched_on_;
         private readonly ISet<Rn> register_switched_on_;
 
-        public MnemonicStore(string filename_RegularData, string filename_HandcraftedData, TraceSource traceSource, AsmDude2Options options)
+        public MnemonicStore(string filename_RegularData, string filename_HandcraftedData, TraceSource traceSource, AsmLanguageServerOptions options)
         {
             this.traceSource = traceSource;
             this.options = options;
@@ -177,39 +175,106 @@ namespace LanguageServer
 
         private AsmSignatureInformation CreateAsmSignatureElement(Mnemonic mnemonic, string args, string arch, string sign, string doc)
         {
+            // EG: mnemonic=VADDPS
+            // args=XMM{K}{Z},XMM,XMM/M128/M32BCST
+            // arch=AVX512_VL,AVX512_F
+            // sign=VADDPS XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST
+            // doc=Add packed SP FP values from xmm3/m128/m32bcst to xmm2 and store result in xmm1 with writemask k1.
+
+            IList<AsmSignatureEnum> ParseOperands(string str)
+            {
+                var result = new List<AsmSignatureEnum>();
+                foreach (string op in str.Split('/'))
+                {
+                    result.Add(AsmSignatureTools.Parse_Operand_Type_Enum(op, true)[0]);
+                }
+                return result;
+            }
+
+            string ParamDoc(IList<AsmSignatureEnum> x)
+            {
+                StringBuilder argDoc = new StringBuilder();
+                foreach (AsmSignatureEnum op in x)
+                {
+                    argDoc.Append(AsmSignatureTools.Get_Doc(op) + " or ");
+                }
+                argDoc.Length -= 4;
+                return argDoc.ToString();
+            }
+            
+            Tuple<int, int>[] FindParamPositions(string signature)
+            {
+                int startPos = -1;
+                for (int i = 0; i < signature.Length; ++i)
+                {
+                    if (signature[i] == ' ')
+                    {
+                        startPos = i + 1;
+                        break;
+                    }
+                }
+                if (startPos == -1)
+                {
+                    return Array.Empty<Tuple<int, int>>();
+                }
+                var result = new List<Tuple<int, int>>();
+                int previousPos = startPos;
+                for (int i = startPos; i < signature.Length; ++i)
+                {
+                    if (signature[i] == ',')
+                    {
+                        result.Add(new Tuple<int, int>(previousPos, i));
+                        previousPos = i + 1;
+                    }
+                }
+                if (previousPos < signature.Length)
+                {
+                    result.Add(new Tuple<int, int>(previousPos, signature.Length));
+                }
+                return result.ToArray<Tuple<int, int>>();
+            }
+
             var parameters = new List<ParameterInformation>();
-            var operands = args.Split(',');
+            var operands = (args.Length == 0) ? Array.Empty<string>() : args.Split(',');
+            var parameterOffsets = FindParamPositions(sign);
+
+            if (operands.Length != parameterOffsets.Length)
+            {
+                LogError($"MnemonicStore:CreateAsmSignatureElement: inconsistent signature information: args={args}; parameterOffsets={parameterOffsets}");
+                for (int i = 0; i < operands.Length; ++i)
+                {
+                    LogError($"MnemonicStore:CreateAsmSignatureElement: operands[{i}]={operands[i]}");
+                }
+                for (int i = 0; i < parameterOffsets.Length; ++i)
+                {
+                    LogError($"MnemonicStore:CreateAsmSignatureElement: parameterOffsets[{i}]={parameterOffsets[i]}; sign={sign}");
+                }
+            }
+
+            var operandList = new List<IList<AsmSignatureEnum>>();
 
             for (int j = 0; j < operands.Length; ++j)
             {
-                StringBuilder argDoc = new StringBuilder();
-                {
-                    foreach (string op in operands[j].Split('/'))
-                    {
-                        var op2 = AsmSignatureTools.Parse_Operand_Type_Enum(op, true);
-                        argDoc.Append(AsmSignatureTools.Get_Doc(op2[0]) + " or ");
-                    }
-                    argDoc.Length -= 4;
-                }
+                var operand = ParseOperands(operands[j]);
+                operandList.Add(operand);
 
                 parameters.Add(new ParameterInformation
                 {
-                    Label = operands[j],
-                    Documentation = argDoc.ToString(),
+                    Label = parameterOffsets[j],
+                    Documentation = ParamDoc(operandList[j]),
                 });
             }
-            AsmSignatureInformation se = new AsmSignatureInformation
-            {
+            return new AsmSignatureInformation{
                 Mnemonic = mnemonic,
-                arch_ = ArchTools.ParseArchList(arch, false, true),
+                Arch = ArchTools.ParseArchList(arch, false, true),
+                Operands = operandList,
                 SignatureInformation = new SignatureInformation
                 {
                     Label = sign,
                     Parameters = parameters.ToArray<ParameterInformation>(),
                     Documentation = doc,
-                },
+                }
             };
-            return se;
         }
 
         private void LoadRegularData(string filename)
@@ -285,12 +350,12 @@ namespace LanguageServer
                     ISet<Arch> archs = new HashSet<Arch>();
                     foreach (AsmSignatureInformation signatureElement in pair.Value)
                     {
-                        if (signatureElement.arch_ == null)
+                        if (signatureElement.Arch == null)
                         {
                             this.LogError("signatureElement.arch_ is null");
                         } else
                         {
-                            foreach (Arch arch in signatureElement.arch_)
+                            foreach (Arch arch in signatureElement.Arch)
                             {
                                 if (arch == Arch.ARCH_NONE)
                                 {
@@ -392,7 +457,7 @@ namespace LanguageServer
                     ISet<Arch> archs = new HashSet<Arch>();
                     foreach (AsmSignatureInformation signatureElement in pair.Value)
                     {
-                        foreach (Arch arch in signatureElement.arch_)
+                        foreach (Arch arch in signatureElement.Arch)
                         {
                             archs.Add(arch);
                         }

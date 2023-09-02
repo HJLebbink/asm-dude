@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace LanguageServer
+namespace LanguageServerLibrary
 {
     using System;
     using System.Collections.Generic;
@@ -80,10 +80,10 @@ namespace LanguageServer
     public class PerformanceStore
     {
         private readonly TraceSource traceSource;
-        private readonly AsmDude2Options options;
+        private readonly AsmLanguageServerOptions options;
         private readonly IList<PerformanceItem> data_;
 
-        public PerformanceStore(string path, TraceSource traceSource, AsmDude2Options options)
+        public PerformanceStore(string path, TraceSource traceSource, AsmLanguageServerOptions options)
         {
             this.traceSource = traceSource;
             this.options = options;

@@ -34,7 +34,7 @@ namespace AsmTools
     using System.Reflection.Metadata;
 
     [DataContract]
-    public class AsmDude2Options
+    public class AsmLanguageServerOptions
     {
         [DataMember]
         public System.Drawing.Color SyntaxHighlighting_Opcode;
@@ -351,7 +351,7 @@ namespace AsmTools
         [DataMember]
         public int Global_MaxFileLines;
 
-        public AsmDude2Options() { }
+        public AsmLanguageServerOptions() { }
 
         public MicroArch Get_MicroArch_Switched_On()
         {

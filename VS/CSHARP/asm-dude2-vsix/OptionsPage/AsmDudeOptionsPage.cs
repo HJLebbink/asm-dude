@@ -163,7 +163,7 @@ namespace AsmDude2
 
         private bool Setting_Changed(Arch key, StringBuilder sb)
         {
-            return (key == Arch.ARCH_NONE) ? false : this.Setting_Changed(key.ToString(), sb);
+            return (key != Arch.ARCH_NONE) && this.Setting_Changed(key.ToString(), sb);
         }
 
         private bool Setting_Changed_RGB(PropertyEnum key, StringBuilder sb)
@@ -199,7 +199,7 @@ namespace AsmDude2
 
         private bool Setting_Update(Arch key)
         {
-            return (key == Arch.ARCH_NONE) ? false : this.Setting_Update(key.ToString());
+            return (key != Arch.ARCH_NONE) && this.Setting_Update(key.ToString());
         }
 
         private bool Setting_Update_RGB(PropertyEnum key)
@@ -776,9 +776,6 @@ namespace AsmDude2
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            var text = await AsmLanguageClient.Instance.SendServerCustomMessage("Message_from_AsmDude2");
-            AsmDudeToolsStatic.Output_INFO("SaveAsync: text " + text);
-
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:save", this.ToString()));
             bool changed = false;
             bool restartNeeded = false;
@@ -987,32 +984,36 @@ namespace AsmDude2
             if (this.Setting_Update(PropertyEnum.AsmSim_Pragma_Assume)) { changed = true; }
             #endregion
 
+
             if (archChanged) //TODO HJ 02-06-19 changes will propagate before save-yes is hit
             {
-                //TODO restart LSP
-                //AsmDude2Tools.Instance.UpdateMnemonicSwitchedOn();
-                //AsmDude2Tools.Instance.UpdateRegisterSwitchedOn();
+                //?
             }
             if (changed)
             {
                 Settings.Default.Save();
                 //await ClearMefCache.ClearMefCache.ClearAsync().ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                await AsmLanguageClient.Instance.RestartServerAsync();
             }
-            if (restartNeeded)
-            {
-                string title = "Microsoft Visual Studio";
-                string text1 = "Do you like to restart Visual Studio now?";
 
-                if (MessageBox.Show(text1, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (false)
+            {
+                if (restartNeeded)
                 {
-                    //await ClearMefCache.ClearMefCache.RestartAsync().ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
-                }
-                else
-                {
-                    if (false)
+                    string title = "Microsoft Visual Studio";
+                    string text1 = "Do you like to restart Visual Studio now?";
+
+                    if (MessageBox.Show(text1, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        string text2 = "You may need to close and open assembly files, or \nrestart visual studio for the changes to take effect.";
-                        MessageBox.Show(text2, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        //await ClearMefCache.ClearMefCache.RestartAsync().ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    }
+                    else
+                    {
+                        if (false)
+                        {
+                            string text2 = "You may need to close and open assembly files, or \nrestart visual studio for the changes to take effect.";
+                            MessageBox.Show(text2, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
             }

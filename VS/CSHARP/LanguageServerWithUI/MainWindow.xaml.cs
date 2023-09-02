@@ -58,7 +58,8 @@ namespace LanguageServerWithUI
 
         private void OnSendDiagnosticsButtonClick(object sender, RoutedEventArgs e)
         {
-            viewModel.SendDiagnostics();
+            var uri = new Uri("TODO2");
+            viewModel.SendDiagnostics(true, uri);
         }
 
         private void OnSetReferencesButtonClick(object sender, RoutedEventArgs e)
@@ -88,7 +89,8 @@ namespace LanguageServerWithUI
 
         private void OnApplyTextEditButtonClick(object sender, RoutedEventArgs e)
         {
-            viewModel.ApplyTextEdit();
+            var uri = new Uri("TODO3"); //TODO
+            viewModel.ApplyTextEdit(uri);
         }
 
         private void OnShowMessageButtonClick(object sender, RoutedEventArgs e)

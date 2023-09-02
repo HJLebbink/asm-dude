@@ -12,6 +12,8 @@ include "bla"
 	rep stos
 	rep SCAS
 
+    VPXORD 
+
     #region
     #region
 

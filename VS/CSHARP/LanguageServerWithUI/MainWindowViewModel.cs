@@ -1,4 +1,4 @@
-﻿using LanguageServer;
+﻿using LanguageServerLibrary;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace LanguageServerWithUI
         private ObservableCollection<DiagnosticItem> diagnosticItems = new ObservableCollection<DiagnosticItem>();
         private ObservableCollection<FoldingRangeItem> foldingRanges = new ObservableCollection<FoldingRangeItem>();
         private ObservableCollection<SymbolInformationItem> symbols = new ObservableCollection<SymbolInformationItem>();
-        private readonly LanguageServer.LanguageServer languageServer;
+        private readonly LanguageServerLibrary.LanguageServer languageServer;
         private string initializedMessage;
         private string responseText;
         private string currentSettings;
@@ -46,7 +46,7 @@ namespace LanguageServerWithUI
             writerPipe.Connect();
 
             this.InitializedMessage = "The server has not yet been initialized.";
-            this.languageServer = new LanguageServer.LanguageServer(writerPipe, readerPipe);
+            this.languageServer = new LanguageServerLibrary.LanguageServer(writerPipe, readerPipe);
 
             this.languageServer.OnInitialized += OnInitialized;
             this.languageServer.Disconnected += OnDisconnected;
@@ -65,15 +65,15 @@ namespace LanguageServerWithUI
 
         private void OnLanguageServerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.Equals(nameof(LanguageServer.LanguageServer.CurrentSettings)))
+            if (e.PropertyName.Equals(nameof(LanguageServerLibrary.LanguageServer.CurrentSettings)))
             {
                 this.CurrentSettings = this.languageServer.CurrentSettings;
             }
-            else if (e.PropertyName.Equals(nameof(LanguageServer.LanguageServer.LastCompletionRequest)))
+            else if (e.PropertyName.Equals(nameof(LanguageServerLibrary.LanguageServer.LastCompletionRequest)))
             {
                 this.LastCompletionRequest = this.languageServer.LastCompletionRequest;
             }
-            else if (e.PropertyName.Equals(nameof(LanguageServer.LanguageServer.IsIncomplete)))
+            else if (e.PropertyName.Equals(nameof(LanguageServerLibrary.LanguageServer.IsIncomplete)))
             {
                 this.IsIncomplete = this.languageServer.IsIncomplete;
             }
@@ -342,7 +342,7 @@ namespace LanguageServerWithUI
             }
         }
 
-        public void SendDiagnostics(bool pushDiagnostics = true)
+        public void SendDiagnostics(bool pushDiagnostics, Uri uri)
         {
             var diagnostics = new List<DiagnosticsInfo>();
 
@@ -355,7 +355,7 @@ namespace LanguageServerWithUI
                 }
             }
 
-            this.languageServer.SendDiagnostics(diagnostics, pushDiagnostics);
+            this.languageServer.SendDiagnostics(diagnostics, pushDiagnostics, uri);
         }
 
         public void SetReferences()
@@ -370,7 +370,7 @@ namespace LanguageServerWithUI
 
         public void SetFoldingRanges()
         {
-            var foldingRanges = this.FoldingRanges.Select(f => new FoldingRange() { StartLine = f.StartLine, StartCharacter = f.StartCharacter, EndLine = f.EndLine, EndCharacter = f.EndCharacter, Kind = FoldingRangeKind.Comment });
+            var foldingRanges = this.FoldingRanges.Select(f => new AsmFoldingRange() { StartLine = f.StartLine, StartCharacter = f.StartCharacter, EndLine = f.EndLine, EndCharacter = f.EndCharacter, Kind = FoldingRangeKind.Comment });
             this.languageServer.SetFoldingRanges(foldingRanges);
         }
 
@@ -392,9 +392,9 @@ namespace LanguageServerWithUI
             this.languageServer.SetDocumentSymbols(symbols);
         }
 
-        public void ApplyTextEdit()
+        public void ApplyTextEdit(Uri uri)
         {
-            this.languageServer.ApplyTextEdit(this.ApplyTextEditText);
+            this.languageServer.ApplyTextEdit(this.ApplyTextEditText, uri);
         }
 
         private void NotifyPropertyChanged(string propertyName)

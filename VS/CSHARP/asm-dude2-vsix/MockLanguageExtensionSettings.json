@@ -1,3 +1,4 @@
 ﻿{
-  "foo.maxNumberOfProblems": -1
+  "foo.trace.server": "Verbose",
+  "foo.maxNumberOfProblems": 2
 }
