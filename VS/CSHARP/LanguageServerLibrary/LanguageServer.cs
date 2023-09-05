@@ -23,6 +23,8 @@
 using AsmTools;
 
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+using Microsoft.Win32;
+
 using Newtonsoft.Json.Linq;
 using StreamJsonRpc;
 using System;
@@ -54,6 +56,7 @@ namespace LanguageServerLibrary
         private IList<DiagnosticsInfo> diagnostics;
         private readonly IDictionary<Uri, TextDocumentItem> textDocuments;
         private readonly IDictionary<Uri, string[]> textDocumentLines;
+        private readonly IDictionary<Uri, IEnumerable<AsmFoldingRange>> foldingRanges;
 
         private string referenceToFind;
         private int referencesChunkSize;
@@ -64,6 +67,8 @@ namespace LanguageServerLibrary
 
         private readonly Dictionary<VSTextDocumentIdentifier, int> diagnosticsResults;
         private readonly TraceSource traceSource;
+
+        private AsmDude2Tools asmDudeTools;
         public MnemonicStore mnemonicStore;
         public PerformanceStore performanceStore;
         public AsmLanguageServerOptions options;
@@ -71,9 +76,11 @@ namespace LanguageServerLibrary
         public LanguageServer(Stream sender, Stream reader, List<DiagnosticsInfo> initialDiagnostics = null)
         {
             this.traceSource = LogUtils.CreateTraceSource();
+            //LogInfo("LanguageServer: constructor"); // This line produces a crash
             this.target = new LanguageServerTarget(this, traceSource);
             this.textDocuments = new Dictionary<Uri, TextDocumentItem>();
             this.textDocumentLines = new Dictionary<Uri, string[]>();
+            this.foldingRanges = new Dictionary<Uri, IEnumerable<AsmFoldingRange>>();
             this.messageHandler = new HeaderDelimitedMessageHandler(sender, reader);
             this.rpc = new JsonRpc(this.messageHandler, this.target);
             this.rpc.Disconnected += OnRpcDisconnected;
@@ -90,8 +97,6 @@ namespace LanguageServerLibrary
 
             this.diagnostics = initialDiagnostics;
             this.diagnosticsResults = new Dictionary<VSTextDocumentIdentifier, int>();
-
-            this.FoldingRanges = Array.Empty<AsmFoldingRange>();
             this.Symbols = Array.Empty<VSSymbolInformation>();
 
             this.target.OnInitializeCompletion += OnTargetInitializeCompletion;
@@ -172,12 +177,6 @@ namespace LanguageServerLibrary
             get => this.rpc;
         }
 
-        public IEnumerable<AsmFoldingRange> FoldingRanges
-        {
-            get;
-            set;
-        }
-
         public IEnumerable<VSSymbolInformation> Symbols
         {
             get;
@@ -193,6 +192,7 @@ namespace LanguageServerLibrary
         public bool UsePublishModelDiagnostic { get; set; } = true;
 
         private string lastCompletionRequest = string.Empty;
+        
         public string LastCompletionRequest
         {
             get => this.lastCompletionRequest;
@@ -209,7 +209,8 @@ namespace LanguageServerLibrary
 
         private void OnTargetInitializeCompletion(object sender, EventArgs e)
         {
-            Timer timer = new Timer(LogMessage, null, 0, 5 * 1000);
+            LogInfo("LanguageServer: OnTargetInitializeCompletion");
+            //Timer timer = new Timer(LogMessage, null, 0, 5 * 1000);
         }
 
         private void OnTargetInitialized(object sender, EventArgs e)
@@ -241,6 +242,9 @@ namespace LanguageServerLibrary
                 string path_performance = Path.Combine(path, "Performance");
                 this.performanceStore = new PerformanceStore(path_performance, this.traceSource, this.options);
             }
+            {
+                this.asmDudeTools = new AsmDude2Tools(path, this.traceSource);
+            }
         }
 
         private void UpdateInternals(Uri uri)
@@ -261,6 +265,12 @@ namespace LanguageServerLibrary
                 }
                 this.SendDiagnostics(uri);
             }
+        }
+
+
+        private char GetChar(string str, int offset)
+        {
+            return ((offset < 0) || (offset >= str.Length)) ? ' ' : str.ElementAt(offset);
         }
 
         private TextDocumentItem GetTextDocument(Uri uri)
@@ -355,7 +365,7 @@ namespace LanguageServerLibrary
                     }
                 }
             }
-            this.SetFoldingRanges(foldingRanges);
+            this.SetFoldingRanges(foldingRanges, uri);
         }
 
         public void UpdateServerSideTextDocument(string text, int version, Uri uri)
@@ -763,7 +773,7 @@ namespace LanguageServerLibrary
                 return Array.Empty<object>();
             }
 
- 
+            //TODO why not use VSLocation??
             List<Location> locations = new List<Location>();
             List<Location> locationsChunk = new List<Location>();
 
@@ -927,9 +937,13 @@ namespace LanguageServerLibrary
             };
         }
 
-        public void SetFoldingRanges(IEnumerable<AsmFoldingRange> foldingRanges)
+        public void SetFoldingRanges(IEnumerable<AsmFoldingRange> foldingRanges, Uri uri)
         {
-            this.FoldingRanges = foldingRanges;
+            if (this.foldingRanges.ContainsKey(uri))
+            {
+                this.foldingRanges.Remove(uri);
+            }
+            this.foldingRanges.Add(uri, foldingRanges);
         }
 
         public AsmFoldingRange[] GetFoldingRanges(FoldingRangeParams parameter)
@@ -938,7 +952,11 @@ namespace LanguageServerLibrary
             {
                 return Array.Empty<AsmFoldingRange>();
             }
-            return this.FoldingRanges.ToArray();
+            if (this.foldingRanges.TryGetValue(parameter.TextDocument.Uri, out IEnumerable<AsmFoldingRange> value))
+            {
+                return value.ToArray();
+            }
+            return Array.Empty<AsmFoldingRange>();
         }
 
         public CompletionList GetTextDocumentCompletion(CompletionParams parameter)
@@ -1072,12 +1090,7 @@ namespace LanguageServerLibrary
             //LogInfo($"OnTextDocumentCompletion: lineStr: \"{lineStr}\"");
 
             int pos = parameter.Position.Character - 1;
-            if (pos >= lineStr.Length)
-            {
-                LogInfo($"OnTextDocumentCompletion: char position is too large: pos={pos}; lineStr.Length={lineStr.Length}");
-                return new CompletionList();
-            }
-            char currentChar = lineStr[pos];
+            char currentChar = GetChar(lineStr, pos);
             //LogInfo($"OnTextDocumentCompletion: currentChar={currentChar}");
 
             if (AsmTools.AsmSourceTools.IsSeparatorChar(currentChar))
@@ -1104,8 +1117,6 @@ namespace LanguageServerLibrary
                 IsIncomplete = false,
                 Items = items.ToArray(),
             };
-
-
         }
 
         public DocumentHighlight[] GetDocumentHighlights(IProgress<DocumentHighlight[]> progress, Position position, CancellationToken token, Uri uri)
@@ -1256,6 +1267,27 @@ namespace LanguageServerLibrary
             return result.ToString();
         }
 
+        private AsmTokenType GetAsmTokenType(string keyword_upcase)
+        {
+            Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword_upcase, true);
+            if (mnemonic != Mnemonic.NONE)
+            {
+                if (AsmTools.AsmSourceTools.IsJump(mnemonic))
+                {
+                    return AsmTokenType.Jump;
+                }
+                return AsmTokenType.Mnemonic;
+            }
+            if (RegisterTools.IsRn(keyword_upcase))
+            {
+                return AsmTokenType.Register;
+            }
+
+            //TODO labels and constants
+
+            return AsmTokenType.UNKNOWN;
+        }
+
         public Hover GetHover(TextDocumentPositionParams parameter)
         {
             if (!this.options.AsmDoc_On)
@@ -1276,60 +1308,138 @@ namespace LanguageServerLibrary
             }
             string keyword = lineStr.Substring(startPos, length).ToUpperInvariant();
             string keyword_upcase = keyword;
-            string full_Descr = $"No match: keyword=\"{keyword}\" maxProblems={this.maxProblems}";
-            string performanceStr = "No performance info";
+            SumType<string, MarkedString>[] hoverContent = null;
 
-            //LogInfo($"OnHover: keyword={keyword}");
-
-            if (AsmTools.AsmSourceTools.IsMnemonic(keyword_upcase, true))
+            switch (GetAsmTokenType(keyword_upcase))
             {
-                Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword_upcase, true);
-                string mnemonicStr = mnemonic.ToString();
-                string archStr = ":" + ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
-                string descr = this.mnemonicStore.GetDescription(mnemonic);
-                full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonicStr} {archStr} {descr}", MaxNumberOfCharsInToolTips);
-
-                if (this.options.PerformanceInfo_On)
-                {
-                    bool first = true;
-                    string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
-
-                    MicroArch selectedMicroArchs = MicroArch.SkylakeX | MicroArch.Haswell;// AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-                    foreach (PerformanceItem item in this.performanceStore.GetPerformance(mnemonic, selectedMicroArchs))
+                case AsmTokenType.Mnemonic: // intentional fall through
+                case AsmTokenType.Jump:
                     {
-                        if (first)
+                        Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword_upcase, true);
+                        string mnemonicStr = mnemonic.ToString();
+                        string archStr = ":" + ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
+                        string descr = this.mnemonicStore.GetDescription(mnemonic);
+                        string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonicStr} {archStr} {descr}", MaxNumberOfCharsInToolTips);
+                        string performanceStr = "No performance info";
+
+                        if (this.options.PerformanceInfo_On)
                         {
-                            first = false;
+                            bool first = true;
+                            string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
 
-                            string msg1 = string.Format(
-                                CultureUI,
-                                format,
-                                string.Empty, string.Empty, "µOps", "µOps", "µOps", string.Empty, string.Empty, string.Empty);
+                            MicroArch selectedMicroArchs = MicroArch.SkylakeX | MicroArch.Haswell;// AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+                            foreach (PerformanceItem item in this.performanceStore.GetPerformance(mnemonic, selectedMicroArchs))
+                            {
+                                if (first)
+                                {
+                                    first = false;
 
-                            string msg2 = string.Format(
-                                CultureUI,
-                                "\n" + format,
-                                "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", string.Empty);
+                                    string msg1 = string.Format(
+                                        CultureUI,
+                                        format,
+                                        string.Empty, string.Empty, "µOps", "µOps", "µOps", string.Empty, string.Empty, string.Empty);
 
-                            performanceStr = msg1;
-                            performanceStr += msg2;
+                                    string msg2 = string.Format(
+                                        CultureUI,
+                                        "\n" + format,
+                                        "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", string.Empty);
+
+                                    performanceStr = msg1;
+                                    performanceStr += msg2;
+                                }
+
+                                string msg3 = string.Format(
+                                    CultureUI,
+                                    "\n" + format,
+                                    item.microArch_ + " ",
+                                    item.instr_ + " " + item.args_ + " ",
+                                    item.mu_Ops_Fused_ + " ",
+                                    item.mu_Ops_Merged_ + " ",
+                                    item.mu_Ops_Port_ + " ",
+                                    item.latency_ + " ",
+                                    item.throughput_ + " ",
+                                    item.remark_);
+
+                                performanceStr += msg3;
+                            }
                         }
 
-                        string msg3 = string.Format(
-                            CultureUI,
-                            "\n" + format,
-                            item.microArch_ + " ",
-                            item.instr_ + " " + item.args_ + " ",
-                            item.mu_Ops_Fused_ + " ",
-                            item.mu_Ops_Merged_ + " ",
-                            item.mu_Ops_Port_ + " ",
-                            item.latency_ + " ",
-                            item.throughput_ + " ",
-                            item.remark_);
-
-                        performanceStr += msg3;
+                        hoverContent = new SumType<string, MarkedString>[]{
+                            new SumType<string, MarkedString>(new MarkedString
+                            {
+                                Language = MarkupKind.PlainText.ToString(),
+                                Value = full_Descr + "\n",
+                            }),
+                            new SumType<string, MarkedString>(new MarkedString
+                            {
+                                Language = MarkupKind.Markdown.ToString(),
+                                Value = "**Performance:**\n",
+                            }),
+                            new SumType<string, MarkedString>(new MarkedString
+                            {
+                                Language = MarkupKind.Markdown.ToString(),
+                                Value = "```text\n" + performanceStr + "\n```",
+                            })
+                        };
+                        break;
                     }
-                }
+                case AsmTokenType.Register:
+                    {
+                       // int lineNumber = //AsmTools.AsmDudeToolsStatic.Get_LineNumber(tagSpan);
+                        if (keyword_upcase.StartsWith("%", StringComparison.Ordinal))
+                        {
+                            keyword_upcase = keyword_upcase.Substring(1); // remove the preceding % in AT&T syntax
+                        }
+
+                        Rn reg = RegisterTools.ParseRn(keyword_upcase, true);
+                        if (this.mnemonicStore.RegisterSwitchedOn(reg))
+                        {
+                            string regStr = reg.ToString();
+                            Arch arch = RegisterTools.GetArch(reg);
+
+                            string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "] ";
+                            string descr = this.asmDudeTools.Get_Description(regStr);
+                            if (regStr.Length > (MaxNumberOfCharsInToolTips / 2))
+                            {
+                                descr = "\n" + descr;
+                            }
+                            string full_Descr = AsmTools.AsmSourceTools.Linewrap(archStr + descr, MaxNumberOfCharsInToolTips);
+                            hoverContent = new SumType<string, MarkedString>[]{
+                                new SumType<string, MarkedString>(new MarkedString
+                                {
+                                    Language = MarkupKind.PlainText.ToString(),
+                                    Value = $"Register {regStr}: {full_Descr}",
+                                }),
+                            };
+                        }
+                        break;
+                    }
+                case AsmTokenType.Constant: //TODO
+                    break;
+                case AsmTokenType.LabelDef: //TODO
+                    break;
+                case AsmTokenType.Label: //TODO
+                    break;
+                case AsmTokenType.UNKNOWN:
+                    {
+                        string descr = this.asmDudeTools.Get_Description(keyword_upcase);
+                        if (descr.Length > 0)
+                        {
+                            if (keyword.Length > (MaxNumberOfCharsInToolTips / 2))
+                            {
+                                descr = "\n" + descr;
+                            }
+                            descr = AsmTools.AsmSourceTools.Linewrap(descr, MaxNumberOfCharsInToolTips);
+                            hoverContent = new SumType<string, MarkedString>[]{
+                                new SumType<string, MarkedString>(new MarkedString
+                                {
+                                    Language = MarkupKind.PlainText.ToString(),
+                                    Value = $"Keyword {keyword}: {descr}",
+                                }),
+                            };
+                        }
+                        break;
+                    }
             }
 
             /*
@@ -1337,67 +1447,13 @@ namespace LanguageServerLibrary
             {
                 case AsmTokenType.Misc: // intentional fall through
                 case AsmTokenType.Directive:
-                    {
-                        string descr = this.asmDudeTools_.Get_Description(keyword_upcase);
-                        if (descr.Length > 0)
-                        {
-                            if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
-                            {
-                                descr = "\n" + descr;
-                            }
-                            descr = AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.MaxNumberOfCharsInToolTips);
-
-                            var containerElement = new ContainerElement(
-                                 ContainerElementStyle.Wrapped,
-                                 new ImageElement(_icon),
-                                 new ClassifiedTextElement(
-                                     new ClassifiedTextRun(PredefinedClassificationTypeNames.NaturalLanguage, "Directive "),
-                                     new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, keyword),
-                                     new ClassifiedTextRun(PredefinedClassificationTypeNames.NaturalLanguage, descr)));
-
-                            return (new List<object> { containerElement }, keywordSpan.Value);
-                        }
-                        break;
-                    }
+                    // done...
                 case AsmTokenType.Register:
-                    {
-                        int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
-                        if (keyword_upcase.StartsWith("%", StringComparison.Ordinal))
-                        {
-                            keyword_upcase = keyword_upcase.Substring(1); // remove the preceding % in AT&T syntax
-                        }
-
-                        Rn reg = RegisterTools.ParseRn(keyword_upcase, true);
-                        if (this.asmDudeTools_.RegisterSwitchedOn(reg))
-                        {
-                            string regStr = reg.ToString();
-                            Arch arch = RegisterTools.GetArch(reg);
-
-                            string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "] ";
-                            string descr = this.asmDudeTools_.Get_Description(regStr);
-                            if (regStr.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
-                            {
-                                descr = "\n" + descr;
-                            }
-                            string full_Descr = AsmSourceTools.Linewrap(":" + archStr + descr, AsmDudePackage.MaxNumberOfCharsInToolTips);
-
-                            var containerElement = new ContainerElement(
-                                ContainerElementStyle.Wrapped,
-                                new ImageElement(_icon),
-                                new ClassifiedTextElement(
-                                    new ClassifiedTextRun(PredefinedClassificationTypeNames.NaturalLanguage, "Register "),
-                                    new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, regStr),
-                                    new ClassifiedTextRun(PredefinedClassificationTypeNames.NaturalLanguage, full_Descr)));
-
-                            return (new List<object> { containerElement }, keywordSpan.Value);
-                        }
-                        break;
-                    }
+                    // done...
                 case AsmTokenType.Mnemonic: // intentional fall through
                 case AsmTokenType.MnemonicOff: // intentional fall through
                 case AsmTokenType.Jump:
-                    { // done....
-                    }
+                    // done....
                 case AsmTokenType.Label:
                     {
                         string label = keyword;
@@ -1557,53 +1613,19 @@ namespace LanguageServerLibrary
             }
             */
 
-            //LogInfo($"OnHover: keyword = {keyword}; full_Descr={full_Descr}");
-
-            SumType<string, MarkedString>[] hoverContent = new SumType<string, MarkedString>[]{
-                new SumType<string, MarkedString>(new MarkedString
-                {
-                    Language = MarkupKind.PlainText.ToString(),
-                    Value = full_Descr + "\n",
-                }),
-                new SumType<string, MarkedString>(new MarkedString
-                {
-                    Language = MarkupKind.Markdown.ToString(),
-                    Value = "**Performance:**\n",
-                }),
-                new SumType<string, MarkedString>(new MarkedString
-                {
-                    Language = MarkupKind.Markdown.ToString(),
-                    Value = "```text\n" + performanceStr + "\n```",
-                })
-            };
-
-            return new Hover()
+            if (hoverContent != null)
             {
-                //     Gets or sets the content for the hover. Object can either be an array or a single
-                //     object. If the object is an array the array can contain objects of type Microsoft.VisualStudio.LanguageServer.Protocol.MarkedString
-                //     and System.String. If the object is not an array it can be of type Microsoft.VisualStudio.LanguageServer.Protocol.MarkedString,
-                //     System.String, or Microsoft.VisualStudio.LanguageServer.Protocol.MarkupContent.
-                // Contents = new SumType<string, MarkedString>(full_Descr + "\n" + performanceStr),
-
-                //Contents = new MarkupContent
-                //{
-                //    Kind = MarkupKind.Markdown,
-                //    Value = full_Descr + "\n*BOLD*\n```\n" + performanceStr + "\n```\n__Underscore__",
-                //},
-
-                //Contents = new SumType<string, MarkedString>(new MarkedString
-                //{
-                //    Language = MarkupKind.Markdown.ToString(),
-                //    Value = full_Descr + "\n```typescript\n" + performanceStr + "\n```",
-                //}),
-
-                Contents = hoverContent,
-                Range = new Range()
+                return new Hover()
                 {
-                    Start = new Position(parameter.Position.Line, startPos),
-                    End = new Position(parameter.Position.Line, endPos),
-                },
-            };
+                    Contents = hoverContent,
+                    Range = new Range()
+                    {
+                        Start = new Position(parameter.Position.Line, startPos),
+                        End = new Position(parameter.Position.Line, endPos),
+                    },
+                };
+            }
+            return null;
         }
 
         public void SetDocumentSymbols(IEnumerable<VSSymbolInformation> symbolsInfo)
@@ -1632,8 +1654,6 @@ namespace LanguageServerLibrary
                     {
                         Name = label,
                         Kind = SymbolKind.Key,
-                        HintText = "some hinttext here?",
-                        Description = "some description here?",
                         Location = new Location
                         {
                             Uri = uri,
@@ -1650,7 +1670,12 @@ namespace LanguageServerLibrary
                                     Character = pos+label.Length,
                                 }
                             }
-                        }
+                        },
+                        #region VS specific
+                        HintText = "some hinttext here?",
+                        Description = "some description here?",
+                        //Icon = // If specified, this icon is used instead of SymbolKind.
+                        #endregion
                     });
                 }
                 if (mnemonic != Mnemonic.NONE)
@@ -1719,9 +1744,12 @@ namespace LanguageServerLibrary
 
         #region Logging
 
-        private void LogInfo(string message)
+        public void LogInfo(string message)
         {
-            this.traceSource.TraceEvent(TraceEventType.Information, 0, message);
+            if (this.target.traceSetting == TraceSetting.Verbose)
+            {
+                this.traceSource.TraceEvent(TraceEventType.Information, 0, message);
+            }
         }
 
         private void LogWarning(string message)
@@ -1873,6 +1901,9 @@ namespace LanguageServerLibrary
             DiagnosticsInfo diagnosticInfo,
             TextDocumentIdentifier textDocumentIdentifier = null)
         {
+            //SEE https://github.com/microsoft/VSExtensibility/blob/main/docs/lsp/lsp-extensions-specifications.md
+
+
             string wordToMatch = diagnosticInfo.Text;
             VSProjectContext context = diagnosticInfo.Context;
             VSProjectContext requestedContext = null;
@@ -1950,19 +1981,12 @@ namespace LanguageServerLibrary
 
         private Range GetHighlightRange(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch)
         {
-            char getChar(string str, int offset)
-            {
-                return ((offset < 0) || (offset >= str.Length)) ? ' ' : str.ElementAt(offset);
-            }
             int wordLength = wordToMatch.Length;
 
             if ((characterOffset + wordLength) <= lineStr.Length)
             {
-                char before = getChar(lineStr, characterOffset - 1);
-                //char first = getChar(lineStr, characterOffset);
-                //char last = getChar(lineStr, characterOffset + wordLength - 1);
-                char after = getChar(lineStr, characterOffset +  wordLength);
-                //LogInfo($"GetHighlightRange: = before='{before}'; first='{first}'; last='{last}'; after='{after}'; substr=\"{subString}\"");
+                char before = GetChar(lineStr, characterOffset - 1);
+                char after = GetChar(lineStr, characterOffset +  wordLength);
 
                 if (!AsmTools.AsmSourceTools.IsSeparatorChar(before) || !AsmTools.AsmSourceTools.IsSeparatorChar(after))
                 {
@@ -1981,8 +2005,6 @@ namespace LanguageServerLibrary
             }
             return null;
         }
-
-
 
         private Range GetHighlightRangeMultiple(string line, int lineOffset, ref int characterOffset, IEnumerable<string> wordsToMatch)
         {

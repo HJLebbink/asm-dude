@@ -330,6 +330,7 @@ namespace AsmDude2
             this.CustomMessageRpc = rpc;
             await Task.Yield();
         }
+        
         public async Task SendServerCustomNotification(object arg)
         {
             AsmDudeToolsStatic.Output_INFO($"AsmLanguageClient: SendServerCustomNotificationAsync: {arg}");

@@ -19,7 +19,7 @@ namespace LanguageServerWithUI
         private ObservableCollection<DiagnosticItem> diagnosticItems = new ObservableCollection<DiagnosticItem>();
         private ObservableCollection<FoldingRangeItem> foldingRanges = new ObservableCollection<FoldingRangeItem>();
         private ObservableCollection<SymbolInformationItem> symbols = new ObservableCollection<SymbolInformationItem>();
-        private readonly LanguageServerLibrary.LanguageServer languageServer;
+        private readonly LanguageServer languageServer;
         private string initializedMessage;
         private string responseText;
         private string currentSettings;
@@ -46,7 +46,7 @@ namespace LanguageServerWithUI
             writerPipe.Connect();
 
             this.InitializedMessage = "The server has not yet been initialized.";
-            this.languageServer = new LanguageServerLibrary.LanguageServer(writerPipe, readerPipe);
+            this.languageServer = new LanguageServer(writerPipe, readerPipe);
 
             this.languageServer.OnInitialized += OnInitialized;
             this.languageServer.Disconnected += OnDisconnected;
@@ -371,7 +371,7 @@ namespace LanguageServerWithUI
         public void SetFoldingRanges()
         {
             var foldingRanges = this.FoldingRanges.Select(f => new AsmFoldingRange() { StartLine = f.StartLine, StartCharacter = f.StartCharacter, EndLine = f.EndLine, EndCharacter = f.EndCharacter, Kind = FoldingRangeKind.Comment });
-            this.languageServer.SetFoldingRanges(foldingRanges);
+            this.languageServer.SetFoldingRanges(foldingRanges, new Uri("TODO"));
         }
 
         public void SetSymbols()

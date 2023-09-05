@@ -9,7 +9,7 @@
         xmlns:protocol="clr-namespace:Microsoft.VisualStudio.LanguageServer.Protocol;assembly=Microsoft.VisualStudio.LanguageServer.Protocol"
         xmlns:protocolext="clr-namespace:Microsoft.VisualStudio.LanguageServer.Protocol;assembly=Microsoft.VisualStudio.LanguageServer.Protocol.Extensions"
         mc:Ignorable="d"
-        Title="MainWindow" SizeToContent="Width" Height="350">
+        Title="AsmDude2 Language Service" SizeToContent="Width" Height="350">
     <Window.Resources>
         <ObjectDataProvider x:Key="diagnosticSeverityEnums" MethodName="GetValues"
                         ObjectType="{x:Type sys:Enum}">

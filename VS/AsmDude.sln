@@ -49,6 +49,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests-ls-lib", "CSHARP\unit-tests-ls\unit-tests-ls-lib.csproj", "{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -185,6 +187,14 @@ Global
 		{E8E7EF28-598E-45FD-905E-EC76486EAB89}.Release|x64.ActiveCfg = Release|Any CPU
 		{E8E7EF28-598E-45FD-905E-EC76486EAB89}.Release|x64.Build.0 = Release|Any CPU
 		{E8E7EF28-598E-45FD-905E-EC76486EAB89}.Release|x64.Deploy.0 = Release|Any CPU
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}.Debug|x64.Build.0 = Debug|Any CPU
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}.Release|x64.ActiveCfg = Release|Any CPU
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -197,6 +207,7 @@ Global
 		{CDC97AE1-D866-44F3-A2F5-E1F0EA7BBD1D} = {7AA6F88A-1FD8-4913-8DB4-F15B79BB98FC}
 		{BF80AE23-E323-48FB-8B44-156B2524EFFF} = {8539E7E0-634A-459F-A5AF-25ECBD16DE13}
 		{16019732-E6FC-4299-B075-4B5537A7FDB5} = {8539E7E0-634A-459F-A5AF-25ECBD16DE13}
+		{F5A1BEC7-3338-4DEC-825A-E729927CDBF1} = {2E174C17-3344-49CE-A166-F18E0C5C65DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89D318BB-C529-4DDE-8EAF-DAEA3986256B}

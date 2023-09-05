@@ -54,7 +54,7 @@ namespace LanguageServerLibrary
     public class LanguageServerTarget
     {
         private int version = 1;
-        private TraceSetting traceSetting;
+        public TraceSetting traceSetting;
         private readonly LanguageServer server;
         private readonly TraceSource traceSource;
 
@@ -91,7 +91,9 @@ namespace LanguageServerLibrary
 
         private void LogInfo(string message)
         {
-            this.traceSource.TraceEvent(TraceEventType.Information, 0, message);
+            if (this.traceSetting == TraceSetting.Verbose) {
+                this.traceSource.TraceEvent(TraceEventType.Information, 0, message);
+            }
         }
 
         [JsonRpcMethod(Methods.InitializeName)]
@@ -99,8 +101,13 @@ namespace LanguageServerLibrary
         {
             LogInfo($"Initialize: Received: {arg}");
             var parameter = arg.ToObject<InitializeParams>();
+            
+            #if DEBUG
+                this.traceSetting = TraceSetting.Verbose;
+            #else
+                this.traceSetting = parameter.Trace;
+            #endif
 
-            this.traceSetting = parameter.Trace;
             LogInfo($"Initialize: traceSetting={this.traceSetting}");
 
             AsmLanguageServerOptions options = (parameter.InitializationOptions as JToken).ToObject<AsmLanguageServerOptions>();
