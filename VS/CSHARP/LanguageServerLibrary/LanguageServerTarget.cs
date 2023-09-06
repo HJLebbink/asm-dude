@@ -22,6 +22,7 @@
 
 using AsmTools;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using Newtonsoft.Json.Linq;
@@ -68,26 +69,26 @@ namespace LanguageServerLibrary
 
         public event EventHandler OnInitialized;
 
-        public bool SuggestionMode
-        {
-            get;
-            set;
-        } = false;
+        //public bool SuggestionMode
+        //{
+        //    get;
+        //    set;
+        //} = false;
 
-        public bool IsIncomplete
-        {
-            get;
-            set;
-        } = false;
+        //public bool IsIncomplete
+        //{
+        //    get;
+        //    set;
+        //} = false;
 
-        public bool CompletionServerError
-        {
-            get;
-            set;
-        } = false;
+        //public bool CompletionServerError
+        //{
+        //    get;
+        //    set;
+        //} = false;
 
-        public bool ServerCommitCharacters { get; internal set; } = true;
-        public bool ItemCommitCharacters { get; internal set; } = false;
+        //public bool ServerCommitCharacters { get; internal set; } = true;
+        //public bool ItemCommitCharacters { get; internal set; } = false;
 
         private void LogInfo(string message)
         {
@@ -224,8 +225,7 @@ namespace LanguageServerLibrary
         public object[] OnTextDocumentFindReferences(ReferenceParams parameter, CancellationToken token)
         {
             LogInfo($"OnTextDocumentFindReferences: Received: {JToken.FromObject(parameter)}");
-            var uri = new Uri("TODO"); //TODO
-            var result = server.SendReferences(parameter, returnLocationsOnly: true, token: token, uri: uri);
+            var result = server.SendReferences(args: parameter, returnLocationsOnly: true, token: token);
             LogInfo($"OnTextDocumentFindReferences: Sent: {JToken.FromObject(result)}");
             return result;
         }
@@ -278,6 +278,14 @@ namespace LanguageServerLibrary
             this.server.SendSettings(parameter);
         }
 
+        [JsonRpcMethod(Methods.TextDocumentImplementationName)]
+        public object OnDocumentImplementation(JToken arg)
+        {
+            LogInfo($"OnDocumentImplementation: Received: {arg}");
+            //var parameter = arg.ToObject<ImplementationParams>();
+            return null;
+        }
+
         [JsonRpcMethod(Methods.ShutdownName)]
         public object Shutdown()
         {
@@ -295,7 +303,7 @@ namespace LanguageServerLibrary
         [JsonRpcMethod(Methods.TextDocumentRenameName)]
         public WorkspaceEdit Rename(JToken arg)
         {
-            LogInfo($"Received: {arg}");
+            LogInfo($"Rename: Received: {arg}");
             var renameParams = arg.ToObject<RenameParams>();
             string fullText = File.ReadAllText(renameParams.TextDocument.Uri.LocalPath);
             string wordToReplace = GetWordAtPosition(fullText, renameParams.Position);
@@ -324,6 +332,14 @@ namespace LanguageServerLibrary
 
             LogInfo($"Sent: {JToken.FromObject(result)}");
             return result;
+        }
+
+        [JsonRpcMethod("textDocument/prepareRename")] // NOTE: not provided in Methods
+        public object PrepareRename(JToken arg)
+        {
+            LogInfo($"PrepareRename: Received: {arg}");
+            //var renameParams = arg.ToObject<PrepareRenameParams>();
+            return null; 
         }
 
         [JsonRpcMethod(Methods.TextDocumentFoldingRangeName)]

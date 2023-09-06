@@ -38,6 +38,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace LanguageServerLibrary
 {
@@ -58,9 +59,8 @@ namespace LanguageServerLibrary
         private readonly IDictionary<Uri, string[]> textDocumentLines;
         private readonly IDictionary<Uri, IEnumerable<AsmFoldingRange>> foldingRanges;
 
-        private string referenceToFind;
-        private int referencesChunkSize;
-        private int referencesDelay;
+        private int referencesChunkSize = 10;
+        private int referencesDelayMs = 10;
 
         private int highlightChunkSize; // number of highlights returned before going to sleep for some delay
         private int highlightsDelayMs; // delay between highlight results returned
@@ -103,14 +103,14 @@ namespace LanguageServerLibrary
             this.target.OnInitialized += OnTargetInitialized;
         }
 
-        private static string Truncate(string text)
-        {
-            if (text.Length < MAX_LENGTH_DESCR_TEXT)
-            {
-                return text;
-            }
-            return text.Substring(0, MAX_LENGTH_DESCR_TEXT) + "...";
-        }
+        //private static string Truncate(string text)
+        //{
+        //    if (text.Length < MAX_LENGTH_DESCR_TEXT)
+        //    {
+        //        return text;
+        //    }
+        //    return text.Substring(0, MAX_LENGTH_DESCR_TEXT) + "...";
+        //}
 
         private string[] GetLines(Uri uri)
         {
@@ -121,61 +121,61 @@ namespace LanguageServerLibrary
             return Array.Empty<string>();
         }
 
-        public string CustomText
-        {
-            get;
-            set;
-        }
+        //public string CustomText
+        //{
+        //    get;
+        //    set;
+        //}
 
-        public bool IsIncomplete
-        {
-            get
-            {
-                return this.target.IsIncomplete;
-            }
-            set
-            {
-                if (this.target.IsIncomplete != value)
-                {
-                    this.target.IsIncomplete = value;
-                    NotifyPropertyChanged(nameof(IsIncomplete));
-                }
-            }
-        }
+        //public bool IsIncomplete
+        //{
+        //    get
+        //    {
+        //        return this.target.IsIncomplete;
+        //    }
+        //    set
+        //    {
+        //        if (this.target.IsIncomplete != value)
+        //        {
+        //            this.target.IsIncomplete = value;
+        //            NotifyPropertyChanged(nameof(IsIncomplete));
+        //        }
+        //    }
+        //}
 
-        public bool CompletionServerError
-        {
-            get
-            {
-                return this.target.CompletionServerError;
-            }
-            set
-            {
-                this.target.CompletionServerError = value;
-            }
-        }
+        //public bool CompletionServerError
+        //{
+        //    get
+        //    {
+        //        return this.target.CompletionServerError;
+        //    }
+        //    set
+        //    {
+        //        this.target.CompletionServerError = value;
+        //    }
+        //}
 
-        public bool ItemCommitCharacters
-        {
-            get
-            {
-                return this.target.ItemCommitCharacters;
-            }
-            set
-            {
-                this.target.ItemCommitCharacters = value;
-            }
-        }
+        //public bool ItemCommitCharacters
+        //{
+        //    get
+        //    {
+        //        return this.target.ItemCommitCharacters;
+        //    }
+        //    set
+        //    {
+        //        this.target.ItemCommitCharacters = value;
+        //    }
+        //}
 
         public string CurrentSettings
         {
             get; private set;
         }
 
-        public JsonRpc Rpc
-        {
-            get => this.rpc;
-        }
+        //public JsonRpc Rpc
+        //{
+        //    get => this.rpc;
+        //}
 
         public IEnumerable<VSSymbolInformation> Symbols
         {
@@ -191,17 +191,17 @@ namespace LanguageServerLibrary
 
         public bool UsePublishModelDiagnostic { get; set; } = true;
 
-        private string lastCompletionRequest = string.Empty;
+        //private string lastCompletionRequest = string.Empty;
         
-        public string LastCompletionRequest
-        {
-            get => this.lastCompletionRequest;
-            set
-            {
-                this.lastCompletionRequest = value ?? string.Empty;
-                NotifyPropertyChanged(nameof(LastCompletionRequest));
-            }
-        }
+        //public string LastCompletionRequest
+        //{
+        //    get => this.lastCompletionRequest;
+        //    set
+        //    {
+        //        this.lastCompletionRequest = value ?? string.Empty;
+        //        NotifyPropertyChanged(nameof(LastCompletionRequest));
+        //    }
+        //}
 
         public event EventHandler OnInitialized;
         public event EventHandler Disconnected;
@@ -267,7 +267,6 @@ namespace LanguageServerLibrary
             }
         }
 
-
         private char GetChar(string str, int offset)
         {
             return ((offset < 0) || (offset >= str.Length)) ? ' ' : str.ElementAt(offset);
@@ -295,12 +294,12 @@ namespace LanguageServerLibrary
             this.textDocumentLines.Remove(uri);
         }
 
-        public void SetFindReferencesParams(string wordToFind, int chunkSize, int delay = 0)
-        {
-            this.referenceToFind = wordToFind;
-            this.referencesChunkSize = chunkSize;
-            this.referencesDelay = delay;
-        }
+        //public void SetFindReferencesParams(string wordToFind, int chunkSize, int delay = 0)
+        //{
+        //    this.referenceToFind = wordToFind;
+        //    this.referencesChunkSize = chunkSize;
+        //    this.referencesDelayMs = delay;
+        //}
 
         public void SetDocumentHighlightsParams(int chunkSize, int delayMs = 0)
         {
@@ -345,7 +344,10 @@ namespace LanguageServerLibrary
                 }
                 else
                 {
-                    if (startLineNumbers.Count() > 0) // TODO if startLineNumbers is empty we could give an error because of an closing region marker without an opening marker.
+                    if (startLineNumbers.Count() == 0)
+                    {
+                        // TODO if startLineNumbers is empty we could give an error because of an closing region marker without an opening marker.
+                    } else 
                     {
                         int offsetEndRegion = lineStr.IndexOf(EndKeyword);
                         if (offsetEndRegion != -1)
@@ -436,78 +438,78 @@ namespace LanguageServerLibrary
             _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnostics, parameter);
         }
 
-        public void SendDiagnostics2(Uri uri)
-        {
-            if (this.diagnostics == null || !this.UsePublishModelDiagnostic)
-            {
-                return;
-            }
-            var lines = this.GetLines(uri);
-            IReadOnlyList<Diagnostic> diagnostics = this.GetDocumentDiagnostics(lines, textDocumentIdentifier: null);
+        //public void SendDiagnostics2(Uri uri)
+        //{
+        //    if (this.diagnostics == null || !this.UsePublishModelDiagnostic)
+        //    {
+        //        return;
+        //    }
+        //    var lines = this.GetLines(uri);
+        //    IReadOnlyList<Diagnostic> diagnostics = this.GetDocumentDiagnostics(lines, textDocumentIdentifier: null);
 
-            PublishDiagnosticParams parameter = new PublishDiagnosticParams
-            {
-                Uri = uri,
-                Diagnostics = diagnostics.ToArray()
-            };
+        //    PublishDiagnosticParams parameter = new PublishDiagnosticParams
+        //    {
+        //        Uri = uri,
+        //        Diagnostics = diagnostics.ToArray()
+        //    };
 
-            if (this.maxProblems > -1)
-            {
-                parameter.Diagnostics = parameter.Diagnostics.Take(this.maxProblems).ToArray();
-            }
+        //    if (this.maxProblems > -1)
+        //    {
+        //        parameter.Diagnostics = parameter.Diagnostics.Take(this.maxProblems).ToArray();
+        //    }
 
-            _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnostics, parameter);
-        }
+        //    _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnostics, parameter);
+        //}
        
-        public void SendDiagnostics(List<DiagnosticsInfo> sentDiagnostics, bool pushDiagnostics, Uri uri)
-        {
-            if (this.diagnostics == null)
-            {
-                this.diagnostics = new List<DiagnosticsInfo>();
-            }
+        //public void SendDiagnostics(List<DiagnosticsInfo> sentDiagnostics, bool pushDiagnostics, Uri uri)
+        //{
+        //    if (this.diagnostics == null)
+        //    {
+        //        this.diagnostics = new List<DiagnosticsInfo>();
+        //    }
 
-            this.diagnostics = sentDiagnostics;
+        //    this.diagnostics = sentDiagnostics;
 
-            if (pushDiagnostics)
-            {
-                this.SendDiagnostics(sentDiagnostics, uri);
-            }
-        }
+        //    if (pushDiagnostics)
+        //    {
+        //        this.SendDiagnostics(sentDiagnostics, uri);
+        //    }
+        //}
 
-        private IReadOnlyList<VSDiagnostic> GetDocumentDiagnostics(string[] lines, TextDocumentIdentifier textDocumentIdentifier)
-        {
-            List<VSDiagnostic> diagnostics = new List<VSDiagnostic>();
-            for (int i = 0; i < lines.Length; i++)
-            {
-                string line = lines[i];
+        //private IReadOnlyList<VSDiagnostic> GetDocumentDiagnostics(string[] lines, TextDocumentIdentifier textDocumentIdentifier)
+        //{
+        //    List<VSDiagnostic> diagnostics = new List<VSDiagnostic>();
+        //    for (int i = 0; i < lines.Length; i++)
+        //    {
+        //        string line = lines[i];
 
-                int j = 0;
-                while (j < line.Length)
-                {
-                    VSDiagnostic diagnostic = null;
-                    foreach (DiagnosticsInfo tag in this.diagnostics)
-                    {
-                        diagnostic = GetDiagnostic(line, i, ref j, tag, textDocumentIdentifier);
+        //        int j = 0;
+        //        while (j < line.Length)
+        //        {
+        //            VSDiagnostic diagnostic = null;
+        //            foreach (DiagnosticsInfo tag in this.diagnostics)
+        //            {
+        //                diagnostic = GetDiagnostic(line, i, ref j, tag, textDocumentIdentifier);
 
-                        if (diagnostic != null)
-                        {
-                            break;
-                        }
-                    }
+        //                if (diagnostic != null)
+        //                {
+        //                    break;
+        //                }
+        //            }
 
-                    if (diagnostic == null)
-                    {
-                        ++j;
-                    }
-                    else
-                    {
-                        diagnostics.Add(diagnostic);
-                    }
-                }
-            }
+        //            if (diagnostic == null)
+        //            {
+        //                ++j;
+        //            }
+        //            else
+        //            {
+        //                diagnostics.Add(diagnostic);
+        //            }
+        //        }
+        //    }
 
-            return diagnostics;
-        }
+        //    return diagnostics;
+        //}
 
         public CodeAction GetResolvedCodeAction(CodeAction parameter)
         {
@@ -752,23 +754,22 @@ namespace LanguageServerLibrary
             };
         }
 
-        public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token, Uri uri)
+        public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token)
         {
-            this.rpc.TraceSource.TraceEvent(TraceEventType.Information, 0, $"Received: {JToken.FromObject(args)}");
+            LogInfo($"Received: {JToken.FromObject(args)}");
+            var uri = args.TextDocument.Uri;
 
-            IProgress<object[]> progress = args.PartialResultToken;
-            int delay = this.referencesDelay * 1000;
-
-            // Set default values if no custom values are set
-            if (referencesChunkSize <= 0 || string.IsNullOrEmpty(referenceToFind))
+            var lines = this.GetLines(uri);
+            var (referenceWord, _, _) = GetWord(args.Position.Character, lines[args.Position.Line]);
+            if (referenceWord.Length == 0)
             {
-                this.referenceToFind = "error";
-                this.referencesChunkSize = 1;
+                return Array.Empty<object>();
             }
 
-            string referenceWord = this.referenceToFind;
-            TextDocumentItem document = GetTextDocument(uri);
-            if (document == null || progress == null)
+            IProgress<object[]> progress = args.PartialResultToken;
+            int delay = this.referencesDelayMs;
+
+            if (progress == null)
             {
                 return Array.Empty<object>();
             }
@@ -777,7 +778,6 @@ namespace LanguageServerLibrary
             List<Location> locations = new List<Location>();
             List<Location> locationsChunk = new List<Location>();
 
-            var lines = this.GetLines(uri);
             for (int i = 0; i < lines.Length; i++)
             {
                 string lineStr = lines[i];
@@ -1110,7 +1110,7 @@ namespace LanguageServerLibrary
                 items.AddRange(Selected_Completions(useCapitals, selected1, true));
             }
 
-            this.IsIncomplete = false;
+            //this.IsIncomplete = false;
             return new CompletionList()
             {
                 //IsIncomplete = this.IsIncomplete || (parameter.Context.TriggerKind == CompletionTriggerKind.TriggerForIncompleteCompletions),
@@ -1241,32 +1241,6 @@ namespace LanguageServerLibrary
             return (startPos, endPos);
         }
 
-        //TODO use ElementAtOrDefault in FindWordBoundary
-        private string GetWordAtPositionOLD(Position position, string[] lines)
-        {
-            string lineStr = lines.ElementAtOrDefault(position.Line);
-
-            StringBuilder result = new StringBuilder();
-
-            int startIdx = position.Character;
-            int endIdx = startIdx + 1;
-
-
-            while (char.IsLetter(lineStr.ElementAtOrDefault(startIdx)))
-            {
-                result.Insert(0, lineStr[startIdx]);
-                startIdx--;
-            }
-
-            while (char.IsLetter(lineStr.ElementAtOrDefault(endIdx)))
-            {
-                result.Append(lineStr[endIdx]);
-                endIdx++;
-            }
-
-            return result.ToString();
-        }
-
         private AsmTokenType GetAsmTokenType(string keyword_upcase)
         {
             Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword_upcase, true);
@@ -1288,6 +1262,19 @@ namespace LanguageServerLibrary
             return AsmTokenType.UNKNOWN;
         }
 
+        private (string, int, int) GetWord(int pos, string lineStr)
+        {
+            (int startPos, int endPos) = FindWordBoundary(pos, lineStr);
+            int length = endPos - startPos;
+            //LogInfo($"OnHover: lineStr=\"{lineStr}\"; startPos={startPos}; endPos={endPos}");
+
+            if (length <= 0)
+            {
+                return (String.Empty, -1, -1);
+            }
+            return (lineStr.Substring(startPos, length), startPos, endPos);
+        }
+
         public Hover GetHover(TextDocumentPositionParams parameter)
         {
             if (!this.options.AsmDoc_On)
@@ -1296,18 +1283,13 @@ namespace LanguageServerLibrary
                 return null;
             }
             var lines = this.GetLines(parameter.TextDocument.Uri);
-            string lineStr = lines[parameter.Position.Line];
-            (int startPos, int endPos) = FindWordBoundary(parameter.Position.Character, lineStr);
-            int length = endPos - startPos;
-
-            //LogInfo($"OnHover: lineStr=\"{lineStr}\"; startPos={startPos}; endPos={endPos}");
-
-            if (length <= 0)
+            var (keyword, startPos, endPos) = GetWord(parameter.Position.Character, lines[parameter.Position.Line]);
+            if (keyword.Length == 0)
             {
                 return null;
             }
-            string keyword = lineStr.Substring(startPos, length).ToUpperInvariant();
-            string keyword_upcase = keyword;
+            string keyword_upcase = keyword.ToUpperInvariant();
+
             SumType<string, MarkedString>[] hoverContent = null;
 
             switch (GetAsmTokenType(keyword_upcase))
@@ -1425,7 +1407,7 @@ namespace LanguageServerLibrary
                         string descr = this.asmDudeTools.Get_Description(keyword_upcase);
                         if (descr.Length > 0)
                         {
-                            if (keyword.Length > (MaxNumberOfCharsInToolTips / 2))
+                            if (keyword_upcase.Length > (MaxNumberOfCharsInToolTips / 2))
                             {
                                 descr = "\n" + descr;
                             }
@@ -1726,10 +1708,10 @@ namespace LanguageServerLibrary
             this.SetDocumentSymbols(symbolInfo);
         }
 
-        public void SetProjectContexts(IEnumerable<VSProjectContext> contexts)
-        {
-            this.Contexts = contexts;
-        }
+        //public void SetProjectContexts(IEnumerable<VSProjectContext> contexts)
+        //{
+        //    this.Contexts = contexts;
+        //}
 
         public VSProjectContextList GetProjectContexts()
         {
@@ -1824,10 +1806,10 @@ namespace LanguageServerLibrary
             }
         }
 
-        public void WaitForExit()
-        {
-            this.disconnectEvent.WaitOne();
-        }
+        //public void WaitForExit()
+        //{
+        //    this.disconnectEvent.WaitOne();
+        //}
 
         public void Exit()
         {
@@ -1836,63 +1818,63 @@ namespace LanguageServerLibrary
             Disconnected?.Invoke(this, new EventArgs());
         }
 
-        public void ApplyTextEdit(string text, Uri uri)
-        {
-            TextDocumentItem document = GetTextDocument(uri);
-            if (document == null)
-            {
-                return;
-            }
-            TextEdit[] addTextEdit = new TextEdit[]
-            {
-                new TextEdit
-                {
-                    Range = new Range
-                    {
-                        Start = new Position
-                        {
-                            Line = 0,
-                            Character = 0
-                        },
-                        End = new Position
-                        {
-                            Line = 0,
-                            Character = 0
-                        }
-                    },
-                    NewText = text,
-                }
-            };
+        //public void ApplyTextEdit(string text, Uri uri)
+        //{
+        //    TextDocumentItem document = GetTextDocument(uri);
+        //    if (document == null)
+        //    {
+        //        return;
+        //    }
+        //    TextEdit[] addTextEdit = new TextEdit[]
+        //    {
+        //        new TextEdit
+        //        {
+        //            Range = new Range
+        //            {
+        //                Start = new Position
+        //                {
+        //                    Line = 0,
+        //                    Character = 0
+        //                },
+        //                End = new Position
+        //                {
+        //                    Line = 0,
+        //                    Character = 0
+        //                }
+        //            },
+        //            NewText = text,
+        //        }
+        //    };
 
-            ApplyWorkspaceEditParams parameter = new ApplyWorkspaceEditParams()
-            {
-                Label = "Test Edit",
-                Edit = new WorkspaceEdit()
-                {
-                    DocumentChanges = new TextDocumentEdit[]
-                        {
-                            new TextDocumentEdit()
-                            {
-                                TextDocument = new OptionalVersionedTextDocumentIdentifier()
-                                {
-                                    Uri = uri,
-                                },
-                                Edits = addTextEdit,
-                            },
-                        }
-                }
-            };
+        //    ApplyWorkspaceEditParams parameter = new ApplyWorkspaceEditParams()
+        //    {
+        //        Label = "Test Edit",
+        //        Edit = new WorkspaceEdit()
+        //        {
+        //            DocumentChanges = new TextDocumentEdit[]
+        //                {
+        //                    new TextDocumentEdit()
+        //                    {
+        //                        TextDocument = new OptionalVersionedTextDocumentIdentifier()
+        //                        {
+        //                            Uri = uri,
+        //                        },
+        //                        Edits = addTextEdit,
+        //                    },
+        //                }
+        //        }
+        //    };
 
-            _ = Task.Run(async () =>
-            {
-                ApplyWorkspaceEditResponse response = await this.SendMethodRequestAsync(Methods.WorkspaceApplyEdit, parameter);
+        //    _ = Task.Run(async () =>
+        //    {
+        //        ApplyWorkspaceEditResponse response = await this.SendMethodRequestAsync(Methods.WorkspaceApplyEdit, parameter);
 
-                if (!response.Applied)
-                {
-                    Console.WriteLine($"Failed to apply edit: {response.FailureReason}");
-                }
-            });
-        }
+        //        if (!response.Applied)
+        //        {
+        //            Console.WriteLine($"Failed to apply edit: {response.FailureReason}");
+        //        }
+        //    });
+        //}
 
         private VSDiagnostic GetDiagnostic(
             string line,

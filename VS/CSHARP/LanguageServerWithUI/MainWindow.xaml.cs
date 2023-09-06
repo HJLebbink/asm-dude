@@ -1,10 +1,5 @@
-﻿using Microsoft.VisualStudio.LanguageServer.Protocol;
-using System;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Interop;
 
 namespace LanguageServerWithUI
 {
@@ -39,7 +34,7 @@ namespace LanguageServerWithUI
         //    }
         //}
 
-        private MainWindowViewModel viewModel = new MainWindowViewModel();
+        private readonly MainWindowViewModel viewModel = new MainWindowViewModel();
         public MainWindow()
         {
             InitializeComponent();
