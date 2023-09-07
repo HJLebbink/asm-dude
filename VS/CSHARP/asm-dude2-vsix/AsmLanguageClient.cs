@@ -367,34 +367,18 @@ namespace AsmDude2
 
             public bool CanHandle(string methodName)
             {
-                if (methodName == Methods.InitializeName)
-                {
-                    AsmDudeToolsStatic.Output_INFO($"DiagnosticsFilterMiddleLayer: CanHandle: methodName={methodName} is supported");
-                    return true;
-                }
-                //AsmDudeToolsStatic.Output_INFO($"DiagnosticsFilterMiddleLayer: CanHandle: methodName={methodName} is not supported");
-                return false;
+                return true;
             }
 
             public async Task HandleNotificationAsync(string methodName, JToken methodParam, Func<JToken, Task> sendNotification)
             {
-                if (methodName == "textDocument/publishDiagnostics")
-                {
-                    var diagnosticsToFilter = (JArray)methodParam["diagnostics"];
-                    // ony show diagnostics of severity 1 (error)
-                    methodParam["diagnostics"] = new JArray(diagnosticsToFilter.Where(diagnostic => diagnostic.Value<int?>("severity") == 1));
-                }
-
-                if (methodName == Methods.InitializeName)
-                {
-                    AsmDudeToolsStatic.Output_INFO($"DiagnosticsFilterMiddleLayer: HandleNotificationAsync: methodName={methodName}; methodParam={methodParam}");
-                }
+                AsmDudeToolsStatic.Output_INFO($"Received a LSP notification: name={methodName}; param={methodParam}");
                 await sendNotification(methodParam);
             }
 
             public async Task<JToken> HandleRequestAsync(string methodName, JToken methodParam, Func<JToken, Task<JToken>> sendRequest)
             {
-                AsmDudeToolsStatic.Output_INFO($"DiagnosticsFilterMiddleLayer: HandleRequestAsync: methodName={methodName}; methodParam={methodParam}");
+                AsmDudeToolsStatic.Output_INFO($"Received a LSP request: name={methodName}; param={methodParam}");
                 return await sendRequest(methodParam);
             }
         }

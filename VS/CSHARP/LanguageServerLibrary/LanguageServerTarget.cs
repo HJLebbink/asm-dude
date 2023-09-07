@@ -114,7 +114,6 @@ namespace LanguageServerLibrary
             AsmLanguageServerOptions options = (parameter.InitializationOptions as JToken).ToObject<AsmLanguageServerOptions>();
 
             this.server.Initialize(options);
-            this.server.SetDocumentHighlightsParams(20, 10);
             var result = new InitializeResult
             {
                 Capabilities = new VSServerCapabilities
@@ -137,36 +136,103 @@ namespace LanguageServerLibrary
                         RetriggerCharacters = new string[] { "," },                       
                         WorkDoneProgress = false,
                     },
-                    RenameProvider = new RenameOptions
-                    {
-                        PrepareProvider = true,
-                        WorkDoneProgress = false,
-                    },
-                    FoldingRangeProvider = new FoldingRangeOptions
-                    {
-                        WorkDoneProgress = false,
-                    },
-                    ReferencesProvider = new ReferenceOptions
-                    {
-                        WorkDoneProgress = false,
-                    },
-                    DocumentHighlightProvider = new DocumentHighlightOptions
-                    {
-                        WorkDoneProgress = false,
-                    },
-                    DocumentSymbolProvider = true,
-                    CodeActionProvider = new CodeActionOptions()
-                    {
-                        ResolveProvider = true
-                    },
-                    ProjectContextProvider = true,
+
+                    // enable the popups with descriptions of keywords
                     HoverProvider = new HoverOptions
                     {
                         WorkDoneProgress = false,
                     },
-                    DefinitionProvider = false,
-                    TypeDefinitionProvider = false,
-                    ImplementationProvider = false,
+
+                    // enable the folding of line ranges
+                    FoldingRangeProvider = new FoldingRangeOptions
+                    {
+                        WorkDoneProgress = false,
+                    },
+
+                    // enable highlighting of selected words
+                    DocumentHighlightProvider = new DocumentHighlightOptions
+                    {
+                        WorkDoneProgress = false,
+                    },
+
+                    // enable the "Find All References (Shift+F12)" when right clicking on a keyword to find all references to this keyword
+                    ReferencesProvider = new ReferenceOptions
+                    {
+                        WorkDoneProgress = false,
+                    },
+
+                    // enable the "X' when right clicking on a keyword to rename this keyword
+                    //RenameProvider = new RenameOptions
+                    //{
+                    //    PrepareProvider = true,
+                    //    WorkDoneProgress = false,
+                    //},
+
+                    // "Peek Definition (Alt+F12)"
+
+                    // Unknown what this does
+                    //DocumentSymbolProvider = true,
+                    
+                    //CodeActionProvider = new CodeActionOptions()
+                    //{
+                    //    ResolveProvider = true
+                    //},
+                    
+                    //ProjectContextProvider = true,
+                    
+                    //DocumentColorProvider = new DocumentColorOptions
+                    //{
+                    //   WorkDoneProgress = false,
+                    //},
+
+                    DocumentFormattingProvider = new DocumentFormattingOptions
+                    {
+                        WorkDoneProgress = false,
+                    },
+                    //DocumentRangeFormattingProvider = true,
+
+
+                    //DefinitionProvider = true,
+
+                    //TypeDefinitionProvider = true,
+
+                    //ImplementationProvider = true,
+
+                    CodeLensProvider = new CodeLensOptions
+                    {
+                        ResolveProvider = true,
+                        WorkDoneProgress = false,
+                    },
+
+                    //DocumentLinkProvider = new DocumentLinkOptions
+                    //{
+                    //    ResolveProvider = false,
+                    //},
+
+                    // The document on type formatting request is sent from the client to the server to format parts of the document during typing.
+                    //DocumentOnTypeFormattingProvider = new DocumentOnTypeFormattingOptions
+                    //{
+                    //    FirstTriggerCharacter = ",",
+                    //    MoreTriggerCharacter = new string[] { "@" },
+                    //},
+
+                    //ExecuteCommandProvider = new ExecuteCommandOptions
+                    //{
+                    //    Commands = new string[] { "COMMAND_TODO" },
+                    //},
+
+                    //Experimental = true,
+
+                    //LinkedEditingRangeProvider = true,
+
+                    //SemanticTokensOptions = new SemanticTokensOptions
+                    //{
+                    //    Full = false,
+                    //    //Legend = SemanticTokensLegend.,
+                    //    Range = false
+                    //},
+
+                    //WorkspaceSymbolProvider = false
                 }
             };
 
@@ -188,7 +254,7 @@ namespace LanguageServerLibrary
         {
             LogInfo($"OnTextDocumentOpened: Received: {arg}");
             var parameter = arg.ToObject<DidOpenTextDocumentParams>();
-            System.Diagnostics.Debug.WriteLine($"Document Open: {parameter.TextDocument.Uri.AbsolutePath}");
+            Debug.WriteLine($"Document Open: {parameter.TextDocument.Uri.AbsolutePath}");
             server.OnTextDocumentOpened(parameter);
         }
 
@@ -207,7 +273,8 @@ namespace LanguageServerLibrary
         {
             LogInfo($"OnTextDocumentChanged: Received: {arg}");
             var parameter = arg.ToObject<DidChangeTextDocumentParams>();
-            System.Diagnostics.Debug.WriteLine($"Document Change: {parameter.TextDocument.Uri.AbsolutePath}");
+            Debug.WriteLine($"Document Change: {parameter.TextDocument.Uri.AbsolutePath}");
+            
             server.UpdateServerSideTextDocument(parameter.ContentChanges[0].Text, parameter.TextDocument.Version, parameter.TextDocument.Uri);
             server.SendDiagnostics(parameter.TextDocument.Uri);
         }
@@ -217,7 +284,7 @@ namespace LanguageServerLibrary
         {
             LogInfo($"OnTextDocumentClosed: Received: {arg}");
             var parameter = arg.ToObject<DidCloseTextDocumentParams>();
-            System.Diagnostics.Debug.WriteLine($"Document Close: {parameter.TextDocument.Uri.AbsolutePath}");
+            Debug.WriteLine($"Document Close: {parameter.TextDocument.Uri.AbsolutePath}");
             server.OnTextDocumentClosed(parameter);
         }
 

@@ -23,10 +23,11 @@
 using AsmTools;
 
 using Microsoft.VisualStudio.LanguageServer.Protocol;
-using Microsoft.Win32;
 
 using Newtonsoft.Json.Linq;
+
 using StreamJsonRpc;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,17 +36,19 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace LanguageServerLibrary
 {
     public class LanguageServer : INotifyPropertyChanged
     {
         private const int MAX_LENGTH_DESCR_TEXT = 120;
-        private const int MaxNumberOfCharsInToolTips = 150;
+        internal const double SlowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
+        internal const double SlowShutdownThresholdSec = 4.0; // threshold to switch off components
+        internal const int MaxNumberOfCharsInToolTips = 150;
+        internal const int MsSleepBeforeAsyncExecution = 1000;
+
         public static readonly CultureInfo CultureUI = CultureInfo.CurrentUICulture;
 
         public int maxProblems = 10;
@@ -54,18 +57,18 @@ namespace LanguageServerLibrary
         private readonly HeaderDelimitedMessageHandler messageHandler;
         private readonly LanguageServerTarget target;
         private readonly ManualResetEvent disconnectEvent = new ManualResetEvent(false);
-        private IList<DiagnosticsInfo> diagnostics;
+        private readonly IList<Diagnostic> diagnostics;
+ 
         private readonly IDictionary<Uri, TextDocumentItem> textDocuments;
         private readonly IDictionary<Uri, string[]> textDocumentLines;
         private readonly IDictionary<Uri, IEnumerable<AsmFoldingRange>> foldingRanges;
 
-        private int referencesChunkSize = 10;
-        private int referencesDelayMs = 10;
+        private readonly int referencesChunkSize = 10;
+        private readonly int referencesDelayMs = 10;
 
-        private int highlightChunkSize; // number of highlights returned before going to sleep for some delay
-        private int highlightsDelayMs; // delay between highlight results returned
+        private readonly int highlightChunkSize = 10; // number of highlights returned before going to sleep for some delay
+        private readonly int highlightsDelayMs = 10; // delay between highlight results returned
 
-        private readonly Dictionary<VSTextDocumentIdentifier, int> diagnosticsResults;
         private readonly TraceSource traceSource;
 
         private AsmDude2Tools asmDudeTools;
@@ -73,7 +76,7 @@ namespace LanguageServerLibrary
         public PerformanceStore performanceStore;
         public AsmLanguageServerOptions options;
 
-        public LanguageServer(Stream sender, Stream reader, List<DiagnosticsInfo> initialDiagnostics = null)
+        public LanguageServer(Stream sender, Stream reader)
         {
             this.traceSource = LogUtils.CreateTraceSource();
             //LogInfo("LanguageServer: constructor"); // This line produces a crash
@@ -81,6 +84,11 @@ namespace LanguageServerLibrary
             this.textDocuments = new Dictionary<Uri, TextDocumentItem>();
             this.textDocumentLines = new Dictionary<Uri, string[]>();
             this.foldingRanges = new Dictionary<Uri, IEnumerable<AsmFoldingRange>>();
+
+            this.diagnostics = new List<Diagnostic>();
+            this.Symbols = Array.Empty<VSSymbolInformation>();
+
+
             this.messageHandler = new HeaderDelimitedMessageHandler(sender, reader);
             this.rpc = new JsonRpc(this.messageHandler, this.target);
             this.rpc.Disconnected += OnRpcDisconnected;
@@ -94,10 +102,6 @@ namespace LanguageServerLibrary
             ((JsonMessageFormatter)this.messageHandler.Formatter).JsonSerializer.Converters.Add(new VSExtensionConverter<TextDocumentIdentifier, VSTextDocumentIdentifier>());
 
             this.rpc.StartListening();
-
-            this.diagnostics = initialDiagnostics;
-            this.diagnosticsResults = new Dictionary<VSTextDocumentIdentifier, int>();
-            this.Symbols = Array.Empty<VSSymbolInformation>();
 
             this.target.OnInitializeCompletion += OnTargetInitializeCompletion;
             this.target.OnInitialized += OnTargetInitialized;
@@ -256,6 +260,7 @@ namespace LanguageServerLibrary
                     this.textDocumentLines.Remove(uri);
                 }
                 this.textDocumentLines.Add(uri, document.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
+                this.diagnostics.Clear();
                 this.UpdateFoldingRanges(uri);
                 if (false)
                 {
@@ -294,17 +299,50 @@ namespace LanguageServerLibrary
             this.textDocumentLines.Remove(uri);
         }
 
-        //public void SetFindReferencesParams(string wordToFind, int chunkSize, int delay = 0)
-        //{
-        //    this.referenceToFind = wordToFind;
-        //    this.referencesChunkSize = chunkSize;
-        //    this.referencesDelayMs = delay;
-        //}
-
-        public void SetDocumentHighlightsParams(int chunkSize, int delayMs = 0)
+        private void AddMessage(
+            string message, 
+            Microsoft.VisualStudio.LanguageServer.Protocol.DiagnosticSeverity severity, 
+            Range range,
+            TextDocumentIdentifier textDocumentIdentifier)
         {
-            this.highlightChunkSize = chunkSize;
-            this.highlightsDelayMs = delayMs;
+            VSDiagnosticProjectInformation projectAndContext = null;
+            if (textDocumentIdentifier != null
+                && textDocumentIdentifier is VSTextDocumentIdentifier vsTextDocumentIdentifier
+                && vsTextDocumentIdentifier.ProjectContext != null)
+            {
+                projectAndContext = new VSDiagnosticProjectInformation
+                {
+                    ProjectName = vsTextDocumentIdentifier.ProjectContext.Label,
+                    ProjectIdentifier = vsTextDocumentIdentifier.ProjectContext.Id,
+                    Context = "Win32"
+                };
+            }
+
+            VSDiagnosticProjectInformation[] projects = null;
+
+
+            if (projectAndContext != null)
+            {
+                projects = new VSDiagnosticProjectInformation[] { projectAndContext };
+            }
+
+            VSDiagnostic d = new VSDiagnostic
+            {
+                Message = message,
+                Severity = severity,
+                Range = range,
+                //Code = "Error Code Here",
+                //CodeDescription = new CodeDescription
+                //{
+                //    Href = new Uri("https://www.microsoft.com")
+                //},
+
+                Projects = projects,
+                //Identifier = $"{lineNumber},{offsetStart} {lineNumber},{offsetEnd}",
+                Tags = new DiagnosticTag[1] { (DiagnosticTag)AsmDiagnosticTag.IntellisenseError }
+            };
+
+            this.diagnostics.Add(d);
         }
 
         private void UpdateFoldingRanges(Uri uri)
@@ -315,7 +353,7 @@ namespace LanguageServerLibrary
                 if (length <= 0)
                 {
                     return "...";
-                }                
+                }
                 return line.Substring(startPos, length).Trim();
             }
 
@@ -337,20 +375,29 @@ namespace LanguageServerLibrary
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string lineStr = lines[lineNumber].ToUpper();
-                int offsetRegion = lineStr.IndexOf(StartKeyword); 
+                int offsetRegion = lineStr.IndexOf(StartKeyword);
                 if (offsetRegion != -1) {
                     startLineNumbers.Push(lineNumber);
                     startCharacters.Push(offsetRegion);
                 }
                 else
                 {
-                    if (startLineNumbers.Count() == 0)
+                    int offsetEndRegion = lineStr.IndexOf(EndKeyword);
+                    if (offsetEndRegion != -1)
                     {
-                        // TODO if startLineNumbers is empty we could give an error because of an closing region marker without an opening marker.
-                    } else 
-                    {
-                        int offsetEndRegion = lineStr.IndexOf(EndKeyword);
-                        if (offsetEndRegion != -1)
+                        if (startLineNumbers.Count() == 0)
+                        {
+                            var severity = Microsoft.VisualStudio.LanguageServer.Protocol.DiagnosticSeverity.Warning;
+                            TextDocumentIdentifier textDocumentIdentifier = null;//TODO
+
+                            string message = $"keyword {EndKeyword} has no matching {StartKeyword} keyword";
+                            Range range = new Range()
+                            {
+                                Start = new Position(lineNumber, offsetEndRegion),
+                                End = new Position(lineNumber, offsetEndRegion + endKeywordLength),
+                            };
+                            this.AddMessage(message, severity, range, textDocumentIdentifier);
+                        } else 
                         {
                             int startLine = startLineNumbers.Pop();
                             int startCharacter = startCharacters.Pop();
@@ -362,7 +409,7 @@ namespace LanguageServerLibrary
                                 EndCharacter = offsetEndRegion + endKeywordLength,
                                 Kind = FoldingRangeKind.Region,
                                 CollapsedText = NextWord(startCharacter + startKeywordLength + 1, lines[startLine]),
-                            }); ;
+                            });
                         }
                     }
                 }
@@ -384,132 +431,13 @@ namespace LanguageServerLibrary
 
         public void SendDiagnostics(Uri uri)
         {
-            this.SendDiagnostics(this.diagnostics, uri);
-        }
-
-        public void SendDiagnostics(IList<DiagnosticsInfo> sentDiagnostics, Uri uri)
-        {
-            TextDocumentItem document = GetTextDocument(uri);
-            if (document == null || sentDiagnostics == null || !this.UsePublishModelDiagnostic)
+            PublishDiagnosticParams parameter = new PublishDiagnosticParams
             {
-                return;
-            }
-
-            List<Diagnostic> diagnostics = new List<Diagnostic>();
-            var lines = this.GetLines(uri);
-            for (int i = 0; i < lines.Length; i++)
-            {
-                string lineStr = lines[i];
-
-                int j = 0;
-                while (j < lineStr.Length)
-                {
-                    Diagnostic diagnostic = null;
-                    foreach (DiagnosticsInfo tag in sentDiagnostics)
-                    {
-                        diagnostic = this.GetDiagnostic(lineStr, i, ref j, tag, textDocumentIdentifier: null);
-
-                        if (diagnostic != null)
-                        {
-                            break;
-                        }
-                    }
-
-                    if (diagnostic == null)
-                    {
-                        ++j;
-                    }
-                    else
-                    {
-                        diagnostics.Add(diagnostic);
-                    }
-                }
-            }
-
-            PublishDiagnosticParams parameter = new PublishDiagnosticParams();
-            parameter.Uri = uri;
-            parameter.Diagnostics = diagnostics.ToArray();
-
-            if (this.maxProblems > -1)
-            {
-                parameter.Diagnostics = parameter.Diagnostics.Take(this.maxProblems).ToArray();
-            }
-
+                Uri = uri,
+                Diagnostics = this.diagnostics.ToArray(),
+            };
             _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnostics, parameter);
         }
-
-        //public void SendDiagnostics2(Uri uri)
-        //{
-        //    if (this.diagnostics == null || !this.UsePublishModelDiagnostic)
-        //    {
-        //        return;
-        //    }
-        //    var lines = this.GetLines(uri);
-        //    IReadOnlyList<Diagnostic> diagnostics = this.GetDocumentDiagnostics(lines, textDocumentIdentifier: null);
-
-        //    PublishDiagnosticParams parameter = new PublishDiagnosticParams
-        //    {
-        //        Uri = uri,
-        //        Diagnostics = diagnostics.ToArray()
-        //    };
-
-        //    if (this.maxProblems > -1)
-        //    {
-        //        parameter.Diagnostics = parameter.Diagnostics.Take(this.maxProblems).ToArray();
-        //    }
-
-        //    _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnostics, parameter);
-        //}
-       
-        //public void SendDiagnostics(List<DiagnosticsInfo> sentDiagnostics, bool pushDiagnostics, Uri uri)
-        //{
-        //    if (this.diagnostics == null)
-        //    {
-        //        this.diagnostics = new List<DiagnosticsInfo>();
-        //    }
-
-        //    this.diagnostics = sentDiagnostics;
-
-        //    if (pushDiagnostics)
-        //    {
-        //        this.SendDiagnostics(sentDiagnostics, uri);
-        //    }
-        //}
-
-        //private IReadOnlyList<VSDiagnostic> GetDocumentDiagnostics(string[] lines, TextDocumentIdentifier textDocumentIdentifier)
-        //{
-        //    List<VSDiagnostic> diagnostics = new List<VSDiagnostic>();
-        //    for (int i = 0; i < lines.Length; i++)
-        //    {
-        //        string line = lines[i];
-
-        //        int j = 0;
-        //        while (j < line.Length)
-        //        {
-        //            VSDiagnostic diagnostic = null;
-        //            foreach (DiagnosticsInfo tag in this.diagnostics)
-        //            {
-        //                diagnostic = GetDiagnostic(line, i, ref j, tag, textDocumentIdentifier);
-
-        //                if (diagnostic != null)
-        //                {
-        //                    break;
-        //                }
-        //            }
-
-        //            if (diagnostic == null)
-        //            {
-        //                ++j;
-        //            }
-        //            else
-        //            {
-        //                diagnostics.Add(diagnostic);
-        //            }
-        //        }
-        //    }
-
-        //    return diagnostics;
-        //}
 
         public CodeAction GetResolvedCodeAction(CodeAction parameter)
         {
@@ -1354,8 +1282,13 @@ namespace LanguageServerLibrary
                             }),
                             new SumType<string, MarkedString>(new MarkedString
                             {
+                                Language = MarkupKind.PlainText.ToString(),
+                                Value = "https://github.com/HJLebbink/asm-dude/wiki/ADDPD",
+                            }),
+                            new SumType<string, MarkedString>(new MarkedString
+                            {
                                 Language = MarkupKind.Markdown.ToString(),
-                                Value = "**Performance:**\n",
+                                Value = "**Performance:**",
                             }),
                             new SumType<string, MarkedString>(new MarkedString
                             {
@@ -1756,17 +1689,16 @@ namespace LanguageServerLibrary
 
         public void LogMessage(object arg, string message, MessageType messageType)
         {
-            LogMessageParams parameter = new LogMessageParams
+            _ = this.SendMethodNotificationAsync(Methods.WindowLogMessage, new LogMessageParams
             {
                 Message = message,
                 MessageType = messageType
-            };
-            _ = this.SendMethodNotificationAsync(Methods.WindowLogMessage, parameter);
+            });
         }
 
         public void ShowMessage(string message, MessageType messageType)
         {
-            //LogInfo($"LanguageServer: ShowMessage: message={message}; messageType={messageType.ToString()}");
+            LogInfo($"LanguageServer: ShowMessage: message={message}; messageType={messageType.ToString()}");
             ShowMessageParams parameter = new ShowMessageParams
             {
                 Message = message,
@@ -1802,7 +1734,6 @@ namespace LanguageServerLibrary
             if (this.maxProblems != newMaxProblems)
             {
                 this.maxProblems = newMaxProblems;
-                //this.SendDiagnostics();
             }
         }
 
@@ -1875,70 +1806,6 @@ namespace LanguageServerLibrary
         //        }
         //    });
         //}
-
-        private VSDiagnostic GetDiagnostic(
-            string line,
-            int lineOffset,
-            ref int characterOffset,
-            DiagnosticsInfo diagnosticInfo,
-            TextDocumentIdentifier textDocumentIdentifier = null)
-        {
-            //SEE https://github.com/microsoft/VSExtensibility/blob/main/docs/lsp/lsp-extensions-specifications.md
-
-
-            string wordToMatch = diagnosticInfo.Text;
-            VSProjectContext context = diagnosticInfo.Context;
-            VSProjectContext requestedContext = null;
-
-            VSDiagnosticProjectInformation projectAndContext = null;
-            if (textDocumentIdentifier != null
-                && textDocumentIdentifier is VSTextDocumentIdentifier vsTextDocumentIdentifier
-                && vsTextDocumentIdentifier.ProjectContext != null)
-            {
-                requestedContext = vsTextDocumentIdentifier.ProjectContext;
-                projectAndContext = new VSDiagnosticProjectInformation
-                {
-                    ProjectName = vsTextDocumentIdentifier.ProjectContext.Label,
-                    ProjectIdentifier = vsTextDocumentIdentifier.ProjectContext.Id,
-                    Context = "Win32"
-                };
-            }
-
-            if ((characterOffset + wordToMatch?.Length) <= line.Length)
-            {
-                string subString = line.Substring(characterOffset, wordToMatch.Length);
-                if (subString.Equals(wordToMatch, StringComparison.OrdinalIgnoreCase) && context == requestedContext)
-                {
-                    VSDiagnostic diagnostic = new VSDiagnostic();
-                    diagnostic.Message = "This is an " + Enum.GetName(typeof(DiagnosticSeverity), diagnosticInfo.Severity);
-                    diagnostic.Severity = diagnosticInfo.Severity;
-                    diagnostic.Range = new Range();
-                    diagnostic.Range.Start = new Position(lineOffset, characterOffset);
-                    diagnostic.Range.End = new Position(lineOffset, characterOffset + wordToMatch.Length);
-                    diagnostic.Code = "Test" + Enum.GetName(typeof(DiagnosticSeverity), diagnosticInfo.Severity);
-                    diagnostic.CodeDescription = new CodeDescription
-                    {
-                        Href = new Uri("https://www.microsoft.com")
-                    };
-
-                    if (projectAndContext != null)
-                    {
-                        diagnostic.Projects = new VSDiagnosticProjectInformation[] { projectAndContext };
-                    }
-
-                    diagnostic.Identifier = lineOffset + "," + characterOffset + " " + lineOffset + "," + diagnostic.Range.End.Character;
-                    characterOffset = characterOffset + wordToMatch.Length;
-
-                    // Our Mock UI only allows setting one tag at a time
-                    diagnostic.Tags = new DiagnosticTag[1];
-                    diagnostic.Tags[0] = diagnosticInfo.Tag;
-
-                    return diagnostic;
-                }
-            }
-
-            return null;
-        }
 
         private Location GetLocation(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch, Uri uri)
         {

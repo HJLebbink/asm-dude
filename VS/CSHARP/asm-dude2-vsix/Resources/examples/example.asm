@@ -6,6 +6,10 @@ include "bla"
 	jmp			FOO		# FOO is defined in an included file
 	call procedure3
 
+; give warning for an endregion that does not have an accompanying begin region
+#endregion
+
+
 	V4FMADDPS
 	rep movs #rep movs
 	repe cmps
