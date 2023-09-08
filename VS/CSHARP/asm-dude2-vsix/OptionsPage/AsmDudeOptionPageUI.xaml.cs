@@ -456,44 +456,6 @@ namespace AsmDude2
         }
         #endregion Syntax Highlighting
 
-        #region Keyword Highlighting
-        public bool KeywordHighlighting_BackgroundColor_On
-        {
-            get { return this.KeywordHighlighting_BackgroundColor_On_UI.IsChecked ?? false; }
-            set { this.KeywordHighlighting_BackgroundColor_On_UI.IsChecked = value; }
-        }
-
-        public System.Drawing.Color KeywordHighlighting_BackgroundColor
-        {
-            get
-            {
-                return this.KeywordHighling_BackgroundColor_UI.SelectedColor.HasValue
-                    ? AsmDudeToolsStatic.ConvertColor(this.KeywordHighling_BackgroundColor_UI.SelectedColor.Value)
-                    : System.Drawing.Color.Cyan;
-            }
-
-            set { this.KeywordHighling_BackgroundColor_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
-        }
-
-        public bool KeywordHighlighting_BorderColor_On
-        {
-            get { return this.KeywordHighlighting_BorderColor_On_UI.IsChecked ?? false; }
-            set { this.KeywordHighlighting_BorderColor_On_UI.IsChecked = value; }
-        }
-
-        public System.Drawing.Color KeywordHighlighting_BorderColor
-        {
-            get
-            {
-                return this.KeywordHighling_BorderColor_UI.SelectedColor.HasValue
-                    ? AsmDudeToolsStatic.ConvertColor(this.KeywordHighling_BorderColor_UI.SelectedColor.Value)
-                    : System.Drawing.Color.Cyan;
-            }
-
-            set { this.KeywordHighling_BorderColor_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
-        }
-        #endregion
-
         #region Latency and Throughput Information (Performance Info)
 
         public bool PerformanceInfo_On

@@ -15,12 +15,18 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+  </PropertyGroup>
+	
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.2.8" />
     <PackageReference Include="StreamJsonRpc" Version="2.16.36" />

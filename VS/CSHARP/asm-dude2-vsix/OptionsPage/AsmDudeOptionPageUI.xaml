@@ -160,24 +160,6 @@
                     <TextBlock TextWrapping="WrapWithOverflow" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Text="Note: place folding tags in a remark in order not to offend your assembler. For example, use: ;#region" VerticalAlignment="Center" />
                 </Grid>
             </GroupBox>
-            <GroupBox Header="Keyword Highlighting" >
-                <Grid Margin="0,2,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="180"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="26" />
-                        <RowDefinition Height="26" />
-                    </Grid.RowDefinitions>
-
-                    <CheckBox x:Name="KeywordHighlighting_BackgroundColor_On_UI" Grid.Column="0" Grid.Row="0" ToolTipService.ShowOnDisabled="True" ToolTip="Background color for highlighting enabled" Content="Use background color" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                    <xctk:ColorPicker x:Name="KeywordHighling_BackgroundColor_UI" Grid.Column="1" Grid.Row="0" IsEnabled="True" DisplayColorAndName="True" ToolTipService.ShowOnDisabled="True" ToolTip="The background color for keyword highlighting" />
-
-                    <CheckBox x:Name="KeywordHighlighting_BorderColor_On_UI" Grid.Column="0" Grid.Row="1" ToolTipService.ShowOnDisabled="True" ToolTip="Border color for highlighting enabled" Content="Use border color" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                    <xctk:ColorPicker x:Name="KeywordHighling_BorderColor_UI" Grid.Column="1" Grid.Row="1" IsEnabled="True" DisplayColorAndName="True" ToolTipService.ShowOnDisabled="True" ToolTip="The font color for keyword highlighting"  />
-                </Grid>
-            </GroupBox>
             <GroupBox Header="Latency and Throughput Information" >
                 <Grid Margin="0,2,0,0">
                     <Grid.ColumnDefinitions>

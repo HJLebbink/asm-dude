@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LanguageServerLibrary\LanguageServerLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <!-- Entry point -->
     <ApplicationDefinition Include="App.xaml">
       <SubType>Designer</SubType>
@@ -35,6 +31,10 @@
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\asm-dude2-ls-lib\asm-dude2-ls-lib.csproj" />
   </ItemGroup>
 
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

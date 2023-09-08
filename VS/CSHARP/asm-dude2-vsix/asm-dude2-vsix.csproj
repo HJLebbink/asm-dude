@@ -27,6 +27,10 @@
 		<VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug'">
 		<DeployExtension>True</DeployExtension>
 	</PropertyGroup>
@@ -100,7 +104,9 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<IncludeInVSIX>true</IncludeInVSIX>
 		</Content>
-		<None Include="source.extension.vsixmanifest" />
+		<None Include="source.extension.vsixmanifest">
+		  <Generator>VsixManifestGenerator</Generator>
+		</None>
 	</ItemGroup>
 	
 	<ItemGroup>

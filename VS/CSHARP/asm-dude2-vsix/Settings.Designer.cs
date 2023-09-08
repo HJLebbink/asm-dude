@@ -25,7 +25,7 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Blue")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Lavender")]
         public global::System.Drawing.Color SyntaxHighlighting_Opcode {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Opcode"]));
@@ -37,7 +37,7 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("DarkRed")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MistyRose")]
         public global::System.Drawing.Color SyntaxHighlighting_Register {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Register"]));
@@ -49,7 +49,7 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Green")]
+        [global::System.Configuration.DefaultSettingValueAttribute("PaleGreen")]
         public global::System.Drawing.Color SyntaxHighlighting_Remark {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Remark"]));
@@ -61,7 +61,7 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Magenta")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Thistle")]
         public global::System.Drawing.Color SyntaxHighlighting_Directive {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Directive"]));
@@ -73,7 +73,7 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Blue")]
+        [global::System.Configuration.DefaultSettingValueAttribute("LightSteelBlue")]
         public global::System.Drawing.Color SyntaxHighlighting_Jump {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Jump"]));
@@ -85,7 +85,7 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("OrangeRed")]
+        [global::System.Configuration.DefaultSettingValueAttribute("OldLace")]
         public global::System.Drawing.Color SyntaxHighlighting_Label {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Label"]));
@@ -97,7 +97,7 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Chocolate")]
+        [global::System.Configuration.DefaultSettingValueAttribute("LemonChiffon")]
         public global::System.Drawing.Color SyntaxHighlighting_Constant {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Constant"]));
@@ -109,7 +109,7 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("DarkOrange")]
+        [global::System.Configuration.DefaultSettingValueAttribute("PeachPuff")]
         public global::System.Drawing.Color SyntaxHighlighting_Misc {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Misc"]));
@@ -200,30 +200,6 @@ namespace AsmDude2 {
             }
             set {
                 this["AsmDoc_On"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool KeywordHighlighting_BackgroundColor_On {
-            get {
-                return ((bool)(this["KeywordHighlighting_BackgroundColor_On"]));
-            }
-            set {
-                this["KeywordHighlighting_BackgroundColor_On"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Yellow")]
-        public global::System.Drawing.Color KeywordHighlighting_BackgroundColor {
-            get {
-                return ((global::System.Drawing.Color)(this["KeywordHighlighting_BackgroundColor"]));
-            }
-            set {
-                this["KeywordHighlighting_BackgroundColor"] = value;
             }
         }
         
@@ -985,18 +961,6 @@ namespace AsmDude2 {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
-        public global::System.Drawing.Color KeywordHighlighting_BorderColor {
-            get {
-                return ((global::System.Drawing.Color)(this["KeywordHighlighting_BorderColor"]));
-            }
-            set {
-                this["KeywordHighlighting_BorderColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool PerformanceInfo_SandyBridge_On {
             get {
@@ -1064,18 +1028,6 @@ namespace AsmDude2 {
             }
             set {
                 this["PerformanceInfo_KnightsLanding_On"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool KeywordHighlighting_BorderColor_On {
-            get {
-                return ((bool)(this["KeywordHighlighting_BorderColor_On"]));
-            }
-            set {
-                this["KeywordHighlighting_BorderColor_On"] = value;
             }
         }
         

@@ -1,30 +1,30 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AsmDude" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AsmDude2" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="SyntaxHighlighting_Opcode" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Blue</Value>
+      <Value Profile="(Default)">Lavender</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Register" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">DarkRed</Value>
+      <Value Profile="(Default)">MistyRose</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Remark" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Green</Value>
+      <Value Profile="(Default)">PaleGreen</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Directive" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Magenta</Value>
+      <Value Profile="(Default)">Thistle</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Jump" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Blue</Value>
+      <Value Profile="(Default)">LightSteelBlue</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Label" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">OrangeRed</Value>
+      <Value Profile="(Default)">OldLace</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Constant" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Chocolate</Value>
+      <Value Profile="(Default)">LemonChiffon</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Misc" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">DarkOrange</Value>
+      <Value Profile="(Default)">PeachPuff</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -46,12 +46,6 @@
     </Setting>
     <Setting Name="AsmDoc_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="KeywordHighlighting_BackgroundColor_On" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="KeywordHighlighting_BackgroundColor" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Yellow</Value>
     </Setting>
     <Setting Name="CodeFolding_IsDefaultCollapsed" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -242,9 +236,6 @@
     <Setting Name="IntelliSense_Show_Undefined_Includes" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="KeywordHighlighting_BorderColor" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Red</Value>
-    </Setting>
     <Setting Name="PerformanceInfo_SandyBridge_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
@@ -262,9 +253,6 @@
     </Setting>
     <Setting Name="PerformanceInfo_KnightsLanding_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="KeywordHighlighting_BorderColor_On" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AsmSim_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

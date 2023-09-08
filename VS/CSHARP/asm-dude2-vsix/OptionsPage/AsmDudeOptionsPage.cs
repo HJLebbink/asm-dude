@@ -76,11 +76,6 @@ namespace AsmDude2
         SyntaxHighlighting_Userdefined3,
         SyntaxHighlighting_Userdefined3_Italic,
 
-        KeywordHighlighting_BackgroundColor_On,
-        KeywordHighlighting_BackgroundColor,
-        KeywordHighlighting_BorderColor_On,
-        KeywordHighlighting_BorderColor,
-
         PerformanceInfo_On,
         PerformanceInfo_IsDefaultCollapsed,
         PerformanceInfo_SandyBridge_On,
@@ -424,13 +419,6 @@ namespace AsmDude2
             this.Set_GUI(PropertyEnum.SyntaxHighlighting_Userdefined3_Italic);
             #endregion
 
-            #region Keyword Highlighting
-            this.Set_GUI(PropertyEnum.KeywordHighlighting_BackgroundColor_On);
-            this.Set_GUI(PropertyEnum.KeywordHighlighting_BackgroundColor);
-            this.Set_GUI(PropertyEnum.KeywordHighlighting_BorderColor_On);
-            this.Set_GUI(PropertyEnum.KeywordHighlighting_BorderColor);
-            #endregion
-
             #region Latency and Throughput Information (Performance Info)
             this.Set_GUI(PropertyEnum.PerformanceInfo_On);
             this.Set_GUI(PropertyEnum.PerformanceInfo_IsDefaultCollapsed);
@@ -572,13 +560,6 @@ namespace AsmDude2
             changed |= this.Setting_Changed(PropertyEnum.SyntaxHighlighting_Userdefined2_Italic, sb);
             changed |= this.Setting_Changed_RGB(PropertyEnum.SyntaxHighlighting_Userdefined3, sb);
             changed |= this.Setting_Changed(PropertyEnum.SyntaxHighlighting_Userdefined3_Italic, sb);
-            #endregion
-
-            #region Keyword Highlighting
-            changed |= this.Setting_Changed(PropertyEnum.KeywordHighlighting_BackgroundColor_On, sb);
-            changed |= this.Setting_Changed_RGB(PropertyEnum.KeywordHighlighting_BackgroundColor, sb);
-            changed |= this.Setting_Changed(PropertyEnum.KeywordHighlighting_BorderColor_On, sb);
-            changed |= this.Setting_Changed_RGB(PropertyEnum.KeywordHighlighting_BorderColor, sb);
             #endregion
 
             #region Latency and Throughput Information (Performance Info)
@@ -902,13 +883,6 @@ namespace AsmDude2
                     guid = new Guid("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}"); // Text editor category
                 }
             }
-            #endregion
-
-            #region Keyword Highlighting
-            if (this.Setting_Update(PropertyEnum.KeywordHighlighting_BackgroundColor_On)) { changed = true; restartNeeded = true; }
-            if (this.Setting_Update_RGB(PropertyEnum.KeywordHighlighting_BackgroundColor)) { changed = true; restartNeeded = true; }
-            if (this.Setting_Update(PropertyEnum.KeywordHighlighting_BorderColor_On)) { changed = true; restartNeeded = true; }
-            if (this.Setting_Update_RGB(PropertyEnum.KeywordHighlighting_BorderColor)) { changed = true; restartNeeded = true; }
             #endregion
 
             #region Latency and Throughput Information (Performance Info)

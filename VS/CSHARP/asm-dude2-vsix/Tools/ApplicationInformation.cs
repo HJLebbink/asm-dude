@@ -20,6 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Globalization;
+using System.Reflection;
+using System;
+
 namespace AsmDude2.Tools
 {
     public static class ApplicationInformation
@@ -28,69 +32,63 @@ namespace AsmDude2.Tools
         /// Gets the executing assembly.
         /// </summary>
         /// <value>The executing assembly.</value>
-        public static System.Reflection.Assembly ExecutingAssembly
+        public static Assembly ExecutingAssembly
         {
             get { return executingAssembly ?? (executingAssembly = System.Reflection.Assembly.GetExecutingAssembly()); }
         }
 
-        private static System.Reflection.Assembly executingAssembly;
+        private static Assembly executingAssembly;
 
         /// <summary>
         /// Gets the executing assembly version.
         /// </summary>
         /// <value>The executing assembly version.</value>
-        public static System.Version ExecutingAssemblyVersion
+        public static Version ExecutingAssemblyVersion
         {
             get { return executingAssemblyVersion ?? (executingAssemblyVersion = ExecutingAssembly.GetName().Version); }
         }
 
-        private static System.Version executingAssemblyVersion;
+        private static Version executingAssemblyVersion;
 
         /// <summary>
         /// Gets the compile date of the currently executing assembly.
         /// </summary>
         /// <value>The compile date.</value>
-        public static System.DateTime CompileDate
+        public static DateTime CompileDate
         {
             get
             {
-                if (!compileDate.HasValue)
-                {
-                    compileDate = RetrieveLinkerTimestamp(ExecutingAssembly.Location);
-                }
-
-                return compileDate ?? default(System.DateTime);
+                var d = GetBuildDate(Assembly.GetExecutingAssembly());                
+                return d.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(d).Hours);
             }
         }
-
-        private static System.DateTime? compileDate;
 
         /// <summary>
         /// Retrieves the linker timestamp.
         /// </summary>
-        /// <param name="filePath">The file path.</param>
+        /// <param name="assembly">The assembly</param>
         /// <returns></returns>
-        /// <remarks>http://www.codinghorror.com/blog/2005/04/determining-build-date-the-hard-way.html</remarks>
-        private static System.DateTime RetrieveLinkerTimestamp(string filePath)
+        /// <remarks>https://www.meziantou.net/getting-the-date-of-build-of-a-dotnet-assembly-at-runtime.htm</remarks>
+        private static DateTime GetBuildDate(Assembly assembly)
         {
-            const int peHeaderOffset = 60;
-            const int linkerTimestampOffset = 8;
-            byte[] b = new byte[2048];
-            System.IO.FileStream s = null;
-            try
+            const string BuildVersionMetadataPrefix = "+build";
+
+            var attribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            if (attribute?.InformationalVersion != null)
             {
-                s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                s.Read(b, 0, 2048);
-            }
-            finally
-            {
-                if (s != null)
+                var value = attribute.InformationalVersion;
+                var index = value.IndexOf(BuildVersionMetadataPrefix);
+                if (index > 0)
                 {
-                    s.Close();
+                    value = value.Substring(index + BuildVersionMetadataPrefix.Length);
+                    if (DateTime.TryParseExact(value, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
+                    {
+                        return result;
+                    }
                 }
             }
-            System.DateTime dt = new System.DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(System.BitConverter.ToInt32(b, System.BitConverter.ToInt32(b, peHeaderOffset) + linkerTimestampOffset));
-            return dt.AddHours(System.TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+
+            return default;
         }
     }
 }
