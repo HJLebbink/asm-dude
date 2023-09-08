@@ -565,5 +565,119 @@ namespace AsmTools
                     return false; //TODO return error;
             }
         }
+
+        public int MaxFileLines
+        {
+            get
+            {
+                return this.Global_MaxFileLines;
+            }
+
+            set
+            {
+                this.Global_MaxFileLines = value;
+            }
+        }
+
+        public AssemblerEnum Used_Assembler
+        {
+            get
+            {
+                if (this.useAssemblerAutoDetect)
+                {
+                    return AssemblerEnum.AUTO_DETECT;
+                }
+                if (this.useAssemblerMasm)
+                {
+                    return AssemblerEnum.MASM;
+                }
+                if (this.useAssemblerNasm)
+                {
+                    return AssemblerEnum.NASM_INTEL;
+                }
+                if (this.useAssemblerNasm_Att)
+                {
+                    return AssemblerEnum.NASM_ATT;
+                }
+                //LogWarning("AsmDudeToolsStatic.Used_Assembler:get: no assembler specified, assuming AUTO_DETECT");
+                return AssemblerEnum.AUTO_DETECT;
+            }
+
+            set
+            {
+                this.useAssemblerAutoDetect = false;
+                this.useAssemblerMasm = false;
+                this.useAssemblerNasm = false;
+                this.useAssemblerNasm_Att = false;
+
+                if (value.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    this.useAssemblerAutoDetect = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.MASM))
+                {
+                    this.useAssemblerMasm = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_INTEL))
+                {
+                    this.useAssemblerNasm = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    this.useAssemblerNasm_Att = true;
+                }
+                else
+                {
+                    //Output_WARNING(string.Format(CultureUI, "{0}:Used_Assembler:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
+                    this.useAssemblerAutoDetect = true;
+                }
+            }
+        }
+
+        public AssemblerEnum Used_Assembler_Disassembly_Window
+        {
+            get
+            {
+                if (this.useAssemblerDisassemblyAutoDetect)
+                {
+                    return AssemblerEnum.AUTO_DETECT;
+                }
+                if (this.useAssemblerDisassemblyMasm)
+                {
+                    return AssemblerEnum.MASM;
+                }
+                if (this.useAssemblerDisassemblyNasm_Att)
+                {
+                    return AssemblerEnum.NASM_ATT;
+                }
+                //Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window:get no assembler specified, assuming AUTO_DETECT");
+                return AssemblerEnum.AUTO_DETECT;
+            }
+
+            set
+            {
+                this.useAssemblerDisassemblyAutoDetect = false;
+                this.useAssemblerDisassemblyMasm = false;
+                this.useAssemblerDisassemblyNasm_Att = false;
+
+                if (value.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    this.useAssemblerDisassemblyAutoDetect = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.MASM))
+                {
+                    this.useAssemblerDisassemblyMasm = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    this.useAssemblerDisassemblyNasm_Att = true;
+                }
+                else
+                {
+                    //Output_WARNING(string.Format(CultureUI, "{0}:Used_Assembler_Disassembly_Window:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
+                    this.useAssemblerDisassemblyAutoDetect = true;
+                }
+            }
+        }
     }
 }

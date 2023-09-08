@@ -38,7 +38,9 @@ namespace LanguageServerWithUI
         public MainWindow()
         {
             InitializeComponent();
+            this.Hide();
             DataContext = viewModel;
+            this.ShowInTaskbar = false;
         }
 
         //private void OnAddDiagnosticButtonClick(object sender, RoutedEventArgs e)

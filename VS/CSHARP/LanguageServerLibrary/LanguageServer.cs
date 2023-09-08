@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmSourceTools;
+
 using AsmTools;
 
 using Microsoft.VisualStudio.LanguageServer.Protocol;
@@ -62,6 +64,7 @@ namespace LanguageServerLibrary
         private readonly IDictionary<Uri, TextDocumentItem> textDocuments;
         private readonly IDictionary<Uri, string[]> textDocumentLines;
         private readonly IDictionary<Uri, IEnumerable<AsmFoldingRange>> foldingRanges;
+        private readonly IDictionary<Uri, LabelGraph> labelGraphs;
 
         private readonly int referencesChunkSize = 10;
         private readonly int referencesDelayMs = 10;
@@ -83,8 +86,9 @@ namespace LanguageServerLibrary
             this.target = new LanguageServerTarget(this, traceSource);
             this.textDocuments = new Dictionary<Uri, TextDocumentItem>();
             this.textDocumentLines = new Dictionary<Uri, string[]>();
-            this.foldingRanges = new Dictionary<Uri, IEnumerable<AsmFoldingRange>>();
 
+            this.labelGraphs = new Dictionary<Uri, LabelGraph>();            
+            this.foldingRanges = new Dictionary<Uri, IEnumerable<AsmFoldingRange>>();
             this.diagnostics = new List<Diagnostic>();
             this.Symbols = Array.Empty<VSSymbolInformation>();
 
@@ -107,14 +111,14 @@ namespace LanguageServerLibrary
             this.target.OnInitialized += OnTargetInitialized;
         }
 
-        //private static string Truncate(string text)
-        //{
-        //    if (text.Length < MAX_LENGTH_DESCR_TEXT)
-        //    {
-        //        return text;
-        //    }
-        //    return text.Substring(0, MAX_LENGTH_DESCR_TEXT) + "...";
-        //}
+        private static string Truncate(string text)
+        {
+            if (text.Length < MAX_LENGTH_DESCR_TEXT)
+            {
+                return text;
+            }
+            return text.Substring(0, MAX_LENGTH_DESCR_TEXT) + "...";
+        }
 
         private string[] GetLines(Uri uri)
         {
@@ -125,61 +129,10 @@ namespace LanguageServerLibrary
             return Array.Empty<string>();
         }
 
-        //public string CustomText
-        //{
-        //    get;
-        //    set;
-        //}
-
-        //public bool IsIncomplete
-        //{
-        //    get
-        //    {
-        //        return this.target.IsIncomplete;
-        //    }
-        //    set
-        //    {
-        //        if (this.target.IsIncomplete != value)
-        //        {
-        //            this.target.IsIncomplete = value;
-        //            NotifyPropertyChanged(nameof(IsIncomplete));
-        //        }
-        //    }
-        //}
-
-        //public bool CompletionServerError
-        //{
-        //    get
-        //    {
-        //        return this.target.CompletionServerError;
-        //    }
-        //    set
-        //    {
-        //        this.target.CompletionServerError = value;
-        //    }
-        //}
-
-        //public bool ItemCommitCharacters
-        //{
-        //    get
-        //    {
-        //        return this.target.ItemCommitCharacters;
-        //    }
-        //    set
-        //    {
-        //        this.target.ItemCommitCharacters = value;
-        //    }
-        //}
-
         public string CurrentSettings
         {
             get; private set;
         }
-
-        //public JsonRpc Rpc
-        //{
-        //    get => this.rpc;
-        //}
 
         public IEnumerable<VSSymbolInformation> Symbols
         {
@@ -194,18 +147,6 @@ namespace LanguageServerLibrary
         } = Array.Empty<VSProjectContext>();
 
         public bool UsePublishModelDiagnostic { get; set; } = true;
-
-        //private string lastCompletionRequest = string.Empty;
-        
-        //public string LastCompletionRequest
-        //{
-        //    get => this.lastCompletionRequest;
-        //    set
-        //    {
-        //        this.lastCompletionRequest = value ?? string.Empty;
-        //        NotifyPropertyChanged(nameof(LastCompletionRequest));
-        //    }
-        //}
 
         public event EventHandler OnInitialized;
         public event EventHandler Disconnected;
@@ -262,6 +203,8 @@ namespace LanguageServerLibrary
                 this.textDocumentLines.Add(uri, document.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
                 this.diagnostics.Clear();
                 this.UpdateFoldingRanges(uri);
+                this.UpdateLabelGraph(uri);
+
                 if (false)
                 {
 #pragma warning disable CS0162 // Unreachable code detected
@@ -299,9 +242,9 @@ namespace LanguageServerLibrary
             this.textDocumentLines.Remove(uri);
         }
 
-        private void AddMessage(
+        private void ScheduleDiagnosticMessage(
             string message, 
-            Microsoft.VisualStudio.LanguageServer.Protocol.DiagnosticSeverity severity, 
+            DiagnosticSeverity severity, 
             Range range,
             TextDocumentIdentifier textDocumentIdentifier)
         {
@@ -343,6 +286,40 @@ namespace LanguageServerLibrary
             };
 
             this.diagnostics.Add(d);
+        }
+
+        private void UpdateLabelGraph(Uri uri)
+        {
+            LogInfo("UpdateLabelGraph");
+
+            if (this.labelGraphs.ContainsKey(uri))
+            {
+                this.labelGraphs.Remove(uri);
+            }
+
+            var textDocument = this.GetTextDocument(uri);
+            string filename = textDocument.Uri.LocalPath;
+            string[] lines = this.GetLines(uri);
+            LabelGraph labelGraph = new LabelGraph(lines, filename, this.traceSource, this.options);
+
+
+            foreach (var (key, value) in labelGraph.Label_Clashes)
+            {
+                LogInfo($"UpdateLabelGraph: found a label clash for label {value}");
+                //TextDocumentIdentifier id = null;
+                //Range range = null;
+                //this.ScheduleDiagnosticMessage("label clash", DiagnosticSeverity.Error, range, id);
+            }
+
+            foreach (var (key, value) in labelGraph.Undefined_Labels)
+            {
+                LogInfo($"UpdateLabelGraph: found an undefined label {value}");
+                //TextDocumentIdentifier id = null;
+                //Range range = null;
+                //this.ScheduleDiagnosticMessage("undefined clash", DiagnosticSeverity.Error, range, id);
+            }
+
+            this.labelGraphs.Add(uri, labelGraph);
         }
 
         private void UpdateFoldingRanges(Uri uri)
@@ -396,7 +373,7 @@ namespace LanguageServerLibrary
                                 Start = new Position(lineNumber, offsetEndRegion),
                                 End = new Position(lineNumber, offsetEndRegion + endKeywordLength),
                             };
-                            this.AddMessage(message, severity, range, textDocumentIdentifier);
+                            this.ScheduleDiagnosticMessage(message, severity, range, textDocumentIdentifier);
                         } else 
                         {
                             int startLine = startLineNumbers.Pop();
@@ -748,59 +725,60 @@ namespace LanguageServerLibrary
             return locations.ToArray();
         }
 
-        public SignatureHelp GetTextDocumentSignatureHelp(SignatureHelpParams parameter)
+        /// <summary>
+        /// Constrain the list of signatures given: 1) the currently operands provided by the user; and 2) the selected architectures
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="operands"></param>
+        /// <returns></returns>
+        private IEnumerable<AsmSignatureInformation> Constrain_Signatures(
+                IEnumerable<AsmSignatureInformation> data,
+                IList<Operand> operands2,
+                ISet<Arch> selectedArchitectures2)
         {
-            /// <summary>
-            /// Constrain the list of signatures given: 1) the currently operands provided by the user; and 2) the selected architectures
-            /// </summary>
-            /// <param name="data"></param>
-            /// <param name="operands"></param>
-            /// <returns></returns>
-            IEnumerable<AsmSignatureInformation> Constrain_Signatures(
-                    IEnumerable<AsmSignatureInformation> data,
-                    IList<Operand> operands2,
-                    ISet<Arch> selectedArchitectures2)
+            foreach (AsmSignatureInformation asmSignatureElement in data)
             {
-                foreach (AsmSignatureInformation asmSignatureElement in data)
+                bool allowed = true;
+
+                //1] constrain on architecture
+                if (!asmSignatureElement.Is_Allowed(selectedArchitectures2))
                 {
-                    bool allowed = true;
+                    allowed = false;
+                }
 
-                    //1] constrain on architecture
-                    if (!asmSignatureElement.Is_Allowed(selectedArchitectures2))
+                //2] constrain on operands
+                if (allowed)
+                {
+                    if ((operands2 == null) || (operands2.Count == 0))
                     {
-                        allowed = false;
+                        // do nothing
                     }
-
-                    //2] constrain on operands
-                    if (allowed)
+                    else
                     {
-                        if ((operands2 == null) || (operands2.Count == 0))
+                        for (int i = 0; i < operands2.Count; ++i)
                         {
-                            // do nothing
-                        }
-                        else
-                        {
-                            for (int i = 0; i < operands2.Count; ++i)
+                            Operand operand = operands2[i];
+                            if (operand != null)
                             {
-                                Operand operand = operands2[i];
-                                if (operand != null)
+                                if (!asmSignatureElement.Is_Allowed(operand, i))
                                 {
-                                    if (!asmSignatureElement.Is_Allowed(operand, i))
-                                    {
-                                        allowed = false;
-                                        break;
-                                    }
+                                    allowed = false;
+                                    break;
                                 }
                             }
                         }
                     }
-                    if (allowed)
-                    {
-                        yield return asmSignatureElement;
-                    }
+                }
+                if (allowed)
+                {
+                    yield return asmSignatureElement;
                 }
             }
+        }
 
+        public SignatureHelp GetTextDocumentSignatureHelp(SignatureHelpParams parameter)
+        {
+ 
             if (!options.SignatureHelp_On)
             {
                 LogInfo($"OnTextDocumentSignatureHelp: switched off");
@@ -811,8 +789,8 @@ namespace LanguageServerLibrary
             string lineStr = lines[parameter.Position.Line];
             LogInfo($"OnTextDocumentSignatureHelp: parameter={parameter}; line=\"{lineStr}\";");
 
-            (string _, Mnemonic mnemonic, string[] _, string _) = AsmTools.AsmSourceTools.ParseLine(lineStr);
-            if (mnemonic == Mnemonic.NONE)
+            (string _, Mnemonic mnemonic, string[] _, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr);
+            if ((mnemonic == Mnemonic.NONE) || (remark.Length > 0))
             {
                 return null;
             }
@@ -887,6 +865,105 @@ namespace LanguageServerLibrary
             return Array.Empty<AsmFoldingRange>();
         }
 
+        private IEnumerable<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
+        {
+            //bool use_AsmSim_In_Code_Completion = this.asmSimulator_.Enabled && Settings.Default.AsmSim_Show_Register_In_Code_Completion;
+            bool att_Syntax = this.options.Used_Assembler == AssemblerEnum.NASM_ATT;
+
+            SortedSet<CompletionItem> completions = new SortedSet<CompletionItem>(new CompletionComparer());
+
+            foreach (Rn regName in this.mnemonicStore.Get_Allowed_Registers())
+            {
+                //string additionalInfo = null;
+                if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
+                {
+                    string keyword = regName.ToString();
+                    //if (use_AsmSim_In_Code_Completion && this.asmSimulator_.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
+                    //{
+                    //    (string value, bool bussy) = this.asmSimulator_.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration, false));
+                    //    if (!bussy)
+                    //    {
+                    //        additionalInfo = value;
+                    //        LogInfo("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
+                    //    }
+                    //}
+
+                    if (att_Syntax)
+                    {
+                        keyword = "%" + keyword;
+                    }
+
+                    Arch arch = RegisterTools.GetArch(regName);
+                    //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+
+                    // by default, the entry.Key is with capitals
+                    string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
+                    string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
+                    string descriptionStr = this.asmDudeTools.Get_Description(keyword); //TODO add additional info
+                    descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
+                    string displayText = Truncate(keyword + archStr + descriptionStr);
+
+                    completions.Add(new CompletionItem
+                    {
+                        Kind = GetCompletionItemKind(AsmTokenType.Register),
+                        Label = displayText,
+                        InsertText = insertionText,
+                        SortText = insertionText,
+                        Documentation = descriptionStr
+                    });
+                }
+            }
+
+            foreach (string keyword in this.asmDudeTools.Get_Keywords())
+            {
+                AsmTokenType type = this.asmDudeTools.Get_Token_Type_Intel(keyword);
+                Arch arch = this.asmDudeTools.Get_Architecture(keyword);
+
+                string keyword2 = keyword;
+                bool selected = true;
+
+                //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
+
+                switch (type)
+                {
+                    case AsmTokenType.Misc:
+                        {
+                            if (!AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
+                            {
+                                selected = false;
+                            }
+                            break;
+                        }
+                    default:
+                        {
+                            selected = false;
+                            break;
+                        }
+                }
+                if (selected)
+                {
+                    //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+
+                    // by default, the entry.Key is with capitals
+                    string insertionText = useCapitals ? keyword2 : keyword2.ToLowerInvariant();
+                    string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
+                    string descriptionStr = this.asmDudeTools.Get_Description(keyword);
+                    descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
+                    string displayText = Truncate(keyword2 + archStr + descriptionStr);
+
+                    completions.Add(new CompletionItem
+                    {
+                        Kind = GetCompletionItemKind(type),
+                        Label = displayText,
+                        InsertText = insertionText,
+                        SortText = insertionText,
+                        Documentation = descriptionStr
+                    });
+                }
+            }
+            return completions;
+        }
+
         public CompletionList GetTextDocumentCompletion(CompletionParams parameter)
         {
             IEnumerable<CompletionItem> Selected_Completions(bool useCapitals, ISet<AsmTokenType> selectedTypes, bool addSpecialKeywords)
@@ -895,64 +972,58 @@ namespace LanguageServerLibrary
 
                 //Add the completions of AsmDude directives (such as code folding directives)
                 #region
-                bool codeFoldingOn = true; //Settings.Default.CodeFolding_On
-                if (addSpecialKeywords && codeFoldingOn)
+                if (addSpecialKeywords && this.options.CodeFolding_On)
                 {
                     {
-                        string labelText = "#region"; // Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
+                        string labelText = this.options.CodeFolding_BeginTag;     //the characters that start the outlining region
                         completions.Add(new CompletionItem
                         {
-                            Kind = CompletionItemKind.Keyword,
-                            Label = labelText,
-                            InsertText = labelText,
+                            Kind = CompletionItemKind.Macro,
+                            Label = $"{labelText} - keyword to start code folding",
+                            InsertText = labelText.Substring(1), // remove the prefix #
                             SortText = labelText,
-                            Documentation = $"{labelText} - keyword to start code folding",
+                            //Documentation = $"keyword to start code folding",
                         });
                     }
                     {
-                        string labelText = "#endregion"; // Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
+                        string labelText = this.options.CodeFolding_EndTag;       //the characters that end the outlining region
                         completions.Add(new CompletionItem
                         {
-                            Kind = CompletionItemKind.Keyword,
-                            Label = labelText,
-                            InsertText = labelText,
+                            Kind = CompletionItemKind.Macro,
+                            Label = $"{labelText} - keyword to end code folding",
+                            InsertText = labelText.Substring(1), // remove the prefix #
                             SortText = labelText,
-                            Documentation = $"{labelText} - keyword to end code folding",
+                            //Documentation = $"keyword to end code folding",
                         });
                     }
                 }
                 #endregion
 
-                // AssemblerEnum usedAssember = AssemblerEnum.NASM_INTEL; //AsmDudeToolsStatic.Used_Assembler;
+                AssemblerEnum usedAssember = this.options.Used_Assembler;
 
                 #region Add completions
-                if (true)
+                if (selectedTypes.Contains(AsmTokenType.Mnemonic))
                 {
-                    if (true)
-                    //if (selectedTypes.Contains(AsmDude2.AsmTokenType.Mnemonic))
+                    foreach (Mnemonic mnemonic2 in this.mnemonicStore.Get_Allowed_Mnemonics())
                     {
-                        foreach (Mnemonic mnemonic2 in this.mnemonicStore.Get_Allowed_Mnemonics())
-                        {
-                            string keyword_upcase = mnemonic2.ToString();
-                            string insertionText = useCapitals ? keyword_upcase : keyword_upcase.ToLowerInvariant();
-                            string archStr = ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic2));
+                        string keyword_upcase = mnemonic2.ToString();
+                        string insertionText = useCapitals ? keyword_upcase : keyword_upcase.ToLowerInvariant();
+                        string archStr = ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic2));
 
-                            completions.Add(new CompletionItem
-                            {
-                                Kind = CompletionItemKind.Keyword,
-                                Label = $"{keyword_upcase} {archStr}",
-                                InsertText = insertionText,
-                                SortText = insertionText,
-                                Documentation = this.mnemonicStore.GetDescription(mnemonic2),
-                            });
-                        }
+                        completions.Add(new CompletionItem
+                        {
+                            Kind = CompletionItemKind.Keyword,
+                            Label = $"{keyword_upcase} {archStr}",
+                            InsertText = insertionText,
+                            SortText = insertionText,
+                            Documentation = this.mnemonicStore.GetDescription(mnemonic2),
+                        });
                     }
                 }
-                /*
                 //Add the completions that are defined in the xml file
-                foreach (string keyword_upcase in this.asmDudeTools_.Get_Keywords())
+                foreach (string keyword_upcase in this.asmDudeTools.Get_Keywords())
                 {
-                    AsmTokenType type = this.asmDudeTools_.Get_Token_Type_Intel(keyword_upcase);
+                    AsmTokenType type = this.asmDudeTools.Get_Token_Type_Intel(keyword_upcase);
                     if (selectedTypes.Contains(type))
                     {
                         Arch arch = Arch.ARCH_NONE;
@@ -960,7 +1031,7 @@ namespace LanguageServerLibrary
 
                         if (type == AsmTokenType.Directive)
                         {
-                            AssemblerEnum assembler = this.asmDudeTools_.Get_Assembler(keyword_upcase);
+                            AssemblerEnum assembler = this.asmDudeTools.Get_Assembler(keyword_upcase);
                             if (assembler.HasFlag(AssemblerEnum.MASM))
                             {
                                 if (!usedAssember.HasFlag(AssemblerEnum.MASM))
@@ -978,30 +1049,33 @@ namespace LanguageServerLibrary
                         }
                         else
                         {
-                            arch = this.asmDudeTools_.Get_Architecture(keyword_upcase);
-                            selected = AsmDudeToolsStatic.Is_Arch_Switched_On(arch);
+                            arch = this.asmDudeTools.Get_Architecture(keyword_upcase);
+                            selected = this.options.Is_Arch_Switched_On(arch);
                         }
 
-                        //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Selected_Completions; keyword=" + keyword + "; arch=" + arch + "; selected=" + selected);
+                        LogInfo("CodeCompletionSource:Selected_Completions; keyword=" + keyword_upcase + "; arch=" + arch + "; selected=" + selected);
 
                         if (selected)
                         {
-                            //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
-
                             // by default, the entry.Key is with capitals
                             string insertionText = useCapitals ? keyword_upcase : keyword_upcase.ToLowerInvariant();
                             string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
-                            string descriptionStr = this.asmDudeTools_.Get_Description(keyword_upcase);
+                            string descriptionStr = this.asmDudeTools.Get_Description(keyword_upcase);
                             descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
                             string displayTextFull = keyword_upcase + archStr + descriptionStr;
                             string displayText = Truncate(displayTextFull);
-                            //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
-                            this.icons_.TryGetValue(type, out ImageSource imageSource);
-                            completions.Add(new Completion(displayText, insertionText, displayTextFull, imageSource, string.Empty));
+ 
+                            completions.Add(new CompletionItem
+                            {
+                                Kind = GetCompletionItemKind(type),
+                                Label = displayText,
+                                InsertText = insertionText,
+                                SortText = insertionText,
+                                Documentation = descriptionStr
+                            });
                         }
                     }
                 }
-                */
                 #endregion
 
                 return completions;
@@ -1031,17 +1105,54 @@ namespace LanguageServerLibrary
 
             List<CompletionItem> items = new List<CompletionItem>();
 
-            if (mnemonic == Mnemonic.NONE)
+            if (remark.Length > 0)
             {
-                ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
-                bool useCapitals = true;
-                items.AddRange(Selected_Completions(useCapitals, selected1, true));
+                // do not recommend anything while typing comments
+            } else
+            {
+                if (mnemonic == Mnemonic.NONE)
+                {
+                    ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
+                    bool useCapitals = true; //TODO
+                    items.AddRange(Selected_Completions(useCapitals, selected1, true));
+                }
+                else
+                {
+                    // the line contains a mnemonic but we are not in a comment
+                    if (AsmTools.AsmSourceTools.IsJump(mnemonic))
+                    {
+                        //TODO select labels
+                    } else
+                    {
+                        IList<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
+                        ISet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
+                        ISet<AsmSignatureEnum> allowed = new HashSet<AsmSignatureEnum>();
+                        int nCommas = operands.Count;
+
+                        IEnumerable<AsmSignatureInformation> allSignatures = this.mnemonicStore.GetSignatures(mnemonic);
+
+                        foreach (AsmSignatureInformation se in this.Constrain_Signatures(allSignatures, operands, selectedArchitectures))
+                        {
+                            if (nCommas < se.Operands.Count)
+                            {
+                                foreach (AsmSignatureEnum s in se.Operands[nCommas])
+                                {
+                                    allowed.Add(s);
+                                }
+                            }
+                        }
+                        bool useCapitals = true; //TODO
+                        IEnumerable<CompletionItem> completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, parameter.Position.Line);
+                        if (completions.Any())
+                        {
+                            items.AddRange(completions);
+                        }
+                    }
+                }
             }
 
-            //this.IsIncomplete = false;
             return new CompletionList()
             {
-                //IsIncomplete = this.IsIncomplete || (parameter.Context.TriggerKind == CompletionTriggerKind.TriggerForIncompleteCompletions),
                 IsIncomplete = false,
                 Items = items.ToArray(),
             };
@@ -1065,7 +1176,6 @@ namespace LanguageServerLibrary
             var lineStr2 = lines[position.Line];
             (int startPos, int endPos) = FindWordBoundary(position.Character, lineStr2);
             int length = endPos - startPos;
-            //LogInfo($"OnHover: lineStr=\"{lineStr}\"; startPos={startPos}; endPos={endPos}");
 
             if (length <= 0)
             {
@@ -1194,7 +1304,6 @@ namespace LanguageServerLibrary
         {
             (int startPos, int endPos) = FindWordBoundary(pos, lineStr);
             int length = endPos - startPos;
-            //LogInfo($"OnHover: lineStr=\"{lineStr}\"; startPos={startPos}; endPos={endPos}");
 
             if (length <= 0)
             {
@@ -1279,11 +1388,6 @@ namespace LanguageServerLibrary
                             {
                                 Language = MarkupKind.PlainText.ToString(),
                                 Value = full_Descr + "\n",
-                            }),
-                            new SumType<string, MarkedString>(new MarkedString
-                            {
-                                Language = MarkupKind.PlainText.ToString(),
-                                Value = "https://github.com/HJLebbink/asm-dude/wiki/ADDPD",
                             }),
                             new SumType<string, MarkedString>(new MarkedString
                             {
@@ -1641,11 +1745,6 @@ namespace LanguageServerLibrary
             this.SetDocumentSymbols(symbolInfo);
         }
 
-        //public void SetProjectContexts(IEnumerable<VSProjectContext> contexts)
-        //{
-        //    this.Contexts = contexts;
-        //}
-
         public VSProjectContextList GetProjectContexts()
         {
             VSProjectContextList result = new VSProjectContextList
@@ -1655,6 +1754,17 @@ namespace LanguageServerLibrary
             };
 
             return result;
+        }
+
+        CompletionItemKind GetCompletionItemKind(AsmTokenType type)
+        {
+            switch (type)
+            {
+                case AsmTokenType.Directive: return CompletionItemKind.Value;
+                case AsmTokenType.Register: return CompletionItemKind.Variable;
+                case AsmTokenType.Misc: return CompletionItemKind.Struct;
+                default: return CompletionItemKind.None;
+            }
         }
 
         #region Logging
@@ -1736,11 +1846,6 @@ namespace LanguageServerLibrary
                 this.maxProblems = newMaxProblems;
             }
         }
-
-        //public void WaitForExit()
-        //{
-        //    this.disconnectEvent.WaitOne();
-        //}
 
         public void Exit()
         {
