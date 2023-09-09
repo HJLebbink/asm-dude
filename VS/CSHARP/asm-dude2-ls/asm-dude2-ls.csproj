@@ -9,6 +9,11 @@
     <SignAssembly>false</SignAssembly>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <AssemblyName>AsmDude2.LSP</AssemblyName>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+    <ApplicationIcon>AsmDudePackage.ico</ApplicationIcon>
+    <RootNamespace>AsmDude2LS</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +31,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Content Include="AsmDudePackage.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
 
     <!-- Xaml -->
     <Page Include="MainWindow.xaml">

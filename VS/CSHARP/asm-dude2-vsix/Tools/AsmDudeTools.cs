@@ -28,11 +28,12 @@ namespace AsmDude2
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Xml;
-    using System.Xml.XPath;
+
     using AsmDude2.Tools;
+
     using AsmTools;
+
     using Microsoft.VisualStudio.Shell;
 
     public sealed class AsmDude2Tools : IDisposable
@@ -42,12 +43,9 @@ namespace AsmDude2
         private IDictionary<string, AssemblerEnum> assembler_;
         private IDictionary<string, Arch> arch_;
         private IDictionary<string, string> description_;
-        private readonly ISet<Mnemonic> mnemonics_switched_on_;
-        private readonly ISet<Rn> register_switched_on_;
-
+  
         private readonly ErrorListProvider errorListProvider_;
-        //private readonly SmartThreadPool threadPool_;
-
+ 
 
         #region Singleton Stuff
         private static readonly Lazy<AsmDude2Tools> Lazy = new Lazy<AsmDude2Tools>(() => new AsmDude2Tools());
@@ -64,208 +62,10 @@ namespace AsmDude2
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            #region Initialize ErrorListProvider
-
-            //this._errorListProvider = new ErrorListProvider(new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider))
-            //{
-            //    ProviderName = "Asm Errors",
-            //    ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode),
-            //};
-
-            IServiceProvider a = Package.GetGlobalService(typeof(System.IServiceProvider)) as IServiceProvider;
-
-            this.errorListProvider_ = new ErrorListProvider(a)
-            {
-                ProviderName = "Asm Errors",
-                ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode),
-            };
-
-            #endregion
-
-            //this.threadPool_ = new SmartThreadPool();
-
             this.Init_Data();
-
-            #region Experiments
-            /*
-            if (false)
-            {
-                string filename2 = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar + "mnemonics-nasm.txt";
-                MnemonicStore store2 = new MnemonicStore(filename2, null);
-
-                ISet<string> archs = new SortedSet<string>();
-                IDictionary<string, string> signaturesIntel = new Dictionary<string, string>();
-                IDictionary<string, string> signaturesNasm = new Dictionary<string, string>();
-
-                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
-                {
-                    IEnumerable<AsmSignatureElement> intel = this.mnemonicStore_.GetSignatures(mnemonic);
-                    IEnumerable<AsmSignatureElement> nasm = store2.GetSignatures(mnemonic);
-
-                    signaturesIntel.Clear();
-                    signaturesNasm.Clear();
-                    int intelCount = 0;
-                    foreach (AsmSignatureElement e in intel)
-                    {
-                        intelCount++;
-                        string instruction = e.mnemonic.ToString() + " " + e.Operands_Str;
-                        if (signaturesIntel.ContainsKey(instruction))
-                        {
-                            AsmDudeToolsStatic.Output_WARNING("Intel " + instruction + ": is already present with arch " + signaturesIntel[instruction] + "; new arch " + e.Arch_Str);
-                        }
-                        else
-                        {
-                            signaturesIntel.Add(instruction, e.Arch_Str);
-                        }
-                    }
-                    int nasmCount = 0;
-                    foreach (AsmSignatureElement e in nasm)
-                    {
-                        nasmCount++;
-                        string instruction = e.mnemonic.ToString() + " " + e.Operands_Str;
-                        if (signaturesNasm.ContainsKey(instruction))
-                        {
-                            // AsmDudeToolsStatic.Output_WARNING("Nasm " + instruction + ": is already present with arch " + signaturesNasm[instruction] + "; new arch " + e.archStr);
-                        }
-                        else
-                        {
-                            signaturesNasm.Add(instruction, e.Arch_Str);
-                        }
-                    }
-
-                    foreach (AsmSignatureElement e in intel)
-                    {
-                        string instruction = e.mnemonic.ToString() + " " + e.Operands_Str;
-
-                        //AsmDudeToolsStatic.Output_INFO("Intel " + instruction + ": arch" + e.archStr);
-                        if (string.IsNullOrEmpty(e.Arch_Str))
-                        {
-                            if (signaturesNasm.ContainsKey(instruction))
-                            {
-                                AsmDudeToolsStatic.Output_INFO("Intel " + instruction + " has no arch, but NASM has \"" + signaturesNasm[instruction] + "\".");
-                            }
-                            else
-                            {
-                                if (signaturesNasm.Count == 1)
-                                {
-                                    AsmDudeToolsStatic.Output_INFO("Intel " + instruction + " has no arch, but NASM has \"" + signaturesNasm.GetEnumerator().Current + "\".");
-                                }
-                                else
-                                {
-                                    AsmDudeToolsStatic.Output_INFO("Intel " + instruction + " has no arch:");
-                                    foreach (KeyValuePair<string, string> pair in signaturesNasm)
-                                    {
-                                        AsmDudeToolsStatic.Output_INFO("\tNASM has " + pair.Key + ": \"" + pair.Value + "\".");
-                                    }
-                                    AsmDudeToolsStatic.Output_INFO("    ----");
-                                }
-                            }
-                        }
-                    }
-
-                    if (false)
-                    {
-                        if (intelCount != nasmCount)
-                        {
-                            foreach (AsmSignatureElement e in intel)
-                            {
-                                AsmDudeToolsStatic.Output_INFO("INTEL " + mnemonic + ": " + e);
-                            }
-                            foreach (AsmSignatureElement e in nasm)
-                            {
-                                AsmDudeToolsStatic.Output_INFO("NASM " + mnemonic + ": " + e);
-                            }
-                        }
-                    }
-                }
-                foreach (string str in archs)
-                {
-                    AsmDudeToolsStatic.Output_INFO("INTEL arch " + str);
-                }
-            }
-            if (false)
-            {
-                foreach (Arch arch in Enum.GetValues(typeof(Arch)))
-                {
-                    int counter = 0;
-                    ISet<Mnemonic> usedMnemonics = new HashSet<Mnemonic>();
-                    foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
-                    {
-                        if (this.Mnemonic_Store.GetArch(mnemonic).Contains(arch))
-                        {
-                            //AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor: arch="+arch+"; mnemonic=" + mnemonic);
-                            counter++;
-                            usedMnemonics.Add(mnemonic);
-                        }
-                    }
-                    string str = string.Empty;
-                    foreach (Mnemonic mnemonic in usedMnemonics)
-                    {
-                        str += mnemonic.ToString() + ",";
-                    }
-                    AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor: Architecture Option " + arch + " enables mnemonics " + str);
-                }
-            }
-
-            if (false)
-            {
-                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
-                {
-                    string keyword = mnemonic.ToString();
-                    if (this.description_.ContainsKey(keyword))
-                    {
-                        string description = this.description_[keyword];
-                        string reference = this.Get_Url(mnemonic);
-
-                        this.Mnemonic_Store.SetHtmlRef(mnemonic, reference);
-                    }
-                }
-                AsmDudeToolsStatic.Output_INFO(this.Mnemonic_Store.ToString());
-            }
-            if (false)
-            {
-                ISet<string> archs = new HashSet<string>();
-
-                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
-                {
-                    if (!this.mnemonicStore_.HasElement(mnemonic))
-                    {
-                        AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor: mnemonic " + mnemonic + " is not present");
-                    }
-                    foreach (AsmSignatureElement e in this.mnemonicStore_.GetSignatures(mnemonic))
-                    {
-                        foreach (string s in e.Arch_Str.Split(','))
-                        {
-                            archs.Add(s.Trim());
-                        }
-                    }
-                }
-                foreach (string s in archs)
-                {
-                    AsmDudeToolsStatic.Output_INFO(s + ",");
-                }
-            }
-            */
-            #endregion
-        }
+         }
 
         #region Public Methods
-
- 
-        public ErrorListProvider Error_List_Provider { get { return this.errorListProvider_; } }
-
-        //public SmartThreadPool Thread_Pool { get { return this.threadPool_; } }
-
-        /// <summary>Get the collection of Keywords (in CAPITALS), but NOT mnemonics and registers</summary>
-        public IEnumerable<string> Get_Keywords()
-        {
-            if (this.type_ == null)
-            {
-                this.Init_Data();
-            }
-
-            return this.type_.Keys;
-        }
 
         public AsmTokenType Get_Token_Type_Att(string keyword)
         {
@@ -349,43 +149,6 @@ namespace AsmDude2
             return this.assembler_.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
         }
 
-        /// <summary>
-        /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
-        /// </summary>
-        public string Get_Url(Mnemonic mnemonic)
-        {
-            return "TODO";// this.Mnemonic_Store.GetHtmlRef(mnemonic);
-        }
-
-        /// <summary>
-        /// get descripton for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an description. Keyword has to be in CAPITALS
-        /// </summary>
-        public string Get_Description(string keyword)
-        {
-            Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpperInvariant());
-
-            return this.description_.TryGetValue(keyword, out string description) ? description : string.Empty;
-        }
-
-        /// <summary>
-        /// Get architecture of the provided keyword. Keyword has to be in CAPITALS
-        /// </summary>
-        public Arch Get_Architecture(string keyword)
-        {
-            Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpperInvariant());
-
-            return this.arch_.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
-        }
-
-        public void Invalidate_Data()
-        {
-            this.xmlData_ = null;
-            this.type_ = null;
-            this.description_ = null;
-        }
-
         #endregion Public Methods
 
         #region Private Methods
@@ -413,7 +176,6 @@ namespace AsmDude2
                     this.description_[name] = Retrieve_Description(node);
                 }
             }
-
             foreach (XmlNode node in xmlDoc.SelectNodes("//directive"))
             {
                 XmlAttribute nameAttribute = node.Attributes["name"];

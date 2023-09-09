@@ -41,7 +41,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LanguageServerLibrary
+namespace AsmDude2LS
 {
     public class LanguageServer : INotifyPropertyChanged
     {
@@ -177,7 +177,7 @@ namespace LanguageServerLibrary
 
         public void Initialized()
         {
-            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..", "Resources");
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Resources");
             {
                 string filename_Regular = Path.Combine(path, "signature-may2019.txt");
                 string filename_Hand = Path.Combine(path, "signature-hand-1.txt");

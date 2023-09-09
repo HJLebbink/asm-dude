@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace LanguageServerLibrary
+namespace AsmDude2LS
 {
     using System;
     using System.Collections.Generic;
@@ -50,17 +50,31 @@ namespace LanguageServerLibrary
         {
             this.traceSource = traceSource;
             this.options = options;
-            this.LogInfo($"MnemonicStore: constructor: regularData = {filename_RegularData}; hHandcraftedData = {filename_HandcraftedData}");
+            LogInfo($"MnemonicStore: constructor: regularData = {filename_RegularData}; handcraftedData = {filename_HandcraftedData}");
 
             this.data_ = new Dictionary<Mnemonic, IList<AsmSignatureInformation>>();
             this.arch_ = new Dictionary<Mnemonic, IList<Arch>>();
             this.htmlRef_ = new Dictionary<Mnemonic, string>();
             this.description_ = new Dictionary<Mnemonic, string>();
+            if (File.Exists(filename_RegularData))
+            {
+                LoadRegularData(filename_RegularData);
+            } 
+            else
+            {
+                LogError($"MnemonicStore: constructor: regularData = {filename_RegularData} does not exist");
+            }
 
-            this.LoadRegularData(filename_RegularData);
             if (filename_HandcraftedData != null)
             {
-                this.LoadHandcraftedData(filename_HandcraftedData);
+                if (File.Exists(filename_HandcraftedData))
+                {
+                    LoadHandcraftedData(filename_HandcraftedData);
+                }
+                else
+                {
+                    LogError($"MnemonicStore: constructor: handcraftedData = {filename_HandcraftedData} does not exist");
+                }
             }
 
             this.mnemonics_switched_on_ = new HashSet<Mnemonic>();

@@ -28,7 +28,7 @@ using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using System.Collections.Generic;
 
-namespace LanguageServerLibrary
+namespace AsmDude2LS
 {
     public class AsmSignatureInformation
     {

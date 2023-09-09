@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.LanguageServer.Protocol;
 
-namespace LanguageServerLibrary
+namespace AsmDude2LS
 {
     public enum AsmDiagnosticTag
     {

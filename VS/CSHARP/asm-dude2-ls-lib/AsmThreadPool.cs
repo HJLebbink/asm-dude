@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LanguageServerLibrary
+namespace AsmDude2LS
 {
     public class AsmThreadPool
     {

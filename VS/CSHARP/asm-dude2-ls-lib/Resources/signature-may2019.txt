@@ -902,6 +902,12 @@ ENCLU			ENCLU	This instruction is used to execute non-privileged Intel SGX leaf 
 GENERAL	ENCLV	Execute an Enclave VMM Function of Specified Leaf Number	ENCLV
 ENCLV			ENCLV	This instruction is used to execute privileged SGX leaf functions that are reserved for VMM use. They are used for managing the enclaves.
 ;--------------------------------------------------------
+GENERAL	ENQCMD	Enqueue Command	ENQCMD
+ENQCMD	R32/64,M512	ENQCMD	ENQCMD R32/64,M512	Atomically enqueue 64-byte user command with PASID from source memory operand to destination offset in ES segment specified in register operand as offset in ES segment.
+;--------------------------------------------------------
+GENERAL	ENQCMDS	Enqueue Command Supervisor	ENQCMDS
+ENQCMDS	R32/64,M512	ENQCMD	ENQCMDS R32/64,M512	Atomically enqueue 64-byte command from source memory operand to destination offset in ES segment specified in register operand as offset in ES segment.
+;--------------------------------------------------------
 GENERAL	ENTER	Make Stack Frame for Procedure Parameters	ENTER
 ENTER	IMM16,0	8086	ENTER IMM16,0	Create a stack frame for a procedure.
 ENTER	IMM16,1	8086	ENTER IMM16,1	Create a stack frame with a nested pointer for a procedure.
@@ -1323,7 +1329,7 @@ IDIV	R/M32	386	IDIV R/M32	Signed divide EDX:EAX by r/m32, with result stored in 
 IDIV	R/M64	X64	IDIV R/M64	Signed divide RDX:RAX by r/m64, with result stored in RAX ← Quotient, RDX ← Remainder.
 ;--------------------------------------------------------
 GENERAL	IMUL	Signed Multiply	IMUL
-IMUL	R/M8	8086	IMUL R/M8	AX← AL ∗ r/m byte.
+IMUL	R/M8	8086	IMUL R/M8	AX ← AL ∗ r/m byte.
 IMUL	R/M16	8086	IMUL R/M16	DX:AX ← AX ∗ r/m word.
 IMUL	R/M32	386	IMUL R/M32	EDX:EAX ← EAX ∗ r/m32.
 IMUL	R/M64	X64	IMUL R/M64	RDX:RAX ← RAX ∗ r/m64.
@@ -3494,13 +3500,13 @@ VPUNPCKHBW	XMM,XMM,XMM/M128	AVX	VPUNPCKHBW XMM1,XMM2,XMM3/M128	Interleave high-o
 VPUNPCKHBW	YMM,YMM,YMM/M256	AVX2	VPUNPCKHBW YMM1,YMM2,YMM3/M256	Interleave high-order bytes from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKHBW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPUNPCKHBW XMM1{K1}{Z},XMM2,XMM3/M128	Interleave high-order bytes from xmm2 and xmm3/m128 into xmm1 register using k1 write mask.
 VPUNPCKHBW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPUNPCKHBW YMM1{K1}{Z},YMM2,YMM3/M256	Interleave high-order bytes from ymm2 and ymm3/m256 into ymm1 register using k1 write mask.
-VPUNPCKHBW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPUNPCKHBW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 into zmm1 register.
+VPUNPCKHBW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPUNPCKHBW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Interleave high-order bytes from zmm2 and zmm3/m512 into zmm1 register.
 GENERAL	VPUNPCKHWD	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
 VPUNPCKHWD	XMM,XMM,XMM/M128	AVX	VPUNPCKHWD XMM1,XMM2,XMM3/M128	Interleave high-order words from xmm2 and xmm3/m128 into xmm1.
 VPUNPCKHWD	YMM,YMM,YMM/M256	AVX2	VPUNPCKHWD YMM1,YMM2,YMM3/M256	Interleave high-order words from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKHWD	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPUNPCKHWD XMM1{K1}{Z},XMM2,XMM3/M128	Interleave high-order words from xmm2 and xmm3/m128 into xmm1 register using k1 write mask.
 VPUNPCKHWD	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPUNPCKHWD YMM1{K1}{Z},YMM2,YMM3/M256	Interleave high-order words from ymm2 and ymm3/m256 into ymm1 register using k1 write mask.
-VPUNPCKHWD	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPUNPCKHWD ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 into zmm1 register.
+VPUNPCKHWD	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPUNPCKHWD ZMM1{K1}{Z},ZMM2,ZMM3/M512	Interleave high-order words from zmm2 and zmm3/m512 into zmm1 register.
 GENERAL	VPUNPCKHDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
 VPUNPCKHDQ	XMM,XMM,XMM/M128	AVX	VPUNPCKHDQ XMM1,XMM2,XMM3/M128	Interleave high-order doublewords from xmm2 and xmm3/m128 into xmm1.
 VPUNPCKHDQ	YMM,YMM,YMM/M256	AVX2	VPUNPCKHDQ YMM1,YMM2,YMM3/M256	Interleave high-order doublewords from ymm2 and ymm3/m256 into ymm1 register.
@@ -4398,6 +4404,16 @@ VCOMPRESSPS	XMM/M128{K}{Z},XMM	AVX512_VL,AVX512_F	VCOMPRESSPS XMM1/M128{K1}{Z},X
 VCOMPRESSPS	YMM/M256{K}{Z},YMM	AVX512_VL,AVX512_F	VCOMPRESSPS YMM1/M256{K1}{Z},YMM2	Compress packed SP FP values from ymm2 to ymm1/m256 using writemask k1.
 VCOMPRESSPS	ZMM/M512{K}{Z},ZMM	AVX512_F	VCOMPRESSPS ZMM1/M512{K1}{Z},ZMM2	Compress packed SP FP values from zmm2 using control mask k1 to zmm1/m512.
 ;--------------------------------------------------------
+GENERAL	VCVTNE2PS2BF16	Convert Two Packed Single Data to One Packed BF16 Data	VCVTNE2PS2BF16
+VCVTNE2PS2BF16	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_BF16	VCVTNE2PS2BF16 XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Convert packed single data from xmm2 and xmm3/m128/m32bcst to packed BF16 data in xmm1 with writemask k1.
+VCVTNE2PS2BF16	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_BF16	VCVTNE2PS2BF16 YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Convert packed single data from ymm2 and ymm3/m256/m32bcst to packed BF16 data in ymm1 with writemask k1.
+VCVTNE2PS2BF16	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F,AVX512_BF16	VCVTNE2PS2BF16 ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Convert packed single data from zmm2 and zmm3/m512/m32bcst to packed BF16 data in zmm1 with writemask k1.
+;--------------------------------------------------------
+GENERAL	VCVTNEPS2BF16	Convert Packed Single Data to Packed BF16 Data	VCVTNEPS2BF16
+VCVTNEPS2BF16	XMM{K}{Z},XMM/M128/M32BCST	AVX512_VL,AVX512_BF16	VCVTNEPS2BF16 XMM1{K1}{Z},XMM2/M128/M32BCST	Convert packed single data from xmm2/m128 to packed BF16 data in xmm1 with writemask k1.
+VCVTNEPS2BF16	XMM{K}{Z},YMM/M256/M32BCST	AVX512_VL,AVX512_BF16	VCVTNEPS2BF16 XMM1{K1}{Z},YMM2/M256/M32BCST	Convert packed single data from ymm2/m256 to packed BF16 data in xmm1 with writemask k1.
+VCVTNEPS2BF16	YMM{K}{Z},ZMM/M512/M32BCST	AVX512_F,AVX512_BF16	VCVTNEPS2BF16 YMM1{K1}{Z},ZMM2/M512/M32BCST	Convert packed single data from zmm2/m512 to packed BF16 data in ymm1 with writemask k1.
+;--------------------------------------------------------
 GENERAL	VCVTPD2QQ	Convert Packed Double-Precision Floating-Point Values to Packed Quadword Integers	VCVTPD2QQ
 VCVTPD2QQ	XMM{K}{Z},XMM/M128/M64BCST	AVX512_VL,AVX512_DQ	VCVTPD2QQ XMM1{K1}{Z},XMM2/M128/M64BCST	Convert two packed DP FP values from xmm2/m128/m64bcst to two packed quadword integers in xmm1 with writemask k1.
 VCVTPD2QQ	YMM{K}{Z},YMM/M256/M64BCST	AVX512_VL,AVX512_DQ	VCVTPD2QQ YMM1{K1}{Z},YMM2/M256/M64BCST	Convert four packed DP FP values from ymm2/m256/m64bcst to four packed quadword integers in ymm1 with writemask k1.
@@ -4530,6 +4546,11 @@ GENERAL	VDBPSADBW	Double Block Packed Sum-Absolute-Differences (SAD) on Unsigned
 VDBPSADBW	XMM{K}{Z},XMM,XMM/M128,IMM8	AVX512_VL,AVX512_BW	VDBPSADBW XMM1{K1}{Z},XMM2,XMM3/M128,IMM8	Compute packed SAD word results of unsigned bytes in dword block from xmm2 with unsigned bytes of dword blocks transformed from xmm3/m128 using the shuffle controls in imm8. Results are written to xmm1 under the writemask k1.
 VDBPSADBW	YMM{K}{Z},YMM,YMM/M256,IMM8	AVX512_VL,AVX512_BW	VDBPSADBW YMM1{K1}{Z},YMM2,YMM3/M256,IMM8	Compute packed SAD word results of unsigned bytes in dword block from ymm2 with unsigned bytes of dword blocks transformed from ymm3/m256 using the shuffle controls in imm8. Results are written to ymm1 under the writemask k1.
 VDBPSADBW	ZMM{K}{Z},ZMM,ZMM/M512,IMM8	AVX512_BW	VDBPSADBW ZMM1{K1}{Z},ZMM2,ZMM3/M512,IMM8	Compute packed SAD word results of unsigned bytes in dword block from zmm2 with unsigned bytes of dword blocks transformed from zmm3/m512 using the shuffle controls in imm8. Results are written to zmm1 under the writemask k1.
+;--------------------------------------------------------
+GENERAL	VDPBF16PS	Dot Product of BF16 Pairs Accumulated into Packed Single Precision	VDPBF16PS
+VDPBF16PS	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_BF16	VDPBF16PS XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Multiply BF16 pairs from xmm2 and xmm3/m128, and accumulate the resulting packed single precision results in xmm1 with writemask k1.
+VDPBF16PS	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_BF16	VDPBF16PS YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Multiply BF16 pairs from ymm2 and ymm3/m256, and accumulate the resulting packed single precision results in ymm1 with writemask k1.
+VDPBF16PS	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F,AVX512_BF16	VDPBF16PS ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Multiply BF16 pairs from zmm2 and zmm3/m512, and accumulate the resulting packed single precision results in zmm1 with writemask k1.
 ;--------------------------------------------------------
 GENERAL	VERR	Verify a Segment for Reading or Writing	VERR_VERW
 VERR	R/M16	8086	VERR R/M16	Set ZF=1 if segment specified with r/m16 can be read.
@@ -5037,6 +5058,15 @@ VMASKMOVPD	YMM,YMM,M256	AVX	VMASKMOVPD YMM1,YMM2,M256	Conditionally load packed 
 VMASKMOVPD	M128,XMM,XMM	AVX	VMASKMOVPD M128,XMM1,XMM2	Conditionally store packed DP values from xmm2 using mask in xmm1.
 VMASKMOVPD	M256,YMM,YMM	AVX	VMASKMOVPD M256,YMM1,YMM2	Conditionally store packed DP values from ymm2 using mask in ymm1.
 ;--------------------------------------------------------
+GENERAL	VP2INTERSECTD	Compute Intersection Between DWORDS/QUADWORDS to a Pair of Mask Registers	VP2INTERSECTD_VP2INTERSECTQ
+VP2INTERSECTD	K+1,XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_VP2INTERSECT	VP2INTERSECTD K1+1,XMM2,XMM3/M128/M32BCST	Store, in an even/odd pair of mask registers, the indicators of the locations of value matches between dwords in xmm3/m128/m32bcst and xmm2.
+VP2INTERSECTD	K+1,YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_VP2INTERSECT	VP2INTERSECTD K1+1,YMM2,YMM3/M256/M32BCST	Store, in an even/odd pair of mask registers, the indicators of the locations of value matches between dwords in ymm3/m256/m32bcst and ymm2.
+VP2INTERSECTD	K+1,ZMM,ZMM/M512/M32BCST	AVX512_F,AVX512_VP2INTERSECT	VP2INTERSECTD K1+1,ZMM2,ZMM3/M512/M32BCST	Store, in an even/odd pair of mask registers, the indicators of the locations of value matches between dwords in zmm3/m512/m32bcst and zmm2.
+GENERAL	VP2INTERSECTQ	Compute Intersection Between DWORDS/QUADWORDS to a Pair of Mask Registers	VP2INTERSECTD_VP2INTERSECTQ
+VP2INTERSECTQ	K+1,XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_VP2INTERSECT	VP2INTERSECTQ K1+1,XMM2,XMM3/M128/M64BCST	Store, in an even/odd pair of mask registers, the indicators of the locations of value matches between quadwords in xmm3/m128/m64bcst and xmm2.
+VP2INTERSECTQ	K+1,YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_VP2INTERSECT	VP2INTERSECTQ K1+1,YMM2,YMM3/M256/M64BCST	Store, in an even/odd pair of mask registers, the indicators of the locations of value matches between quadwords in ymm3/m256/m64bcst and ymm2.
+VP2INTERSECTQ	K+1,ZMM,ZMM/M512/M64BCST	AVX512_F,AVX512_VP2INTERSECT	VP2INTERSECTQ K1+1,ZMM2,ZMM3/M512/M64BCST	Store, in an even/odd pair of mask registers, the indicators of the locations of value matches between quadwords in zmm3/m512/m64bcst and zmm2.
+;--------------------------------------------------------
 GENERAL	VP4DPWSSD	Dot Product of Signed Words with Dword Accumulation (4-iterations)	VP4DPWSSD
 VP4DPWSSD	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSD ZMM1{K1}{Z},ZMM2+3,M128	Multiply signed words from source register block indicated by zmm2 by signed words from m128 and accumulate resulting signed dwords in zmm1.
 ;--------------------------------------------------------
@@ -5223,7 +5253,7 @@ VPDPWSSD	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VNNI,AVX512_VL	VPDPWSSD XMM1{K1}{
 VPDPWSSD	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VNNI,AVX512_VL	VPDPWSSD YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Multiply groups of 2 pairs signed words in ymm3/m256/m32bcst with corresponding signed words of ymm2, summing those products and adding them to doubleword result in ymm1, under writemask k1.
 VPDPWSSD	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_VNNI	VPDPWSSD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Multiply groups of 2 pairs signed words in zmm3/m512/m32bcst with corresponding signed words of zmm2, summing those products and adding them to doubleword result in zmm1, under writemask k1.
 ;--------------------------------------------------------
-GENERAL	VPDPWSSDS	Multiply and Add Word Integers with Saturation	VPDPWSSDS
+GENERAL	VPDPWSSDS	Multiply and Add Signed Word Integers with Saturation	VPDPWSSDS
 VPDPWSSDS	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VNNI,AVX512_VL	VPDPWSSDS XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Multiply groups of 2 pairs of signed words in xmm3/m128/m32bcst with corresponding signed words of xmm2, summing those products and adding them to doubleword result in xmm1, with signed saturation, under writemask k1.
 VPDPWSSDS	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VNNI,AVX512_VL	VPDPWSSDS YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Multiply groups of 2 pairs of signed words in ymm3/m256/m32bcst with corresponding signed words of ymm2, summing those products and adding them to doubleword result in ymm1, with signed saturation, under writemask k1.
 VPDPWSSDS	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_VNNI	VPDPWSSDS ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Multiply groups of 2 pairs of signed words in zmm3/m512/m32bcst with corresponding signed words of zmm2, summing those products and adding them to doubleword result in zmm1, with signed saturation, under writemask k1.
@@ -5954,7 +5984,7 @@ GENERAL	WBINVD	Write Back and Invalidate Cache	WBINVD
 WBINVD		8086	WBINVD	Write back and flush Internal caches; initiate writing-back and flushing of external caches.
 ;--------------------------------------------------------
 GENERAL	WBNOINVD	Write Back and Do Not Invalidate Cache	WBNOINVD
-WBNOINVD			WBNOINVD	initiate writing-back without flushing of external caches.
+WBNOINVD			WBNOINVD	Write back and do not flush internal caches; initiate writing-back without flushing of external caches.
 ;--------------------------------------------------------
 GENERAL	WRFSBASE	Write FS/GS Segment Base	WRFSBASE_WRGSBASE
 WRFSBASE	R32	FSGSBASE	WRFSBASE R32	Load the FS base address with the 32-bit value in the source register.

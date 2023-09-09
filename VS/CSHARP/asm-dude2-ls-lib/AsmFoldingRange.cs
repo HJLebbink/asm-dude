@@ -26,7 +26,7 @@ using Newtonsoft.Json;
 
 using System.Runtime.Serialization;
 
-namespace LanguageServerLibrary
+namespace AsmDude2LS
 {
     //
     // Summary:
