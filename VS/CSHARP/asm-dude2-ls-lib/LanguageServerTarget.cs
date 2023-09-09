@@ -40,7 +40,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace LanguageServerLibrary
+namespace AsmDude2LS
 {
     public sealed class CompletionComparer : IComparer<CompletionItem>
     {

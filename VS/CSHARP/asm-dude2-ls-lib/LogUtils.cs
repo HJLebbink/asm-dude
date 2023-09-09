@@ -23,7 +23,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace LanguageServerLibrary
+namespace AsmDude2LS
 {
     public static class LogUtils
     {

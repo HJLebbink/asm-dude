@@ -33,11 +33,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Threading;
 using Newtonsoft.Json.Linq;
-using Task = System.Threading.Tasks.Task;
-using Microsoft.VisualStudio.LanguageServer.Protocol;
 using System.ComponentModel.Composition;
 using AsmDude2.Tools;
-using System.Linq;
 using AsmTools;
 
 namespace AsmDude2
@@ -45,7 +42,7 @@ namespace AsmDude2
     [ContentType(AsmDude2Package.AsmDudeContentType)]
     [Export(typeof(ILanguageClient))]
     [RunOnContext(RunningContext.RunOnHost)]
-    public class AsmLanguageClient : ILanguageClient, ILanguageClientCustomMessage2
+    public class AsmLanguageClient : ILanguageClient
     {
         public AsmLanguageClient()
         {
@@ -54,12 +51,6 @@ namespace AsmDude2
         }
 
         internal static AsmLanguageClient Instance
-        {
-            get;
-            set;
-        }
-
-        internal JsonRpc CustomMessageRpc
         {
             get;
             set;
@@ -75,7 +66,7 @@ namespace AsmDude2
             get
             {
                 AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: get ConfigurationSections");
-                yield return "foo";
+                yield return "asm";
             }
         }
 
@@ -84,7 +75,7 @@ namespace AsmDude2
             get
             {
                 AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: get InitializationOptions");
-                var options = new AsmLanguageServerOptions
+                return new AsmLanguageServerOptions
                 {
                     SyntaxHighlighting_Opcode = Settings.Default.SyntaxHighlighting_Opcode,
                     SyntaxHighlighting_Register = Settings.Default.SyntaxHighlighting_Register,
@@ -240,7 +231,6 @@ namespace AsmDude2
                     useAssemblerAutoDetect = Settings.Default.useAssemblerAutoDetect,
                     Global_MaxFileLines = Settings.Default.Global_MaxFileLines,
                 };
-                return options;
             }
         }
         
@@ -254,8 +244,8 @@ namespace AsmDude2
         {
             // Debugger.Launch();
 
-            string programPath = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Server", "LanguageServerWithUI.exe");
-            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: ActivateAsync: configuring language server " + programPath);
+            string programPath = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Server", "AsmDude2.LSP.exe");
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: starting Language Server (LSP) " + programPath);
 
             ProcessStartInfo info = new ProcessStartInfo
             {
@@ -263,8 +253,8 @@ namespace AsmDude2
                 WorkingDirectory = Path.GetDirectoryName(programPath)
             };
 
-            var stdInPipeName = @"output";
-            var stdOutPipeName = @"input";
+            const string stdInPipeName = @"output";
+            const string stdOutPipeName = @"input";
 
             var pipeAccessRule = new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
             var pipeSecurity = new PipeSecurity();
@@ -318,25 +308,6 @@ namespace AsmDude2
         {
             AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: OnServerInitializedAsync");
             return Task.CompletedTask;
-        }
-
-        public async Task AttachForCustomMessageAsync(JsonRpc rpc)
-        {
-            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: AttachForCustomMessageAsync");
-            this.CustomMessageRpc = rpc;
-            await Task.Yield();
-        }
-        
-        public async Task SendServerCustomNotification(object arg)
-        {
-            AsmDudeToolsStatic.Output_INFO($"AsmLanguageClient: SendServerCustomNotificationAsync: {arg}");
-            await this.CustomMessageRpc.NotifyWithParameterObjectAsync("OnCustomNotification", arg);
-        }
-
-        public async Task<string> SendServerCustomMessage(string msg)
-        {
-            AsmDudeToolsStatic.Output_INFO($"AsmLanguageClient: SendServerCustomMessageAsync: {msg}");
-            return await this.CustomMessageRpc.InvokeAsync<string>("OnCustomRequest", msg);
         }
 
         public Task<InitializationFailureContext> OnServerInitializeFailedAsync(ILanguageClientInitializationInfo initializationState)

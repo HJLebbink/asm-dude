@@ -55,37 +55,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="MockLanguageExtensionSettings.pkgdef">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVsix>true</IncludeInVsix>
-		</Content>
 		<Content Include="Resources\AsmDudeData.xml">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\CustomCommand.png" />
-		<Content Include="Resources\CustomCommandPackage.ico" />
-		<Content Include="Resources\Performance\Broadwell.tsv">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\Performance\Haswell.tsv">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\Performance\Instructions-Translations.tsv">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\Performance\IvyBridge.tsv">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\Performance\Skylake.tsv">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\Performance\SkylakeX.tsv">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		  <IncludeInVSIX>true</IncludeInVSIX>
 		</Content>
@@ -97,29 +67,15 @@
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		  <IncludeInVSIX>true</IncludeInVSIX>
 		</Content>
-		<VSCTCompile Include="CustomCommandPackage.vsct">
-			<ResourceName>Menus.ctmenu</ResourceName>
-		</VSCTCompile>
-		<Content Include="MockLanguageExtensionSettings.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
 		<None Include="source.extension.vsixmanifest">
 		  <Generator>VsixManifestGenerator</Generator>
 		</None>
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.507" />
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
 		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.7.37357" />
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.6.2164">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="SmartThreadPool.dll" Version="2.3.0" />
-		<PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
 		<PackageReference Include="System.Xml.ReaderWriter" Version="4.3.1" />
 		<Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
 		  <Generator>XamlIntelliSenseFileGenerator</Generator>
@@ -132,7 +88,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj" />
 		<ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
-		<ProjectReference Include="..\LanguageServerWithUI\LanguageServerWithUI.csproj">
+		<ProjectReference Include="..\asm-dude2-ls\asm-dude2-ls.csproj">
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 			<VsixSubPath>Server</VsixSubPath>
 		</ProjectReference>
@@ -153,7 +109,7 @@
 
 	<Target Name="IncludeLanguageServers" BeforeTargets="GetVsixSourceItems">
 		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\LanguageServerWithUI\bin\$(Configuration)\net472\*.*" Visible="false">
+			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net472\*.*" Visible="false">
 				<IncludeInVSIX>true</IncludeInVSIX>
 				<VsixSubPath>Server</VsixSubPath>
 			</Content>

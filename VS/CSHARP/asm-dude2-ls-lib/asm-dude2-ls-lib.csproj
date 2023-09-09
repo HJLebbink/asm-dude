@@ -26,6 +26,54 @@
   <PropertyGroup>
     <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Resourses\**" />
+    <EmbeddedResource Remove="Resourses\**" />
+    <None Remove="Resourses\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\AsmDudeData.xml" />
+    <None Remove="Resources\Performance\Broadwell.tsv" />
+    <None Remove="Resources\Performance\Haswell.tsv" />
+    <None Remove="Resources\Performance\Instructions-Translations.tsv" />
+    <None Remove="Resources\Performance\IvyBridge.tsv" />
+    <None Remove="Resources\Performance\Skylake.tsv" />
+    <None Remove="Resources\Performance\SkylakeX.tsv" />
+    <None Remove="Resources\signature-hand-1.txt" />
+    <None Remove="Resources\signature-may2019.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\AsmDudeData.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\Broadwell.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\Haswell.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\Instructions-Translations.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\IvyBridge.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\Skylake.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\SkylakeX.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\signature-hand-1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\signature-may2019.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 	
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.2.8" />

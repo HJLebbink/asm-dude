@@ -1,0 +1,1470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<asmdudedata>
+	<info>General info here</info>
+
+  <userdefined>
+    <userdefined1 name="MY_MACRO_A1">
+      <description>BLAH 1</description>
+    </userdefined1>
+    <userdefined1 name="MY_MACRO_A2">
+      <description>BLAH 2</description>
+    </userdefined1>
+    <userdefined2 name="MY_MACRO_B1">
+      <description>BLAH 3</description>
+    </userdefined2>
+    <userdefined3 name="MY_MACRO_C1" />
+  </userdefined>
+
+  <miscs>
+		<misc name="Z" arch="AVX512VL">
+			<description>Zero Mask {Z}</description>
+		</misc>
+		<misc name="SAE" arch="AVX512VL">
+			<description>Suppress all Exceptions {SAE}</description>
+		</misc>
+		<misc name="RN-SAE" arch="AVX512VL">
+			<description>Rounding Mode: round nearest even {RN-SAE}</description>
+		</misc>
+		<misc name="RU-SAE" arch="AVX512VL">
+			<description>Rounding Mode: round up {RU-SAE}</description>
+		</misc>
+		<misc name="RD-SAE" arch="AVX512VL">
+			<description>Rounding Mode: round down {RD-SAE}</description>
+		</misc>
+		<misc name="RZ-SAE" arch="AVX512VL">
+			<description>Rounding Mode: truncate / round to zero {RZ-SAE}</description>
+		</misc>
+		<misc name="1TO16" arch="AVX512VL">
+			<description>Broadcast 1 to 16 {1TO16}</description>
+		</misc>
+		<misc name="1TO8" arch="AVX512VL">
+			<description>Broadcast 1 to 8 {1TO8}</description>
+		</misc>
+		<misc name="1TO4" arch="AVX512VL">
+			<description>Broadcast 1 to 4 {1TO4}</description>
+		</misc>
+	</miscs>
+
+  <directives>
+    <directive name="ADDR" tool="MASM">
+      <description>Operator used exclusively with INVOKE to pass the address of a variable to a procedure.</description>
+    </directive>
+    <directive name="OFFSET" tool="MASM">
+      <description>Returns the address of a variable.</description>
+    </directive>
+    <directive name="PTR" tool="MASM">
+      <description>Specifies a type for a memory address.</description>
+    </directive>
+    <directive name="DB" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring initialized data. Byte (1 byte, 8 bit). DB is a synonym of BYTE</description>
+    </directive>
+    <directive name="DW" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring initialized data. Word, Half Precision (2 bytes, 16 bit). DW is a synonym of WORD.</description>
+    </directive>
+    <directive name="DD" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring initialized data. Double Word, Single Precision (4 bytes, 32 bit). DD is a synonym of DWORD.</description>
+    </directive>
+    <directive name="DF" tool="MASM">
+      <description>Pseudo-Instruction declaring initialized data. (6 bytes, 48 bit). DF is a synonym of FWORD.</description>
+    </directive>
+    <directive name="DQ" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring initialized data. Quad word, Double Precision (8 bytes, 64 bit). DQ is a synonym of QWORD.</description>
+    </directive>
+    <directive name="DT" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring initialized data. Extended (Double) Precision (10 bytes, 80 bit). DT is a synonym of TBYTE.</description>
+    </directive>
+    <directive name="DO" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring initialized data. IEEE 754-2008 Quad Precision (16 bytes, 128 bit), DO is a synonym of OWORD.</description>
+    </directive>
+    <directive name="DY" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring initialized data. (32 bytes, 256 bit). DY is a synonym of YWORD.</description>
+    </directive>
+    <directive name="DZ" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring initialized data. (64 bytes, 512 bit). DZ is a synonym of ZWORD.</description>
+    </directive>
+
+    <directive name="RESB" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Byte (1 byte, 8 bit). RESB is a synonym of BYTE</description>
+    </directive>
+    <directive name="RESW" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Word, Half Precision (2 bytes, 16 bit). RESW is a synonym of WORD.</description>
+    </directive>
+    <directive name="RESD" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Double Word, Single Precision (4 bytes, 32 bit). RESD is a synonym of DWORD.</description>
+    </directive>
+    <directive name="RESQ" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Quad word, Double Precision (8 bytes, 64 bit). RESQ is a synonym of QWORD.</description>
+    </directive>
+    <directive name="REST" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Extended (Double) Precision (10 bytes, 80 bit). REST is a synonym of TBYTE.</description>
+    </directive>
+    <directive name="RESO" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring uninitialized data. IEEE 754-2008 Quad Precision (16 bytes, 128 bit), RESO is a synonym of OWORD.</description>
+    </directive>
+    <directive name="RESY" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring uninitialized data. (32 bytes, 256 bit). RESY is a synonym of YWORD.</description>
+    </directive>
+    <directive name="RESZ" tool="MASM, NASM">
+      <description>Pseudo-Instruction declaring uninitialized data. (64 bytes, 512 bit). RESZ is a synonym of ZWORD.</description>
+    </directive>
+
+
+    <directive name="BOOLEAN" tool="MASM">
+      <description>Boolean</description>
+    </directive>
+    <directive name="HWND" tool="MASM">
+      <description>A handle to a window</description>
+    </directive>
+    <directive name="BYTE" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Byte (1 byte, 8 bit)</description>
+    </directive>
+    <directive name="SBYTE" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Signed Byte (1 byte, 8 bit)</description>
+    </directive>
+    <directive name="WORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Word, Half Precision (2 bytes, 16 bit)</description>
+    </directive>
+    <directive name="SWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Signed Word, Half Precision (2 bytes, 16 bit)</description>
+    </directive>
+    <directive name="DWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Double Word, Single Precision (4 bytes, 32 bit)</description>
+    </directive>
+    <directive name="SDWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Signed Double Word, Single Precision (4 bytes, 32 bit)</description>
+    </directive>
+    <directive name="FWORD" tool="MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. (6 bytes, 48 bit).</description>
+    </directive>
+    <directive name="QWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Quad word, Double Precision (8 bytes, 64 bit)</description>
+    </directive>
+    <directive name="MMWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Quad word, Double Precision (8 bytes, 64 bit)</description>
+    </directive>
+    <directive name="TWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. Extended (Double) Precision (10 bytes, 80 bit)</description>
+    </directive>
+    <directive name="XMMWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. (16 bytes, 128 bit)</description>
+    </directive>
+    <directive name="OWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. IEEE 754-2008 Quad Precision (16 bytes, 128 bit)</description>
+    </directive>
+    <directive name="YMMWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. (32 bytes, 256 bit)</description>
+    </directive>
+    <directive name="YWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. (32 bytes, 256 bit)</description>
+    </directive>
+    <directive name="ZMMWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. (64 bytes, 512 bit)</description>
+    </directive>
+    <directive name="ZWORD" tool="NASM, MASM">
+      <description>Pseudo-Instruction declaring uninitialized data. (64 bytes, 512 bit)</description>
+    </directive>
+
+    <directive name="REAL4" tool="MASM">
+      <description>Allocates and optionally initializes a single-precision (4-byte) floating-point number for each initializer.</description>
+    </directive>
+    <directive name="REAL8" tool="MASM">
+      <description>Allocates and optionally initializes a double-precision (8-byte) floating-point number for each initializer.</description>
+    </directive>
+    <directive name="REAL10" tool="MASM">
+      <description>Allocates and optionally initializes a 10-byte floating-point number for each initializer.</description>
+    </directive>
+    <directive name="TBYTE" tool="MASM">
+      <description>Allocates and optionally initializes 10 bytes of storage for each initializer. Can also be used as a type specifier anywhere a type is legal.</description>
+    </directive>
+
+    <directive name="STRICT" tool="MASM">
+      <description>TODO.</description>
+    </directive>
+    <directive name=".ALLOCSTACK" tool="MASM">
+      <description>MASM64: Generates a UWOP_ALLOC_SMALL or a UWOP_ALLOC_LARGE with the specified size for the current offset in the prologue.</description>
+    </directive>
+    <directive name=".ENDPROLOG" tool="MASM">
+      <description>MASM64: Signals the end of the prologue declarations.</description>
+    </directive>
+    <directive name=".PUSHFRAME" tool="MASM">
+      <description>MASM64: Generates a UWOP_PUSH_MACHFRAME unwind code entry. If the optional code is specified, the unwind code entry is given a modifier of 1. Otherwise the modifier is 0.</description>
+    </directive>
+    <directive name=".PUSHREG" tool="MASM">
+      <description>MASM64: Generates a UWOP_PUSH_NONVOL unwind code entry for the specified register number using the current offset in the prologue.</description>
+    </directive>
+    <directive name=".SAVEREG" tool="MASM">
+      <description>MASM64: Generates either a UWOP_SAVE_NONVOL or a UWOP_SAVE_NONVOL_FAR unwind code entry for the specified register (reg) and offset (offset) using the current prologue offset. MASM will choose the most efficient encoding.</description>
+    </directive>
+    <directive name=".SAVEXMM128" tool="MASM">
+      <description>MASM64: Generates either a UWOP_SAVE_XMM128 or a UWOP_SAVE_XMM128_FAR unwind code entry for the specified XMM register and offset using the current prologue offset. MASM will choose the most efficient encoding.</description>
+    </directive>
+    <directive name=".SETFRAME" tool="MASM">
+      <description>MASM64: Fills in the frame register field and offset in the unwind information using the specified register (reg) and offset (offset). The offset must be a multiple of 16 and less than or equal to 240. This directive also generates a UWOP_SET_FPREG unwind code entry for the specified register using the current prologue offset.</description>
+    </directive>
+    <directive name="ALIGN" tool="MASM">
+      <description>Aligns the next variable or instruction on a byte that is a multiple of number.</description>
+    </directive>
+    <directive name="EVEN" tool="MASM">
+      <description>Aligns the next variable or instruction on an even byte.</description>
+    </directive>
+    <directive name="LABEL" tool="MASM">
+      <description>Creates a new label by assigning the current location-counter value and the given type to name.</description>
+    </directive>
+    <directive name="ORG" tool="MASM">
+      <description>Sets the location counter to expression.</description>
+    </directive>
+
+    <directive name="ELSE" tool="MASM">
+      <description>Marks the beginning of an alternate block within a conditional block.</description>
+    </directive>
+    <directive name="ELSEIF" tool="MASM">
+      <description>Combines ELSE and IF into one statement.</description>
+    </directive>
+    <directive name="ELSEIF2" tool="MASM">
+      <description>ELSEIF block evaluated on every assembly pass if OPTION:SETIF2 is TRUE.</description>
+    </directive>
+    <directive name="IF" tool="MASM">
+      <description>Grants assembly of ifstatements if expression1 is true (nonzero) or elseifstatements if expression1 is false (0) and expression2 is true.</description>
+    </directive>
+    <directive name="IF2" tool="MASM">
+      <description>IF block is evaluated on every assembly pass if OPTION:SETIF2 is TRUE.</description>
+    </directive>
+    <directive name="IFNB" tool="MASM">
+      <description>Grants assembly if textitem is not blank.</description>
+    </directive>
+    <directive name="IFB" tool="MASM">
+      <description>Grants assembly if textitem is blank.</description>
+    </directive>
+    <directive name="IFDEF" tool="MASM">
+      <description>Grants assembly if name is a previously defined label, variable, or symbol.</description>
+    </directive>
+    <directive name="IFNDEF" tool="MASM">
+      <description>Grants assembly if name has not been defined.</description>
+    </directive>
+    <directive name="IFDIF" tool="MASM">
+      <description>Grants assembly if the text items are different.</description>
+    </directive>
+    <directive name="IFE" tool="MASM">
+      <description>Grants assembly if expression is false (0).</description>
+    </directive>
+    <directive name="IFIDN" tool="MASM">
+      <description>Grants assembly if the text items are identical.</description>
+    </directive>
+    <directive name="ENDIF" tool="MASM">
+      <description>MASM:</description>
+    </directive>
+    <directive name="ALIAS" tool="MASM">
+      <description>The ALIAS directive creates an alternate name for a function.</description>
+    </directive>
+    <directive name=".BREAK" tool="MASM">
+      <description>Generates code to terminate a .WHILE or .REPEAT block if condition is true.</description>
+    </directive>
+    <directive name=".CONTINUE" tool="MASM">
+      <description>Generates code to jump to the top of a .WHILE or .REPEAT block if condition is true.</description>
+    </directive>
+    <directive name=".ELSE" tool="MASM">
+      <description>Generates code to jump to the top of a .WHILE or .REPEAT block if condition is false.</description>
+    </directive>
+    <directive name=".ELSIF" tool="MASM">
+      <description>Generates code that tests condition1 (for example, AX > 7) and executes the statements if that condition is true.</description>
+    </directive>
+    <directive name=".ELSEIF" tool="MASM">
+      <description>Generates code that tests condition1 (for example, AX > 7) and executes the statements if that condition is true.</description>
+    </directive>
+    <directive name=".ENDIF" tool="MASM">
+      <description>MASM:</description>
+    </directive>
+    <directive name=".ENDW" tool="MASM">
+      <description>MASM:</description>
+    </directive>
+    <directive name=".IF" tool="MASM">
+      <description>Generates code that tests condition1 (for example, AX > 7) and executes the statements if that condition is true.</description>
+    </directive>
+    <directive name=".REPEAT" tool="MASM">
+      <description>Generates code that repeats execution of the block of statements until condition becomes true. .UNTILCXZ, which becomes true when CX is zero, may be substituted for .UNTIL. The condition is optional with .UNTILCXZ.</description>
+    </directive>
+    <directive name=".UNTIL" tool="MASM">
+      <description>Generates code that repeats execution of the block of statements until condition becomes true. .UNTILCXZ, which becomes true when CX is zero, may be substituted for .UNTIL. The condition is optional with .UNTILCXZ.</description>
+    </directive>
+    <directive name=".UNTILCXZ" tool="MASM">
+      <description>Generates code that repeats execution of the block of statements until condition becomes true. .UNTILCXZ, which becomes true when CX is zero, may be substituted for .UNTIL. The condition is optional with .UNTILCXZ.</description>
+    </directive>
+    <directive name=".WHILE" tool="MASM">
+      <description>Generates code that executes the block of statements while condition remains true.</description>
+    </directive>
+    <directive name=".ERR" tool="MASM">
+      <description>Generates an error.</description>
+    </directive>
+    <directive name=".ERR2" tool="MASM">
+      <description>.ERR block evaluated on every assembly pass if OPTION:SETIF2 is TRUE.</description>
+    </directive>
+    <directive name=".ERRB" tool="MASM">
+      <description>Generates an error if textitem is blank.</description>
+    </directive>
+    <directive name=".ERRDEF" tool="MASM">
+      <description>Generates an error if name is a previously defined label, variable, or symbol.</description>
+    </directive>
+    <directive name=".ERRDIF" tool="MASM">
+      <description>Generates an error if the text items are different.</description>
+    </directive>
+    <directive name=".ERRE" tool="MASM">
+      <description>Generates an error if expression is false (0).</description>
+    </directive>
+    <directive name=".ERRIDN" tool="MASM">
+      <description>Generates an error if the text items are identical.</description>
+    </directive>
+    <directive name=".ERRNB" tool="MASM">
+      <description>Generates an error if textitem is not blank.</description>
+    </directive>
+    <directive name=".ERRNDEF" tool="MASM">
+      <description>Generates an error if name has not been defined.</description>
+    </directive>
+    <directive name=".ERRNZ" tool="MASM">
+      <description>Generates an error if expression is true (nonzero).</description>
+    </directive>
+    <directive name="EQU" tool="MASM, NASM">
+      <description>EQU defines a symbol to a given constant value: when EQU is used, the source line must contain a label. The action of EQU is to define the given label name to the value of its (only) operand. This definition is absolute, and cannot change later.</description>
+    </directive>
+    <directive name="TEXTEQU" tool="MASM">
+      <description>Assigns textitem to name. The textitem can be a literal string, a constant preceded by a %, or the string returned by a macro function.</description>
+    </directive>
+    <directive name=".CREF" tool="MASM">
+      <description>Enables listing of symbols in the symbol portion of the symbol table and browser file.</description>
+    </directive>
+    <directive name=".LIST" tool="MASM">
+      <description>Starts listing of statements.</description>
+    </directive>
+    <directive name=".LISTALL" tool="MASM">
+      <description>Starts listing of all statements.</description>
+    </directive>
+    <directive name=".LISTIF" tool="MASM">
+      <description>Starts listing of statements in false conditional blocks.</description>
+    </directive>
+    <directive name=".LISTMACRO" tool="MASM">
+      <description>Starts listing of macro expansion statements that generate code or data.</description>
+    </directive>
+    <directive name=".LISTMACROALL" tool="MASM">
+      <description>Starts listing of all statements in macros.</description>
+    </directive>
+    <directive name=".NOCREF" tool="MASM">
+      <description>Suppresses listing of symbols in the symbol table and browser file.</description>
+    </directive>
+    <directive name="PAGE" tool="MASM">
+      <description>The first directive sets line length and character width of the program listing. If no arguments are given, generates a page break. The second directive increments the section number and resets the page number to 1.</description>
+    </directive>
+    <directive name="SUBTITLE" tool="MASM">
+      <description>Defines the listing subtitle. Same as SUBTTL.</description>
+    </directive>
+    <directive name=".TFCOND" tool="MASM">
+      <description>Toggles listing of false conditional blocks.</description>
+    </directive>
+    <directive name="TITLE" tool="MASM">
+      <description>Defines the program listing title.</description>
+    </directive>
+    <directive name="ENDM" tool="MASM">
+      <description>Terminates a macro or repeat block.</description>
+    </directive>
+    <directive name="EXITM" tool="MASM">
+      <description>Terminates expansion of the current repeat or macro block and begins assembly of the next statement outside the block.</description>
+    </directive>
+    <directive name="GOTO" tool="MASM">
+      <description>Transfers assembly to the line marked :macrolabel.</description>
+    </directive>
+    <directive name="LOCAL" tool="MASM">
+      <description>In the first directive, within a macro, LOCAL defines labels that are unique to each instance of the macro.</description>
+    </directive>
+    <directive name="MACRO" tool="MASM">
+      <description>Marks a macro block called name and establishes parameter placeholders for arguments passed when the macro is called.</description>
+    </directive>
+    <directive name="PURGE" tool="MASM">
+      <description>Deletes the specified macros from memory.</description>
+    </directive>
+    <directive name="ASSUME" tool="MASM">
+      <description>Enables error checking for register values.</description>
+    </directive>
+    <directive name="COMMENT" tool="MASM">
+      <description>Treats all text between or on the same line as the delimiters as a comment.</description>
+    </directive>
+    <directive name="ECHO" tool="MASM">
+      <description>Displays message to the standard output device (by default, the screen).</description>
+    </directive>
+    <directive name="END" tool="MASM">
+      <description>Marks the end of a module and, optionally, sets the program entry point to address.</description>
+    </directive>
+    <directive name=".FPO" tool="MASM">
+      <description>The .FPO directive controls the emission of debug records to the .debug$F segment or section.</description>
+    </directive>
+    <directive name="INCLUDE" tool="MASM,NASM">
+      <description>Inserts source code from the source file given by filename into the current source file during assembly.</description>
+    </directive>
+    <directive name="INCLUDELIB" tool="MASM">
+      <description>Informs the linker that the current module should be linked with libraryname.</description>
+    </directive>
+    <directive name="OPTION" tool="MASM">
+      <description>Enables and disables features of the assembler.</description>
+    </directive>
+    <directive name="POPCONTEXT" tool="MASM">
+      <description>Restores part or all of the current context (saved by the PUSHCONTEXT directive). The context can be ASSUMES, RADIX, LISTING, CPU, or ALL.</description>
+    </directive>
+    <directive name="PUSHCONTEXT" tool="MASM">
+      <description>Saves part or all of the current context: segment register assumes, radix value, listing and cref flags, or processor/coprocessor values. The context can be ASSUMES, RADIX, LISTING, CPU, or ALL.</description>
+    </directive>
+    <directive name=".RADIX" tool="MASM">
+      <description>Sets the default radix, in the range 2 to 16, to the value of expression.</description>
+    </directive>
+    <directive name=".SAFESEH" tool="MASM">
+      <description>Registers a function as a structured exception handler.</description>
+    </directive>
+    <directive name="ENDP" tool="MASM">
+      <description>Marks the end of procedure name previously begun with PROC.</description>
+    </directive>
+    <directive name="INVOKE" tool="MASM">
+      <description>Calls the procedure at the address given by expression, passing the arguments on the stack or in registers according to the standard calling conventions of the language type.</description>
+    </directive>
+    <directive name="PROC" tool="MASM">
+      <description>Marks start and end of a procedure block called label. The statements in the block can be called with the CALL instruction or INVOKE directive.</description>
+    </directive>
+    <directive name="PROTO" tool="MASM">
+      <description>Prototypes a function.</description>
+    </directive>
+    <directive name=".386" tool="MASM">
+      <description>Enables assembly of nonprivileged instructions for the 80386 processor; disables assembly of instructions introduced with later processors.</description>
+    </directive>
+    <directive name=".386P" tool="MASM">
+      <description>Enables assembly of all instructions (including privileged) for the 80386 processor; disables assembly of instructions introduced with later processors.</description>
+    </directive>
+    <directive name=".387" tool="MASM">
+      <description>Enables assembly of instructions for the 80387 coprocessor.</description>
+    </directive>
+    <directive name=".486" tool="MASM">
+      <description>Enables assembly of nonprivileged instructions for the 80486 processor.</description>
+    </directive>
+    <directive name=".486P" tool="MASM">
+      <description>Enables assembly of all instructions (including privileged) for the 80486 processor.</description>
+    </directive>
+    <directive name=".586" tool="MASM">
+      <description>Enables assembly of nonprivileged instructions for the Pentium processor.</description>
+    </directive>
+    <directive name=".586P" tool="MASM">
+      <description>Enables assembly of all instructions (including privileged) for the Pentium processor.</description>
+    </directive>
+    <directive name=".686" tool="MASM">
+      <description>Enables assembly of nonprivileged instructions for the Pentium Pro processor.</description>
+    </directive>
+    <directive name=".686P" tool="MASM">
+      <description>Enables assembly of all instructions (including privileged) for the Pentium Pro processor.</description>
+    </directive>
+    <directive name=".K3D" tool="MASM">
+      <description>Enables assembly of K3D instructions.</description>
+    </directive>
+    <directive name=".MMX" tool="MASM">
+      <description>Enables assembly of MMX or single-instruction, multiple data (SIMD) instructions.</description>
+    </directive>
+    <directive name=".XMM" tool="MASM">
+      <description>Enables assembly of Internet Streaming SIMD Extension instructions.</description>
+    </directive>
+    <directive name="FOR" tool="MASM">
+      <description>Marks a block that will be repeated once for each argument, with the current argument replacing parameter on each repetition.</description>
+    </directive>
+    <directive name="FORC" tool="MASM">
+      <description>Marks a block that will be repeated once for each character in string, with the current character replacing parameter on each repetition.</description>
+    </directive>
+    <directive name="COMM" tool="MASM">
+      <description>Creates a communal variable with the attributes specified in definition.</description>
+    </directive>
+    <directive name="EXTRN" tool="MASM">
+      <description>Defines one or more external variables, labels, or symbols called name whose type is type.</description>
+    </directive>
+    <directive name="EXTERN" tool="MASM">
+      <description>Defines one or more external variables, labels, or symbols called name whose type is type.</description>
+    </directive>
+    <directive name="EXTERNDEF" tool="MASM">
+      <description>Defines one or more external variables, labels, or symbols called name whose type is type.</description>
+    </directive>
+    <directive name="PUBLIC" tool="MASM">
+      <description>Makes each variable, label, or absolute symbol specified as name available to all other modules in the program.</description>
+    </directive>
+    <directive name=".ALPHA" tool="MASM">
+      <description>Orders segments alphabetically.</description>
+    </directive>
+    <directive name=".DOSSEG" tool="MASM">
+      <description>Orders the segments according to the MS-DOS segment convention: CODE first, then segments not in DGROUP, and then segments in DGROUP.</description>
+    </directive>
+    <directive name="ENDS" tool="MASM">
+      <description>Marks the end of segment, structure, or union name previously begun with SEGMENT, STRUCT, UNION, or a simplified segment directive.</description>
+    </directive>
+    <directive name="GROUP" tool="MASM">
+      <description>Add the specified segments to the group called name.</description>
+    </directive>
+    <directive name="SEGMENT" tool="MASM">
+      <description>Defines a program segment called name having segment attributes</description>
+    </directive>
+    <directive name=".SEQ" tool="MASM">
+      <description>Orders segments sequentially (the default order).</description>
+    </directive>
+    <directive name=".CODE" tool="MASM">
+      <description>When used with .MODEL, indicates the start of a code segment.</description>
+    </directive>
+    <directive name=".CONST" tool="MASM">
+      <description>When used with .MODEL, starts a constant data segment (with segment name CONST).</description>
+    </directive>
+    <directive name=".DATA" tool="MASM">
+      <description>When used with .MODEL, starts a near data segment for initialized data (segment name _DATA).</description>
+    </directive>
+    <directive name=".DATA?" tool="MASM">
+      <description>When used with .MODEL, starts a near data segment for uninitialized data (segment name _BSS).</description>
+    </directive>
+    <directive name=".EXIT" tool="MASM">
+      <description>Generates termination code.</description>
+    </directive>
+    <directive name=".FARDATA" tool="MASM">
+      <description>When used with .MODEL, starts a far data segment for initialized data (segment name FAR_DATA or name).</description>
+    </directive>
+    <directive name=".FARDATA?" tool="MASM">
+      <description>When used with .MODEL, starts a far data segment for uninitialized data (segment name FAR_BSS or name).</description>
+    </directive>
+    <directive name=".MODEL" tool="MASM">
+      <description>Initializes the program memory model.</description>
+    </directive>
+    <directive name=".STACK" tool="MASM">
+      <description>When used with .MODEL, defines a stack segment (with segment name STACK). The optional size specifies the number of bytes for the stack (default 1,024). The .STACK directive automatically closes the stack statement.</description>
+    </directive>
+    <directive name=".STARTUP" tool="MASM">
+      <description>Generates program start-up code.</description>
+    </directive>
+    <directive name="CATSTR" tool="MASM">
+      <description>Concatenates text items.</description>
+    </directive>
+    <directive name="INSTR" tool="MASM">
+      <description>Finds the first occurrence of textitem2 in textitem1.</description>
+    </directive>
+    <directive name="SIZESTR" tool="MASM">
+      <description>Finds the size of a text item.</description>
+    </directive>
+    <directive name="SUBSTR" tool="MASM">
+      <description>Returns a substring of textitem, starting at position. The textitem can be a literal string, a constant preceded by a %, or the string returned by a macro function.</description>
+    </directive>
+    <directive name="RECORD" tool="MASM">
+      <description>Declares a record type consisting of the specified fields. fieldname names the field, width specifies the number of bits, and expression gives its initial value.</description>
+    </directive>
+    <directive name="STRUCT" tool="MASM">
+      <description>Declares a structure type having the specified fielddeclarations. Each field must be a valid data definition. Same as STRUC.</description>
+    </directive>
+    <directive name="TYPEDEF" tool="MASM">
+      <description>Defines a new type called name, which is equivalent to type.</description>
+    </directive>
+    <directive name="UNION" tool="MASM">
+      <description>Declares a union of one or more data types. The fielddeclarations must be valid data definitions. Omit the ENDS name label on nested UNION definitions.</description>
+    </directive>
+
+
+    <directive name=".LALL" tool="MASM">
+      <description>TODO</description>
+    </directive>
+    <directive name=".LFCOND" tool="MASM">
+      <description>TODO</description>
+    </directive>
+    <directive name=".NOLIST" tool="MASM">
+      <description>Suppresses program listing. Same as .XLIST</description>
+    </directive>
+    <directive name=".SALL" tool="MASM">
+      <description>Suppresses listing of macro expansions.</description>
+    </directive>
+    <directive name=".SFCOND" tool="MASM">
+      <description>Suppresses listing of conditional blocks whose condition evaluates to false (0).</description>
+    </directive>
+    <directive name=".XALL" tool="MASM">
+      <description>Starts listing of macro expansion statements that generate code or data.</description>
+    </directive>
+    <directive name=".XCREF" tool="MASM">
+      <description>Suppresses listing of symbols in the symbol table and browser file.</description>
+    </directive>
+    <directive name=".XLIST" tool="MASM">
+      <description>Suppresses program listing. Same as .NOLIST</description>
+    </directive>
+
+    <directive name="BITS" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="%DEFINE" tool="NASM">
+      <description>Define Single-line macros that is resolved at the time the embedded macro is expanded.</description>
+    </directive>
+    <directive name="%XDEFINE" tool="NASM">
+      <description>Define Single-line macros that is resolved at the time the embedded macro is defined.</description>
+    </directive>
+    <directive name="%IXDEFINE" tool="NASM">
+      <description>Define case-insensitive single-line macros that is resolved at the time the embedded macro is defined.</description>
+    </directive>
+    <directive name="%UNDEF" tool="NASM">
+      <description>Define Single-line macros can be removed with the %undef directive.</description>
+    </directive>
+    <directive name="%UNDEF" tool="NASM">
+      <description>Single-line macros can be removed with the %undef directive.</description>
+    </directive>
+    <directive name="%ASSIGN" tool="NASM">
+      <description>Define single-line macros.</description>
+    </directive>
+    <directive name="%IASSIGN" tool="NASM">
+      <description>Define case-insensitive single-line macros.</description>
+    </directive>
+    <directive name="%DEFSTR" tool="NASM">
+      <description>%defstr, and its case-insensitive counterpart %idefstr, define or redefine a single-line macro without parameters but converts the entire right-hand side, after macro expansion, to a quoted string before definition.</description>
+    </directive>
+    <directive name="%IDEFSTR" tool="NASM">
+      <description>%defstr, and its case-insensitive counterpart %idefstr, define or redefine a single-line macro without parameters but converts the entire right-hand side, after macro expansion, to a quoted string before definition.</description>
+    </directive>
+    <directive name="%DEFTOK" tool="NASM">
+      <description>%deftok, and its case-insensitive counterpart %ideftok, define or redefine a single-line macro without parameters but converts the second parameter, after string conversion, to a sequence of tokens.</description>
+    </directive>
+    <directive name="%IDEFTOK" tool="NASM">
+      <description>%deftok, and its case-insensitive counterpart %ideftok, define or redefine a single-line macro without parameters but converts the second parameter, after string conversion, to a sequence of tokens.</description>
+    </directive>
+    <directive name="%STRCAT" tool="NASM">
+      <description>The %strcat operator concatenates quoted strings and assign them to a single-line macro.</description>
+    </directive>
+    <directive name="%STRLEN" tool="NASM">
+      <description>The %strlen operator assigns the length of a string to a macro.</description>
+    </directive>
+    <directive name="%SUBSTR" tool="NASM">
+      <description>Individual letters or substrings in strings can be extracted using the %substr operator.</description>
+    </directive>
+    <directive name="%MACRO" tool="NASM">
+      <description>Start a multiline macro</description>
+    </directive>
+    <directive name="%ENDMACRO" tool="NASM">
+      <description>End a multiline macro, started with %macro.</description>
+    </directive>
+    <directive name="%UNMACRO" tool="NASM">
+      <description>Multi-line macros can be removed with the %unmacro directive. Unlike the %undef directive, however, %unmacro takes an argument specification, and will only remove exact matches with that argument specification.</description>
+    </directive>
+    <directive name="%IF" tool="NASM">
+      <description>Conditional Assembly.</description>
+    </directive>
+    <directive name="%ELIF" tool="NASM">
+      <description>Conditional Assembly.</description>
+    </directive>
+    <directive name="%ELSE" tool="NASM">
+      <description>Conditional Assembly.</description>
+    </directive>
+    <directive name="%ENDIF" tool="NASM">
+      <description>Conditional Assembly.</description>
+    </directive>
+    <directive name="%IFDEF" tool="NASM">
+      <description>Testing Single-Line Macro Existence.</description>
+    </directive>
+    <directive name="%IFMACRO" tool="NASM">
+      <description>Testing Multi-Line Macro Existence. The %ifmacro directive operates in the same way as the %ifdef directive, except that it checks for the existence of a multi-line macro.</description>
+    </directive>
+    <directive name="%IFCTX" tool="NASM">
+      <description>Testing the Context Stack. The %ifmacro directive operates in the same way as the %ifdef directive, except that it checks for the existence of a multi-line macro.</description>
+    </directive>
+    <directive name="%IFIDN" tool="NASM">
+      <description>Testing Exact Text Identity. The construct %ifidn text1,text2 will cause the subsequent code to be assembled if and only if text1 and text2, after expanding single-line macros, are identical pieces of text. Differences in white space are not counted.</description>
+    </directive>
+    <directive name="%IFIDNI" tool="NASM">
+      <description>Testing Exact Text Identity. The construct %ifidni text1,text2 will cause the subsequent code to be assembled if and only if text1 and text2, after expanding single-line macros, are identical pieces of text (case-insensitive). Differences in white space are not counted.</description>
+    </directive>
+    <directive name="%IFID" tool="NASM">
+      <description>Testing Token Types. The conditional assembly construct %ifid, taking one parameter (which may be blank), assembles the subsequent code if and only if the first token in the parameter exists and is an identifier.</description>
+    </directive>
+    <directive name="%IFNUM" tool="NASM">
+      <description>Testing Token Types. The conditional assembly construct %ifnum, taking one parameter (which may be blank), assembles the subsequent code if and only if the first token in the parameter exists and is a number.</description>
+    </directive>
+    <directive name="%IFSTR" tool="NASM">
+      <description>Testing Token Types. The conditional assembly construct %ifstr, taking one parameter (which may be blank), assembles the subsequent code if and only if the first token in the parameter exists and is a string.</description>
+    </directive>
+    <directive name="%IFTOKEN" tool="NASM">
+      <description>Test for a Single Token. The conditional assembly construct %iftoken assembles the subsequent code if and only if the expanded parameters consist of exactly one token, possibly surrounded by whitespace.</description>
+    </directive>
+    <directive name="%IFEMPTY" tool="NASM">
+      <description>Test for Empty Expansion. The conditional assembly construct %ifempty assembles the subsequent code if and only if the expanded parameters do not contain any tokens at all, whitespace excepted.</description>
+    </directive>
+    <directive name="%IFENV" tool="NASM">
+      <description>Test If Environment Variable Exists. The conditional assembly construct %ifenv assembles the subsequent code if and only if the environment variable referenced by the %!env directive exists.</description>
+    </directive>
+    <directive name="%REP" tool="NASM">
+      <description>The directives %rep and %endrep (%rep takes a numeric argument, which can be an expression; %endrep takes no arguments) can be used to enclose a chunk of code, which is then replicated as many times as specified by the preprocessor.</description>
+    </directive>
+    <directive name="%INCLUDE" tool="NASM">
+      <description>Inserts source code from the source file given by filename into the current source file during assembly.</description>
+    </directive>
+    <directive name="%PATHSEARCH" tool="NASM">
+      <description>Search the Include Path.</description>
+    </directive>
+    <directive name="%DEPEND" tool="NASM">
+      <description>Add Dependent Files.</description>
+    </directive>
+    <directive name="%USE" tool="NASM">
+      <description>Include Standard Macro Package.</description>
+    </directive>
+    <directive name="%PUSH" tool="NASM">
+      <description>Creating and Removing Contexts.</description>
+    </directive>
+    <directive name="%POP" tool="NASM">
+      <description>Creating and Removing Contexts.</description>
+    </directive>
+    <directive name="%REPL" tool="NASM">
+      <description>Renaming a Context.</description>
+    </directive>
+    <directive name="%ARG" tool="NASM">
+      <description>The %arg directive is used to simplify the handling of parameters passed on the stack.</description>
+    </directive>
+    <directive name="%STACKSIZE" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="%LOCAL" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="%ERROR" tool="NASM">
+      <description>The preprocessor directive %error will cause NASM to report an error if it occurs in assembled code.</description>
+    </directive>
+    <directive name="%WARNING" tool="NASM">
+      <description>The preprocessor directive %warning will cause NASM to report an warning (but allows assembly to continue) if it occurs in assembled code.</description>
+    </directive>
+    <directive name="%FATAL" tool="NASM">
+      <description>The preprocessor directive %warning will cause NASM to terminate immediately, regardless of pass.</description>
+    </directive>
+    <directive name="%LINE" tool="NASM">
+      <description>The %line directive is used to notify NASM that the input line corresponds to a specific line number in another file.</description>
+    </directive>
+    <directive name="__NASM_MAJOR__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__NASM_MINOR__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__NASM_SUBMINOR__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="___NASM_PATCHLEVEL__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__NASM_VERSION_ID__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__NASM_VER__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__FILE__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__LINE__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__BITS__" tool="NASM">
+      <description>The __BITS__ standard macro is updated every time that the BITS mode is set using the BITS XX or [BITS XX] directive, where XX is a valid mode number of 16, 32 or 64.</description>
+    </directive>
+    <directive name="__OUTPUT_FORMAT__" tool="NASM">
+      <description>The __OUTPUT_FORMAT__ standard macro holds the current Output Format, as given by the -f option or NASM's default.</description>
+    </directive>
+    <directive name="__DATE__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__TIME__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__DATE_NUM__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__TIME_NUM__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__UTC_DATE__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__UTC_TIME__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__UTC_DATE_NUM__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__UTC_TIME_NUM__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="__POSIX_TIME__" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="STRUC" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="ENDSTRUC" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="ISTRUC" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="IEND" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="ALIGN" tool="NASM">
+      <description>The ALIGN and ALIGNB macros provides a convenient way to align code or data on a word, longword, paragraph or other boundary. Normally, you can just use ALIGN in code and data sections and ALIGNB in BSS sections, and never need the second argument except for special purposes.</description>
+    </directive>
+    <directive name="ALIGNB" tool="NASM">
+      <description>The ALIGN and ALIGNB macros provides a convenient way to align code or data on a word, longword, paragraph or other boundary. Normally, you can just use ALIGN in code and data sections and ALIGNB in BSS sections, and never need the second argument except for special purposes.</description>
+    </directive>
+    <directive name="SECTALIGN" tool="NASM">
+      <description>The SECTALIGN macros provides a way to modify alignment attribute of output file section.</description>
+    </directive>
+    <directive name="INCBIN" tool="NASM">
+      <description>Includes a binary file verbatim into the output file.</description>
+    </directive>
+    <directive name="TIMES" tool="MASM, NASM">
+      <description>The TIMES prefix causes the instruction to be assembled multiple times.</description>
+    </directive>
+    <directive name="AT" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name=".INTEL_SYNTAX" tool="NASM">
+      <description>switch to INTEL syntax</description>
+    </directive>
+    <directive name=".ATT_SYNTAX" tool="NASM">
+      <description>switch to AT&amp;T syntax</description>
+    </directive>
+    <directive name=".TEXT" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name=".GLOBAL" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name=".ALIGN" tool="NASM">
+      <description>TODO</description>
+    </directive>
+    <directive name=".NOPREFIX" tool="NASM">
+      <description>TODO</description>
+    </directive>
+</directives>
+
+	<registers>
+		<register name='CS' bits='16' arch='8086'>
+			<description>Segment Register (Code Segment)</description>
+		</register>
+		<register name='DS' bits='16' arch='8086'>
+			<description>Segment Register (Data Segment)</description>
+		</register>
+		<register name='ES' bits='16' arch='8086'>
+			<description>Segment Register (Extra Segment)</description>
+		</register>
+		<register name='SS' bits='16' arch='8086'>
+			<description>Segment Register (Stack Segment)</description>
+		</register>
+		<register name='FS' bits='16' arch='386'>
+			<description>Segment Register (General Purpose)</description>
+		</register>
+		<register name='GS' bits='16' arch='386'>
+			<description>Segment Register (General Purpose)</description>
+		</register>
+
+		<register name='CR0' bits='32' arch='386'>
+			<description>Control Register 0</description>
+		</register>
+		<register name='CR1' bits='32' arch='386'>
+			<description>Control Register 1</description>
+		</register>
+		<register name='CR2' bits='32' arch='386'>
+			<description>Control Register 2</description>
+		</register>
+		<register name='CR3' bits='32' arch='386'>
+			<description>Control Register 3</description>
+		</register>
+		<register name='CR4' bits='32' arch='386'>
+			<description>Control Register 4</description>
+		</register>
+		<register name='CR5' bits='32' arch='386'>
+			<description>Control Register 5</description>
+		</register>
+		<register name='CR6' bits='32' arch='386'>
+			<description>Control Register 6</description>
+		</register>
+		<register name='CR7' bits='32' arch='386'>
+			<description>Control Register 7</description>
+		</register>
+		<register name='CR8' bits='64' arch='X64'>
+			<description>Control Register 8</description>
+		</register>
+
+		<register name='DR0' bits='32' arch='386'>
+			<description>Debug Register 0</description>
+		</register>
+		<register name='DR1' bits='32' arch='386'>
+			<description>Debug Register 1</description>
+		</register>
+		<register name='DR2' bits='32' arch='386'>
+			<description>Debug Register 2</description>
+		</register>
+		<register name='DR3' bits='32' arch='386'>
+			<description>Debug Register 3</description>
+		</register>
+		<register name='DR4' bits='32' arch='386'>
+			<description>Debug Register 4 (alias for DR6)</description>
+		</register>
+		<register name='DR5' bits='32' arch='386'>
+			<description>Debug Register 5 (alias for DR7)</description>
+		</register>
+		<register name='DR6' bits='32' arch='386'>
+			<description>Debug Register 6</description>
+		</register>
+		<register name='DR7' bits='32' arch='386'>
+			<description>Debug Register 7</description>
+		</register>
+
+		<register name='K0' bits='64' arch='AVX512VL'>
+			<description>Opmask Register 0</description>
+		</register>
+		<register name='K1' bits='64' arch='AVX512VL'>
+			<description>Opmask Register 1</description>
+		</register>
+		<register name='K2' bits='64' arch='AVX512VL'>
+			<description>Opmask Register 2</description>
+		</register>
+		<register name='K3' bits='64' arch='AVX512VL'>
+			<description>Opmask Register 3</description>
+		</register>
+		<register name='K4' bits='64' arch='AVX512VL'>
+			<description>Opmask Register 4</description>
+		</register>
+		<register name='K5' bits='64' arch='AVX512VL'>
+			<description>Opmask Register 5</description>
+		</register>
+		<register name='K6' bits='64' arch='AVX512VL'>
+			<description>Opmask Register 6</description>
+		</register>
+		<register name='K7' bits='64' arch='AVX512VL'>
+			<description>Opmask Register 7</description>
+		</register>
+
+		<register name='BND0' bits='128' arch='MPX'>
+			<description>MPX Bound Register 0</description>
+		</register>
+		<register name='BND1' bits='128' arch='MPX'>
+			<description>MPX Bound Register 1</description>
+		</register>
+		<register name='BND2' bits='128' arch='MPX'>
+			<description>MPX Bound Register 2</description>
+		</register>
+		<register name='BND3' bits='128' arch='MPX'>
+			<description>MPX Bound Register 3</description>
+		</register>
+
+
+		<register name='RAX' bits='64' arch='X64'>
+			<description>64-bit GPR (Accumulator)</description>
+		</register>
+		<register name='RBX' bits='64' arch='X64'>
+			<description>64-bit GPR (Base Register)</description>
+		</register>
+		<register name='RCX' bits='64' arch='X64'>
+			<description>64-bit GPR (Count Register)</description>
+		</register>
+		<register name='RDX' bits='64' arch='X64'>
+			<description>64-bit GPR (Data Register)</description>
+		</register>
+		<register name='RSI' bits='64' arch='X64'>
+			<description>64-bit Index Register (Source Index)</description>
+		</register>
+		<register name='RDI' bits='64' arch='X64'>
+			<description>64-bit Index Register (Destination Index)</description>
+		</register>
+		<register name='RBP' bits='64' arch='X64'>
+			<description>64-bit Pointer Register (Base Pointer)</description>
+		</register>
+		<register name='RSP' bits='64' arch='X64'>
+			<description>64-bit Pointer Register (Stack Pointer) </description>
+		</register>
+		<register name='R8' bits='64' arch='X64'>
+			<description>64-bit GPR</description>
+		</register>
+		<register name='R9' bits='64' arch='X64'>
+			<description>64-bit GPR</description>
+		</register>
+		<register name='R10' bits='64' arch='X64'>
+			<description>64-bit GPR</description>
+		</register>
+		<register name='R11' bits='64' arch='X64'>
+			<description>64-bit GPR</description>
+		</register>
+		<register name='R12' bits='64' arch='X64'>
+			<description>64-bit GPR</description>
+		</register>
+		<register name='R13' bits='64' arch='X64'>
+			<description>64-bit GPR</description>
+		</register>
+		<register name='R14' bits='64' arch='X64'>
+			<description>64-bit GPR</description>
+		</register>
+		<register name='R15' bits='64' arch='X64'>
+			<description>64-bit GPR</description>
+		</register>
+		<register name='EAX' bits='32' arch='386'>
+			<description>32-bit GPR (Accumulator)</description>
+		</register>
+		<register name='EBX' bits='32' arch='386'>
+			<description>32-bit GPR (Base Register)</description>
+		</register>
+		<register name='ECX' bits='32' arch='386'>
+			<description>32-bit GPR (Count Register)</description>
+		</register>
+		<register name='EDX' bits='32' arch='386'>
+			<description>32-bit GPR (Data Register)</description>
+		</register>
+		<register name='ESI' bits='32' arch='386'>
+			<description>32-bit Index Register (Source Index)</description>
+		</register>
+		<register name='EDI' bits='32' arch='386'>
+			<description>32-bit Index Register (Destination Index)</description>
+		</register>
+		<register name='EBP' bits='32' arch='386'>
+			<description>32-bit Pointer Register (Base Pointer)</description>
+		</register>
+		<register name='ESP' bits='32' arch='386'>
+			<description>32-bit Pointer Register (Stack Pointer) </description>
+		</register>
+		<register name='R8D' bits='32' arch='X64'>
+			<description>32-bit GPR</description>
+		</register>
+		<register name='R9D' bits='32' arch='X64'>
+			<description>32-bit GPR</description>
+		</register>
+		<register name='R10D' bits='32' arch='X64'>
+			<description>32-bit GPR</description>
+		</register>
+		<register name='R11D' bits='32' arch='X64'>
+			<description>32-bit GPR</description>
+		</register>
+		<register name='R12D' bits='32' arch='X64'>
+			<description>32-bit GPR</description>
+		</register>
+		<register name='R13D' bits='32' arch='X64'>
+			<description>32-bit GPR</description>
+		</register>
+		<register name='R14D' bits='32' arch='X64'>
+			<description>32-bit GPR</description>
+		</register>
+		<register name='R15D' bits='32' arch='X64'>
+			<description>32-bit GPR</description>
+		</register>
+		<register name='AX' bits='16' arch='8086'>
+			<description>16-bit GPR (Accumulator)</description>
+		</register>
+		<register name='BX' bits='16' arch='8086'>
+			<description>16-bit GPR (Base Register)</description>
+		</register>
+		<register name='CX' bits='16' arch='8086'>
+			<description>16-bit GPR (Count Register)</description>
+		</register>
+		<register name='DX' bits='16' arch='8086'>
+			<description>16-bit GPR (Data Register)</description>
+		</register>
+		<register name='SI' bits='16' arch='8086'>
+			<description>16-bit Index Register (Source Index)</description>
+		</register>
+		<register name='DI' bits='16' arch='8086'>
+			<description>16-bit Index Register (Destination Index)</description>
+		</register>
+		<register name='BP' bits='16' arch='8086'>
+			<description>16-bit Pointer Register (Base Pointer)</description>
+		</register>
+		<register name='SP' bits='16' arch='8086'>
+			<description>16-bit Pointer Register (Stack Pointer) </description>
+		</register>
+		<register name='R8W' bits='16' arch='X64'>
+			<description>16-bit GPR</description>
+		</register>
+		<register name='R9W' bits='16' arch='X64'>
+			<description>16-bit GPR</description>
+		</register>
+		<register name='R10W' bits='16' arch='X64'>
+			<description>16-bit GPR</description>
+		</register>
+		<register name='R11W' bits='16' arch='X64'>
+			<description>16-bit GPR</description>
+		</register>
+		<register name='R12W' bits='16' arch='X64'>
+			<description>16-bit GPR</description>
+		</register>
+		<register name='R13W' bits='16' arch='X64'>
+			<description>16-bit GPR</description>
+		</register>
+		<register name='R14W' bits='16' arch='X64'>
+			<description>16-bit GPR</description>
+		</register>
+		<register name='R15W' bits='16' arch='X64'>
+			<description>16-bit GPR</description>
+		</register>
+		<register name='AH' bits='8' arch='8086'>
+			<description>8-bit GPR (Accumulator)</description>
+		</register>
+		<register name='BH' bits='8' arch='8086'>
+			<description>8-bit GPR (Base Register)</description>
+		</register>
+		<register name='CH' bits='8' arch='8086'>
+			<description>8-bit GPR (Count Register)</description>
+		</register>
+		<register name='DH' bits='8' arch='8086'>
+			<description>8-bit GPR (Data Register)</description>
+		</register>
+		<register name='AL' bits='8' arch='8086'>
+			<description>8-bit GPR (Accumulator)</description>
+		</register>
+		<register name='BL' bits='8' arch='8086'>
+			<description>8-bit GPR (Base Register)</description>
+		</register>
+		<register name='CL' bits='8' arch='8086'>
+			<description>8-bit GPR (Count Register)</description>
+		</register>
+		<register name='DL' bits='8' arch='8086'>
+			<description>8-bit GPR (Data Register)</description>
+		</register>
+		<register name='SIL' bits='8' arch='8086'>
+			<description>8-bit Index Register (Source Index)</description>
+		</register>
+		<register name='DIL' bits='8' arch='8086'>
+			<description>8-bit Index Register (Destination Index)</description>
+		</register>
+		<register name='BPL' bits='8' arch='8086'>
+			<description>8-bit Pointer Register (Base Pointer)</description>
+		</register>
+		<register name='SPL' bits='8' arch='8086'>
+			<description>8-bit Pointer Register (Stack Pointer) </description>
+		</register>
+		<register name='R8B' bits='8' arch='X64'>
+			<description>8-bit GPR</description>
+		</register>
+		<register name='R9B' bits='8' arch='X64'>
+			<description>8-bit GPR</description>
+		</register>
+		<register name='R10B' bits='8' arch='X64'>
+			<description>8-bit GPR</description>
+		</register>
+		<register name='R11B' bits='8' arch='X64'>
+			<description>8-bit GPR</description>
+		</register>
+		<register name='R12B' bits='8' arch='X64'>
+			<description>8-bit GPR</description>
+		</register>
+		<register name='R13B' bits='8' arch='X64'>
+			<description>8-bit GPR</description>
+		</register>
+		<register name='R14B' bits='8' arch='X64'>
+			<description>8-bit GPR</description>
+		</register>
+		<register name='R15B' bits='8' arch='X64'>
+			<description>8-bit GPR</description>
+		</register>
+		<register name='MM0' bits='64' arch='MMX'>
+			<description>64-bit mmx Register</description>
+		</register>
+		<register name='MM1' bits='64' arch='MMX'>
+			<description>64-bit mmx Register</description>
+		</register>
+		<register name='MM2' bits='64' arch='MMX'>
+			<description>64-bit mmx Register</description>
+		</register>
+		<register name='MM3' bits='64' arch='MMX'>
+			<description>64-bit mmx Register</description>
+		</register>
+		<register name='MM4' bits='64' arch='MMX'>
+			<description>64-bit mmx Register</description>
+		</register>
+		<register name='MM5' bits='64' arch='MMX'>
+			<description>64-bit mmx Register</description>
+		</register>
+		<register name='MM6' bits='64' arch='MMX'>
+			<description>64-bit mmx Register</description>
+		</register>
+		<register name='MM7' bits='64' arch='MMX'>
+			<description>64-bit mmx Register</description>
+		</register>
+		<register name='XMM0' bits='128' arch='SSE'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM1' bits='128' arch='SSE'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM2' bits='128' arch='SSE'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM3' bits='128' arch='SSE'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM4' bits='128' arch='SSE'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM5' bits='128' arch='SSE'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM6' bits='128' arch='SSE'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM7' bits='128' arch='SSE'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM8' bits='128' arch='SSE2'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM9' bits='128' arch='SSE2'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM10' bits='128' arch='SSE2'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM11' bits='128' arch='SSE2'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM12' bits='128' arch='SSE2'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM13' bits='128' arch='SSE2'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM14' bits='128' arch='SSE2'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM15' bits='128' arch='SSE2'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM16' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM17' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM18' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM19' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM20' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM21' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM22' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM23' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM24' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM25' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM26' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM27' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM28' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM29' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM30' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+		<register name='XMM31' bits='128' arch='AVX512VL'>
+			<description>128-bit sse Register</description>
+		</register>
+
+		<register name='YMM0' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM1' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM2' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM3' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM4' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM5' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM6' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM7' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM8' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM9' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM10' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM11' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM12' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM13' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM14' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM15' bits='256' arch='AVX'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM16' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM17' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM18' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM19' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM20' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM21' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM22' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM23' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM24' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM25' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM26' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM27' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM28' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM29' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM30' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+		<register name='YMM31' bits='256' arch='AVX512VL'>
+			<description>256-bit avx Register</description>
+		</register>
+
+		<register name='ZMM0' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM1' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM2' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM3' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM4' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM5' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM6' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM7' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM8' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM9' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM10' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM11' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM12' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM13' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM14' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM15' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM16' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM17' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM18' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM19' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM20' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM21' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM22' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM23' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM24' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM25' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM26' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM27' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM28' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM29' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM30' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+		<register name='ZMM31' bits='512' arch='AVX512F'>
+			<description>512-bit avx-512 Register</description>
+		</register>
+
+
+	</registers>
+</asmdudedata>
