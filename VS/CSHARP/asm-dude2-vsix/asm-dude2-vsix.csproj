@@ -3,7 +3,7 @@
 	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
 
 	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework>net48</TargetFramework>
 		<OutputType>Library</OutputType>
 		<OutputSubPath>MockLSPs\MockLanguageExtension</OutputSubPath>
 		<UseCodebase>true</UseCodebase>
@@ -76,17 +76,13 @@
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
 		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.7.37357" />
-		<PackageReference Include="System.Xml.ReaderWriter" Version="4.3.1" />
 		<Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
 		  <Generator>XamlIntelliSenseFileGenerator</Generator>
 		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Page>
-		<Reference Include="PresentationCore" />
 		<Reference Include="PresentationFramework" />
-		<Reference Include="System.Design" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj" />
 		<ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
 		<ProjectReference Include="..\asm-dude2-ls\asm-dude2-ls.csproj">
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -109,7 +105,7 @@
 
 	<Target Name="IncludeLanguageServers" BeforeTargets="GetVsixSourceItems">
 		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net472\*.*" Visible="false">
+			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net48\*.*" Visible="false">
 				<IncludeInVSIX>true</IncludeInVSIX>
 				<VsixSubPath>Server</VsixSubPath>
 			</Content>
