@@ -84,10 +84,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
-		<ProjectReference Include="..\asm-dude2-ls\asm-dude2-ls.csproj">
-			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-			<VsixSubPath>Server</VsixSubPath>
-		</ProjectReference>
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Settings.Designer.cs">
@@ -105,9 +101,21 @@
 
 	<Target Name="IncludeLanguageServers" BeforeTargets="GetVsixSourceItems">
 		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net48\*.*" Visible="false">
+			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net8.0-windows8.0\*.*" Visible="false">
 				<IncludeInVSIX>true</IncludeInVSIX>
 				<VsixSubPath>Server</VsixSubPath>
+			</Content>
+		</ItemGroup>
+		<ItemGroup>
+			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls-lib\Resources\*.*" Visible="false">
+				<IncludeInVSIX>true</IncludeInVSIX>
+				<VsixSubPath>Server\Resources</VsixSubPath>
+			</Content>
+		</ItemGroup>
+		<ItemGroup>
+			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls-lib\Resources\Performance\*.*" Visible="false">
+				<IncludeInVSIX>true</IncludeInVSIX>
+				<VsixSubPath>Server\Resources\Performance</VsixSubPath>
 			</Content>
 		</ItemGroup>
 	</Target>

@@ -24,6 +24,7 @@ using AsmSourceTools;
 
 using AsmTools;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using Newtonsoft.Json.Linq;
@@ -40,6 +41,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 
 namespace AsmDude2LS
 {

@@ -1,48 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project>
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <NoWarn>CA1307,CA1717,CA1824,CS1591,NU1605</NoWarn>
-    <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net48</TargetFrameworks>
-    <SignAssembly>false</SignAssembly>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-WindowsService-7b46c878-2e29-4de0-b355-fe97116ed91a</UserSecretsId>
+    <PlatformTarget>x64</PlatformTarget>
     <AssemblyName>AsmDude2.LSP</AssemblyName>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
     <ApplicationIcon>AsmDudePackage.ico</ApplicationIcon>
-    <RootNamespace>AsmDude2LS</RootNamespace>
+    <Authors>Henk-Jan Lebbink</Authors>
+    <Company>SnellerInc</Company>
+    <Description>AsmDude2 Language Service Provider (LSP) for assembly language</Description>
+    <Version>2.0.0.0</Version>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Title>AsmDude2 LSP</Title>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="System.Xaml">
-        <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <Content Include="AsmDudePackage.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Entry point -->
-    <ApplicationDefinition Include="App.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </ApplicationDefinition>
-    <Content Include="AsmDudePackage.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-
-    <!-- Xaml -->
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0-preview.7.23375.6" />
+    <PackageReference Include="System.IO.Pipes.AccessControl" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\asm-dude2-ls-lib\asm-dude2-ls-lib.csproj" />
   </ItemGroup>
-
-  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
 </Project>

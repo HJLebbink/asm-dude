@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
-
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
     <OutputSubPath>MockLSPs\LanguageServerLibrary</OutputSubPath>
     <SignAssembly>false</SignAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -12,27 +11,22 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <PropertyGroup>
     <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Resourses\**" />
     <EmbeddedResource Remove="Resourses\**" />
     <None Remove="Resourses\**" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove="Resources\AsmDudeData.xml" />
     <None Remove="Resources\Performance\Broadwell.tsv" />
@@ -44,7 +38,6 @@
     <None Remove="Resources\signature-hand-1.txt" />
     <None Remove="Resources\signature-may2019.txt" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Resources\AsmDudeData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -74,17 +67,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-	
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.2.8" />
     <PackageReference Include="StreamJsonRpc" Version="2.16.36" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj" />
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
   </ItemGroup>
-
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
 </Project>

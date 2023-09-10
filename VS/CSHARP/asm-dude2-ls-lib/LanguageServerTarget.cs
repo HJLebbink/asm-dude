@@ -40,6 +40,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 
+using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
+
 namespace AsmDude2LS
 {
     public sealed class CompletionComparer : IComparer<CompletionItem>
