@@ -314,7 +314,6 @@ namespace AsmSim
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public static BoolExpr ConditionalTaken(ConditionalElement ce, string key, Context ctx)
         {
             Contract.Requires(ctx != null);

@@ -648,7 +648,7 @@ namespace AsmDude2
 
                 if (MessageBox.Show(text, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    this.SaveAsync().ConfigureAwait(false);
+                    _ = this.SaveAsync();
                 }
                 else
                 {
@@ -666,7 +666,7 @@ namespace AsmDude2
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e)
         {
-            this.SaveAsync().ConfigureAwait(false);
+            _ = this.SaveAsync();
             base.OnApply(e);
         }
 
@@ -958,38 +958,11 @@ namespace AsmDude2
             if (this.Setting_Update(PropertyEnum.AsmSim_Pragma_Assume)) { changed = true; }
             #endregion
 
-
-            if (archChanged) //TODO HJ 02-06-19 changes will propagate before save-yes is hit
-            {
-                //?
-            }
             if (changed)
             {
                 Settings.Default.Save();
                 //await ClearMefCache.ClearMefCache.ClearAsync().ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                 await AsmLanguageClient.Instance.RestartServerAsync();
-            }
-
-            if (false)
-            {
-                if (restartNeeded)
-                {
-                    string title = "Microsoft Visual Studio";
-                    string text1 = "Do you like to restart Visual Studio now?";
-
-                    if (MessageBox.Show(text1, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        //await ClearMefCache.ClearMefCache.RestartAsync().ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
-                    }
-                    else
-                    {
-                        if (false)
-                        {
-                            string text2 = "You may need to close and open assembly files, or \nrestart visual studio for the changes to take effect.";
-                            MessageBox.Show(text2, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                    }
-                }
             }
         }
 

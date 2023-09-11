@@ -31,26 +31,36 @@ namespace AsmDude2
         [Export]
         [Name("asm!")]
         [BaseDefinition(CodeRemoteContentDefinition.CodeRemoteContentTypeName)]
+#pragma warning disable CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
         internal static ContentTypeDefinition asmContentTypeDefinition;
+#pragma warning restore CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
 
         [Export]
         [FileExtension(".asm")]
         [ContentType(AsmDude2Package.AsmDudeContentType)]
+#pragma warning disable CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
         internal static FileExtensionToContentTypeDefinition asmFileExtensionDefinition;
+#pragma warning restore CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
 
         [Export]
         [FileExtension(".cod")]
         [ContentType(AsmDude2Package.AsmDudeContentType)]
+#pragma warning disable CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
         internal static FileExtensionToContentTypeDefinition asmFileExtensionDefinition_cod;
+#pragma warning restore CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
 
         [Export]
         [FileExtension(".inc")]
         [ContentType(AsmDude2Package.AsmDudeContentType)]
+#pragma warning disable CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
         internal static FileExtensionToContentTypeDefinition asmFileExtensionDefinition_inc;
+#pragma warning restore CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
 
         [Export]
         [FileExtension(".s")]
         [ContentType(AsmDude2Package.AsmDudeContentType)]
+#pragma warning disable CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
         internal static FileExtensionToContentTypeDefinition asmFileExtensionDefinition_s;
+#pragma warning restore CS0649 // Field 'AsmContentDefinition.asmContentTypeDefinition' is never assigned to, and will always have its default value null
     }
 }

@@ -389,20 +389,20 @@ namespace AsmDude2.Tools
         public static void Output_INFO(string msg)
         {
 #           if DEBUG
-            OutputAsync("INFO: " + msg).ConfigureAwait(false);
+            _ = OutputAsync("INFO: " + msg);
 #           endif
         }
 
         /// <summary>Output message to the AsmDude window</summary>
         public static void Output_WARNING(string msg)
         {
-            OutputAsync("WARNING: " + msg).ConfigureAwait(false);
+            _ = OutputAsync("WARNING: " + msg);
         }
 
         /// <summary>Output message to the AsmDude window</summary>
         public static void Output_ERROR(string msg)
         {
-            OutputAsync("ERROR: " + msg).ConfigureAwait(false);
+            _ = OutputAsync("ERROR: " + msg);
         }
 
         /// <summary>
@@ -444,7 +444,7 @@ namespace AsmDude2.Tools
             }
             else
             {
-                outputPane.OutputString(msg2);
+                outputPane.OutputStringThreadSafe(msg2);
                 outputPane.Activate();
             }
         }
@@ -469,6 +469,5 @@ namespace AsmDude2.Tools
                 return pane;
             }
         }
-
     }
 }

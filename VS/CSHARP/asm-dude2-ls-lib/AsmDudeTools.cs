@@ -37,10 +37,10 @@ namespace AsmDude2LS
     public sealed class AsmDude2Tools : IDisposable
     {
         private XmlDocument xmlData_;
-        private IDictionary<string, AsmTokenType> type_;
-        private IDictionary<string, AssemblerEnum> assembler_;
-        private IDictionary<string, Arch> arch_;
-        private IDictionary<string, string> description_;
+        private Dictionary<string, AsmTokenType> type_;
+        private Dictionary<string, AssemblerEnum> assembler_;
+        private Dictionary<string, Arch> arch_;
+        private Dictionary<string, string> description_;
         //private readonly ISet<Mnemonic> mnemonics_switched_on_;
         //private readonly ISet<Rn> register_switched_on_;
         private readonly TraceSource traceSource;
@@ -552,11 +552,9 @@ namespace AsmDude2LS
                 try
                 {
                     this.xmlData_ = new XmlDocument() { XmlResolver = null };
-                    System.IO.StringReader sreader = new System.IO.StringReader(File.ReadAllText(filename));
-                    using (XmlReader reader = XmlReader.Create(sreader, new XmlReaderSettings() { XmlResolver = null }))
-                    {
-                        this.xmlData_.Load(reader);
-                    }
+                    StringReader sreader = new(File.ReadAllText(filename));
+                    using XmlReader reader = XmlReader.Create(sreader, new XmlReaderSettings() { XmlResolver = null });
+                    this.xmlData_.Load(reader);
                 }
                 catch (FileNotFoundException)
                 {

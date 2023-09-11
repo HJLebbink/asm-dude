@@ -56,7 +56,7 @@ namespace AsmDude2LS
 
         private readonly string[] lines;
         private readonly string thisFilename_;
-        private readonly IDictionary<uint, string> filenames_;
+        private readonly Dictionary<uint, string> filenames_;
 
         /// <summary>
         /// Include_Filename = the file that is supposed to be included
@@ -68,11 +68,11 @@ namespace AsmDude2LS
 
         //private readonly BidirectionalGraph<uint, TaggedEdge<uint, (string LabelSource, string LabelTarget)>> graph_; TODO consider using graph
 
-        private readonly IDictionary<string, IList<uint>> usedAt_;
-        private readonly IDictionary<string, IList<uint>> defAt_;
-        private readonly IDictionary<string, IList<uint>> defAt_PROTO_;
-        private readonly ISet<uint> hasLabel_;
-        private readonly ISet<uint> hasDef_;
+        private readonly ConcurrentDictionary<string, IList<uint>> usedAt_;
+        private readonly ConcurrentDictionary<string, IList<uint>> defAt_;
+        private readonly ConcurrentDictionary<string, IList<uint>> defAt_PROTO_;
+        private readonly HashSet<uint> hasLabel_;
+        private readonly HashSet<uint> hasDef_;
 
         public bool Enabled { get; private set; }
 

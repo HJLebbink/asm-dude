@@ -1,10 +1,6 @@
 ﻿using Amib.Threading;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsmDude2LS
 {
@@ -12,7 +8,7 @@ namespace AsmDude2LS
     {
         public readonly SmartThreadPool threadPool_;
 
-        private static readonly Lazy<AsmThreadPool> Lazy = new Lazy<AsmThreadPool>(() => new AsmThreadPool());
+        private static readonly Lazy<AsmThreadPool> Lazy = new(() => new AsmThreadPool());
 
         public static AsmThreadPool Instance { get { return Lazy.Value; } }
 

@@ -624,7 +624,6 @@ namespace AsmSim
 
         #region Private Methods
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private State Create_State_Private(string key, bool after)
         {
             List<string> visisted = new List<string>();

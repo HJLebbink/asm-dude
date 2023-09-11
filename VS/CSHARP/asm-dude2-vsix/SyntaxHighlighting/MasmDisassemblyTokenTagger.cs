@@ -147,8 +147,8 @@ namespace AsmDude2
                                                         yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.misc_);
                                                         break;
                                                     }
-                                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.label_);
-                                                    break;
+                                                    // yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.label_);
+                                                    // break;
                                             }
 
                                             break;

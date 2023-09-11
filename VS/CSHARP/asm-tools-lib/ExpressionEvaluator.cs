@@ -177,7 +177,7 @@ namespace AsmTools
             }
 
             int nBits = parsedSuccessfully ? AsmSourceTools.NBitsStorageNeeded(value, isNegative) : -1;
-            return (valid: parsedSuccessfully, value: value, nBits: nBits);
+            return (valid: parsedSuccessfully, value, nBits);
         }
 
         public static (bool valid, ulong value, int nBits) Evaluate_Constant(string str, bool isCapitals = false)
@@ -207,7 +207,7 @@ namespace AsmTools
                     System.Threading.Tasks.Task<ulong> t = CSharpScript.EvaluateAsync<ulong>(str);
                     ulong value = t.Result;
                     bool isNegative = false;
-                    return (valid: true, value: value, nBits: AsmSourceTools.NBitsStorageNeeded(value, isNegative));
+                    return (valid: true, value, nBits: AsmSourceTools.NBitsStorageNeeded(value, isNegative));
                 }
                 catch (Exception)
                 {

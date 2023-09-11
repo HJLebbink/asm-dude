@@ -22,20 +22,16 @@
 
 namespace AsmTools
 {
-    using System.Collections.Generic;
     using System;
-    using System.ComponentModel;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
-    using System.Runtime;
     using System.Runtime.Serialization;
-
-    using Newtonsoft.Json;
-    using System.Reflection.Metadata;
 
     [DataContract]
     public class AsmLanguageServerOptions
     {
+#pragma warning disable SA1401 // Fields should be private
         [DataMember]
         public System.Drawing.Color SyntaxHighlighting_Opcode;
         [DataMember]
@@ -48,7 +44,7 @@ namespace AsmTools
         public System.Drawing.Color SyntaxHighlighting_Jump;
         [DataMember]
         public System.Drawing.Color SyntaxHighlighting_Label;
-        [DataMember]        
+        [DataMember]
         public System.Drawing.Color SyntaxHighlighting_Constant;
         [DataMember]
         public System.Drawing.Color SyntaxHighlighting_Misc;
@@ -350,6 +346,7 @@ namespace AsmTools
         public bool useAssemblerAutoDetect;
         [DataMember]
         public int Global_MaxFileLines;
+#pragma warning restore SA1401 // Fields should be private
 
         public AsmLanguageServerOptions() { }
 
@@ -562,7 +559,7 @@ namespace AsmTools
                 case Arch.ARCH_CYRIXM:
                     return this.ARCH_CYRIXM;
                 default:
-                    return false; //TODO return error;
+                    return false; // TODO return error;
             }
         }
 
@@ -599,7 +596,7 @@ namespace AsmTools
                 {
                     return AssemblerEnum.NASM_ATT;
                 }
-                //LogWarning("AsmDudeToolsStatic.Used_Assembler:get: no assembler specified, assuming AUTO_DETECT");
+                // LogWarning("AsmDudeToolsStatic.Used_Assembler:get: no assembler specified, assuming AUTO_DETECT");
                 return AssemblerEnum.AUTO_DETECT;
             }
 
@@ -628,7 +625,7 @@ namespace AsmTools
                 }
                 else
                 {
-                    //Output_WARNING(string.Format(CultureUI, "{0}:Used_Assembler:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
+                    // Output_WARNING(string.Format(CultureUI, "{0}:Used_Assembler:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
                     this.useAssemblerAutoDetect = true;
                 }
             }
@@ -650,7 +647,7 @@ namespace AsmTools
                 {
                     return AssemblerEnum.NASM_ATT;
                 }
-                //Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window:get no assembler specified, assuming AUTO_DETECT");
+                // Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window:get no assembler specified, assuming AUTO_DETECT");
                 return AssemblerEnum.AUTO_DETECT;
             }
 
@@ -674,7 +671,7 @@ namespace AsmTools
                 }
                 else
                 {
-                    //Output_WARNING(string.Format(CultureUI, "{0}:Used_Assembler_Disassembly_Window:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
+                    // Output_WARNING(string.Format(CultureUI, "{0}:Used_Assembler_Disassembly_Window:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
                     this.useAssemblerDisassemblyAutoDetect = true;
                 }
             }

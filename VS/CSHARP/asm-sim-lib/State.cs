@@ -173,7 +173,6 @@ namespace AsmSim
         }
 
         /// <summary>Merge Constructor Method</summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private void MergeConstructor(State state1, State state2)
         {
             #region Handle Inconsistent states
@@ -223,7 +222,6 @@ namespace AsmSim
                 // merge the contents of both solvers
                 {
                     ISet<BoolExpr> mergedContent = new HashSet<BoolExpr>();
-#pragma warning disable DisposableFixer // Undisposed ressource.
                     foreach (BoolExpr b in state1.Solver.Assertions)
                     {
                         mergedContent.Add(b.Translate(ctx) as BoolExpr);
@@ -254,7 +252,6 @@ namespace AsmSim
                     {
                         this.Solver_U.Assert(b);
                     }
-#pragma warning restore DisposableFixer // Undisposed resource.
                 }
 
                 // merge the head and tail
@@ -750,7 +747,6 @@ namespace AsmSim
         #region UndefGrounding
         private bool hasUndefGrounding_ = false;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private bool UndefGrounding
         {
             get { return this.hasUndefGrounding_; }

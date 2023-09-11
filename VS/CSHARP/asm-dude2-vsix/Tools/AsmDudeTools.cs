@@ -44,9 +44,6 @@ namespace AsmDude2
         private IDictionary<string, Arch> arch_;
         private IDictionary<string, string> description_;
   
-        private readonly ErrorListProvider errorListProvider_;
- 
-
         #region Singleton Stuff
         private static readonly Lazy<AsmDude2Tools> Lazy = new Lazy<AsmDude2Tools>(() => new AsmDude2Tools());
 
@@ -342,7 +339,6 @@ namespace AsmDude2
             if (disposing)
             {
                 // free managed resources
-                this.errorListProvider_.Dispose();
                 //this.threadPool_.Dispose();
             }
             // free native resources if there are any.

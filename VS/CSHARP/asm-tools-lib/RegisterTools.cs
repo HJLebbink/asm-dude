@@ -536,7 +536,6 @@ namespace AsmTools
             }
         }
 
-
         /// <summary>
         /// return regular pattern to select the provided register and aliased register names
         /// </summary>
@@ -761,7 +760,6 @@ namespace AsmTools
                 default: return Array.Empty<string>();
             }
         }
-
 
         /// <summary>
         /// return regular pattern to select the provided register and aliased register names
