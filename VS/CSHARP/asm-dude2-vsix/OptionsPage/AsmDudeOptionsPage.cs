@@ -759,9 +759,7 @@ namespace AsmDude2
 
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:save", this.ToString()));
             bool changed = false;
-            bool restartNeeded = false;
-            bool archChanged = false;
-
+ 
             #region Global
             if (this.Setting_Update(PropertyEnum.Global_MaxFileLines)) { changed = true; }
             #endregion
@@ -771,26 +769,24 @@ namespace AsmDude2
             {
                 AsmDudeToolsStatic.Used_Assembler = this.asmDudeOptionsPageUI_.UsedAssembler;
                 changed = true;
-                restartNeeded = true;
             }
             if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this.asmDudeOptionsPageUI_.UsedAssemblerDisassemblyWindow)
             {
                 AsmDudeToolsStatic.Used_Assembler_Disassembly_Window = this.asmDudeOptionsPageUI_.UsedAssemblerDisassemblyWindow;
                 changed = true;
-                restartNeeded = true;
             }
             #endregion
 
             #region AsmDoc
             if (this.Setting_Update(PropertyEnum.AsmDoc_On)) { changed = true; }
-            if (this.Setting_Update(PropertyEnum.AsmDoc_Url)) { changed = true; restartNeeded = true; }
+            if (this.Setting_Update(PropertyEnum.AsmDoc_Url)) { changed = true; }
             #endregion
 
             #region CodeFolding
-            if (this.Setting_Update(PropertyEnum.CodeFolding_On)) { changed = true; restartNeeded = true; }
+            if (this.Setting_Update(PropertyEnum.CodeFolding_On)) { changed = true; }
             if (this.Setting_Update(PropertyEnum.CodeFolding_IsDefaultCollapsed)) { changed = true; }
-            if (this.Setting_Update(PropertyEnum.CodeFolding_BeginTag)) { changed = true; restartNeeded = true; }
-            if (this.Setting_Update(PropertyEnum.CodeFolding_EndTag)) { changed = true; restartNeeded = true; }
+            if (this.Setting_Update(PropertyEnum.CodeFolding_BeginTag)) { changed = true; }
+            if (this.Setting_Update(PropertyEnum.CodeFolding_EndTag)) { changed = true; }
             #endregion
 
             #region Syntax Highlighting
@@ -799,7 +795,7 @@ namespace AsmDude2
 
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_On))
                 {
-                    changed = true; restartNeeded = true;
+                    changed = true;
                 }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Opcode))
                 {
@@ -810,69 +806,69 @@ namespace AsmDude2
                 {
                     //TODO fix that toggling italic is displayed immediately
                     //UpdateItalic(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.ColorMnemonic_Italic).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
-                    changed = true; restartNeeded = true;
+                    changed = true;
                 }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Register))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Register, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Register).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Register_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Register_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Remark))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Remark, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Remark).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Remark_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Remark_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Directive))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Directive, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Directive).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Directive_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Directive_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Constant))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Constant, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Constant).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Constant_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Constant_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Jump))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Jump, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Jump).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Jump_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Jump_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Label))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Label, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Label).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.LabelDef, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Label).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Label_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Label_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Misc))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Misc, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Misc).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Misc_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Misc_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined1))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined1, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Userdefined1).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined1_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined1_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined2))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined2, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Userdefined2).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined2_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined2_Italic)) { changed = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined3))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined3, this.asmDudeOptionsPageUI_.SyntaxHighlighting_Userdefined3).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined3_Italic)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined3_Italic)) { changed = true; }
 
                 if (refreshRegistry)
                 {
@@ -907,7 +903,7 @@ namespace AsmDude2
             {
                 if (this.Setting_Update(arch))
                 {
-                    changed = true; archChanged = true;
+                    changed = true;
                 }
             }
             #endregion
@@ -923,9 +919,9 @@ namespace AsmDude2
             #endregion
 
             #region AsmSim
-            if (this.Setting_Update(PropertyEnum.AsmSim_On)) { changed = true; restartNeeded = true; }
-            if (this.Setting_Update(PropertyEnum.AsmSim_Z3_Timeout_MS)) { changed = true; restartNeeded = true; }
-            if (this.Setting_Update(PropertyEnum.AsmSim_Number_Of_Threads)) { changed = true; restartNeeded = true; }
+            if (this.Setting_Update(PropertyEnum.AsmSim_On)) { changed = true; }
+            if (this.Setting_Update(PropertyEnum.AsmSim_Z3_Timeout_MS)) { changed = true; }
+            if (this.Setting_Update(PropertyEnum.AsmSim_Number_Of_Threads)) { changed = true; }
             if (this.Setting_Update(PropertyEnum.AsmSim_64_Bits)) { changed = true; }
             if (this.Setting_Update(PropertyEnum.AsmSim_Show_Syntax_Errors)) { changed = true; }
             if (this.Setting_Update(PropertyEnum.AsmSim_Decorate_Syntax_Errors)) { changed = true; }

@@ -3,7 +3,7 @@
 	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
 
 	<PropertyGroup>
-		<TargetFramework>net48</TargetFramework>
+		<TargetFramework>net472</TargetFramework>
 		<OutputType>Library</OutputType>
 		<OutputSubPath>MockLSPs\MockLanguageExtension</OutputSubPath>
 		<UseCodebase>true</UseCodebase>
@@ -48,13 +48,35 @@
 		<Description>Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window </Description>
 		<Copyright>LICENSE.txt</Copyright>
 		<PackageProjectUrl>https://github.com/HJLebbink/asm-dude</PackageProjectUrl>
+		<ApplicationIcon>AsmDudePackage.ico</ApplicationIcon>
+		<IsPublishable>False</IsPublishable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>AsmDude2</PackageId>
+		<Company>SnellerInc</Company>
+		<RepositoryType>git</RepositoryType>
+		<PackageOutputPath>vsix\</PackageOutputPath>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageTags>ASM; AVX512; syntax highlighting; code completion; signature help; hover help</PackageTags>
+		<RepositoryUrl>https://github.com/HJLebbink/asm-dude</RepositoryUrl>
+		<PackageIcon>AsmDude2.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="AsmDude2.png" />
 	  <None Remove="OptionsPage\AsmDudeOptionPageUI.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="AsmDude2.png">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="AsmDudePackage.ico">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Resources\AsmDudeData.xml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		  <IncludeInVSIX>true</IncludeInVSIX>
@@ -76,16 +98,27 @@
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
 		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.7.37357" />
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.7.2196">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
 		  <Generator>XamlIntelliSenseFileGenerator</Generator>
 		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Page>
+		<ProjectReference Include="..\asm-tools-lib-net48\asm-tools-lib-net48.csproj" />
 		<Reference Include="PresentationFramework" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
-	</ItemGroup>
-	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
 	  <Compile Update="Settings.Designer.cs">
 	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	    <AutoGen>True</AutoGen>
@@ -93,6 +126,16 @@
 	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="LICENSE.txt">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	  <None Update="Settings.settings">
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>

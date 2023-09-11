@@ -243,6 +243,7 @@ namespace AsmTools
         public static Arch ParseArch(string str, bool strIsCapitals, bool warn)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             string str2 = AsmSourceTools.ToCapitals(str, strIsCapitals).Replace("_", string.Empty);
             switch (str2)
@@ -458,6 +459,7 @@ namespace AsmTools
         public static string ToString(IEnumerable<Arch> archs)
         {
             Contract.Requires(archs != null);
+            Contract.Assume(archs != null);
 
             bool empty = true;
             StringBuilder sb = new StringBuilder();

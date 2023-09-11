@@ -23,44 +23,79 @@
 using System.Globalization;
 using System.Reflection;
 using System;
+using System.Diagnostics;
+using System.IO;
 
 namespace AsmDude2.Tools
 {
     public static class ApplicationInformation
     {
-        /// <summary>
-        /// Gets the executing assembly.
-        /// </summary>
-        /// <value>The executing assembly.</value>
-        public static Assembly ExecutingAssembly
+        public static string LspPath()
         {
-            get { return executingAssembly ?? (executingAssembly = System.Reflection.Assembly.GetExecutingAssembly()); }
+            return Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Server", "AsmDude2.LSP.exe");
         }
 
-        private static Assembly executingAssembly;
+        private static string vsixVersion = string.Empty;
+        private static string vsixBuildInfo = string.Empty;
+        private static string lspVersion = string.Empty;
+        private static string lspBuildInfo = string.Empty;
 
-        /// <summary>
-        /// Gets the executing assembly version.
-        /// </summary>
-        /// <value>The executing assembly version.</value>
-        public static Version ExecutingAssemblyVersion
+        public static string VsixVersion()
         {
-            get { return executingAssemblyVersion ?? (executingAssemblyVersion = ExecutingAssembly.GetName().Version); }
-        }
-
-        private static Version executingAssemblyVersion;
-
-        /// <summary>
-        /// Gets the compile date of the currently executing assembly.
-        /// </summary>
-        /// <value>The compile date.</value>
-        public static DateTime CompileDate
-        {
-            get
+            if (vsixVersion == string.Empty)
             {
-                var d = GetBuildDate(Assembly.GetExecutingAssembly());                
-                return d.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(d).Hours);
+                vsixVersion = typeof(AsmDude2Package).Assembly.GetName().Version.ToString();
             }
+            return vsixVersion;
+        }
+
+        public static string LspVersion()
+        {
+            if (lspVersion == string.Empty)
+            {
+                lspVersion = FileVersionInfo.GetVersionInfo(LspPath()).FileVersion;
+            }
+            return lspVersion;
+        }
+
+        public static string VsixBuildInfo()
+        {
+            if (vsixBuildInfo == string.Empty)
+            {
+                var d = GetBuildDate(Assembly.GetExecutingAssembly());
+                d.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(d).Hours);
+                vsixBuildInfo = d.ToUniversalTime().ToString(AsmDudeToolsStatic.CultureUI);
+            }
+            return vsixBuildInfo;
+        }
+
+        public static string LspBuildInfo()
+        {
+            if (lspBuildInfo == string.Empty)
+            {
+                /*
+                string lspPath = LspPath();
+                lspPath = lspPath.Substring(0, lspPath.Length - 3);// remove the exe
+                lspPath += "dll";
+
+                if (!File.Exists(lspPath))
+                {
+                    lspBuildInfo = $"file {lspPath} does not exist";
+                } 
+                else
+                {
+                    //var x = Assembly.LoadFrom(lspPath);
+
+
+                    var x = Assembly.LoadFile(lspPath);
+                    var d = GetBuildDate(x);
+                    //d.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(d).Hours);
+                    //lspBuildInfo = d.ToUniversalTime().ToString(AsmDudeToolsStatic.CultureUI);
+                }
+                */
+                lspBuildInfo = "TODO";
+            }
+            return lspBuildInfo;
         }
 
         /// <summary>

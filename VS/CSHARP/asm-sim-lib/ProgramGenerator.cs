@@ -76,12 +76,12 @@ namespace AsmSim
 
         private string ToString(Flags flag, State state)
         {
-            char c = ToolsZ3.ToStringBin(state.GetTv5(flag));
+            char c = ToolsZ3.ToStringBin(state.GetTv(flag));
             return c+"";
         }
         private string ToString(Rn name, State state)
         {
-            Tv[] array = state.GetTv5Array(name);
+            Tv[] array = state.GetTvArray(name);
             var tup = ToolsZ3.HasOneValue(array);
             if (tup.hasOneValue)
             {

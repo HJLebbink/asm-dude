@@ -96,6 +96,7 @@ namespace AsmTools
         public static Flags Parse(string str, bool strIsCapitals)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             switch (AsmSourceTools.ToCapitals(str, strIsCapitals))
             {

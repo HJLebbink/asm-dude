@@ -242,15 +242,13 @@ namespace AsmDude2
 
         public async Task<Connection> ActivateAsync(CancellationToken token)
         {
-            // Debugger.Launch();
-
-            string programPath = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Server", "AsmDude2.LSP.exe");
-            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: starting Language Server (LSP) " + programPath);
+            string lspPath = ApplicationInformation.LspPath();
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: starting Language Server (LSP) " + lspPath);
 
             ProcessStartInfo info = new ProcessStartInfo
             {
-                FileName = programPath,
-                WorkingDirectory = Path.GetDirectoryName(programPath)
+                FileName = lspPath,
+                WorkingDirectory = Path.GetDirectoryName(lspPath)
             };
 
             const string stdInPipeName = @"output";

@@ -7,8 +7,4 @@
     <StartupObject />
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
-  </ItemGroup>
-
 </Project>

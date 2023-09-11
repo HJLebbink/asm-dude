@@ -32,7 +32,7 @@ namespace AsmTools
         private readonly Rn rn_ = Rn.NOREG;
         private ulong imm_ = 0;
         private readonly (Rn baseReg, Rn indexReg, int scale, long displacement) mem_;
-        private readonly string errorMessage_;
+        private readonly string errorMessage_ = string.Empty;
 
         public string ErrorMessage { get { return this.errorMessage_; } }
 
@@ -42,6 +42,7 @@ namespace AsmTools
         public Operand(string token, bool isCapitals, AsmParameters p = null)
         {
             Contract.Requires(token != null);
+            Contract.Assume(token != null);
 
             token = AsmSourceTools.ToCapitals(token, isCapitals);
             this.str_ = token;

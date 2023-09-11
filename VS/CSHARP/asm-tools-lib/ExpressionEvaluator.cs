@@ -34,6 +34,7 @@ namespace AsmTools
         public static (bool valid, ulong value, int nBits) Parse_Constant(string str, bool isCapitals = false)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             string token2;
             bool isHex = false;
@@ -183,6 +184,7 @@ namespace AsmTools
         public static (bool valid, ulong value, int nBits) Evaluate_Constant(string str, bool isCapitals = false)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             // 1] test whether str has digits, if it has none it is not a constant
             if (!str.Any(char.IsDigit))

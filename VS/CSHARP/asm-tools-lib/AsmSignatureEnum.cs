@@ -137,6 +137,7 @@ namespace AsmSourceTools
         public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str, bool strIsCapitals)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             switch (AsmSourceTools.ToCapitals(str, strIsCapitals).Trim())
             {
@@ -452,6 +453,7 @@ namespace AsmSourceTools
         public static string ToString(IList<AsmSignatureEnum> list, string concat)
         {
             Contract.Requires(list != null);
+            Contract.Assume(list != null);
 
             int nOperands = list.Count;
             if (nOperands == 0)
@@ -549,6 +551,7 @@ namespace AsmSourceTools
         public static bool Is_Allowed_Operand(Operand op, AsmSignatureEnum operandType)
         {
             Contract.Requires(op != null);
+            Contract.Assume(op != null);
 
             switch (operandType)
             {
@@ -638,8 +641,10 @@ namespace AsmSourceTools
         public static bool Is_Allowed_Misc(string misc, ISet<AsmSignatureEnum> allowedOperands)
         {
             Contract.Requires(misc != null);
+            Contract.Assume(misc != null);
             Contract.Requires(misc == misc.ToUpperInvariant());
             Contract.Requires(allowedOperands != null);
+            Contract.Assume(allowedOperands != null);
 
             switch (misc)
             {
@@ -755,6 +760,7 @@ namespace AsmSourceTools
         public static bool Is_Allowed_Reg(Rn regName, ISet<AsmSignatureEnum> allowedOperands)
         {
             Contract.Requires(allowedOperands != null);
+            Contract.Assume(allowedOperands != null);
 
             RegisterType type = RegisterTools.GetRegisterType(regName);
             switch (type)

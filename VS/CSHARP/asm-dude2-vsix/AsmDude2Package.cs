@@ -58,8 +58,6 @@ namespace AsmDude2
             AsmDudeToolsStatic.Output_INFO("AsmDude2Package: Entering constructor");
         }
 
-        #region Package Members
-
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -69,7 +67,5 @@ namespace AsmDude2
             await this.JoinableTaskFactory.SwitchToMainThreadAsync();
             AsmDudeToolsStatic.Output_INFO("AsmDude2Package: InitializeAsync");
         }
-
-        #endregion
     }
 }

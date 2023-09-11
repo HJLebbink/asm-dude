@@ -744,7 +744,8 @@ namespace AsmSim
 
         private bool IsGrounded(BitVecExpr value, Solver solver, Context ctx)
         {
-            return ToolsZ3.GetUlong(value, value.SortSize, solver, ctx) != null;
+            // TODO return ToolsZ3.GetUlong(value, value.SortSize, solver, ctx) != null;
+            throw new NotImplementedException();
         }
 
         private bool Contains(FuncDecl f, IEnumerable<FuncDecl> e)

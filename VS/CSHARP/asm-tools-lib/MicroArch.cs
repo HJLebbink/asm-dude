@@ -49,6 +49,7 @@ namespace AsmTools
         public static MicroArch ParseMicroArch(string str, bool strIsCapitals)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             switch (ToCapitals(str, strIsCapitals))
             {

@@ -36,7 +36,12 @@ namespace AsmDude2
         {
             this.InitializeComponent();
 
-            this.version_UI.Content = "AsmDude2 v" + typeof(AsmDude2Package).Assembly.GetName().Version.ToString() + " (" + ApplicationInformation.CompileDate.ToUniversalTime().ToString(AsmDudeToolsStatic.CultureUI) + ")";
+            string vsixVersion = ApplicationInformation.VsixVersion();
+            string vsixBuildInfo = ApplicationInformation.VsixBuildInfo();
+            string lspVersion = ApplicationInformation.LspVersion();
+            string lspBuildInfo = ApplicationInformation.LspBuildInfo();
+
+            this.version_UI.Content = $"AsmDude2 VSIX v{vsixVersion} ({vsixBuildInfo})\nAsmDude2 LSP v{lspVersion} ({lspBuildInfo})";
 
             #region setup handlers
             this.SyntaxHighlighting_On_UI.Click += (o, i) => { this.SyntaxHighlighting_Update(this.SyntaxHighlighting_On); };

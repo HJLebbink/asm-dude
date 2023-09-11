@@ -423,6 +423,11 @@ namespace AsmDude2.Tools
             {
                 first_log_message = false;
 
+                string vsixVersion = ApplicationInformation.VsixVersion();
+                string vsixBuildInfo = ApplicationInformation.VsixBuildInfo();
+                string lspVersion = ApplicationInformation.LspVersion();
+                string lspBuildInfo = ApplicationInformation.LspBuildInfo();
+
                 StringBuilder sb = new StringBuilder();
                 //https://patorjk.com/software/taag/#p=display&f=Rectangles&t=AsmDude2
                 sb.Append("Welcome to\n");
@@ -430,7 +435,8 @@ namespace AsmDude2.Tools
                 sb.Append("|  _  |___ _____|    \\ _ _ _| |___|_  |\n");
                 sb.Append("|     |_ -|     |  |  | | | . | -_|  _|\n");
                 sb.Append("|__|__|___|_|_|_|____/|___|___|___|___|\n");
-                sb.Append("INFO: Loaded AsmDude2 version " + typeof(AsmDude2Package).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString(CultureUI) + ")\n");
+                sb.Append($"INFO: AsmDude2 VSIX {vsixVersion} ({vsixBuildInfo})\n");
+                sb.Append($"INFO: AsmDude2 LSP {lspVersion} ({lspBuildInfo})\n");
                 sb.Append("INFO: Open source assembly extension. Making programming in assembler almost bearable.\n");
                 sb.Append("INFO: made possible by generous support from https://Sneller.ai \n");
                 sb.Append("INFO: More info at https://github.com/Sneller/asm-dude \n");
