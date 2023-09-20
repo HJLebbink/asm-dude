@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -68,16 +68,6 @@ namespace AsmSim
             // TacticTest();
             // TestMemoryLeak();
             // Test_NullReference_Bsf_1();
-
-            if (false)
-            {
-                AsmSourceTools.SpeedTestMnemonicParsing();
-            }
-
-            if (false)
-            {
-                AsmSourceTools.SpeedTestRegisterParsing();
-            }
 
             if (true)
             {

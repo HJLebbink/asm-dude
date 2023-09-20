@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ namespace AsmDude.SignatureHelp
     [Name("Signature Help controller")]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
+    //[TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener
     {
         [Import]
@@ -45,11 +45,7 @@ namespace AsmDude.SignatureHelp
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
             ITextView textView = this.adapterService_.GetWpfTextView(textViewAdapter);
-            if (textView != null)
-            {
-                textView.Properties.GetOrCreateSingletonProperty(
-                     () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this.signatureHelpBroker_));
-            }
+            textView?.Properties.GetOrCreateSingletonProperty(() => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this.signatureHelpBroker_));
         }
     }
 }

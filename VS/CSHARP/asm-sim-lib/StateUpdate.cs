@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -177,7 +177,6 @@ namespace AsmSim
         public BitVecExpr NextLineNumberExpr { get; set; }
 
         #region Getters
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private IEnumerable<BoolExpr> Value
         {
             get
@@ -213,7 +212,6 @@ namespace AsmSim
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private IEnumerable<BoolExpr> Undef
         {
             get
@@ -269,7 +267,6 @@ namespace AsmSim
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private BoolExpr Get_Private(Rn reg, bool undef)
         {
             lock (this.ctxLock_)
@@ -316,7 +313,6 @@ namespace AsmSim
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private BoolExpr Get_Private(Flags flag, bool undef)
         {
             lock (this.ctxLock_)
@@ -356,7 +352,6 @@ namespace AsmSim
 
         #region Setters
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public string NextKey
         {
             get { return this.nextKey_; }
@@ -447,7 +442,6 @@ namespace AsmSim
             this.Set(flag, value, value);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set(Flags flag, BoolExpr value, BoolExpr undef)
         {
             this.Empty = false;
@@ -504,7 +498,6 @@ namespace AsmSim
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set_SF_ZF_PF(BitVecExpr value)
         {
             Contract.Requires(value != null);
@@ -619,7 +612,6 @@ namespace AsmSim
         }
 
         /// <summary> Fill all bits of the provided register with the provided truth-value</summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set(Rn reg, Tv value)
         {
             switch (value)
@@ -643,7 +635,6 @@ namespace AsmSim
             this.Set(reg, value, value);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set(Rn reg, BitVecExpr value, BitVecExpr undef)
         {
             Contract.Requires(value != null);
@@ -952,7 +943,6 @@ namespace AsmSim
             this.Set_Mem(address, value, value);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set_Mem(BitVecExpr address, BitVecExpr value, BitVecExpr undef)
         {
             Contract.Requires(address != null);
@@ -997,7 +987,6 @@ namespace AsmSim
             this.mem_Full_ = memContent.Translate(this.ctx_) as ArrayExpr;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public void Set_Mem_Unknown()
         {
             this.Set_Mem(Tools.Create_Mem_Key_Fresh(this.tools_.Rand, this.ctx_));

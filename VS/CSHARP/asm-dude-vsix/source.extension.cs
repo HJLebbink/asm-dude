@@ -7,11 +7,11 @@ namespace AsmDude
 {
     static class Vsix
     {
-        public const string Id = "c729d6b2-f412-49ed-893d-a8f61f25db98";
+        public const string Id = "c729d6b2-f412-49ed-893d-a8f61f25db99";
         public const string Name = "AsmDude";
         public const string Description = "Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window ";
         public const string Language = "en-US";
-        public const string Version = "1.9.6.14";
+        public const string Version = "2.0.0.0";
         public const string Author = "Henk-Jan Lebbink";
         public const string Tags = "Assembly, Assembler, ASM, Syntax Highlighting, Code Completion, Disassembly Window, Code Analysis, x86_64, SSE, AVX, AVX2, AVX512";
     }

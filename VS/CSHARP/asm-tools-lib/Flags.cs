@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -96,6 +96,7 @@ namespace AsmTools
         public static Flags Parse(string str, bool strIsCapitals)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             switch (AsmSourceTools.ToCapitals(str, strIsCapitals))
             {

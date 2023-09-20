@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ namespace AsmDude
     using System.Threading;
     using AsmDude.OptionsPage;
     using AsmDude.Tools;
+ 
     using Microsoft.VisualStudio.Shell;
 
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
@@ -61,8 +62,11 @@ namespace AsmDude
 
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            await base.InitializeAsync(cancellationToken, progress).ConfigureAwait(true);
+            //await base.InitializeAsync(cancellationToken, progress).ConfigureAwait(true);
+
+            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             ClearMefCache.ClearMefCache.Initialize(this);
+            //await MyToolWindowCommand.InitializeAsync(this);
         }
 
         #region Disassembly window experiments

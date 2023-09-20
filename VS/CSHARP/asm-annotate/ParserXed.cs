@@ -250,7 +250,7 @@ namespace asm_annotate
                 Console.WriteLine("ERROR: could not parse " + line);
             }
             var y = x[0].Split('_');
-            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(y[0], true);
+            Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(y[0], true);
 
             List<IformRegister> args = new List<IformRegister>();
             for (int i = 1; i<y.Length; ++i)

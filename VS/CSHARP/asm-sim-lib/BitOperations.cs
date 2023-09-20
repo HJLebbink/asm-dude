@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -130,7 +130,6 @@ namespace AsmSim
         #endregion
 
         #region Shift operations
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public static (BitVecExpr result, BoolExpr cf) ShiftOperations(
             Mnemonic op,
             BitVecExpr value,
@@ -193,7 +192,6 @@ namespace AsmSim
             return (result: value_out, cf: cf);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         public static (BitVecExpr result, BoolExpr cf) ShiftOperations(
             Mnemonic op,
             BitVecExpr value,

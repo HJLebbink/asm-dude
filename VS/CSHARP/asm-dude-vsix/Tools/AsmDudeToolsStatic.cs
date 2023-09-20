@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -517,7 +517,7 @@ namespace AsmDude.Tools
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            EnvDTE80.DTE2 dte = Package.GetGlobalService(typeof(SDTE)) as EnvDTE80.DTE2;
             Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
             Property prop = propertiesList.Item("FontsAndColorsItems");
 
@@ -758,7 +758,8 @@ namespace AsmDude.Tools
                 sb.Append("|__|__|___|_|_|_| |____/|___|___|___|\n");
                 sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString(CultureUI) + ")\n");
                 sb.Append("INFO: Open source assembly extension. Making programming in assembler almost bearable.\n");
-                sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
+                sb.Append("INFO: made possible by generous support from https://Sneller.ai \n");
+                sb.Append("INFO: More info at https://github.com/Sneller/asm-dude \n");
                 sb.Append("----------------------------------\n");
                 msg2 = sb.ToString() + msg2;
             }

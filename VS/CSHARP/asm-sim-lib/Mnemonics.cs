@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -106,7 +106,12 @@ namespace AsmSim
                 this.args_ = args;
                 this.tools_ = t;
                 this.keys_ = keys;
-                this.ctx_ = new Context(t.ContextSettings);
+                try {
+                    this.ctx_ = new Context(t.ContextSettings);
+                } catch
+                {
+                    //TODO
+                }
             }
 
             public abstract void Execute();
@@ -155,7 +160,6 @@ namespace AsmSim
                 return Tools.Create_Flag_Key_Fresh(flagName, rand, ctx);
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public BitVecExpr GetMem(Rn regName, int nBytes)
             {
                 return this.GetMem(this.Get(regName), nBytes);
@@ -990,7 +994,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 /* Compare AL with r/m8 (op1). If equal, ZF is set and r8 (op2) is loaded into r/m8 (op1). Else, clear ZF and load r/m8 (op1) into AL.
@@ -1095,7 +1098,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 //Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
@@ -1153,7 +1155,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 //Compare RDX:RAX with m128. If equal, set ZF and load RCX:RBX into m128. Else, clear ZF and load m128 into RDX:RAX.
@@ -1226,7 +1227,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 if (this.tools_.Parameters.mode_64bit) // the stackAddrSize == 64
@@ -1352,7 +1352,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 int operand_Size = this.op1_.NBits;
@@ -1483,7 +1482,6 @@ namespace AsmSim
             public Cwd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CWD, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.DX, this.ctx_.MkExtract(32, 16, this.ctx_.MkSignExt(16, this.Get(Rn.AX))));
@@ -1500,7 +1498,6 @@ namespace AsmSim
             public Cdq(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CDQ, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.EDX, this.ctx_.MkExtract(64, 32, this.ctx_.MkSignExt(32, this.Get(Rn.EAX))));
@@ -1517,7 +1514,6 @@ namespace AsmSim
             public Cqo(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CQO, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.RDX, this.ctx_.MkExtract(128, 64, this.ctx_.MkSignExt(64, this.Get(Rn.RAX))));
@@ -1534,7 +1530,6 @@ namespace AsmSim
             public Cbw(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CBW, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.AX, this.ctx_.MkSignExt(8, this.Get(Rn.AL)));
@@ -1551,7 +1546,6 @@ namespace AsmSim
             public Cwde(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CWDE, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.EAX, this.ctx_.MkSignExt(16, this.Get(Rn.AX)));
@@ -1568,7 +1562,6 @@ namespace AsmSim
             public Cdqe(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CDQE, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.RAX, this.ctx_.MkSignExt(32, this.Get(Rn.EAX)));
@@ -1775,7 +1768,6 @@ namespace AsmSim
             public Adc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.ADC, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.ctx_);
@@ -1830,7 +1822,6 @@ namespace AsmSim
             public Sbb(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.SBB, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.ctx_);
@@ -1943,7 +1934,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 /*
@@ -2137,7 +2127,6 @@ namespace AsmSim
             public Mul(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.MUL, args, Ot1.reg | Ot1.mem, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2268,7 +2257,6 @@ namespace AsmSim
             public Idiv(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2410,7 +2398,6 @@ namespace AsmSim
             public Div(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2552,7 +2539,6 @@ namespace AsmSim
             public Inc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.INC, args, Ot1.reg | Ot1.mem, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
@@ -2576,7 +2562,6 @@ namespace AsmSim
             public Dec(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DEC, args, Ot1.reg | Ot1.mem, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
@@ -2646,7 +2631,6 @@ namespace AsmSim
             public Daa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DAA, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2685,7 +2669,6 @@ namespace AsmSim
             public Das(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.DAS, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2724,7 +2707,6 @@ namespace AsmSim
             public Aaa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.AAA, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2763,7 +2745,6 @@ namespace AsmSim
             public Aas(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.AAS, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2826,7 +2807,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2879,7 +2859,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -3080,7 +3059,6 @@ namespace AsmSim
                 UpdateFlagsShift(value, cfIn, shiftCount, shiftTooLarge, left, this.keys_.prevKey, this.RegularUpdate, this.tools_.Rand, this.ctx_);
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public static void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left, string prevKey, StateUpdate stateUpdate, Random rand, Context ctx)
             {
                 Contract.Requires(shiftCount != null);
@@ -3123,7 +3101,6 @@ namespace AsmSim
                 #endregion
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public void UpdateFlagsRotate(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, bool left)
             {
                 Contract.Requires(shiftCount != null);
@@ -3265,7 +3242,6 @@ namespace AsmSim
             public Rcr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.RCR, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3285,7 +3261,6 @@ namespace AsmSim
             public Rcl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.RCL, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3474,7 +3449,6 @@ namespace AsmSim
             public Shld(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.SHLD, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -3689,7 +3663,6 @@ namespace AsmSim
                 return result;
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -3755,7 +3728,6 @@ namespace AsmSim
                 return result;
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -3902,7 +3874,6 @@ namespace AsmSim
             public Loop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOP, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)); } }
         }
 
@@ -3911,7 +3882,6 @@ namespace AsmSim
             public Loopz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOPZ, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.Get(Flags.ZF)); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
@@ -3922,7 +3892,6 @@ namespace AsmSim
             public Loope(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOPE, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.Get(Flags.ZF)); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
@@ -3933,7 +3902,6 @@ namespace AsmSim
             public Loopnz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOPNZ, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.ctx_.MkNot(this.Get(Flags.ZF))); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
@@ -3944,7 +3912,6 @@ namespace AsmSim
             public Loopne(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LOOPNE, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.ctx_.MkNot(this.Get(Flags.ZF))); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
@@ -4110,7 +4077,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 BitVecExpr nextLineNumberExpr;
@@ -4321,7 +4287,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -4394,7 +4359,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -4484,7 +4448,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -4583,7 +4546,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -4701,7 +4663,6 @@ namespace AsmSim
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -4893,7 +4854,6 @@ namespace AsmSim
             public Cmc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.CMC, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 this.RegularUpdate.Set(Flags.CF, this.ctx_.MkNot(this.Get(Flags.CF)));
@@ -4935,7 +4895,6 @@ namespace AsmSim
             public Lahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.LAHF, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 BitVecNum zERO = this.ctx_.MkBV(0, 1);
@@ -4961,7 +4920,6 @@ namespace AsmSim
             public Sahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.SAHF, args, keys, t) { }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
             public override void Execute()
             {
                 BitVecNum oNE = this.ctx_.MkBV(1, 1);

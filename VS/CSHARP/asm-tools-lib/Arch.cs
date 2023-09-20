@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ namespace AsmTools
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Linq;
     using System.Text;
 
     public enum Arch
@@ -242,7 +243,8 @@ namespace AsmTools
         public static Arch ParseArch(string str, bool strIsCapitals, bool warn)
         {
             Contract.Requires(str != null);
-
+            Contract.Assume(str != null);
+            
             string str2 = AsmSourceTools.ToCapitals(str, strIsCapitals).Replace("_", string.Empty);
             switch (str2)
             {
@@ -350,11 +352,22 @@ namespace AsmTools
                 default:
                     if (warn)
                     {
-                        Console.WriteLine("WARNING: parseArch: no arch for str " + str);
+                        Console.WriteLine($"WARNING: parseArch: no arch for str \"{str}\"");
                     }
-
                     return Arch.ARCH_NONE;
             }
+        }
+
+        public static Arch[] ParseArchList(string str, bool strIsCapitals, bool warn)
+        {
+            //Console.WriteLine($"Arch: ParseArchList \"{str}\"");
+            var substrArray = str.Split(',');
+            var result = new Arch[substrArray.Length];
+            for (int i = 0; i < substrArray.Length; ++i)
+            {
+                result[i] = ParseArch(substrArray[i], strIsCapitals, warn);
+            }
+            return result;
         }
 
         public static string ArchDocumentation(Arch arch)
@@ -446,6 +459,7 @@ namespace AsmTools
         public static string ToString(IEnumerable<Arch> archs)
         {
             Contract.Requires(archs != null);
+            Contract.Assume(archs != null);
 
             bool empty = true;
             StringBuilder sb = new StringBuilder();
