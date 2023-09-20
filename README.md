@@ -13,30 +13,35 @@ or download latest installer [AsmDude.vsix (v2.0.0.2)](https://github.com/HJLebb
 ### Features
 
 #### Syntax highlighting and Code Folding
-The following architectures are supported: the instruction sets of the x86 and the x64, but also 
-SSE, AVX, AVX2, Xeon-Phi (Knights Corner), AVX-512 instructions are provided.
-Most of the regularly used Masm directives are supported and some Nasm directives. 
+AsmDude2 offers support for the following architectures: the instruction sets of x86 and x64, as well as 
+SSE, AVX, AVX2, Xeon-Phi (Knights Corner), and AVX-512 instructions.
+Most of the commonly used Masm directives covered, along with a selection of Nasm directives.
 
 ![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-syntax-highlighting.png?raw=true "Syntax highlighting")
 
 #### Code Descriptions
-When you hover over a mnemonic you may get a popup with descriptions. Descriptions can be added and changed by updating 
-the AsmDudeData.xml file that will be stored next to the binaries when installing the plugin (.vsix). 
-The directory where plugins are installed can be difficult to find, try something as C:\Users\<user>\AppData\Local\Microsoft\VisualStudio\17.0\Extensions\AsmDude2\2.0.0.1\Server
-Please consider sharing your updates.
+When you hover over a mnemonic, you may receive a pop-up with descriptions. These descriptions 
+can be modified and added by updating the AsmDudeData.xml file, which will be located alongside
+the installed plugin binaries (.vsix). Finding the directory where plugins are installed can be
+a bit challenging; you might want to try a location like C:\Users<user>\AppData\Local\Microsoft\VisualStudio\17.0\Extensions\AsmDude2\2.0.0.1\Server.
+I kindly encourage you to share any updates you make.
 
 ![code-descriptions](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-descriptions.png?raw=true "Code descriptions")
 
-Observe that the layout of the popup does not render Markdown (see known issues). 
+Please note that the formatting of the pop-up does not display Markdown (see the known issues)
 
 #### Code Completion 
-While typing texts completion lists will narrow down to the relevant language keywords. This works for all keywords and 
-labels. Code suggestion may not be perfect yet, in the sense that only valid code completions should be suggested. 
+While typing text, the completion lists will be refined to display the relevant 
+language keywords. This applies to all keywords. However, please be aware that code suggestions 
+may not be flawless at this stage; only valid code completions should be proposed.
 
 ![code-completion](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-code-completion.png?raw=true "Code Completion")
 
 #### Signature Help
-Signature Help (also known as Parameter Info) displays the signature of a method in a tooltip when a user types the parameter list start character (eg in c++ an opening parenthesis). As a parameter and parameter separator (typically a comma) are typed, the tooltip is updated to show the next parameter in bold.
+Signature Help, also referred to as Parameter Info, presents the method's signature in a tooltip when
+a user enters the character marking the start of the parameter list (e.g., in C++, an opening parenthesis). 
+As the user types a parameter and a parameter separator (usually a comma), 
+the tooltip is refreshed to display the next parameter in bold.
 
 ![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-signature-help.png?raw=true "Signature Help")
 
@@ -44,14 +49,16 @@ Signature Help (also known as Parameter Info) displays the signature of a method
 Syntax highlighting in the disassembly window. No QuickInfo tooltips yet (see known issues)
 
 ## Where is the Source (Are you sure this is not a honeypot?!)
-If you are reading this you are most likely an assembly programmer, if you are still interested in some dirty c#, 
-or you are just cautious, you can run the extension from source code. To do that, Visual Studio 2022 SDK needs to 
-be installed. To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of 
-Visual Studio will launch under the experimental hive.
+If you're reading this, you're probably an assembly programmer. However, if you're still interested 
+in some C#, or you're just being cautious, you can run the extension from the source code. To do 
+that, you'll need to have the Visual Studio 2022 SDK installed. To run the extension, press F5 or 
+select the 'Debug > Start Debugging' option from the menu. This will launch a new instance of Visual 
+Studio under the experimental environment.
 
 ### Things For a next release
 * Update instructions for Sapphire Rapids
 * Support AMX
+* Make the LSP gracefully handle large (+10K lines)
 * Restore hyperlinks in mnemonics (from AsmDude)
 * Restore Label Analysis (from AsmDude)
 * Restore AsmSim (from AsmDude)
