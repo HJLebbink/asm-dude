@@ -245,8 +245,8 @@ namespace AsmDude2
             if (!File.Exists(lspPath))
             {
                 string title = "Microsoft Visual Studio";
-                string text1 = $"AsmDude2 could not find the Language Server Provider (LSP)\nat the expected place: \"{lspPath}\"";
-                MessageBox.Show(text1, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string text = $"AsmDude2 could not find the Language Server Protocol (LSP)\nat the expected place: \"{lspPath}\"";
+                MessageBox.Show(text, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
 
@@ -281,7 +281,12 @@ namespace AsmDude2
                 return new Connection(readerPipe, writerPipe);
             }
 
-            return null;
+            {
+                string title = "Microsoft Visual Studio";
+                string text = $"AsmDude2 could not start the Language Server Protocol (LSP)\nfound at \"{lspPath}\"";
+                MessageBox.Show(text, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
         }
 
         public async Task OnLoadedAsync()

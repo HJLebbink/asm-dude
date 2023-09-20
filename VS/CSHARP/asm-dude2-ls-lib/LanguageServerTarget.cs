@@ -38,16 +38,6 @@ using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 
 namespace AsmDude2LS
 {
-    public sealed class CompletionComparer : IComparer<CompletionItem>
-    {
-        public int Compare(CompletionItem x, CompletionItem y)
-        {
-            Contract.Requires(x != null);
-            Contract.Requires(y != null);
-            return string.CompareOrdinal(x.SortText, y.SortText);
-        }
-    }
-
     public class LanguageServerTarget
     {
         private int version = 1;

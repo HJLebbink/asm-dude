@@ -917,12 +917,12 @@ namespace AsmDude2LS
             return Array.Empty<AsmFoldingRange>();
         }
 
-        private SortedSet<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
+        private HashSet<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
             //bool use_AsmSim_In_Code_Completion = this.asmSimulator_.Enabled && Settings.Default.AsmSim_Show_Register_In_Code_Completion;
             bool att_Syntax = this.options.Used_Assembler == AssemblerEnum.NASM_ATT;
 
-            SortedSet<CompletionItem> completions = new(new CompletionComparer());
+            HashSet<CompletionItem> completions = new();
 
             foreach (Rn regName in this.mnemonicStore.Get_Allowed_Registers())
             {
@@ -1060,7 +1060,7 @@ namespace AsmDude2LS
         {
             IEnumerable<CompletionItem> Selected_Completions(bool useCapitals, ISet<AsmTokenType> selectedTypes, bool addSpecialKeywords)
             {
-                SortedSet<CompletionItem> completions = new(new CompletionComparer());
+                HashSet<CompletionItem> completions = new();
 
                 // Add the completions of AsmDude directives (such as code folding directives)
                 #region

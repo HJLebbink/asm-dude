@@ -15,7 +15,6 @@ public partial class Worker : BackgroundService
     const int SW_HIDE = 0;
     const int SW_SHOW = 5;
 
-
     private readonly ILogger<Worker> _logger;
     private readonly LanguageServer _languageServer;
     private bool _shutdownRequested;
@@ -64,10 +63,6 @@ public partial class Worker : BackgroundService
                 {
                     throw new OperationCanceledException();
                 }
-                //if (_logger.IsEnabled(LogLevel.Information))
-                //{
-                //    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                //}
                 await Task.Delay(1000, stoppingToken);
             }
         }
