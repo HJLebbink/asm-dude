@@ -834,10 +834,14 @@ namespace AsmDude2LS
             var lines = this.GetLines(parameter.TextDocument.Uri);
             int lineNumber = parameter.Position.Line;
             string lineStr = lines[lineNumber];
-            LogInfo($"OnTextDocumentSignatureHelp: parameter={parameter}; lineNumber=\"{lineStr}\";");
 
             int fileID = 0; //TODO
             (object _, string _, Mnemonic mnemonic, string[] _, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
+
+            LogInfo($"OnTextDocumentSignatureHelp: parameter={parameter}; lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
+            if there was a backspace, and the mnemonic becomes null, cancel the signature help, and start the code completion
+
+
             if ((mnemonic == Mnemonic.NONE) || (remark.Length > 0))
             {
                 return null;
