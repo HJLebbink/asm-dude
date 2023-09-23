@@ -153,12 +153,10 @@ namespace AsmTools
             Contract.Assume(args != null);
             Contract.Assume(remark != null);
 
-
-
             return (k.ToArray<KeywordID>(), label, mnemonic, args, remark);
         }
 
-        public static IList<Operand> MakeOperands(string[] operandStrArray) // TODO consider Enumerable
+        public static List<Operand> MakeOperands(string[] operandStrArray) // TODO consider Array
         {
             Contract.Requires(operandStrArray != null);
             Contract.Assume(operandStrArray != null);
@@ -173,10 +171,7 @@ namespace AsmTools
                 var operands = new List<Operand>(nOperands);
                 foreach (string opStr in operandStrArray)
                 {
-                    if (!string.IsNullOrEmpty(opStr))
-                    {
-                        operands.Add(new Operand(opStr, false));
-                    }
+                    operands.Add(new Operand(opStr, false));
                 }
                 return operands;
             }

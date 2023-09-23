@@ -28,7 +28,6 @@ using StreamJsonRpc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -84,7 +83,6 @@ namespace AsmDude2LS
             const char backspace = (char)8;
             string backspaceStr = backspace + string.Empty;
 
-
             var result = new InitializeResult
             {
                 Capabilities = new VSServerCapabilities
@@ -103,7 +101,7 @@ namespace AsmDude2LS
                     },
                     SignatureHelpProvider = new SignatureHelpOptions()
                     {
-                        TriggerCharacters = new string[] { " ", ",", backspaceStr },
+                        TriggerCharacters = new string[] { " ", ",", backspaceStr, "\t" },
                         RetriggerCharacters = new string[] { "," },                       
                         WorkDoneProgress = false,
                     },
@@ -242,7 +240,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDidChangeName)]
         public void OnTextDocumentChanged(JToken arg)
         {
-            Console.WriteLine($"OnTextDocumentChanged: Received:{arg}");
+            //Console.WriteLine($"OnTextDocumentChanged: Received:{arg}");
             LogInfo($"OnTextDocumentChanged: Received: {arg}");
             var parameter = arg.ToObject<DidChangeTextDocumentParams>();
             Debug.WriteLine($"Document Change: {parameter.TextDocument.Uri.AbsolutePath}");
@@ -352,8 +350,7 @@ namespace AsmDude2LS
             {
                 DocumentChanges = new TextDocumentEdit[]
                 {
-                    new TextDocumentEdit
-                    {
+                    new() {
                         TextDocument = new OptionalVersionedTextDocumentIdentifier
                         {
                             Uri = renameParams.TextDocument.Uri,
@@ -425,7 +422,7 @@ namespace AsmDude2LS
             string[] textLines = fullText.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             for (int i = 0; i < textLines.Length; i++)
             {
-                foreach (Match match in Regex.Matches(textLines[i], word))
+                foreach (Match match in Regex.Matches(textLines[i], word).Cast<Match>())
                 {
                     ranges.Add(new Range
                     {

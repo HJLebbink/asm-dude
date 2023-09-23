@@ -165,9 +165,9 @@ namespace AsmDude2LS
 
             if (length <= 0)
             {
-                return (String.Empty, -1, -1);
+                return (string.Empty, -1, -1);
             }
-            return (lineStr.Substring(startPos, length), startPos, endPos);
+            return (lineStr[startPos..endPos], startPos, endPos);
         }
 
         private static string Truncate(string text, int maxLength = MAX_LENGTH_DESCR_TEXT)
@@ -230,7 +230,7 @@ namespace AsmDude2LS
             Range range,
             VSTextDocumentIdentifier vsTextDocumentIdentifier)
         {
-            Console.WriteLine($"ScheduleDiagnosticMessage {message}");
+            //Console.WriteLine($"ScheduleDiagnosticMessage {message}");
 
             this.diagnostics.Add(new VSDiagnostic()
             {
@@ -780,16 +780,21 @@ namespace AsmDude2LS
         /// <returns></returns>
         private IEnumerable<AsmSignatureInformation> Constrain_Signatures(
                 IEnumerable<AsmSignatureInformation> data,
-                IList<Operand> operands2,
-                ISet<Arch> selectedArchitectures2)
+                List<Operand> operands2,
+                HashSet<Arch> selectedArchitectures2)
         {
+            bool extraLogging = true;
+
+            if (extraLogging) Console.WriteLine($"Constrain_Signatures: operands={string.Join(',', operands2)} data.Count={data.Count<AsmSignatureInformation>()}");
+
             foreach (AsmSignatureInformation asmSignatureElement in data)
             {
-                bool allowed = true;
+                bool allowed = true; // first assume the signature element is allowed; constrain it later
 
-                //1] constrain on architecture
+                //1] constrain the signature on architecture
                 if (!asmSignatureElement.Is_Allowed(selectedArchitectures2))
                 {
+                    if (extraLogging) Console.WriteLine($"Constrain_Signatures: asmSignatureElement {asmSignatureElement} is not allowed based on arch");
                     allowed = false;
                 }
 
@@ -799,16 +804,23 @@ namespace AsmDude2LS
                     if ((operands2 == null) || (operands2.Count == 0))
                     {
                         // do nothing
+                        if (extraLogging) Console.WriteLine($"Constrain_Signatures: operands2 is null or empty");
                     }
                     else
                     {
                         for (int i = 0; i < operands2.Count; ++i)
                         {
                             Operand operand = operands2[i];
-                            if (operand != null)
+                            if (operand == null)
                             {
+                                LogError($"Constrain_Signatures: somehow got an operand that is null");
+                            }
+                            else if (operand.IsReg || operand.IsMem || operand.IsImm)
+                            {
+                                if (extraLogging) Console.WriteLine($"Constrain_Signatures: trying operand={operand}");
                                 if (!asmSignatureElement.Is_Allowed(operand, i))
                                 {
+                                    if (extraLogging) Console.WriteLine($"Constrain_Signatures: asmSignatureElement {asmSignatureElement} is not allowed based on mnemonic");
                                     allowed = false;
                                     break;
                                 }
@@ -825,81 +837,94 @@ namespace AsmDude2LS
 
         public SignatureHelp GetTextDocumentSignatureHelp(SignatureHelpParams parameter)
         {
-            if (!options.SignatureHelp_On)
+            try
             {
-                LogInfo($"OnTextDocumentSignatureHelp: switched off");
-                return null;
-            }
+                bool extraLogging = true;
 
-            var lines = this.GetLines(parameter.TextDocument.Uri);
-            int lineNumber = parameter.Position.Line;
-            string lineStr = lines[lineNumber];
-
-            int fileID = 0; //TODO
-            (object _, string _, Mnemonic mnemonic, string[] _, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
-
-            LogInfo($"OnTextDocumentSignatureHelp: parameter={parameter}; lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
-            if there was a backspace, and the mnemonic becomes null, cancel the signature help, and start the code completion
-
-
-            if ((mnemonic == Mnemonic.NONE) || (remark.Length > 0))
-            {
-                return null;
-            }
-
-            int offset = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
-            if (offset == -1)
-            {
-                LogError($"OnTextDocumentSignatureHelp: should not happen: investigate");
-                return null;
-            }
-
-            offset += mnemonic.ToString().Length + 1;
-            int length = parameter.Position.Character - offset;
-            LogInfo($"OnTextDocumentSignatureHelp: offset={offset}; parameter.Position.Character={parameter.Position.Character}, length={length}");
-            string[] args;
-
-            if (length <= 0)
-            {
-                args = Array.Empty<string>();
-            }
-            else
-            {
-                string argsStr = lineStr.Substring(offset, length);
-                args = argsStr.Split(',');
-            }
-            LogInfo($"OnTextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
-
-            IList<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
-            ISet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
-
-            IEnumerable<AsmSignatureInformation> x = this.mnemonicStore.GetSignatures(mnemonic);
-            IEnumerable<AsmSignatureInformation> y = Constrain_Signatures(x, operands, selectedArchitectures);
-            List<SignatureInformation> z = new();
-            foreach (AsmSignatureInformation asmSignatureElement in y)
-            {
-                if (asmSignatureElement.Operands.Count > 0)
+                if (!options.SignatureHelp_On)
                 {
-                    LogInfo($"OnTextDocumentSignatureHelp: adding SignatureInformation: {asmSignatureElement.SignatureInformation.Label}");
-                    z.Add(asmSignatureElement.SignatureInformation);
+                    LogInfo($"OnTextDocumentSignatureHelp: switched off");
+                    return null;
                 }
-            }
-            if (z.Count == 0)
+
+                var lines = this.GetLines(parameter.TextDocument.Uri);
+                int lineNumber = parameter.Position.Line;
+                string completeLineStr = lines[lineNumber];
+                int pos = parameter.Position.Character;
+                string lineStr = completeLineStr.Substring(0, pos);
+
+                int fileID = 0; //TODO
+                (object _, string _, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
+
+                SignatureHelpTriggerKind kind = parameter.Context.TriggerKind;
+
+                if (extraLogging) Console.WriteLine($"===========================\nOnTextDocumentSignatureHelp: kind={kind}; completeLineStr=\"{completeLineStr}\"; lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
+                //if there was a backspace, and the mnemonic becomes null, cancel the signature help, and start the code completion
+
+                // we backspace we may backspace into the mnemonic
+                if ((mnemonic == Mnemonic.NONE))
+                {
+                    return null;
+                }
+
+                int mnemonicOffset = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
+                if (mnemonicOffset == -1)
+                {
+                    LogError($"OnTextDocumentSignatureHelp: should not happen: investigate");
+                    return null;
+                }
+
+                int argsOffset = mnemonicOffset + mnemonic.ToString().Length + 1;
+                int argStrLength = parameter.Position.Character - argsOffset;
+                if (extraLogging) Console.WriteLine($"OnTextDocumentSignatureHelp: argsOffset={argsOffset}; argStrLength={argStrLength}");
+                /*
+                string[] args;
+
+                if (argStrLength <= 0)
+                {
+                    args = Array.Empty<string>();
+                }
+                else
+                {
+                    string argsStr = lineStr.Substring(argsOffset, argStrLength);
+                    args = argsStr.Split(',', StringSplitOptions.TrimEntries);
+                }
+                */
+                if (extraLogging) Console.WriteLine($"OnTextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
+
+                List<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
+                HashSet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
+
+                IEnumerable<AsmSignatureInformation> x = this.mnemonicStore.GetSignatures(mnemonic);
+                IEnumerable<AsmSignatureInformation> y = Constrain_Signatures(x, operands, selectedArchitectures);
+                List<SignatureInformation> z = new();
+                foreach (AsmSignatureInformation asmSignatureElement in y)
+                {
+                    if (asmSignatureElement.Operands.Count > 0)
+                    {
+                        LogInfo($"OnTextDocumentSignatureHelp: adding SignatureInformation: {asmSignatureElement.SignatureInformation.Label}");
+                        z.Add(asmSignatureElement.SignatureInformation);
+                    }
+                }
+                if (z.Count == 0)
+                {
+                    return null; // no signature help present
+                }
+
+                int nCommas = Math.Max(0, operands.Count - 1);
+
+                if (extraLogging) Console.WriteLine($"OnTextDocumentSignatureHelp: lineStr=\"{lineStr}\"; pos={parameter.Position.Character}; mnemonic={mnemonic}, nCommas={nCommas}");
+                return new SignatureHelp()
+                {
+                    ActiveSignature = 0,
+                    ActiveParameter = nCommas,
+                    Signatures = z.ToArray<SignatureInformation>(),
+                };
+            } catch (Exception e)
             {
-                return null; // no signature help present
+                LogError($"OnTextDocumentSignatureHelp: e ={e}");
+                return null;
             }
-
-            int nCommas = operands.Count;
-
-            LogInfo($"OnTextDocumentSignatureHelp: args={args}");
-
-            LogInfo($"OnTextDocumentSignatureHelp: lineStr\"{lineStr}\"; pos={parameter.Position.Character}; {mnemonic}, nCommas {nCommas}");
-            return new SignatureHelp()
-            {
-                ActiveSignature = 0,
-                ActiveParameter = nCommas,
-                Signatures = z.ToArray<SignatureInformation>(),
-            };
         }
 
         public void SetFoldingRanges(IEnumerable<AsmFoldingRange> foldingRanges, Uri uri)
@@ -921,8 +946,10 @@ namespace AsmDude2LS
             return Array.Empty<AsmFoldingRange>();
         }
 
-        private HashSet<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
+        private HashSet<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, HashSet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
+            //TODO return array
+
             //bool use_AsmSim_In_Code_Completion = this.asmSimulator_.Enabled && Settings.Default.AsmSim_Show_Register_In_Code_Completion;
             bool att_Syntax = this.options.Used_Assembler == AssemblerEnum.NASM_ATT;
 
@@ -1062,7 +1089,7 @@ namespace AsmDude2LS
 
         public CompletionList GetTextDocumentCompletion(CompletionParams parameter)
         {
-            IEnumerable<CompletionItem> Selected_Completions(bool useCapitals, ISet<AsmTokenType> selectedTypes, bool addSpecialKeywords)
+            IEnumerable<CompletionItem> Selected_Completions(bool useCapitals, HashSet<AsmTokenType> selectedTypes, bool addSpecialKeywords)
             {
                 HashSet<CompletionItem> completions = new();
 
@@ -1177,82 +1204,147 @@ namespace AsmDude2LS
                 return completions;
             }
 
-            if (!this.options.CodeCompletion_On)
+            try
             {
-                LogInfo($"OnTextDocumentCompletion: switched off");
-                return new CompletionList();
-            }
+                bool extraLogging = true;
 
-            var lines = this.GetLines(parameter.TextDocument.Uri);
-            int lineNumber = parameter.Position.Line;
-            string lineStr = lines[lineNumber];
-            // LogInfo($"OnTextDocumentCompletion: lineStr: \"{lineStr}\"");
+                if (!this.options.CodeCompletion_On)
+                {
+                    LogInfo($"OnTextDocumentCompletion: switched off");
+                    return new CompletionList();
+                }
 
-            int pos = parameter.Position.Character - 1;
-            char currentChar = GetChar(lineStr, pos);
-            // LogInfo($"OnTextDocumentCompletion: currentChar={currentChar}");
+                var lines = this.GetLines(parameter.TextDocument.Uri);
+                int lineNumber = parameter.Position.Line;
+                string completeLineStr = lines[lineNumber];
+                int pos = parameter.Position.Character;
 
-            if (AsmTools.AsmSourceTools.IsSeparatorChar(currentChar))
-            {
-                return new CompletionList();
-            }
-            int fileID = 0; //TODO
-            (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
-            LogInfo($"OnTextDocumentCompletion: label={label}; mnemonic={mnemonic}; args={args}; remark={remark}");
+                if (extraLogging) Console.WriteLine($"===========================\nOnTextDocumentCompletion: completeLineStr=\"{completeLineStr}\"; pos=\'{pos}\'");
 
-            List<CompletionItem> items = new();
+                // if the current characters is a asm separator, no code completion
+                char currentChar = GetChar(completeLineStr, pos - 1);
+                //if (AsmTools.AsmSourceTools.IsSeparatorChar(currentChar))
+                //{
+                //    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: we just typed a separator char \'{currentChar}\' thus no code completion");
+                //    return new CompletionList();
+                //}
 
-            if (remark.Length > 0)
-            {
-                // do not recommend anything while typing comments
-            }
-            else
-            {
-                (string currentWord, _, _) = GetWord(pos, lineStr);
+                // we only consider the line till (and including) the current position
+                string lineStr = completeLineStr[..pos];
+                if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: lineStr=\"{lineStr}\"; currentChar=\'{currentChar}\'");
+
+                int fileID = 0; //TODO
+                (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
+                if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: label=\"{label}\"; mnemonic={mnemonic}; args={string.Join(',', args)}; remark=\"{remark}\"");
+
+                // if we are typing in a remark: no code completion please
+                if (remark.Length > 0)
+                {
+                    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: we are in a remark: no code completion");
+                    return new CompletionList();
+                }
+
+                // determine if the current word we are typing is all capitals
+                (string currentWord, _, _) = GetWord(pos-1, lineStr);
                 bool useCapitals = (currentWord == currentWord.ToUpper());
 
+
+                //TODO if currentWord is only one letter, only return elements that start with that letter.
+
+
+                if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: currentWord=\"{currentWord}\"; useCapitals={useCapitals}");
+
+                // if the mnemonic is NONE we should suggest mnemonics
                 if (mnemonic == Mnemonic.NONE)
                 {
-                    ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
-                    items.AddRange(Selected_Completions(useCapitals, selected1, true));
+                    HashSet<AsmTokenType> selected = new() { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
+                    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: A");
+                    return new CompletionList()
+                    {
+                        Items = Selected_Completions(useCapitals, selected, true).ToArray(),
+                    };
                 }
-                else
+
+                int mnemonicOffsetStart = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
+                if (mnemonicOffsetStart == -1)
                 {
-                    // the lineNumber contains a mnemonic but we are not in a comment
-                    if (AsmTools.AsmSourceTools.IsJump(mnemonic))
+                    LogError($"OnTextDocumentCompletion: should not happen: investigate");
+                    return null;
+                }
+
+                // are we with the cursor in the mnemonic: then we should only suggest mnemonics:
+                int mnemonicOffsetEnd = mnemonicOffsetStart + mnemonic.ToString().Length;
+                if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: pos={pos}; mnemonicOffsetEnd={mnemonicOffsetEnd}");
+                if (pos <= mnemonicOffsetEnd)
+                {
+                    HashSet<AsmTokenType> selected = new() { AsmTokenType.Jump, AsmTokenType.Mnemonic };
+                    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: B");
+                    return new CompletionList()
                     {
-                        var labelGraph = this.GetLabelGraph(parameter.TextDocument.Uri);
-                        items.AddRange(this.Label_Completions(labelGraph, useCapitals, true));
+                        Items = Selected_Completions(useCapitals, selected, true).ToArray(),
+                    };
+                }
+
+                // if the mnemonic is a jump, we should suggest labels   
+                if (AsmTools.AsmSourceTools.IsJump(mnemonic))
+                {
+                    var labelGraph = this.GetLabelGraph(parameter.TextDocument.Uri);
+                    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: C");
+                    return new CompletionList()
+                    {
+                        Items = this.Label_Completions(labelGraph, useCapitals, true).ToArray(),
+                    };
+                }
+
+                // if we are here: there is a mnemonic, and not a jump, the cursor is not in the mnemonic, thus we analyse the
+                // parameters of the mnemonic and make suggestions based on the allowed parameters
+
+                HashSet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
+                HashSet<AsmSignatureEnum> allowed = new();
+                List<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
+                int nCommas = Math.Max(0, operands.Count - 1);
+
+                IEnumerable<AsmSignatureInformation> allSignatures = this.mnemonicStore.GetSignatures(mnemonic);
+
+                if (extraLogging)
+                {
+                    Console.WriteLine($"OnTextDocumentCompletion: nCommas={nCommas}; operands={string.Join(',', operands)}; allSignatures.Count={allSignatures.Count<AsmSignatureInformation>()}");
+                    foreach (AsmSignatureInformation s in allSignatures)
+                    {
+                        Console.WriteLine($"OnTextDocumentCompletion: available signatures: {s}");
                     }
-                    else
+                }
+
+                // constrain allSignatures of the mnemonic based on 1] architectures that are switched on, and 2] the already provided operands
+                foreach (AsmSignatureInformation se in this.Constrain_Signatures(allSignatures, operands, arch_switched_on))
+                {
+                    if (nCommas < se.Operands.Count)
                     {
-                        IList<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
-                        ISet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
-                        HashSet<AsmSignatureEnum> allowed = new();
-                        int nCommas = operands.Count;
-
-                        IEnumerable<AsmSignatureInformation> allSignatures = this.mnemonicStore.GetSignatures(mnemonic);
-
-                        foreach (AsmSignatureInformation se in this.Constrain_Signatures(allSignatures, operands, selectedArchitectures))
+                        foreach (AsmSignatureEnum s in se.Operands[nCommas])
                         {
-                            if (nCommas < se.Operands.Count)
-                            {
-                                foreach (AsmSignatureEnum s in se.Operands[nCommas])
-                                {
-                                    allowed.Add(s);
-                                }
-                            }
+                            allowed.Add(s);
                         }
-                        items.AddRange(this.Mnemonic_Operand_Completions(useCapitals, allowed, parameter.Position.Line));
                     }
+                }
+                if (extraLogging) {
+                    Console.WriteLine($"OnTextDocumentCompletion: D: useCapitals={useCapitals}; allowed.Count={allowed.Count}");
+                    foreach (AsmSignatureEnum sig in allowed)
+                    {
+                        Console.WriteLine($"OnTextDocumentCompletion: D: allowed signature {sig}");
+                    }
+                }
+                return new CompletionList()
+                {
+                    Items = this.Mnemonic_Operand_Completions(useCapitals, allowed, parameter.Position.Line).ToArray()
+                };
+            }
+            catch (Exception e)
+            {
+                {
+                    LogError($"OnTextDocumentCompletion: e={e}");
+                    return new CompletionList();
                 }
             }
-
-            return new CompletionList()
-            {
-                IsIncomplete = false,
-                Items = items.ToArray(),
-            };
         }
 
         public DocumentHighlight[] GetDocumentHighlights(IProgress<DocumentHighlight[]> progress, Position position, Uri uri, CancellationToken token)
@@ -1276,7 +1368,7 @@ namespace AsmDude2LS
 
             if (length <= 0)
             {
-                LogInfo($"LanguageServer:GetDocumentHighlights: length too small ({length})");
+                LogInfo($"LanguageServer:GetDocumentHighlights: argStrLength too small ({length})");
                 return Array.Empty<DocumentHighlight>();
             }
             string currentHighlightedWord = lineStr2.Substring(startPos, length);
@@ -1838,11 +1930,13 @@ namespace AsmDude2LS
 
         private void LogWarning(string message)
         {
+            Console.WriteLine("WARNING: "+message);
             this.traceSource.TraceEvent(TraceEventType.Warning, 0, message);
         }
 
         private void LogError(string message)
         {
+            Console.WriteLine("ERROR: " + message);
             this.traceSource.TraceEvent(TraceEventType.Error, 0, message);
         }
 

@@ -33,48 +33,15 @@ namespace AsmDude2LS
     //     Class representing a folding range in a document. See the Language Server Protocol
     //     specification for additional information.
     [DataContract]
-    public class AsmFoldingRange
+    public class AsmFoldingRange : FoldingRange
     {
-        //
-        // Summary:
-        //     Gets or sets the start line value.
-        [DataMember(Name = "startLine")]
-        public int StartLine { get; set; }
-
-        //
-        // Summary:
-        //     Gets or sets the start character value.
-        [DataMember(Name = "startCharacter")]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? StartCharacter { get; set; }
-
-        //
-        // Summary:
-        //     Gets or sets the end line value.
-        [DataMember(Name = "endLine")]
-        public int EndLine { get; set; }
-
-        //
-        // Summary:
-        //     Gets or sets the end character value.
-        [DataMember(Name = "endCharacter")]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? EndCharacter { get; set; }
-
-        //
-        // Summary:
-        //     Gets or sets the folding range kind.
-        [DataMember(Name = "kind")]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public FoldingRangeKind? Kind { get; set; }
-
-        /**
-             * The text that the client should show when the specified range is
-             * collapsed. If not defined or not supported by the client, a default
-             * will be chosen by the client.
-             *
-             * @since 3.17.0 - proposed
-             */
+       /**
+        * The text that the client should show when the specified range is
+        * collapsed. If not defined or not supported by the client, a default
+        * will be chosen by the client.
+        *
+        * @since 3.17.0 - proposed
+        */
         [DataMember(Name = "collapsedText")]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string CollapsedText { get; set; }

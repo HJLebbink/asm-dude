@@ -391,9 +391,9 @@ namespace AsmTools
             }
         }
 
-        public ISet<Arch> Get_Arch_Switched_On()
+        public HashSet<Arch> Get_Arch_Switched_On()
         {
-            ISet<Arch> set = new HashSet<Arch>();
+            HashSet<Arch> set = new HashSet<Arch>();
             foreach (Arch arch in Enum.GetValues(typeof(Arch)))
             {
                 if (this.Is_Arch_Switched_On(arch))

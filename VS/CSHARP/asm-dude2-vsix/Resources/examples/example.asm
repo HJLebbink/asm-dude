@@ -10,7 +10,12 @@ include "bla"
 #endregion
 
 
-	V4FMADDPS
+    ; code completion suggestions when there exists another mnemonic that is a substring
+	VPAND ymm0, y, 
+    VPANDN
+
+    KSHIFTLB K2, K2,  
+
 	rep movs #rep movs
 	repe cmps
 	rep stos
