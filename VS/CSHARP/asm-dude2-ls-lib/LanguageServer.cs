@@ -843,7 +843,7 @@ namespace AsmDude2LS
 
                 if (!options.SignatureHelp_On)
                 {
-                    LogInfo($"OnTextDocumentSignatureHelp: switched off");
+                    LogInfo($"TextDocumentSignatureHelp: switched off");
                     return null;
                 }
 
@@ -870,13 +870,13 @@ namespace AsmDude2LS
                 int mnemonicOffset = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
                 if (mnemonicOffset == -1)
                 {
-                    LogError($"OnTextDocumentSignatureHelp: should not happen: investigate");
+                    LogError($"TextDocumentSignatureHelp: should not happen: investigate");
                     return null;
                 }
 
                 int argsOffset = mnemonicOffset + mnemonic.ToString().Length + 1;
                 int argStrLength = parameter.Position.Character - argsOffset;
-                if (extraLogging) Console.WriteLine($"OnTextDocumentSignatureHelp: argsOffset={argsOffset}; argStrLength={argStrLength}");
+                if (extraLogging) Console.WriteLine($"TextDocumentSignatureHelp: argsOffset={argsOffset}; argStrLength={argStrLength}");
                 /*
                 string[] args;
 
@@ -890,7 +890,7 @@ namespace AsmDude2LS
                     args = argsStr.Split(',', StringSplitOptions.TrimEntries);
                 }
                 */
-                if (extraLogging) Console.WriteLine($"OnTextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
+                if (extraLogging) Console.WriteLine($"TextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
 
                 List<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
                 HashSet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
@@ -902,7 +902,7 @@ namespace AsmDude2LS
                 {
                     if (asmSignatureElement.Operands.Count > 0)
                     {
-                        LogInfo($"OnTextDocumentSignatureHelp: adding SignatureInformation: {asmSignatureElement.SignatureInformation.Label}");
+                        LogInfo($"TextDocumentSignatureHelp: adding SignatureInformation: {asmSignatureElement.SignatureInformation.Label}");
                         z.Add(asmSignatureElement.SignatureInformation);
                     }
                 }
@@ -913,7 +913,7 @@ namespace AsmDude2LS
 
                 int nCommas = Math.Max(0, operands.Count - 1);
 
-                if (extraLogging) Console.WriteLine($"OnTextDocumentSignatureHelp: lineStr=\"{lineStr}\"; pos={parameter.Position.Character}; mnemonic={mnemonic}, nCommas={nCommas}");
+                if (extraLogging) Console.WriteLine($"TextDocumentSignatureHelp: lineStr=\"{lineStr}\"; pos={parameter.Position.Character}; mnemonic={mnemonic}, nCommas={nCommas}");
                 return new SignatureHelp()
                 {
                     ActiveSignature = 0,
@@ -922,7 +922,7 @@ namespace AsmDude2LS
                 };
             } catch (Exception e)
             {
-                LogError($"OnTextDocumentSignatureHelp: e ={e}");
+                LogError($"TextDocumentSignatureHelp: e ={e}");
                 return null;
             }
         }

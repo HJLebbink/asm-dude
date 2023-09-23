@@ -154,10 +154,10 @@ namespace AsmDude2LS
                     //   WorkDoneProgress = false,
                     //},
 
-                    DocumentFormattingProvider = new DocumentFormattingOptions
-                    {
-                        WorkDoneProgress = false,
-                    },
+                    //DocumentFormattingProvider = new DocumentFormattingOptions
+                    //{
+                    //    WorkDoneProgress = false,
+                    //},
                     //DocumentRangeFormattingProvider = true,
 
 
@@ -169,14 +169,14 @@ namespace AsmDude2LS
 
                     CodeLensProvider = new CodeLensOptions
                     {
-                        ResolveProvider = true,
+                        ResolveProvider = false,
                         WorkDoneProgress = false,
                     },
 
-                    //DocumentLinkProvider = new DocumentLinkOptions
-                    //{
-                    //    ResolveProvider = false,
-                    //},
+                    DocumentLinkProvider = new DocumentLinkOptions
+                    {
+                        ResolveProvider = false,
+                    },
 
                     // The document on type formatting request is sent from the client to the server to format parts of the document during typing.
                     //DocumentOnTypeFormattingProvider = new DocumentOnTypeFormattingOptions
@@ -218,63 +218,57 @@ namespace AsmDude2LS
             this.OnInitialized?.Invoke(this, EventArgs.Empty);
         }
 
-        [JsonRpcMethod(Methods.TextDocumentDidOpenName)]
-        public void OnTextDocumentOpened(JToken arg)
+        [JsonRpcMethod(Methods.ProgressNotificationName)]
+        public void ProgressNotification(JToken arg)
         {
-            LogInfo($"OnTextDocumentOpened: Received: {arg}");
-            var parameter = arg.ToObject<DidOpenTextDocumentParams>();
-            Debug.WriteLine($"Document Open: {parameter.TextDocument.Uri.AbsolutePath}");
-            server.OnTextDocumentOpened(parameter);
+            LogInfo($"ProgressNotification: Received: {arg}");
         }
 
-        [JsonRpcMethod(Methods.TextDocumentHoverName)]
-        public Hover OnHover(JToken arg)
+        [JsonRpcMethod(Methods.PartialResultTokenName)]
+        public void PartialResultToken(JToken arg)
         {
-            LogInfo($"OnHover: Received: {arg}");
-            var parameter = arg.ToObject<TextDocumentPositionParams>();
-            var result = server.GetHover(parameter);
-            LogInfo($"OnHover: Sent: {((result == null) ? "NULL" : JToken.FromObject(result))}");
-            return result;
+            LogInfo($"PartialResultToken: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
         }
 
-        [JsonRpcMethod(Methods.TextDocumentDidChangeName)]
-        public void OnTextDocumentChanged(JToken arg)
+        [JsonRpcMethod(Methods.PartialResultTokenPropertyName)]
+        public void PartialResultTokenProperty(JToken arg)
         {
-            //Console.WriteLine($"OnTextDocumentChanged: Received:{arg}");
-            LogInfo($"OnTextDocumentChanged: Received: {arg}");
-            var parameter = arg.ToObject<DidChangeTextDocumentParams>();
-            Debug.WriteLine($"Document Change: {parameter.TextDocument.Uri.AbsolutePath}");
-            
-            server.UpdateServerSideTextDocument(parameter.ContentChanges[0].Text, parameter.TextDocument.Version, parameter.TextDocument.Uri);
-            server.SendDiagnostics(parameter.TextDocument.Uri);
+            LogInfo($"PartialResultTokenProperty: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
         }
 
-        [JsonRpcMethod(Methods.TextDocumentDidCloseName)]
-        public void OnTextDocumentClosed(JToken arg)
+        [JsonRpcMethod(Methods.WorkDoneTokenName)]
+        public void WorkDoneToken(JToken arg)
         {
-            LogInfo($"OnTextDocumentClosed: Received: {arg}");
-            var parameter = arg.ToObject<DidCloseTextDocumentParams>();
-            Debug.WriteLine($"Document Close: {parameter.TextDocument.Uri.AbsolutePath}");
-            server.OnTextDocumentClosed(parameter);
+            LogInfo($"WorkDoneToken: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
         }
 
-        [JsonRpcMethod(Methods.TextDocumentReferencesName, UseSingleObjectParameterDeserialization = true)]
-        public object[] OnTextDocumentFindReferences(ReferenceParams parameter, CancellationToken token)
+        [JsonRpcMethod(Methods.ProgressNotificationTokenName)]
+        public void ProgressNotificationToken(JToken arg)
         {
-            LogInfo($"OnTextDocumentFindReferences: Received: {JToken.FromObject(parameter)}");
-            var result = server.SendReferences(args: parameter, returnLocationsOnly: true, token: token);
-            LogInfo($"OnTextDocumentFindReferences: Sent: {JToken.FromObject(result)}");
-            return result;
+            LogInfo($"ProgressNotificationToken: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
         }
 
         [JsonRpcMethod(Methods.TextDocumentCodeActionName)]
-        public object GetCodeActions(JToken arg)
+        public object TextDocumentCodeAction(JToken arg)
         {
-            LogInfo($"GetCodeActions: Received: {arg}");
+            LogInfo($"TextDocumentCodeAction: Received: {arg}");
             var parameter = arg.ToObject<CodeActionParams>();
             var result = server.GetCodeActions(parameter);
-            LogInfo($"GetCodeActions: Sent: {JToken.FromObject(result)}");
+            LogInfo($"TextDocumentCodeAction: Sent: {JToken.FromObject(result)}");
             return result;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentCodeLensName)]
+        public object TextDocumentCodeLens(JToken arg)
+        {
+            LogInfo($"TextDocumentCodeLens: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            // var parameter = arg.ToObject<ImplementationParams>();
+            return null;
         }
 
         [JsonRpcMethod(Methods.CodeActionResolveName)]
@@ -287,6 +281,14 @@ namespace AsmDude2LS
             return result;
         }
 
+        [JsonRpcMethod(Methods.CodeLensResolveName)]
+        public object CodeLensResolve(JToken arg)
+        {
+            LogInfo($"CodeLensResolve: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
         [JsonRpcMethod(Methods.TextDocumentCompletionName)]
         public CompletionList OnTextDocumentCompletion(JToken arg)
         {
@@ -297,50 +299,184 @@ namespace AsmDude2LS
             return result;
         }
 
-        [JsonRpcMethod(Methods.TextDocumentSignatureHelpName)]
-        public SignatureHelp OnTextDocumentSignatureHelp(JToken arg)
+        [JsonRpcMethod(Methods.TextDocumentCompletionResolveName)]
+        public object TextDocumentCompletionResolve(JToken arg)
         {
-            LogInfo($"OnTextDocumentSignatureHelp: Received: {arg}");
-            var parameter = arg.ToObject<SignatureHelpParams>();
-            var result = this.server.GetTextDocumentSignatureHelp(parameter);
-            LogInfo($"OnTextDocumentSignatureHelp: Sent: {JToken.FromObject(result)}");
+            LogInfo($"TextDocumentCompletionResolve: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentDefinitionName)]
+        public object TextDocumentDefinition(JToken arg)
+        {
+            LogInfo($"TextDocumentDefinition: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentDidOpenName)]
+        public void OnTextDocumentOpened(JToken arg)
+        {
+            LogInfo($"OnTextDocumentOpened: Received: {arg}");
+            var parameter = arg.ToObject<DidOpenTextDocumentParams>();
+            Debug.WriteLine($"Document Open: {parameter.TextDocument.Uri.AbsolutePath}");
+            server.OnTextDocumentOpened(parameter);
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentDidCloseName)]
+        public void OnTextDocumentClosed(JToken arg)
+        {
+            LogInfo($"OnTextDocumentClosed: Received: {arg}");
+            var parameter = arg.ToObject<DidCloseTextDocumentParams>();
+            Debug.WriteLine($"Document Close: {parameter.TextDocument.Uri.AbsolutePath}");
+            server.OnTextDocumentClosed(parameter);
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentDidChangeName)]
+        public void OnTextDocumentChanged(JToken arg)
+        {
+            //Console.WriteLine($"OnTextDocumentChanged: Received:{arg}");
+            LogInfo($"OnTextDocumentChanged: Received: {arg}");
+            var parameter = arg.ToObject<DidChangeTextDocumentParams>();
+            Debug.WriteLine($"Document Change: {parameter.TextDocument.Uri.AbsolutePath}");
+
+            server.UpdateServerSideTextDocument(parameter.ContentChanges[0].Text, parameter.TextDocument.Version, parameter.TextDocument.Uri);
+            server.SendDiagnostics(parameter.TextDocument.Uri);
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentDidSaveName)]
+        public object TextDocumentDidSave(JToken arg)
+        {
+            LogInfo($"TextDocumentDidSave: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentDocumentHighlightName, UseSingleObjectParameterDeserialization = true)]
+        public DocumentHighlight[] GetDocumentHighlights(DocumentHighlightParams arg, CancellationToken token)
+        {
+            LogInfo($"GetDocumentHighlights: Received: {JToken.FromObject(arg)}");
+            var result = this.server.GetDocumentHighlights(arg.PartialResultToken, arg.Position, arg.TextDocument.Uri, token);
+            LogInfo($"GetDocumentHighlights: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
-        [JsonRpcMethod(Methods.WorkspaceDidChangeConfigurationName)]
-        public void OnDidChangeConfiguration(JToken arg)
+        [JsonRpcMethod(Methods.TextDocumentDocumentLinkName)]
+        public object TextDocumentDocumentLink(JToken arg)
         {
-            LogInfo($"OnDidChangeConfiguration: Received: {arg}");
-            var parameter = arg.ToObject<DidChangeConfigurationParams>();
-            this.server.SendSettings(parameter);
+            LogInfo($"TextDocumentDocumentLink: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.DocumentLinkResolveName)]
+        public object DocumentLinkResolve(JToken arg)
+        {
+            LogInfo($"DocumentLinkResolve: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentDocumentColorName)]
+        public object TextDocumentDocumentColor(JToken arg)
+        {
+            LogInfo($"TextDocumentDocumentColor: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentDocumentSymbolName)]
+        public object GetDocumentSymbols(JToken arg)
+        {
+            LogInfo($"GetDocumentSymbols: Received: {arg}");
+            var parameters = arg.ToObject<DocumentSymbolParams>();
+            var result = this.server.GetDocumentSymbols(parameters);
+            LogInfo($"GetDocumentSymbols: Sent: {JToken.FromObject(result)}");
+            return result;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentFoldingRangeName)]
+        public object GetFoldingRanges(JToken arg)
+        {
+            LogInfo($"GetFoldingRanges: Received: {arg}");
+            var parameter = arg.ToObject<FoldingRangeParams>();
+            var result = this.server.GetFoldingRanges(parameter);
+            LogInfo($"GetFoldingRanges: Sent: {JToken.FromObject(result)}");
+            return result;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentFormattingName)]
+        public object TextDocumentFormatting(JToken arg)
+        {
+            LogInfo($"TextDocumentFormatting: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentHoverName)]
+        public Hover OnHover(JToken arg)
+        {
+            LogInfo($"OnHover: Received: {arg}");
+            var parameter = arg.ToObject<TextDocumentPositionParams>();
+            var result = server.GetHover(parameter);
+            LogInfo($"OnHover: Sent: {((result == null) ? "NULL" : JToken.FromObject(result))}");
+            return result;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentOnTypeFormattingName)]
+        public object TextDocumentOnTypeFormatting(JToken arg)
+        {
+            LogInfo($"TextDocumentOnTypeFormatting: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentPublishDiagnosticsName)]
+        public object TextDocumentPublishDiagnostics(JToken arg)
+        {
+            LogInfo($"TextDocumentPublishDiagnostics: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentRangeFormattingName)]
+        public object TextDocumentRangeFormatting(JToken arg)
+        {
+            LogInfo($"TextDocumentRangeFormatting: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
         }
 
         [JsonRpcMethod(Methods.TextDocumentImplementationName)]
-        public object OnDocumentImplementation(JToken arg)
+        public object TextDocumentImplementation(JToken arg)
         {
-            LogInfo($"OnDocumentImplementation: Received: {arg}");
+            LogInfo($"TextDocumentImplementation: Received: {arg}");
             //var parameter = arg.ToObject<ImplementationParams>();
             return null;
         }
 
-        [JsonRpcMethod(Methods.ShutdownName)]
-        public object Shutdown()
+        [JsonRpcMethod(Methods.TextDocumentTypeDefinitionName)]
+        public object TextDocumentTypeDefinition(JToken arg)
         {
-            LogInfo($"Received Shutdown notification");
+            LogInfo($"TextDocumentRangeFormatting: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
             return null;
         }
 
-        [JsonRpcMethod(Methods.ExitName)]
-        public void Exit()
+        [JsonRpcMethod(Methods.TextDocumentReferencesName, UseSingleObjectParameterDeserialization = true)]
+        public object[] OnTextDocumentFindReferences(ReferenceParams parameter, CancellationToken token)
         {
-            LogInfo($"Received Exit notification");
-            server.Exit();
+            LogInfo($"OnTextDocumentFindReferences: Received: {JToken.FromObject(parameter)}");
+            var result = server.SendReferences(args: parameter, returnLocationsOnly: true, token: token);
+            LogInfo($"OnTextDocumentFindReferences: Sent: {JToken.FromObject(result)}");
+            return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentRenameName)]
-        public WorkspaceEdit Rename(JToken arg)
+        public WorkspaceEdit TextDocumentRename(JToken arg)
         {
-            LogInfo($"Rename: Received: {arg}");
+            LogInfo($"TextDocumentRename: Received: {arg}");
             var renameParams = arg.ToObject<RenameParams>();
             string fullText = File.ReadAllText(renameParams.TextDocument.Uri.LocalPath);
             string wordToReplace = GetWordAtPosition(fullText, renameParams.Position);
@@ -370,22 +506,176 @@ namespace AsmDude2LS
             return result;
         }
 
+        [JsonRpcMethod(Methods.TextDocumentSemanticTokensFullName)]
+        public object TextDocumentSemanticTokensFullName(JToken arg)
+        {
+            LogInfo($"TextDocumentSemanticTokensFull: NOT IMPLEMENTED. Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentSemanticTokensRangeName)]
+        public object TextDocumentSemanticTokensRange(JToken arg)
+        {
+            LogInfo($"TextDocumentSemanticTokensRange: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentSemanticTokensFullDeltaName)]
+        public object TextDocumentSemanticTokensFullDelta(JToken arg)
+        {
+            LogInfo($"TextDocumentSemanticTokensFullDelta: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentSignatureHelpName)]
+        public SignatureHelp TextDocumentSignatureHelp(JToken arg)
+        {
+            LogInfo($"TextDocumentSignatureHelp: Received: {arg}");
+            var parameter = arg.ToObject<SignatureHelpParams>();
+            var result = this.server.GetTextDocumentSignatureHelp(parameter);
+            LogInfo($"TextDocumentSignatureHelp: Sent: {JToken.FromObject(result)}");
+            return result;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentWillSaveName)]
+        public object TextDocumentWillSave(JToken arg)
+        {
+            LogInfo($"TextDocumentWillSave: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentLinkedEditingRangeName)]
+        public object TextDocumentLinkedEditingRange(JToken arg)
+        {
+            LogInfo($"TextDocumentLinkedEditingRange: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.TextDocumentWillSaveWaitUntilName)]
+        public object TextDocumentWillSaveWaitUntil(JToken arg)
+        {
+            LogInfo($"TextDocumentWillSaveWaitUntil: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.WindowLogMessageName)]
+        public object WindowLogMessage(JToken arg)
+        {
+            LogInfo($"WindowLogMessage: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.WindowShowMessageName)]
+        public object WindowShowMessage(JToken arg)
+        {
+            LogInfo($"WindowShowMessage: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.WindowShowMessageRequestName)]
+        public object WindowShowMessageRequest(JToken arg)
+        {
+            LogInfo($"WindowShowMessageRequest: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.WorkspaceApplyEditName)]
+        public object WorkspaceApplyEdit(JToken arg)
+        {
+            LogInfo($"WorkspaceApplyEdit: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.WorkspaceConfigurationName)]
+        public object WorkspaceConfiguration(JToken arg)
+        {
+            LogInfo($"WorkspaceConfiguration: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.WorkspaceDidChangeConfigurationName)]
+        public void OnDidChangeConfiguration(JToken arg)
+        {
+            LogInfo($"OnDidChangeConfiguration: Received: {arg}");
+            var parameter = arg.ToObject<DidChangeConfigurationParams>();
+            this.server.SendSettings(parameter);
+        }
+
+        [JsonRpcMethod(Methods.WorkspaceExecuteCommandName)]
+        public object WorkspaceExecuteCommand(JToken arg)
+        {
+            LogInfo($"WorkspaceExecuteCommand: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.WorkspaceSymbolName)]
+        public object WorkspaceSymbol(JToken arg)
+        {
+            LogInfo($"WorkspaceSymbol: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.WorkspaceDidChangeWatchedFilesName)]
+        public object WorkspaceDidChangeWatchedFiles(JToken arg)
+        {
+            LogInfo($"WorkspaceDidChangeWatchedFiles: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.ShutdownName)]
+        public object Shutdown()
+        {
+            LogInfo($"Received Shutdown notification");
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.ExitName)]
+        public void Exit()
+        {
+            LogInfo($"Received Exit notification");
+            server.Exit();
+        }
+
+        [JsonRpcMethod(Methods.TelemetryEventName)]
+        public object TelemetryEvent(JToken arg)
+        {
+            LogInfo($"TelemetryEvent: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+        [JsonRpcMethod(Methods.ClientUnregisterCapabilityName)]
+        public object ClientUnregisterCapability(JToken arg)
+        {
+            LogInfo($"ClientUnregisterCapability: NOT IMPLEMENTED.  Received: {arg}");
+            // TODO
+            return null;
+        }
+
+
+
+
+
         [JsonRpcMethod("textDocument/prepareRename")] // NOTE: not provided in Methods
         public object PrepareRename(JToken arg)
         {
             LogInfo($"PrepareRename: Received: {arg}");
             //var renameParams = arg.ToObject<PrepareRenameParams>();
             return null; 
-        }
-
-        [JsonRpcMethod(Methods.TextDocumentFoldingRangeName)]
-        public object GetFoldingRanges(JToken arg)
-        {
-            LogInfo($"GetFoldingRanges: Received: {arg}");
-            var parameter = arg.ToObject<FoldingRangeParams>();
-            var result = this.server.GetFoldingRanges(parameter);
-            LogInfo($"GetFoldingRanges: Sent: {JToken.FromObject(result)}");
-            return result;
         }
 
         [JsonRpcMethod(VSMethods.GetProjectContextsName)]
@@ -397,25 +687,7 @@ namespace AsmDude2LS
             return result;
         }
 
-        [JsonRpcMethod(Methods.TextDocumentDocumentSymbolName)]
-        public object GetDocumentSymbols(JToken arg)
-        {
-            LogInfo($"GetDocumentSymbols: Received: {arg}");
-            var parameters = arg.ToObject<DocumentSymbolParams>();
-            var result = this.server.GetDocumentSymbols(parameters);
-            LogInfo($"GetDocumentSymbols: Sent: {JToken.FromObject(result)}");
-            return result;
-        }
-
-        [JsonRpcMethod(Methods.TextDocumentDocumentHighlightName, UseSingleObjectParameterDeserialization = true)]
-        public DocumentHighlight[] GetDocumentHighlights(DocumentHighlightParams arg, CancellationToken token)
-        {
-            LogInfo($"GetDocumentHighlights: Received: {JToken.FromObject(arg)}");
-            var result = this.server.GetDocumentHighlights(arg.PartialResultToken, arg.Position, arg.TextDocument.Uri, token);
-            LogInfo($"GetDocumentHighlights: Sent: {JToken.FromObject(result)}");
-            return result;
-        }
-
+ 
         public Range[] GetWordRangesInText(string fullText, string word)
         {
             List<Range> ranges = new();
