@@ -34,7 +34,6 @@ namespace AsmDude2
     [ContentType(AsmDude2Package.AsmDudeContentType)]
     [TagType(typeof(AsmTokenTag))]
     [Name("AsmDude Assembly Token Tag Provider")]
-//    [Order(Before = "default")]
     internal sealed class AsmTokenTagProvider : ITaggerProvider
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag

@@ -152,28 +152,65 @@ namespace AsmTools
             return this.assembler_.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
         }
 
+        /// <summary>
+        /// get description for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an description. Keyword has to be in CAPITALS
+        /// </summary>
+        public string Get_Description(string keyword)
+        {
+            Contract.Requires(keyword != null);
+            Contract.Requires(keyword == keyword.ToUpperInvariant());
+
+            return this.description_.TryGetValue(keyword, out string description) ? description : string.Empty;
+        }
+
+        /// <summary>Get the collection of Keywords (in CAPITALS), but NOT mnemonics and registers</summary>
+        public IEnumerable<string> Get_Keywords()
+        {
+            return this.type_.Keys;
+        }
+
+        /// <summary>
+        /// Get architecture of the provided keyword. Keyword has to be in CAPITALS
+        /// </summary>
+        public Arch Get_Architecture(string keyword)
+        {
+            Contract.Requires(keyword != null);
+            Contract.Requires(keyword == keyword.ToUpperInvariant());
+
+            return this.arch_.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
+        }
+
+
         #endregion Public Methods
 
         #region Private Methods
 
         private static void LogInfo(string msg)
         {
-            Instance.traceSource.TraceEvent(TraceEventType.Information, 0, msg);
+            if (Instance.traceSource != null)
+            {
+                Instance.traceSource.TraceEvent(TraceEventType.Information, 0, msg);
+            }
             Console.WriteLine($"INFO: {msg}");
         }
 
         private static void LogWarning(string msg)
         {
-            Instance.traceSource.TraceEvent(TraceEventType.Warning, 0, msg);
+            if (Instance.traceSource != null)
+            {
+                Instance.traceSource.TraceEvent(TraceEventType.Warning, 0, msg);
+            }
             Console.WriteLine($"WARNING: {msg}");
         }
 
         private static void LogError(string msg)
         {
-            Instance.traceSource.TraceEvent(TraceEventType.Error, 0, msg);
+            if (Instance.traceSource != null)
+            {
+                Instance.traceSource.TraceEvent(TraceEventType.Error, 0, msg);
+            }
             Console.WriteLine($"ERROR: {msg}");
         }
-
 
         private void Init_Data(string path)
         {
@@ -185,7 +222,7 @@ namespace AsmTools
             // fill the dictionary with keywords
             {
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getXmlData", this.ToString()));
-                string filename = Path.Combine(path, "Resources", "AsmDudeData.xml");
+                string filename = Path.Combine(path, "AsmDudeData.xml");
                 Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: AsmDudeTools:getXmlData: going to load file \"{0}\"", filename));
                 try
                 {
@@ -197,17 +234,17 @@ namespace AsmTools
                 }
                 catch (FileNotFoundException)
                 {
-                    LogError("AsmTokenTagger: could not find file \"" + filename + "\".");
+                    LogError("AsmDudeTools:Init_Data: could not find file \"" + filename + "\".");
                     return;
                 }
                 catch (XmlException)
                 {
-                    LogError("AsmTokenTagger: xml error while reading file \"" + filename + "\".");
+                    LogError("AsmDudeTools:Init_Data: xml error while reading file \"" + filename + "\".");
                     return;
                 }
                 catch (Exception e)
                 {
-                    LogError("AsmTokenTagger: error while reading file \"" + filename + "\"." + e);
+                    LogError("AsmDudeTools:Init_Data: error while reading file \"" + filename + "\"." + e);
                     return;
                 }
             }
@@ -219,7 +256,7 @@ namespace AsmTools
                     XmlAttribute nameAttribute = node.Attributes["name"];
                     if (nameAttribute == null)
                     {
-                        //AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found misc with no name");
+                        LogWarning("AsmDudeTools:Init_Data: found misc with no name");
                     }
                     else
                     {
@@ -291,7 +328,7 @@ namespace AsmTools
                     XmlAttribute nameAttribute = node.Attributes["name"];
                     if (nameAttribute == null)
                     {
-                        //AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found user defined2 with no name");
+                        LogWarning("AsmDudeTools:Init_Data: found user defined2 with no name");
                     }
                     else
                     {
@@ -308,7 +345,7 @@ namespace AsmTools
                     XmlAttribute nameAttribute = node.Attributes["name"];
                     if (nameAttribute == null)
                     {
-                        //AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found user defined3 with no name");
+                        LogWarning("AsmDudeTools:Init_Data: found user defined3 with no name");
                     }
                     else
                     {
@@ -328,12 +365,6 @@ namespace AsmTools
             try
             {
                 XmlAttribute archAttribute = node.Attributes["arch"];
-
-                if (archAttribute!=null)
-                {
-                    LogError($"INFO: AsmDudeTools:Retrieve_Arch \"{archAttribute.Value}\"");
-                }
-
                 return (archAttribute == null) ? Arch.ARCH_NONE : ArchTools.ParseArch(archAttribute.Value, false, true);
             }
             catch (Exception)

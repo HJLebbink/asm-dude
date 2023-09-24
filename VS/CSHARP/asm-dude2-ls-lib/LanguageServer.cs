@@ -82,7 +82,7 @@ namespace AsmDude2LS
 
         private readonly TraceSource traceSource;
 
-        private AsmDude2Tools asmDudeTools;
+        private AsmTools.AsmDude2Tools asmDudeTools;
         public MnemonicStore mnemonicStore;
         public PerformanceStore performanceStore;
         public AsmLanguageServerOptions options;
@@ -303,7 +303,7 @@ namespace AsmDude2LS
                 this.performanceStore = new PerformanceStore(path_performance, this.traceSource, this.options);
             }
             {
-                this.asmDudeTools = new AsmDude2Tools(path, this.traceSource);
+                this.asmDudeTools = AsmTools.AsmDude2Tools.Create(path, this.traceSource);
             }
         }
 
@@ -783,7 +783,11 @@ namespace AsmDude2LS
                 List<Operand> operands2,
                 HashSet<Arch> selectedArchitectures2)
         {
-            bool extraLogging = true;
+#if _DEBUG
+                bool extraLogging = true;
+#else
+            bool extraLogging = false;
+#endif
 
             if (extraLogging) Console.WriteLine($"Constrain_Signatures: operands={string.Join(',', operands2)} data.Count={data.Count<AsmSignatureInformation>()}");
 
@@ -839,7 +843,11 @@ namespace AsmDude2LS
         {
             try
             {
+#if _DEBUG
                 bool extraLogging = true;
+#else
+                bool extraLogging = false;
+#endif
 
                 if (!this.options.SignatureHelp_On)
                 {
@@ -1205,7 +1213,11 @@ namespace AsmDude2LS
 
             try
             {
+#if _DEBUG
                 bool extraLogging = true;
+#else
+                bool extraLogging = false;
+#endif
 
                 if (!this.options.CodeCompletion_On)
                 {
@@ -1481,8 +1493,9 @@ namespace AsmDude2LS
                         string archStr = ":" + ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
                         string descr = this.mnemonicStore.GetDescription(mnemonic);
                         string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonicStr} {archStr} {descr}", MaxNumberOfCharsInToolTips);
-                        string performanceStr = "No performance info";
+                        string performanceStr = "";
 
+                        bool performanceInfoAvailable = false;
                         if (this.options.PerformanceInfo_On)
                         {
                             bool first = true;
@@ -1494,6 +1507,7 @@ namespace AsmDude2LS
                                 if (first)
                                 {
                                     first = false;
+                                    performanceInfoAvailable = true;
 
                                     string msg1 = string.Format(
                                         CultureUI,
@@ -1526,25 +1540,15 @@ namespace AsmDude2LS
                         }
 
                         hoverContent = new SumType<string, MarkedString>[]{
-                            new SumType<string, MarkedString>(new MarkedString
+                            new(new MarkedString
                             {
                                 Language = MarkupKind.PlainText.ToString(),
                                 Value = full_Descr + "\n",
                             }),
-                            //new SumType<string, MarkedString>(new MarkedString
-                            //{
-                            //    Language = MarkupKind.Markdown.ToString(),
-                            //    Value = "[ADDPD]: https://github.com/HJLebbink/asm-dude/wiki/ADDPD [ADDPD]",
-                            //}),
                             new SumType<string, MarkedString>(new MarkedString
                             {
                                 Language = MarkupKind.Markdown.ToString(),
-                                Value = "**Performance:**",
-                            }),
-                            new SumType<string, MarkedString>(new MarkedString
-                            {
-                                Language = MarkupKind.Markdown.ToString(),
-                                Value = "```text\n" + performanceStr + "\n```",
+                                Value = ((performanceInfoAvailable) ? "**Performance:**\n```text\n" + performanceStr + "\n```" : "No performance info"),
                             })
                         };
                         break;
