@@ -285,7 +285,7 @@ namespace AsmDude2LS
                 ref Dictionary<Mnemonic, string> htmlRef,
                 ref Dictionary<Mnemonic, string> description)
             {
-                // AsmDudeToolsStatic.Output_INFO("MnemonicStore:loadRegularData: filename=" + filename);
+                // Tools.Output_INFO("MnemonicStore:loadRegularData: filename=" + filename);
                 try
                 {
                     StreamReader file = new(filename);
@@ -301,7 +301,7 @@ namespace AsmDude2LS
                                 if (mnemonic == Mnemonic.NONE)
                                 {
                                     // ignore the unknown mnemonic
-                                    // AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
+                                    // Tools.Output_WARNING("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                                 }
                                 else
                                 {
@@ -312,7 +312,7 @@ namespace AsmDude2LS
                                     else
                                     {
                                         // this happens when the mnemonic is defined in multiple files, using the data from the first file
-                                        // AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: mnemonic " + mnemonic + " already has a description");
+                                        // Tools.Output_WARNING("MnemonicStore:loadRegularData: mnemonic " + mnemonic + " already has a description");
                                     }
                                     if (!htmlRef.ContainsKey(mnemonic))
                                     {
@@ -321,7 +321,7 @@ namespace AsmDude2LS
                                     else
                                     {
                                         // this happens when the mnemonic is defined in multiple files, using the data from the first file
-                                        //  AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: mnemonic " + mnemonic + " already has a html ref");
+                                        //  Tools.Output_WARNING("MnemonicStore:loadRegularData: mnemonic " + mnemonic + " already has a html ref");
                                     }
                                 }
                             }
@@ -377,7 +377,7 @@ namespace AsmDude2LS
                 ref Dictionary<Mnemonic, string> htmlRef,
                 ref Dictionary<Mnemonic, string> description)
             {
-                // AsmDudeToolsStatic.Output_INFO("MnemonicStore:load_data_intel: filename=" + filename);
+                // Tools.Output_INFO("MnemonicStore:load_data_intel: filename=" + filename);
                 try
                 {
                     StreamReader file = new(filename);

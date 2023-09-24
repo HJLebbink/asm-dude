@@ -89,7 +89,7 @@ namespace AsmDude2LS
 
         public LanguageServer(Stream sender, Stream reader)
         {
-            this.traceSource = LogUtils.CreateTraceSource();
+            this.traceSource = Tools.CreateTraceSource();
             //LogInfo("LanguageServer: constructor"); // This lineNumber produces a crash
             this.target = new LanguageServerTarget(this, this.traceSource);
             this.textDocuments = new Dictionary<Uri, TextDocumentItem>();
@@ -985,7 +985,7 @@ namespace AsmDude2LS
                     }
 
                     Arch arch = RegisterTools.GetArch(regName);
-                    //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+                    //Tools.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
                     string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
@@ -1011,7 +1011,7 @@ namespace AsmDude2LS
                 string keyword2 = keyword;
                 bool selected = true;
 
-                //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
+                //Tools.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
 
                 switch (type)
                 {
@@ -1032,7 +1032,7 @@ namespace AsmDude2LS
                 if (selected)
                 {
                     Arch arch = this.asmDudeTools.Get_Architecture(keyword);
-                    //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+                    //Tools.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
                     string insertionText = useCapitals ? keyword2 : keyword2.ToLowerInvariant();
@@ -1083,7 +1083,7 @@ namespace AsmDude2LS
             {
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
                 string displayTextFull = entry.Key + " - " + entry.Value;
-                string insertionText = AsmDudeToolsStatic.Retrieve_Regular_Label(entry.Key, usedAssembler);
+                string insertionText = Tools.Retrieve_Regular_Label(entry.Key, usedAssembler);
                 yield return new CompletionItem
                 {
                     Kind = this.GetCompletionItemKind(AsmTokenType.Label),
@@ -1501,7 +1501,7 @@ namespace AsmDude2LS
                             bool first = true;
                             string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
 
-                            MicroArch selectedMicroArchs = MicroArch.SkylakeX | MicroArch.Haswell;// AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+                            MicroArch selectedMicroArchs = MicroArch.SkylakeX | MicroArch.Haswell;// Tools.Get_MicroArch_Switched_On();
                             foreach (PerformanceItem item in this.performanceStore.GetPerformance(mnemonic, selectedMicroArchs))
                             {
                                 if (first)
@@ -1555,7 +1555,7 @@ namespace AsmDude2LS
                     }
                 case AsmTokenType.Register:
                     {
-                        // int lineNumber = //AsmTools.AsmDudeToolsStatic.Get_LineNumber(tagSpan);
+                        // int lineNumber = //AsmTools.Tools.Get_LineNumber(tagSpan);
                         if (keyword_uppercase.StartsWith("%", StringComparison.Ordinal))
                         {
                             keyword_uppercase = keyword_uppercase.Substring(1); // remove the preceding % in AT&T syntax
@@ -1628,11 +1628,11 @@ namespace AsmDude2LS
                     {
                         string label = keyword;
                         string labelPrefix = tag.Misc;
-                        string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(labelPrefix, label, AsmDudeToolsStatic.Used_Assembler);
+                        string full_Qualified_Label = Tools.Make_Full_Qualified_Label(labelPrefix, label, Tools.Used_Assembler);
 
                         description = new TextBlock();
                         description.Inlines.Add(Make_Run1("Label ", foreground));
-                        description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Label))));
+                        description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(Tools.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Label))));
 
                         string descr = this.Get_Label_Description(full_Qualified_Label);
                         if (descr.Length == 0)
@@ -1664,14 +1664,14 @@ namespace AsmDude2LS
                         }
                         else
                         {
-                            full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, AsmDudeToolsStatic.Used_Assembler);
+                            full_Qualified_Label = Tools.Make_Full_Qualified_Label(extra_Tag_Info, label, Tools.Used_Assembler);
                         }
 
-                        AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: found label def " + full_Qualified_Label);
+                        Tools.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: found label def " + full_Qualified_Label);
 
                         description = new TextBlock();
                         description.Inlines.Add(Make_Run1("Label ", foreground));
-                        description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Label))));
+                        description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(Tools.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Label))));
 
                         string descr = this.Get_Label_Def_Description(full_Qualified_Label, label);
                         if (descr.Length > 0)
@@ -1692,7 +1692,7 @@ namespace AsmDude2LS
                     {
                         (bool valid, ulong value, int nBits) = AsmSourceTools.Evaluate_Constant(keyword);
                         string constantStr = valid
-                            ? value + "d = " + value.ToString("X", AsmDudeToolsStatic.CultureUI) + "h = " + AsmSourceTools.ToStringBin(value, nBits) + "b"
+                            ? value + "d = " + value.ToString("X", Tools.CultureUI) + "h = " + AsmSourceTools.ToStringBin(value, nBits) + "b"
                             : keyword;
 
                         var containerElement = new ContainerElement(
@@ -1708,7 +1708,7 @@ namespace AsmDude2LS
                     {
                         description = new TextBlock();
                         description.Inlines.Add(Make_Run1("User defined 1: ", foreground));
-                        description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Userdefined1))));
+                        description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(Tools.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Userdefined1))));
 
                         string descr = this.asmDudeTools_.Get_Description(keyword_uppercase);
                         if (descr.Length > 0)
@@ -1729,7 +1729,7 @@ namespace AsmDude2LS
                     {
                         description = new TextBlock();
                         description.Inlines.Add(Make_Run1("User defined 2: ", foreground));
-                        description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Userdefined2))));
+                        description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(Tools.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Userdefined2))));
 
                         string descr = this.asmDudeTools_.Get_Description(keyword_uppercase);
                         if (descr.Length > 0)
@@ -1750,7 +1750,7 @@ namespace AsmDude2LS
                     {
                         description = new TextBlock();
                         description.Inlines.Add(Make_Run1("User defined 3: ", foreground));
-                        description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Userdefined3))));
+                        description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(Tools.ConvertColor(AsmDude.Settings.Default.SyntaxHighlighting_Userdefined3))));
 
                         string descr = this.asmDudeTools_.Get_Description(keyword_uppercase);
                         if (descr.Length > 0)
@@ -1775,9 +1775,9 @@ namespace AsmDude2LS
             if (description != null)
             {
                 description.Focusable = true;
-                description.FontSize = AsmDudeToolsStatic.GetFontSize() + 2;
-                description.FontFamily = AsmDudeToolsStatic.GetFontType();
-                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
+                description.FontSize = Tools.GetFontSize() + 2;
+                description.FontFamily = Tools.GetFontType();
+                //Tools.Output_INFO(string.Format(Tools.CultureUI, "{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
                 //quickInfoContent.Add(description);
                 return (new List<object> { "other" }, keywordSpan.Value);
             }

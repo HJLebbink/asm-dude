@@ -33,6 +33,157 @@ namespace AsmTools
     {
         private static readonly CultureInfo Culture = CultureInfo.CurrentCulture;
 
+
+        /// <summary>Guess whether the provided buffer has assembly in Intel syntax (return true) or AT&T syntax (return false)</summary>
+        public static bool Guess_Intel_Syntax(string[] lines)
+        {
+            bool contains_register_att(List<string> line)
+            {
+                foreach (string asmToken in line)
+                {
+                    if (asmToken[0].Equals('%'))
+                    {
+                        string asmToken2 = asmToken.Substring(1);
+                        if (RegisterTools.IsRn(asmToken2, true))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            bool contains_register_intel(List<string> line)
+            {
+                foreach (string asmToken in line)
+                {
+                    if (RegisterTools.IsRn(asmToken, true))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            bool contains_constant_att(List<string> line)
+            {
+                foreach (string asmToken in line)
+                {
+                    if (asmToken[0].Equals('$'))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            bool contains_constant_intel(List<string> line)
+            {
+                return false;
+            }
+            bool contains_mnemonic_att(List<string> line)
+            {
+                foreach (string word in line)
+                {
+                    if (!AsmSourceTools.IsMnemonic(word, true))
+                    {
+                        if (AsmSourceTools.IsMnemonic_Att(word, true))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            bool contains_mnemonic_intel(List<string> line)
+            {
+                return false;
+            }
+
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Intel_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
+            int registers_i = 0;
+            int constants_i = 0;
+            int mnemonics_i = 0;
+
+            for (int i = 0; i < lines.Length; ++i)
+            {
+                string line_uppercase = lines[i].ToUpper();
+                //Output_INFO(string.Format(CultureUI, "{0}:Guess_Intel_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_uppercase));
+
+                List<string> keywords_uppercase = SplitIntoKeywordsList(line_uppercase);
+
+                if (contains_register_att(keywords_uppercase))
+                {
+                    registers_i++;
+                }
+
+                if (contains_register_intel(keywords_uppercase))
+                {
+                    registers_i--;
+                }
+
+                if (contains_constant_att(keywords_uppercase))
+                {
+                    constants_i++;
+                }
+
+                if (contains_constant_intel(keywords_uppercase))
+                {
+                    constants_i--;
+                }
+
+                if (contains_mnemonic_att(keywords_uppercase))
+                {
+                    mnemonics_i++;
+                }
+
+                if (contains_mnemonic_intel(keywords_uppercase))
+                {
+                    mnemonics_i--;
+                }
+            }
+            int total =
+                Math.Max(Math.Min(1, registers_i), -1) +
+                Math.Max(Math.Min(1, constants_i), -1) +
+                Math.Max(Math.Min(1, mnemonics_i), -1);
+
+            bool result = (total <= 0);
+            //Output_INFO(string.Format(CultureUI, "{0}:Guess_Intel_Syntax; result {1}; file=\"{2}\"; registers {3}; constants {4}; mnemonics {5}", "AsmDudeToolsStatic", result, GetFilename(buffer), registers_i, constants_i, mnemonics_i));
+            return result;
+        }
+
+        /// <summary>Guess whether the provided buffer has assembly in Masm syntax (return true) or Gas syntax (return false)</summary>
+        public static bool Guess_Masm_Syntax(string[] lines)
+        {
+            Contract.Requires(lines != null);
+
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Masm_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
+            int evidence_masm = 0;
+
+            for (int i = 0; i < lines.Length; ++i)
+            {
+                string line_uppercase = lines[i].ToUpper();
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Masm_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
+
+                List<string> keywords_uppercase = AsmSourceTools.SplitIntoKeywordsList(line_uppercase);
+
+                foreach (string keyword_uppercase in keywords_uppercase)
+                {
+                    switch (keyword_uppercase)
+                    {
+                        case "PTR":
+                        case "@B":
+                        case "@F":
+                            evidence_masm++;
+                            break;
+                        case ".INTEL_SYNTAX":
+                        case ".ATT_SYNTAX":
+                            return false; // we know for sure
+                    }
+                }
+            }
+            bool result = (evidence_masm > 0);
+            //Output_INFO(string.Format(Culture, "{0}:Guess_Masm_Syntax; result {1}; evidence_masm {3}", "AsmDudeToolsStatic", result, evidence_masm));
+            return result;
+        }
+
         /// <summary>
         /// Parse the provided lineStr. Returns label, mnemonic, args, remarks. Args are in capitals
         /// </summary>

@@ -69,7 +69,7 @@ namespace AsmDude2LS
             {
                 if (selectedArchitectures.Contains(a))
                 {
-                    //AsmDudeToolsStatic.Output_INFO("AsmSignatureElement: isAllowed: selected architectures=" + ArchTools.ToString(selectedArchitectures) + "; arch = " + ArchTools.ToString(_arch));
+                    //Tools.Output_INFO("AsmSignatureElement: isAllowed: selected architectures=" + ArchTools.ToString(selectedArchitectures) + "; arch = " + ArchTools.ToString(_arch));
                     return true;
                 }
             }

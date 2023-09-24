@@ -22,6 +22,7 @@
 
 namespace AsmDude2
 {
+    using System;
     using System.ComponentModel.Composition;
     using AsmDude2.SyntaxHighlighting;
     using AsmDude2.Tools;
@@ -43,8 +44,13 @@ namespace AsmDude2
             {
                 if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window.HasFlag(AssemblerEnum.AUTO_DETECT))
                 {
-                    int nLinesMax = 40;
-                    bool has_intel_syntax = AsmDudeToolsStatic.Guess_Intel_Syntax(buffer, nLinesMax);
+                    int nLines = Math.Min(40, buffer.CurrentSnapshot.LineCount);
+                    string[] selection = new string[nLines];
+                    for (int i = 0; i < nLines; ++i)
+                    {
+                        selection[i] = buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
+                    }
+                    bool has_intel_syntax = AsmSourceTools.Guess_Intel_Syntax(selection);
 
                     return (has_intel_syntax)
                         ? new MasmDisassemblyTokenTagger(buffer) as ITagger<T>

@@ -150,7 +150,7 @@ namespace AsmDude2LS
         #region Private Methods
         private void AddData(MicroArch microArch, string filename, IDictionary<string, IList<Mnemonic>> translations)
         {
-            //AsmDudeToolsStatic.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
+            //Tools.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
             try
             {
                 StreamReader file = new StreamReader(filename);
@@ -257,7 +257,7 @@ namespace AsmDude2LS
                                     values.Add(mnemonic);
                                 }
                             }
-                            //AsmDudeToolsStatic.Output_INFO("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
+                            //Tools.Output_INFO("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
                             if (translations.ContainsKey(key))
                             {
                                 this.LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");

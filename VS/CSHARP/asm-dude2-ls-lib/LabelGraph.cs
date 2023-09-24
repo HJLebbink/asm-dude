@@ -234,7 +234,7 @@ namespace AsmDude2LS
                         continue;
                     }
 
-                    string regular_Label = AsmDudeToolsStatic.Retrieve_Regular_Label(full_Qualified_Label, usedAssembler);
+                    string regular_Label = Tools.Retrieve_Regular_Label(full_Qualified_Label, usedAssembler);
                     if (this.defAt_.ContainsKey(regular_Label))
                     {
                         continue;
@@ -273,7 +273,7 @@ namespace AsmDude2LS
                         {
                             lineContent = " :TODO";
                         }
-                        result.Add(entry.Key, AsmDudeToolsStatic.Cleanup($"LINE {lineNumber + 1} ({filename}){lineContent}"));
+                        result.Add(entry.Key, Tools.Cleanup($"LINE {lineNumber + 1} ({filename}){lineContent}"));
                     }
                 }
                 return result;
@@ -300,7 +300,7 @@ namespace AsmDude2LS
                 this.hasLabel_.Clear();
                 this.undefined_includes_.Clear();
             }
-            // AsmDudeToolsStatic.Disable_Message(msg, this.thisFilename_, this.Error_List_Provider);
+            // Tools.Disable_Message(msg, this.thisFilename_, this.Error_List_Provider);
         }
  
         private void Add_Linenumber(string lineStr, int lineNumber, int fileID)
@@ -323,7 +323,7 @@ namespace AsmDude2LS
                 }
                 else
                 {
-                    string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssembler);
+                    string full_Qualified_Label = Tools.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssembler);
                     this.LogInfo("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
                     Add_To_Dictionary(full_Qualified_Label, labelID, this.caseSensitiveLabel_, this.defAt_);
                 }
@@ -335,7 +335,7 @@ namespace AsmDude2LS
                 {
                     string labelStr = args[0];
                     string prefix = null; // TODO asmTokenTag.Tag.Misc 
-                    string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(prefix, labelStr, usedAssembler);
+                    string full_Qualified_Label = Tools.Make_Full_Qualified_Label(prefix, labelStr, usedAssembler);
 
                     int startPos = lineStr.IndexOf(labelStr);
                     if (startPos < 0)
@@ -400,7 +400,7 @@ namespace AsmDude2LS
             {
                 if (includeFilename.Length < 1)
                 {
-                    //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
+                    //Tools.Output_INFO("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
                     return;
                 }
                 if (includeFilename.Length > 2)
@@ -418,18 +418,18 @@ namespace AsmDude2LS
 
                 if (!File.Exists(filePath))
                 {
-                    //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
+                    //Tools.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
                     this.undefined_includes_.Add((include_filename: includeFilename, path: filePath, source_filename: currentFilename, lineNumber: lineNumber));
                 }
                 else
                 {
                     if (this.filenames_.Values.Contains(filePath))
                     {
-                        //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
+                        //Tools.Output_INFO("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
                     }
                     else
                     {
-                        //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath);
+                        //Tools.Output_INFO("LabelGraph:Handle_Include: including file " + filePath);
 
                         //ITextDocument doc = this.docFactory_.CreateAndLoadTextDocument(filePath, this.contentType_, true, out bool characterSubstitutionsOccurred);
                         //doc.FileActionOccurred += this.Doc_File_Action_Occurred;
