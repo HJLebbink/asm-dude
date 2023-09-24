@@ -28,7 +28,7 @@ namespace AsmTools
 
         public KeywordID(int lineNumber, int fileID, int startPos, int endPos, AsmTokenType type = AsmTokenType.UNKNOWN)
         {
-            data = ((ulong)lineNumber & 0xFFFFFF) // 24 bits for linenumber
+            this.data = ((ulong)lineNumber & 0xFFFFFF) // 24 bits for linenumber
                 | ((ulong)(fileID & 0xFF) << 24)  // 8 bits for fileID
                 | ((ulong)(startPos & 0x3FFF) << 32)  // 14 bits for startPos
                 | ((ulong)(endPos & 0x3FFF) << 46)  // 14 bits for endPos
@@ -80,13 +80,13 @@ namespace AsmTools
         {
             get
             {
-                return File_Id == 0;
+                return this.File_Id == 0;
             }
         }
 
         public override string ToString()
         {
-            return $"KeywordID({LineNumber}, {File_Id}, {Start_Pos}, {End_Pos}, {Type})";
+            return $"KeywordID({this.LineNumber}, {this.File_Id}, {this.Start_Pos}, {this.End_Pos}, {this.Type})";
         }
     }
 }

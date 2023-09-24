@@ -54,7 +54,7 @@ namespace AsmDude2LS
         public AsmDude2Tools(string path, TraceSource traceSource)
         {
             this.traceSource = traceSource;
-            LogInfo("AsmDude2Tools: constructor");
+            this.LogInfo("AsmDude2Tools: constructor");
 
             this.Init_Data(path);
 
@@ -319,7 +319,7 @@ namespace AsmDude2LS
                 XmlAttribute nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    LogWarning("AsmDudeTools:Init_Data: found misc with no name");
+                    this.LogWarning("AsmDudeTools:Init_Data: found misc with no name");
                 }
                 else
                 {
@@ -335,7 +335,7 @@ namespace AsmDude2LS
                 XmlAttribute nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    LogWarning("AsmDudeTools:Init_Data: found directive with no name");
+                    this.LogWarning("AsmDudeTools:Init_Data: found directive with no name");
                 }
                 else
                 {
@@ -351,7 +351,7 @@ namespace AsmDude2LS
                 XmlAttribute nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    LogWarning("AsmDudeTools:Init_Data: found register with no name");
+                    this.LogWarning("AsmDudeTools:Init_Data: found register with no name");
                 }
                 else
                 {
@@ -366,7 +366,7 @@ namespace AsmDude2LS
                 XmlAttribute nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    LogWarning("AsmDudeTools:Init_Data: found userdefined1 with no name");
+                    this.LogWarning("AsmDudeTools:Init_Data: found userdefined1 with no name");
                 }
                 else
                 {
@@ -380,7 +380,7 @@ namespace AsmDude2LS
                 XmlAttribute nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    LogWarning("AsmDudeTools:Init_Data: found userdefined2 with no name");
+                    this.LogWarning("AsmDudeTools:Init_Data: found userdefined2 with no name");
                 }
                 else
                 {
@@ -394,7 +394,7 @@ namespace AsmDude2LS
                 XmlAttribute nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    LogWarning("AsmDudeTools:Init_Data: found userdefined3 with no name");
+                    this.LogWarning("AsmDudeTools:Init_Data: found userdefined3 with no name");
                 }
                 else
                 {
@@ -460,15 +460,15 @@ namespace AsmDude2LS
                 }
                 catch (FileNotFoundException)
                 {
-                    LogError("AsmTokenTagger: could not find file \"" + filename + "\".");
+                    this.LogError("AsmTokenTagger: could not find file \"" + filename + "\".");
                 }
                 catch (XmlException)
                 {
-                    LogError("AsmTokenTagger: xml error while reading file \"" + filename + "\".");
+                    this.LogError("AsmTokenTagger: xml error while reading file \"" + filename + "\".");
                 }
                 catch (Exception e)
                 {
-                    LogError("AsmTokenTagger: error while reading file \"" + filename + "\"." + e);
+                    this.LogError("AsmTokenTagger: error while reading file \"" + filename + "\"." + e);
                 }
             }
             return this.xmlData_;

@@ -24,6 +24,7 @@ namespace AsmSim
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
@@ -498,6 +499,14 @@ namespace AsmSim
 
             BitVecExpr retrieve_mem_method_LOCAL(Context ctx, ArrayExpr mem1, BitVecExpr rax1)
             {
+                Contract.Requires(ctx != null);
+                Contract.Requires(mem1 != null);
+                Contract.Requires(rax1 != null);
+
+                Contract.Assume(ctx != null);
+                Contract.Assume(mem1 != null);
+                Contract.Assume(rax1 != null);
+
                 BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
                 BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
                 BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
@@ -1000,6 +1009,7 @@ namespace AsmSim
                 }
                 if (false)
                 {
+#pragma warning disable CS0162 // Unreachable code detected
                     tools.StateConfig.RAX = true;
                     tools.StateConfig.RBX = true;
                     tools.StateConfig.RCX = true;
@@ -1121,6 +1131,7 @@ namespace AsmSim
                         state0.BranchInfoStore.Add(branchInfo, true);
                         Console.WriteLine("State0:" + state0);
                     }
+#pragma warning restore CS0162 // Unreachable code detected
                     if (true)
                     {
                         tools.Quiet = false;

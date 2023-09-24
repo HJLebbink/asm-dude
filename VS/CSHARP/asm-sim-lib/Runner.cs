@@ -68,39 +68,37 @@ namespace AsmSim
                 Tools tools = state.Tools;
                 string nextKey = Tools.CreateKey(tools.Rand);
                 string nextKeyBranch = "DUMMY_NOT_USED";
-                (string label, Mnemonic mnemonic, string[] args, string remark) = AsmSourceTools.ParseLine(line);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(mnemonic, args, (state.HeadKey, nextKey, nextKeyBranch), tools))
+                (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmSourceTools.ParseLine(line, -1, -1);
+                using OpcodeBase opcodeBase = InstantiateOpcode(mnemonic, args, (state.HeadKey, nextKey, nextKeyBranch), tools);
+                if (opcodeBase == null)
                 {
-                    if (opcodeBase == null)
-                    {
-                        return null;
-                    }
-
-                    if (opcodeBase.IsHalted)
-                    {
-                        Console.WriteLine("WARNING: Runner:SimpleStep_Forward: line: " + line + " is halted. Message: " + opcodeBase.SyntaxError);
-                        return null;
-                    }
-                    opcodeBase.Execute();
-                    State stateOut = new State(state);
-                    stateOut.Update_Forward(opcodeBase.Updates.regular);
-                    stateOut.Frozen = true;
-
-                    opcodeBase.Updates.regular?.Dispose();
-                    opcodeBase.Updates.branch?.Dispose();
-
-                    if (!tools.Quiet)
-                    {
-                        Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
-                    }
-
-                    if (!tools.Quiet)
-                    {
-                        Console.WriteLine(stateOut);
-                    }
-
-                    return stateOut;
+                    return null;
                 }
+
+                if (opcodeBase.IsHalted)
+                {
+                    Console.WriteLine("WARNING: Runner:SimpleStep_Forward: line: " + line + " is halted. Message: " + opcodeBase.SyntaxError);
+                    return null;
+                }
+                opcodeBase.Execute();
+                State stateOut = new State(state);
+                stateOut.Update_Forward(opcodeBase.Updates.regular);
+                stateOut.Frozen = true;
+
+                opcodeBase.Updates.regular?.Dispose();
+                opcodeBase.Updates.branch?.Dispose();
+
+                if (!tools.Quiet)
+                {
+                    Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
+                }
+
+                if (!tools.Quiet)
+                {
+                    Console.WriteLine(stateOut);
+                }
+
+                return stateOut;
             }
             catch (Exception e)
             {
@@ -117,38 +115,36 @@ namespace AsmSim
             try
             {
                 string prevKey = Tools.CreateKey(state.Tools.Rand);
-                (string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (prevKey, state.TailKey, state.TailKey), state.Tools))
+                (KeywordID[], string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line, -1, -1);
+                using OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (prevKey, state.TailKey, state.TailKey), state.Tools);
+                if (opcodeBase == null)
                 {
-                    if (opcodeBase == null)
-                    {
-                        return null;
-                    }
-
-                    if (opcodeBase.IsHalted)
-                    {
-                        return null;
-                    }
-
-                    opcodeBase.Execute();
-                    State stateOut = new State(state);
-                    stateOut.Update_Backward(opcodeBase.Updates.regular, prevKey);
-
-                    opcodeBase.Updates.regular?.Dispose();
-                    opcodeBase.Updates.branch?.Dispose();
-
-                    if (!state.Tools.Quiet)
-                    {
-                        Console.WriteLine("INFO: Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
-                    }
-
-                    if (!state.Tools.Quiet)
-                    {
-                        Console.WriteLine(stateOut);
-                    }
-
-                    return stateOut;
+                    return null;
                 }
+
+                if (opcodeBase.IsHalted)
+                {
+                    return null;
+                }
+
+                opcodeBase.Execute();
+                State stateOut = new State(state);
+                stateOut.Update_Backward(opcodeBase.Updates.regular, prevKey);
+
+                opcodeBase.Updates.regular?.Dispose();
+                opcodeBase.Updates.branch?.Dispose();
+
+                if (!state.Tools.Quiet)
+                {
+                    Console.WriteLine("INFO: Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
+                }
+
+                if (!state.Tools.Quiet)
+                {
+                    Console.WriteLine(stateOut);
+                }
+
+                return stateOut;
             }
             catch (Exception e)
             {
@@ -158,44 +154,42 @@ namespace AsmSim
         }
 
         /// <summary>Perform one step forward and return states for both branches</summary>
-        public static (State regular, State branch) Step_Forward(string line, State state)
+        public static (State? regular, State? branch) Step_Forward(string line, State state)
         {
             Contract.Requires(state != null);
-
+            Contract.Assume(state != null);
             try
             {
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
                 string nextKeyBranch = nextKey + "!BRANCH";
-                (string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
+                (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line, -1, -1);
+                using OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools);
+                if (opcodeBase == null)
                 {
-                    if (opcodeBase == null)
-                    {
-                        return (regular: null, branch: null);
-                    }
-
-                    if (opcodeBase.IsHalted)
-                    {
-                        return (regular: null, branch: null);
-                    }
-
-                    opcodeBase.Execute();
-                    State stateRegular = null;
-                    if (opcodeBase.Updates.regular != null)
-                    {
-                        stateRegular = new State(state);
-                        stateRegular.Update_Forward(opcodeBase.Updates.regular);
-                        opcodeBase.Updates.regular.Dispose();
-                    }
-                    State stateBranch = null;
-                    if (opcodeBase.Updates.branch != null)
-                    {
-                        stateBranch = new State(state);
-                        stateBranch.Update_Forward(opcodeBase.Updates.branch);
-                        opcodeBase.Updates.branch.Dispose();
-                    }
-                    return (regular: stateRegular, branch: stateBranch);
+                    return (regular: null, branch: null);
                 }
+
+                if (opcodeBase.IsHalted)
+                {
+                    return (regular: null, branch: null);
+                }
+
+                opcodeBase.Execute();
+                State stateRegular = null;
+                if (opcodeBase.Updates.regular != null)
+                {
+                    stateRegular = new State(state);
+                    stateRegular.Update_Forward(opcodeBase.Updates.regular);
+                    opcodeBase.Updates.regular.Dispose();
+                }
+                State stateBranch = null;
+                if (opcodeBase.Updates.branch != null)
+                {
+                    stateBranch = new State(state);
+                    stateBranch.Update_Forward(opcodeBase.Updates.branch);
+                    opcodeBase.Updates.branch.Dispose();
+                }
+                return (regular: stateRegular, branch: stateBranch);
             }
             catch (Exception e)
             {
@@ -215,19 +209,17 @@ namespace AsmSim
             try
             {
                 (Mnemonic mnemonic, string[] args) content = sFlow.Get_Line(lineNumber);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, keys, tools))
+                using OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, keys, tools);
+                if ((opcodeBase == null) || opcodeBase.IsHalted)
                 {
-                    if ((opcodeBase == null) || opcodeBase.IsHalted)
+                    StateUpdate resetState = new StateUpdate(keys.prevKey, keys.nextKey, tools)
                     {
-                        StateUpdate resetState = new StateUpdate(keys.prevKey, keys.nextKey, tools)
-                        {
-                            Reset = true,
-                        };
-                        return (regular: resetState, branch: null);
-                    }
-                    opcodeBase.Execute();
-                    return opcodeBase.Updates;
+                        Reset = true,
+                    };
+                    return (regular: resetState, branch: null);
                 }
+                opcodeBase.Execute();
+                return opcodeBase.Updates;
             }
             catch (Exception e)
             {

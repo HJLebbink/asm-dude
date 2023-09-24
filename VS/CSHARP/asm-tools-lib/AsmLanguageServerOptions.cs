@@ -345,13 +345,13 @@ namespace AsmTools
 #pragma warning restore SA1401 // Fields should be private
 
         public AsmLanguageServerOptions() {
-            CodeFolding_BeginTag = string.Empty;
-            CodeFolding_EndTag = string.Empty;
-            AsmDoc_Url = string.Empty;
-            AsmSim_Pragma_Assume = string.Empty;
-            AsmSim_Show_Register_In_Code_Completion_Numeration = string.Empty;
-            AsmSim_Show_Register_In_Register_Tooltip_Numeration = string.Empty;
-            AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = string.Empty;
+            this.CodeFolding_BeginTag = string.Empty;
+            this.CodeFolding_EndTag = string.Empty;
+            this.AsmDoc_Url = string.Empty;
+            this.AsmSim_Pragma_Assume = string.Empty;
+            this.AsmSim_Show_Register_In_Code_Completion_Numeration = string.Empty;
+            this.AsmSim_Show_Register_In_Register_Tooltip_Numeration = string.Empty;
+            this.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = string.Empty;
         }
 
         public MicroArch Get_MicroArch_Switched_On()

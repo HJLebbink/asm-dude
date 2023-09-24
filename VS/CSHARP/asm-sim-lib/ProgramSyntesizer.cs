@@ -144,7 +144,7 @@ namespace AsmSim
 
             #endregion
 
-            Console.WriteLine(ToString(this._solver));
+            Console.WriteLine(this.ToString(this._solver));
             if (this._solver.Check() == Status.SATISFIABLE)
             {
                 this.GetAllModels(this._solver, ctx);
@@ -183,7 +183,7 @@ namespace AsmSim
                     //Console.WriteLine("GetMostModels2: checking codeSwitch " + codeSwitch);
                     if (solver.Check(codeSwitch) == Status.SATISFIABLE)
                     {
-                        (string programStr, string programId) = Model2Asm(solver.Model);
+                        (string programStr, string programId) = this.Model2Asm(solver.Model);
                         if (!this._validPrograms.Contains(programId))
                         {
                             solver.Push();
@@ -192,7 +192,7 @@ namespace AsmSim
                             Console.WriteLine("-----------------\ncount " + counter);
                             counter++;
                             Console.Write(programStr);
-                            Console.WriteLine(ToString(solver.Model));
+                            Console.WriteLine(this.ToString(solver.Model));
                             //Console.WriteLine(ToString_Constants(solver.Model));
                             //return;
 
@@ -200,7 +200,7 @@ namespace AsmSim
                             {
                                 IList<int> freeLines2 = new List<int>(freeLines);
                                 freeLines2.Remove(lineNumber);
-                                GetMostModels(ref counter, solver, ctx, freeLines2);
+                                this.GetMostModels(ref counter, solver, ctx, freeLines2);
                             }
                             solver.Pop();
                             //Console.WriteLine("GetMostModels2: --------------------------");
@@ -498,7 +498,7 @@ namespace AsmSim
                 BoolExpr newRegState = MakeRuleRegResult(reg1, this._registers, x, lineNumber, ctx);
                 BoolExpr newFlagState = ctx.MkAnd(
                     ZeroFlag(reg1, lineNumber, ctx),
-                    OverFlowFlag(reg1, lineNumber, ctx)
+                    this.OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
@@ -510,7 +510,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RCX, ln1, ctx), (reg1 == Rn.RCX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RCX, ln0, ctx)),
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), (reg1 == Rn.RDX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RDX, ln0, ctx)),
                     ZeroFlag(reg1, lineNumber, ctx),
-                    OverFlowFlag(reg1, lineNumber, ctx)
+                    this.OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                // this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg1, ln0, ctx)));
@@ -533,7 +533,7 @@ namespace AsmSim
                 BoolExpr newRegState = MakeRuleRegResult(reg1, this._registers, x, lineNumber, ctx);
                 BoolExpr newFlagState = ctx.MkAnd(
                     ZeroFlag(reg1, lineNumber, ctx),
-                    OverFlowFlag(reg1, lineNumber, ctx)
+                    this.OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
@@ -545,7 +545,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RCX, ln1, ctx), (reg1 == Rn.RCX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RCX, ln0, ctx)),
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), (reg1 == Rn.RDX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RDX, ln0, ctx)),
                     ZeroFlag(reg1, lineNumber, ctx),
-                    OverFlowFlag(reg1, lineNumber, ctx)
+                    this.OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg1, ln0, ctx)));
@@ -599,8 +599,8 @@ namespace AsmSim
                     SetFlag(Flags.AF, Tv.UNDEFINED, lineNumber, ctx),
 
                     ZeroFlag(reg1, lineNumber, ctx),
-                    SignFlag(reg1, lineNumber, ctx),
-                    OverFlowFlag(reg1, lineNumber, ctx)
+                    this.SignFlag(reg1, lineNumber, ctx),
+                    this.OverFlowFlag(reg1, lineNumber, ctx)
                 );
                // this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
@@ -612,7 +612,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RCX, ln1, ctx), (reg1 == Rn.RCX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RCX, ln0, ctx)),
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), (reg1 == Rn.RDX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RDX, ln0, ctx)),
                     ZeroFlag(reg1, lineNumber, ctx),
-                    OverFlowFlag(reg1, lineNumber, ctx)
+                    this.OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg1, ln0, ctx)));
@@ -650,12 +650,13 @@ namespace AsmSim
                     )
                 ));
             }
+#pragma warning disable CS0162 // Unreachable code detected
             if (false) {
                 BitVecExpr x = ctx.MkBVAdd(GetReg(reg, ln0, ctx), ctx.MkBV(1, nBits));
                 BoolExpr newRegState = MakeRuleRegResult(reg, this._registers, x, lineNumber, ctx);
                 BoolExpr newFlagState = ctx.MkAnd(
                     ZeroFlag(reg, lineNumber, ctx),
-                    OverFlowFlag(reg, lineNumber, ctx)
+                    this.OverFlowFlag(reg, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
@@ -668,11 +669,12 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), GetRegKnown(Rn.RDX, ln0, ctx)),
 
                     ZeroFlag(reg, lineNumber, ctx),
-                    OverFlowFlag(reg, lineNumber, ctx)
+                    this.OverFlowFlag(reg, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg, ln1, ctx)));
             }
+#pragma warning restore CS0162 // Unreachable code detected
         }
 
         private void AddInstruction_Dec(Rn reg, int lineNumber)
@@ -693,7 +695,7 @@ namespace AsmSim
 
                 BoolExpr newFlagState = ctx.MkAnd(
                     ZeroFlag(reg, lineNumber, ctx),
-                    OverFlowFlag(reg, lineNumber, ctx)
+                    this.OverFlowFlag(reg, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
@@ -706,7 +708,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), GetRegKnown(Rn.RDX, ln0, ctx)),
 
                     ZeroFlag(reg, lineNumber, ctx),
-                    OverFlowFlag(reg, lineNumber, ctx)
+                    this.OverFlowFlag(reg, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg, ln1, ctx)));
@@ -802,7 +804,7 @@ namespace AsmSim
                         {
                             FuncDecl constantFuncDecl = this._constants[constant].FuncDecl;
                             string constantValue;
-                            if (Contains(constantFuncDecl, model.ConstDecls))
+                            if (this.Contains(constantFuncDecl, model.ConstDecls))
                             {
                                 constantValue = model.ConstInterp(this._constants[constant].FuncDecl).ToString();
                             }
@@ -836,17 +838,17 @@ namespace AsmSim
 
                 if (true)
                 {
-                    program.Add(funcDecl.Name + " = " + ToString(value));
+                    program.Add(funcDecl.Name + " = " + this.ToString(value));
                 }
                 else
                 {
                     if (value.IsBool && value.IsTrue)
                     {
-                        program.Add(funcDecl.Name + " = " + ToString(value));
+                        program.Add(funcDecl.Name + " = " + this.ToString(value));
                     }
                     else
                     {
-                        program.Add(funcDecl.Name + " = " + ToString(value));
+                        program.Add(funcDecl.Name + " = " + this.ToString(value));
                     }
                 }
             }
@@ -932,7 +934,7 @@ namespace AsmSim
                         if (solver.Check() == Status.SATISFIABLE)
                         {
                             Console.WriteLine(instruction_Switch + " = " + tv);
-                            Console.WriteLine(ToString(solver.Model));
+                            Console.WriteLine(this.ToString(solver.Model));
                         }
                     }
                     if (tv == Tv.ONE)

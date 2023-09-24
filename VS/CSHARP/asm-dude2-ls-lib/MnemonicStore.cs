@@ -58,7 +58,7 @@ namespace AsmDude2LS
         {
             this.traceSource = traceSource;
             this.options = options;
-            LogInfo($"MnemonicStore: constructor: regularData = {filename_RegularData}; handcraftedData = {filename_HandcraftedData}");
+            this.LogInfo($"MnemonicStore: constructor: regularData = {filename_RegularData}; handcraftedData = {filename_HandcraftedData}");
 
             var (data, arch, htmlRef, description) = this.CalcSignatureInformation(filename_RegularData, filename_HandcraftedData);
 
@@ -206,14 +206,14 @@ namespace AsmDude2LS
 
             if (operands.Length != parameterOffsets.Length)
             {
-                LogError($"MnemonicStore:CreateAsmSignatureElement: inconsistent signature information: args={args}; parameterOffsets={parameterOffsets}");
+                this.LogError($"MnemonicStore:CreateAsmSignatureElement: inconsistent signature information: args={args}; parameterOffsets={parameterOffsets}");
                 for (int i = 0; i < operands.Length; ++i)
                 {
-                    LogError($"MnemonicStore:CreateAsmSignatureElement: operands[{i}]={operands[i]}");
+                    this.LogError($"MnemonicStore:CreateAsmSignatureElement: operands[{i}]={operands[i]}");
                 }
                 for (int i = 0; i < parameterOffsets.Length; ++i)
                 {
-                    LogError($"MnemonicStore:CreateAsmSignatureElement: parameterOffsets[{i}]={parameterOffsets[i]}; sign={sign}");
+                    this.LogError($"MnemonicStore:CreateAsmSignatureElement: parameterOffsets[{i}]={parameterOffsets[i]}; sign={sign}");
                 }
             }
 
@@ -330,21 +330,21 @@ namespace AsmDude2LS
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0], false);
                                 if (mnemonic == Mnemonic.NONE)
                                 {
-                                    LogWarning("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
+                                    this.LogWarning("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                                 }
                                 else
                                 {
-                                    var se = CreateAsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
+                                    var se = this.CreateAsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
                                     // LogInfo($"MnemonicStore: adding AsmSignatureInformation {se.SignatureInformation.Label}");
                                     if (Add(se, ref data))
                                     {
-                                        LogWarning("MnemonicStore:loadRegularData: signature already exists" + se.ToString());
+                                        this.LogWarning("MnemonicStore:loadRegularData: signature already exists" + se.ToString());
                                     }
                                 }
                             }
                             else
                             {
-                                LogWarning("MnemonicStore:loadRegularData: s.Length=" + columns.Length + "; funky line" + line);
+                                this.LogWarning("MnemonicStore:loadRegularData: s.Length=" + columns.Length + "; funky line" + line);
                             }
                         }
                     }
@@ -394,7 +394,7 @@ namespace AsmDude2LS
 
                                 if (mnemonic == Mnemonic.NONE)
                                 {
-                                    LogWarning("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
+                                    this.LogWarning("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                                 }
                                 else
                                 {
@@ -412,21 +412,21 @@ namespace AsmDude2LS
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0], false);
                                 if (mnemonic == Mnemonic.NONE)
                                 {
-                                    LogWarning("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
+                                    this.LogWarning("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                                 }
                                 else
                                 {
-                                    var se = CreateAsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
+                                    var se = this.CreateAsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
                                     // LogInfo($"MnemonicStore: LoadHandcraftedData: adding AsmSignatureInformation {se.SignatureInformation.Label}");
                                     if (Add(se, ref data))
                                     {
-                                        LogWarning("MnemonicStore:LoadHandcraftedData: signature already exists" + se.ToString());
+                                        this.LogWarning("MnemonicStore:LoadHandcraftedData: signature already exists" + se.ToString());
                                     }
                                 }
                             }
                             else
                             {
-                               LogWarning("MnemonicStore:loadHandcraftedData: s.Length=" + columns.Length + "; funky line" + line);
+                                this.LogWarning("MnemonicStore:loadHandcraftedData: s.Length=" + columns.Length + "; funky line" + line);
                             }
                         }
                     }
@@ -444,11 +444,11 @@ namespace AsmDude2LS
                 }
                 catch (FileNotFoundException)
                 {
-                    LogError("MnemonicStore:LoadHandcraftedData: could not find file \"" + filename + "\".");
+                    this.LogError("MnemonicStore:LoadHandcraftedData: could not find file \"" + filename + "\".");
                 }
                 catch (Exception e)
                 {
-                    LogError("MnemonicStore:LoadHandcraftedData: error while reading file \"" + filename + "\"." + e);
+                    this.LogError("MnemonicStore:LoadHandcraftedData: error while reading file \"" + filename + "\"." + e);
                 }
             }
 
@@ -458,7 +458,7 @@ namespace AsmDude2LS
             }
             else
             {
-                LogError($"MnemonicStore: constructor: regularData = {filename_RegularData} does not exist");
+                this.LogError($"MnemonicStore: constructor: regularData = {filename_RegularData} does not exist");
             }
 
             if (filename_HandcraftedData != null)
@@ -469,7 +469,7 @@ namespace AsmDude2LS
                 }
                 else
                 {
-                    LogError($"MnemonicStore: constructor: handcraftedData = {filename_HandcraftedData} does not exist");
+                    this.LogError($"MnemonicStore: constructor: handcraftedData = {filename_HandcraftedData} does not exist");
                 }
             }
             return (data, arch, htmlRef, description);

@@ -221,6 +221,7 @@ namespace AsmSim
         public static BitVecExpr Create_Key(Rn reg, string key, Context ctx)
         {
             Contract.Requires(ctx != null);
+            Contract.Assume(ctx != null);
 
             uint nBits = (uint)RegisterTools.NBits(reg);
             if (RegisterTools.Is_SIMD_Register(reg))
@@ -251,36 +252,42 @@ namespace AsmSim
         public static BoolExpr Create_Key(Flags flag, string key, Context ctx)
         {
             Contract.Requires(ctx != null);
+            Contract.Assume(ctx != null);
             return ctx.MkBoolConst(Flag_Name(flag, key));
         }
 
         public static ArrayExpr Create_Mem_Key(string key, Context ctx)
         {
             Contract.Requires(ctx != null);
+            Contract.Assume(ctx != null);
             return ctx.MkArrayConst(Mem_Name(key), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
         }
 
         public static ArrayExpr Create_Mem_Key_Fresh(Random rand, Context ctx)
         {
             Contract.Requires(ctx != null);
+            Contract.Assume(ctx != null);
             return ctx.MkArrayConst(Mem_Name_Fresh(rand), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
         }
 
         public static BitVecExpr Create_Reg_Key_Fresh(Rn reg, Random rand, Context ctx)
         {
             Contract.Requires(ctx != null);
+            Contract.Assume(ctx != null);
             return ctx.MkBVConst(Reg_Name_Fresh(reg, rand), (uint)RegisterTools.NBits(reg));
         }
 
         public static BoolExpr Create_Flag_Key_Fresh(Flags flag, Random rand, Context ctx)
         {
             Contract.Requires(ctx != null);
+            Contract.Assume(ctx != null);
             return ctx.MkBoolConst(Flag_Name_Fresh(flag, rand));
         }
 
         public static BitVecExpr Calc_Effective_Address(string op, string key, Tools tools, Context ctx)
         {
             Contract.Requires(tools != null);
+            Contract.Assume(tools != null);
             return Calc_Effective_Address(new Operand(op, false, tools.Parameters), key, ctx);
         }
 
@@ -288,6 +295,8 @@ namespace AsmSim
         {
             Contract.Requires(op != null);
             Contract.Requires(ctx != null);
+            Contract.Assume(op != null);
+            Contract.Assume(ctx != null);
 
             uint nBitsOperand = (uint)op.NBits;
             uint nBitsAddress = 64;

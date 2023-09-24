@@ -53,7 +53,7 @@ namespace AsmDude2
 
         internal MasmTokenTagger(ITextBuffer buffer)
         {
-            this.asmDudeTools_ = AsmDude2Tools.Create(AsmDudeToolsStatic.Get_Install_Path());
+            this.asmDudeTools_ = AsmDude2Tools.Create(AsmDudeToolsStatic.Get_Install_Path(), null);
 
             this.mnemonic_ = new AsmTokenTag(AsmTokenType.Mnemonic);
             this.mnemonicOff_ = new AsmTokenTag(AsmTokenType.MnemonicOff);

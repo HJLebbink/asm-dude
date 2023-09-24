@@ -948,6 +948,9 @@ namespace AsmSim
             Contract.Requires(address != null);
             Contract.Requires(value != null);
             Contract.Requires(undef != null);
+            Contract.Assume(address != null);
+            Contract.Assume(value != null);
+            Contract.Assume(undef != null);
 
             this.Empty = false;
 

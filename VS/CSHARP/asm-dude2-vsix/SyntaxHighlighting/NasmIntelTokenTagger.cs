@@ -50,7 +50,7 @@ namespace AsmDude2
 
         internal NasmIntelTokenTagger(ITextBuffer buffer)
         {
-            this.asmDudeTools_ = AsmDude2Tools.Create(AsmDudeToolsStatic.Get_Install_Path());
+            this.asmDudeTools_ = AsmDude2Tools.Create(AsmDudeToolsStatic.Get_Install_Path(), null);
 
             this.mnemonic_ = new AsmTokenTag(AsmTokenType.Mnemonic);
             this.register_ = new AsmTokenTag(AsmTokenType.Register);

@@ -47,7 +47,7 @@ namespace AsmDude2LS
             }
             if (operandIndex >= this.Operands.Count)
             {
-                Console.WriteLine($"AsmSignatureInformation:Is_Allowed operandIndex={operandIndex} >= Operands.Count={Operands.Count}");
+                Console.WriteLine($"AsmSignatureInformation:Is_Allowed operandIndex={operandIndex} >= Operands.Count={this.Operands.Count}");
                 return false;
             }
             foreach (AsmSignatureEnum operandType in this.Operands[operandIndex])

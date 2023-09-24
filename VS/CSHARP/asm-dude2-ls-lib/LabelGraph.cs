@@ -75,7 +75,7 @@ namespace AsmDude2LS
                 AsmLanguageServerOptions options)
         {
             this.traceSource = traceSource;
-            LogInfo($"LabelGraph: constructor: creating a label graph for {filename}"); //NOTE first init traceSource!
+            this.LogInfo($"LabelGraph: constructor: creating a label graph for {filename}"); //NOTE first init traceSource!
 
             this.lines = lines;
             this.thisFilename_ = filename;
@@ -95,7 +95,7 @@ namespace AsmDude2LS
             if (lines.Length >= options.MaxFileLines)
             {
                 this.Enabled = false;
-                LogWarning($"{this}:LabelGraph; file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
+                this.LogWarning($"{this}:LabelGraph; file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
             }
 
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
@@ -144,7 +144,7 @@ namespace AsmDude2LS
                         }
                         catch (Exception ex)
                         {
-                            LogError(ex.ToString());
+                            this.LogError(ex.ToString());
                         }
                     }
                 }
@@ -180,7 +180,7 @@ namespace AsmDude2LS
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex.ToString());
+                    this.LogError(ex.ToString());
                 }
             }
         }
@@ -216,7 +216,7 @@ namespace AsmDude2LS
             }
             else
             {
-                LogWarning("LabelGraph:Get_Filename: no filename for labelID=" + labelID + " (fileId " + labelID.File_Id + "; line " + labelID.LineNumber + ")");
+                this.LogWarning("LabelGraph:Get_Filename: no filename for labelID=" + labelID + " (fileId " + labelID.File_Id + "; line " + labelID.LineNumber + ")");
                 return string.Empty;
             }
         }
@@ -289,7 +289,7 @@ namespace AsmDude2LS
         private void Disable()
         {
             string msg = $"Performance of LabelGraph is horrible: disabling label analysis for {this.thisFilename_}.";
-            LogWarning(msg);
+            this.LogWarning(msg);
 
             this.Enabled = false;
             {
@@ -318,13 +318,13 @@ namespace AsmDude2LS
 
                 if ((extra_Tag_Info != null))// TODO && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO, StringComparison.Ordinal))
                 {
-                    LogInfo("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
+                    this.LogInfo("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
                     Add_To_Dictionary(label, labelID, this.caseSensitiveLabel_, this.defAt_PROTO_);
                 }
                 else
                 {
                     string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssembler);
-                    LogInfo("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
+                    this.LogInfo("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
                     Add_To_Dictionary(full_Qualified_Label, labelID, this.caseSensitiveLabel_, this.defAt_);
                 }
                 this.hasDef_.Add(labelID);
@@ -340,13 +340,13 @@ namespace AsmDude2LS
                     int startPos = lineStr.IndexOf(labelStr);
                     if (startPos < 0)
                     {
-                        LogError($"LabelGraph:Add_Linenumber: startPos {startPos}");
+                        this.LogError($"LabelGraph:Add_Linenumber: startPos {startPos}");
                     } 
                     else
                     {
                         KeywordID labelID = new(lineNumber, fileID, startPos, startPos + labelStr.Length);
                         Add_To_Dictionary(full_Qualified_Label, labelID, this.caseSensitiveLabel_, this.usedAt_);
-                        LogInfo("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
+                        this.LogInfo("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
                         this.hasLabel_.Add(labelID);
                     }
                 }
@@ -442,7 +442,7 @@ namespace AsmDude2LS
             }
             catch (Exception e)
             {
-                LogWarning("LabelGraph:Handle_Include. Exception:" + e.Message);
+                this.LogWarning("LabelGraph:Handle_Include. Exception:" + e.Message);
             }
         }
 

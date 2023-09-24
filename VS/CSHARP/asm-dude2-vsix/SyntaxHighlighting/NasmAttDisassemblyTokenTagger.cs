@@ -49,7 +49,7 @@ namespace AsmDude2
         internal NasmAttDisassemblyTokenTagger(ITextBuffer buffer)
         {
             AsmDudeToolsStatic.Output_INFO("NasmAttDisassemblyTokenTagger:constructor");
-            this.asmDudeTools_ = AsmDude2Tools.Create(AsmDudeToolsStatic.Get_Install_Path());
+            this.asmDudeTools_ = AsmDude2Tools.Create(AsmDudeToolsStatic.Get_Install_Path(), null);
 
             this.mnemonic_ = new AsmTokenTag(AsmTokenType.Mnemonic);
             this.register_ = new AsmTokenTag(AsmTokenType.Register);

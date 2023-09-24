@@ -183,7 +183,7 @@ namespace AsmDude2LS
                                             }
                                             else
                                             {
-                                                LogWarning("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line " + lineNumber + " with content \"" + line + "\".");
+                                                this.LogWarning("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line " + lineNumber + " with content \"" + line + "\".");
                                             }
                                         }
                                         else
@@ -211,7 +211,7 @@ namespace AsmDude2LS
                         }
                         else
                         {
-                            LogWarning("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
+                            this.LogWarning("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
                         }
                     }
                     lineNumber++;
@@ -220,11 +220,11 @@ namespace AsmDude2LS
             }
             catch (FileNotFoundException)
             {
-                LogError("PerformanceStore:LoadData: could not find file \"" + filename + "\".");
+                this.LogError("PerformanceStore:LoadData: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                LogError("PerformanceStore:LoadData: error while reading file \"" + filename + "\"." + e);
+                this.LogError("PerformanceStore:LoadData: error while reading file \"" + filename + "\"." + e);
             }
         }
 
@@ -250,7 +250,7 @@ namespace AsmDude2LS
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr, false);
                                 if (mnemonic == Mnemonic.NONE)
                                 {
-                                    LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
+                                    this.LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
                                 }
                                 else
                                 {
@@ -260,7 +260,7 @@ namespace AsmDude2LS
                             //AsmDudeToolsStatic.Output_INFO("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
                             if (translations.ContainsKey(key))
                             {
-                                LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");
+                                this.LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");
                             }
                             else
                             {
@@ -273,11 +273,11 @@ namespace AsmDude2LS
             }
             catch (FileNotFoundException)
             {
-                LogError("PerformanceStore:Load_Instruction_Translation: could not find file \"" + filename + "\".");
+                this.LogError("PerformanceStore:Load_Instruction_Translation: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                LogError("PerformanceStore:Load_Instruction_Translation: error while reading file \"" + filename + "\"." + e);
+                this.LogError("PerformanceStore:Load_Instruction_Translation: error while reading file \"" + filename + "\"." + e);
             }
             return translations;
         }
