@@ -72,7 +72,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Remove="C:\Users\henkj\.nuget\packages\microsoft.vssdk.buildtools\17.7.2196\contentFiles\any\net472\LICENSE_SDKOOB.txt" />
+	  <Content Remove="C:\Users\henkj\.nuget\packages\microsoft.vssdk.buildtools\17.7.2196\contentFiles\any\net472\vsextensibilityicon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="AsmDude2.png" />
+	  <None Remove="C:\Users\henkj\.nuget\packages\microsoft.vssdk.buildtools\17.7.2196\contentFiles\any\net472\NOTICE.txt" />
 	  <None Remove="OptionsPage\AsmDudeOptionPageUI.xaml" />
 	</ItemGroup>
 

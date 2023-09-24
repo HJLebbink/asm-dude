@@ -23,10 +23,8 @@
 namespace AsmSim
 {
     using System.Diagnostics.Contracts;
-    using System.Drawing;
     using System.Globalization;
     using System.IO;
-    using System.Windows.Forms;
     using QuikGraph;
     using QuikGraph.Graphviz;
     using QuikGraph.Graphviz.Dot;
@@ -51,28 +49,6 @@ namespace AsmSim
                 displayGraph.AddEdge(new TaggedEdge<string, string>(edge.Source, edge.Target, displayInfo));
             }
             Visualize(displayGraph, filename);
-        }
-
-        public static void ShowPicture(string filename)
-        {
-            using (Form f = new Form())
-            {
-                // f.FormBorderStyle = FormBorderStyle.None;
-
-                PictureBox picture = new PictureBox()
-                {
-                    ImageLocation = filename,
-                    SizeMode = PictureBoxSizeMode.Normal,
-                    Dock = DockStyle.Fill,
-                    Size = new Size(100, 300),
-                };
-                f.Controls.Add(picture);
-                f.Size = picture.Size;
-
-                f.ShowDialog();
-                f.Refresh();
-                f.Show();
-            }
         }
 
         public static void Visualize(
@@ -118,7 +94,6 @@ namespace AsmSim
                     if (true)
                     {
                         process.WaitForExit();
-                        ShowPicture(outputFileName + ".jpg");
                     }
                 }
                 return output;

@@ -74,7 +74,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-rc.1.23419.4" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.2.8" />
-    <PackageReference Include="SmartThreadPool.dll" Version="2.3.0" />
     <PackageReference Include="StreamJsonRpc" Version="2.16.36" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

@@ -21,15 +21,10 @@
 // SOFTWARE.
 
 using AsmSourceTools;
-
 using AsmTools;
-
 using Microsoft.VisualStudio.LanguageServer.Protocol;
-
 using Newtonsoft.Json.Linq;
-
 using StreamJsonRpc;
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,9 +36,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Interop;
-
-using static System.Net.WebRequestMethods;
 
 using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 
@@ -58,8 +50,6 @@ namespace AsmDude2LS
         internal const int MsSleepBeforeAsyncExecution = 1000;
 
         public static readonly CultureInfo CultureUI = CultureInfo.CurrentUICulture;
-
-        public int maxProblems = 10;
 
         private readonly JsonRpc rpc;
         private readonly HeaderDelimitedMessageHandler messageHandler;
@@ -1997,10 +1987,6 @@ namespace AsmDude2LS
             int newMaxProblems = parsedSettings.Children().First().Values<int>("maxNumberOfProblems").First();
 
             this.LogInfo($"SendSettings: received {parameter}");
-            if (this.maxProblems != newMaxProblems)
-            {
-                this.maxProblems = newMaxProblems;
-            }
         }
 
         public void Exit()
