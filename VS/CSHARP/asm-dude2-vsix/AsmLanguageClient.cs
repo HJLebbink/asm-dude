@@ -42,7 +42,7 @@ namespace AsmDude2
     //[ContentType(AsmDude2Package.DisassemblyContentType)]
     [ContentType(AsmDude2Package.AsmDudeContentType)]
     [Export(typeof(ILanguageClient))]
-    [RunOnContext(RunningContext.RunOnHost)]
+    //[RunOnContext(RunningContext.RunOnHost)]
     public class AsmLanguageClient : ILanguageClient
     {
         public AsmLanguageClient()
@@ -263,7 +263,7 @@ namespace AsmDude2
 
             var pipeAccessRule = new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
             var pipeSecurity = new PipeSecurity();
-            pipeSecurity.AddAccessRule(pipeAccessRule);
+           // pipeSecurity.AddAccessRule(pipeAccessRule);
 
             var bufferSize = 256;
             var readerPipe = new NamedPipeServerStream(stdInPipeName, PipeDirection.InOut, 4, PipeTransmissionMode.Message, PipeOptions.Asynchronous, bufferSize, bufferSize, pipeSecurity);
@@ -330,7 +330,11 @@ namespace AsmDude2
             {
                 FailureMessage = $"{message}\n {exception}",
             };
-
+            {
+                string title = "Microsoft Visual Studio";
+                string text = $"AsmDude2 Language Server Protocol (LSP) failed to activate.\n{exception.Substring(0, Math.Min(exception.Length, 1000))}...";
+                MessageBox.Show(text, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             return Task.FromResult(failureContext);
         }
 
