@@ -21,11 +21,8 @@
 // SOFTWARE.
 
 using AsmSourceTools;
-
 using AsmTools;
-
 using Microsoft.VisualStudio.LanguageServer.Protocol;
-
 using System;
 using System.Collections.Generic;
 
@@ -47,7 +44,7 @@ namespace AsmDude2LS
             }
             if (operandIndex >= this.Operands.Count)
             {
-                Console.WriteLine($"AsmSignatureInformation:Is_Allowed operandIndex={operandIndex} >= Operands.Count={this.Operands.Count}");
+                //Console.WriteLine($"AsmSignatureInformation:Is_Allowed operandIndex={operandIndex} >= Operands.Count={this.Operands.Count}");
                 return false;
             }
             foreach (AsmSignatureEnum operandType in this.Operands[operandIndex])
@@ -56,7 +53,7 @@ namespace AsmDude2LS
                 {
                     return true;
                 }
-                Console.WriteLine($"AsmSignatureInformation:Is_Allowed operandType={operandType} is not allowed for op={op}");
+                //Console.WriteLine($"AsmSignatureInformation:Is_Allowed operandType={operandType} is not allowed for op={op}");
             }
             return false;
         }

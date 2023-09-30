@@ -261,6 +261,7 @@ namespace AsmDude2LS
         public event EventHandler OnInitialized;
         public event EventHandler Disconnected;
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler ShowWindow;
 
         private void OnTargetInitializeCompletion(object sender, EventArgs e)
         {
@@ -352,8 +353,12 @@ namespace AsmDude2LS
             string[] lines = this.GetLines(uri);
             bool caseSensitiveLabels = true; //nasm has case sensitive labels
             LabelGraph labelGraph = new(lines, filename, caseSensitiveLabels, this.traceSource, this.options);
-            labelGraph.UpdateDiagnostics();
-            this.diagnostics.AddRange(labelGraph.Diagnostics);
+            if (false) { // TODO 30-09-23: switch on the label diagnostics when most of the false positives are removed
+#pragma warning disable CS0162 // Unreachable code detected
+                labelGraph.UpdateDiagnostics();
+                this.diagnostics.AddRange(labelGraph.Diagnostics);
+#pragma warning restore CS0162 // Unreachable code detected
+            }
             this.labelGraphs.Add(uri, labelGraph);
         }
 
@@ -1930,6 +1935,7 @@ namespace AsmDude2LS
         private void LogError(string message)
         {
             Console.WriteLine("ERROR: " + message);
+            this.MakeWindowVisible();
             this.traceSource.TraceEvent(TraceEventType.Error, 0, message);
         }
 
@@ -2118,6 +2124,10 @@ namespace AsmDude2LS
         private void OnRpcDisconnected(object sender, JsonRpcDisconnectedEventArgs e)
         {
             this.Exit();
+        }
+        public void MakeWindowVisible() 
+        {
+            this.ShowWindow?.Invoke(this, EventArgs.Empty);
         }
 
         private void NotifyPropertyChanged(string propertyName)

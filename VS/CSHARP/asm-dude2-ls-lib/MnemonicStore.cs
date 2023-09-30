@@ -147,12 +147,13 @@ namespace AsmDude2LS
             // sign=VADDPS XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST
             // doc=Add packed SP FP values from xmm3/m128/m32bcst to xmm2 and store result in xmm1 with writemask k1.
 
-            IList<AsmSignatureEnum> ParseOperands(string str)
+            List<AsmSignatureEnum> ParseOperands(string str)
             {
-                var result = new List<AsmSignatureEnum>();
+                List<AsmSignatureEnum> result = new();
+                str = str.Replace("R/M", "R_M");
                 foreach (string op in str.Split('/'))
                 {
-                    result.Add(AsmSignatureTools.Parse_Operand_Type_Enum(op, true)[0]);
+                    result.AddRange(AsmSignatureTools.Parse_Operand_Type_Enum(op, true));
                 }
                 return result;
             }

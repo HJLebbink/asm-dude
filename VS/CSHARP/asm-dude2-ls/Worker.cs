@@ -12,8 +12,8 @@ public partial class Worker : BackgroundService
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-    const int SW_HIDE = 0;
-    const int SW_SHOW = 5;
+    private const int SW_HIDE = 0;
+    private const int SW_SHOW = 5;
 
     private readonly ILogger<Worker> _logger;
     private readonly LanguageServer _languageServer;
@@ -21,9 +21,11 @@ public partial class Worker : BackgroundService
 
     public Worker(ILogger<Worker> logger)
     {
-#if DEBUG
-        //ShowWindow(GetConsoleWindow(), SW_HIDE);
+#if _DEBUG
+        // in a debug run we want to see the console with the LSP
+        ShowWindow(GetConsoleWindow(), SW_SHOW);
 #else
+        // in a release run we do not want to see the console with the LSP
         ShowWindow(GetConsoleWindow(), SW_HIDE);
 #endif
         logger.LogInformation("Worker created at: {time}", DateTimeOffset.Now);
@@ -42,8 +44,10 @@ public partial class Worker : BackgroundService
         readerPipe.Connect();
         writerPipe.Connect();
 
+        this._shutdownRequested = false;
         this._languageServer = new LanguageServer(writerPipe, readerPipe);
         this._languageServer.Disconnected += this.OnDisconnected;
+        this._languageServer.ShowWindow += this.OnShowWindow;
     }
 
     private void OnDisconnected(object? sender, EventArgs e)
@@ -52,23 +56,29 @@ public partial class Worker : BackgroundService
         this._shutdownRequested = true;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public void OnShowWindow(object? sender, EventArgs e)
+    {
+        _logger.LogInformation("OnShowWindow at: {time}", DateTimeOffset.Now);
+        ShowWindow(GetConsoleWindow(), SW_SHOW);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken cancelToken)
     {
         try
         {
             while (true)
             {
-                stoppingToken.ThrowIfCancellationRequested();
-                if (_shutdownRequested)
+                cancelToken.ThrowIfCancellationRequested();
+                if (this._shutdownRequested)
                 {
                     throw new OperationCanceledException();
                 }
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(1000, cancelToken);
             }
         }
         catch (OperationCanceledException)
         {
-            _logger.LogWarning("TestService canceled");
+            _logger.LogWarning("AsmDude2 LSP canceled");
         }
         Environment.Exit(0);
     }

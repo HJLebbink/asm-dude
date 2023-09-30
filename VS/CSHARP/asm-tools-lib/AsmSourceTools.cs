@@ -626,7 +626,7 @@ namespace AsmTools
             // TODO bugfix: there is a issue with .net 1.6.2 and the evaluation code in Evaluate_Constant
             if (true)
             {
-                // dont use expression evaluation, just parse it.
+                // don't use expression evaluation, just parse it.
                 return ExpressionEvaluator.Parse_Constant(token, isCapitals);
             }
             else

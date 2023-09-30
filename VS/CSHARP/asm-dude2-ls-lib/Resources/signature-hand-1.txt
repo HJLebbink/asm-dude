@@ -477,7 +477,7 @@ JMPE	R/M32	IA64	JMPE R/M32	TODO
 JMP	M16	8086	JMP M16:16	Jump far, absolute indirect, address given in m16
 JMP	M32	386	JMP M16:32	Jump far, absolute indirect, address given in m32.
 JMP	M64	X64	JMP M16:64	Jump far, absolute indirect, address given in m64.
-JMP	R/M16	8086	JMP R/M16	Jump near, absolute indirect, address = zero-extended r/m16. Not supported in 64-bit mode.
+JMP	R/M16	8086	JMP R/M16	Jump near, absolute indirect, address is zero-extended r/m16. Not supported in 64-bit mode.
 JMP	R/M32	386	JMP R/M32	Jump near, absolute indirect, address given in r/m32. Not supported in 64-bit mode.
 JMP	R/M64	X64	JMP R/M64	Jump near, absolute indirect, RIP = 64-Bit offset from register or memory.
 JMP	REL8	8086	JMP REL8	Jump short, RIP = RIP + 8-bit displacement sign extended to 64-bits.

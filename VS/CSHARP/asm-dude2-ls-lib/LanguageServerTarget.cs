@@ -68,11 +68,12 @@ namespace AsmDude2LS
             this.LogInfo($"Initialize: Received: {arg}");
             var parameter = arg.ToObject<InitializeParams>();
             
-            #if DEBUG
+#if DEBUG
                 this.traceSetting = TraceSetting.Verbose;
-            #else
-                this.traceSetting = parameter.Trace;
-            #endif
+#else
+                //this.traceSetting = parameter.Trace;
+                this.traceSetting = TraceSetting.Off;
+#endif
 
             this.LogInfo($"Initialize: traceSetting={this.traceSetting}");
 
@@ -167,18 +168,18 @@ namespace AsmDude2LS
 
                     //ImplementationProvider = true,
 
-                    CodeLensProvider = new CodeLensOptions
-                    {
-                        ResolveProvider = false,
-                        WorkDoneProgress = false,
-                    },
+                    //CodeLensProvider = new CodeLensOptions
+                    //{
+                    //    ResolveProvider = false,
+                    //    WorkDoneProgress = false,
+                    //},
 
-                    DocumentLinkProvider = new DocumentLinkOptions
-                    {
-                        ResolveProvider = false,
-                    },
+                    //DocumentLinkProvider = new DocumentLinkOptions
+                    //{
+                    //    ResolveProvider = false,
+                    //},
 
-                    // The document on type formatting request is sent from the client to the server to format parts of the document during typing.
+                    //// The document on type formatting request is sent from the client to the server to format parts of the document during typing.
                     //DocumentOnTypeFormattingProvider = new DocumentOnTypeFormattingOptions
                     //{
                     //    FirstTriggerCharacter = ",",
@@ -420,7 +421,7 @@ namespace AsmDude2LS
             this.LogInfo($"OnHover: Received: {arg}");
             var parameter = arg.ToObject<TextDocumentPositionParams>();
             var result = this.server.GetHover(parameter);
-            this.LogInfo($"OnHover: Sent: {((result == null) ? "NULL" : JToken.FromObject(result))}");
+            this.LogInfo($"OnHover: Sent: {((result == null) ? "NULL" : JToken.FromObject(result))}");           
             return result;
         }
 

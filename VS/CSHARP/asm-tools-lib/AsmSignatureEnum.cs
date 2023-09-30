@@ -22,6 +22,7 @@
 
 namespace AsmSourceTools
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Text;
@@ -147,16 +148,8 @@ namespace AsmSourceTools
                 case "M8": return new AsmSignatureEnum[] { AsmSignatureEnum.M8 };
                 case "M16": return new AsmSignatureEnum[] { AsmSignatureEnum.M16 };
                 case "M32": return new AsmSignatureEnum[] { AsmSignatureEnum.M32 };
-                case "M32{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32, AsmSignatureEnum.K };
                 case "M64": return new AsmSignatureEnum[] { AsmSignatureEnum.M64 };
-                case "M64{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.K };
                 case "M80": return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
-                case "M128": return new AsmSignatureEnum[] { AsmSignatureEnum.M128 };
-                case "M128{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M128, AsmSignatureEnum.K };
-                case "M256": return new AsmSignatureEnum[] { AsmSignatureEnum.M256 };
-                case "M256{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M256, AsmSignatureEnum.K };
-                case "M512": return new AsmSignatureEnum[] { AsmSignatureEnum.M512 };
-                case "M512{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M512, AsmSignatureEnum.K };
 
                 case "M16&16": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
                 case "M16&32": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
@@ -166,6 +159,13 @@ namespace AsmSourceTools
                 case "M16:16": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
                 case "M16:32": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
                 case "M16:64": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
+
+                case "R_M8": return new AsmSignatureEnum[] { AsmSignatureEnum.R8, AsmSignatureEnum.M8 };
+                case "R_M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.M16 };
+                case "R_M32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32 };
+                case "R_M32{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32, AsmSignatureEnum.ER };
+                case "R_M64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64 };
+                case "R_M64{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64, AsmSignatureEnum.ER };
 
                 case "PTR16:16": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
                 case "PTR16:32": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
@@ -271,8 +271,10 @@ namespace AsmSourceTools
                 case "M32INT": return new AsmSignatureEnum[] { AsmSignatureEnum.M32 };
                 case "M64INT": return new AsmSignatureEnum[] { AsmSignatureEnum.M64 };
 
-                case "M14/28BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M14BYTE, AsmSignatureEnum.M28BYTE };
-                case "M94/108BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M94BYTE, AsmSignatureEnum.M108BYTE };
+                case "M14": return new AsmSignatureEnum[] { AsmSignatureEnum.M14BYTE };
+                case "28BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M28BYTE };
+                case "M94": return new AsmSignatureEnum[] { AsmSignatureEnum.M94BYTE};
+                case "108BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M108BYTE };
                 case "M2BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M2BYTE };
                 case "M512BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M512BYTE };
                 case "M80BCD": return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
@@ -281,9 +283,6 @@ namespace AsmSourceTools
 
                 #region SIMD
                 case "MM": return new AsmSignatureEnum[] { AsmSignatureEnum.MMXREG };
-                case "MM/M32": return new AsmSignatureEnum[] { AsmSignatureEnum.MMXREG, AsmSignatureEnum.M32 };
-                case "MM/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.MMXREG, AsmSignatureEnum.M64 };
-                case "MM/MEM": return new AsmSignatureEnum[] { AsmSignatureEnum.MMXREG, AsmSignatureEnum.M64 };
 
                 case "Z": return new AsmSignatureEnum[] { AsmSignatureEnum.Z };
                 case "K": return new AsmSignatureEnum[] { AsmSignatureEnum.K };
@@ -315,47 +314,47 @@ namespace AsmSourceTools
                 case "XMM_ZERO": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_XMM0 };
                 case "XMM{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.K };
                 case "XMM{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "XMM/M8": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M8 };
-                case "XMM/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M16 };
-                case "XMM/M16{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M16 };
-                case "XMM/M32": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M32, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "XMM/M32{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M32, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "XMM/M32{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M32, AsmSignatureEnum.ER };
-                case "XMM/M32{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M32, AsmSignatureEnum.SAE };
-                case "XMM/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M64 };
-                case "XMM/M64{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M64, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "XMM/M64{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M64, AsmSignatureEnum.ER };
-                case "XMM/M64{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M64, AsmSignatureEnum.SAE };
-                case "XMM/M64/M32BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M64, AsmSignatureEnum.M32BCST };
-                case "XMM/M128": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128 };
-                case "XMM/M128{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "XMM/M128/M32BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128, AsmSignatureEnum.M32BCST };
-                case "XMM/M128/M64BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128, AsmSignatureEnum.M64BCST };
+                
+                case "M16{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M16, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+
+                case "M32{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32, AsmSignatureEnum.K };
+                case "M32{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+                case "M32{ER}": return new AsmSignatureEnum[] {  AsmSignatureEnum.M32, AsmSignatureEnum.ER };
+                case "M32{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32, AsmSignatureEnum.SAE };
+                case "M32BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.M32BCST };
+                case "M32BCST{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32BCST, AsmSignatureEnum.ER };
+                case "M32BCST{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32BCST, AsmSignatureEnum.SAE };
+
+                case "M64{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.K };
+                case "M64{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+                case "M64{ER}": return new AsmSignatureEnum[] {  AsmSignatureEnum.M64, AsmSignatureEnum.ER };
+                case "M64{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.SAE };
+                case "M64BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.M64BCST };
+                case "M64BCST{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64BCST, AsmSignatureEnum.ER };
+                case "M64BCST{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64BCST, AsmSignatureEnum.SAE };
+
+                case "M128": return new AsmSignatureEnum[] { AsmSignatureEnum.M128 };
+                case "M128{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M128, AsmSignatureEnum.K };
+                case "M128{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M128, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+
+                case "M256": return new AsmSignatureEnum[] { AsmSignatureEnum.M256 };
+                case "M256{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M256, AsmSignatureEnum.K };
+                case "M256{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M256, AsmSignatureEnum.SAE };
+                case "M256{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M256, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+
+                case "M512": return new AsmSignatureEnum[] { AsmSignatureEnum.M512 };
+                case "M512{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M512, AsmSignatureEnum.K };
+                case "M512{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
 
                 case "YMM": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG };
                 case "YMM{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.K };
                 case "YMM{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "YMM/M256": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.M256 };
-                case "YMM/M256{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.M256, AsmSignatureEnum.SAE };
-                case "YMM/M256{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.M256, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "YMM/M256/M32BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.M256, AsmSignatureEnum.M32BCST };
-                case "YMM/M256/M32BCST{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.M256, AsmSignatureEnum.M32BCST, AsmSignatureEnum.ER };
-                case "YMM/M256/M32BCST{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.M256, AsmSignatureEnum.M32BCST, AsmSignatureEnum.SAE };
-                case "YMM/M256/M64BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.M256, AsmSignatureEnum.M64BCST };
-
+ 
                 case "ZMM": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG };
                 case "ZMM{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K };
                 case "ZMM{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
                 case "ZMM{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.SAE };
-                case "ZMM/M512": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.M512, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "ZMM/M512{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "ZMM/M512/M32BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.M512, AsmSignatureEnum.M32BCST };
-                case "ZMM/M512/M32BCST{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.M512, AsmSignatureEnum.M32BCST, AsmSignatureEnum.ER };
-                case "ZMM/M512/M32BCST{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.M512, AsmSignatureEnum.M32BCST, AsmSignatureEnum.SAE };
-                case "ZMM/M512/M64BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.M512, AsmSignatureEnum.M64BCST };
-                case "ZMM/M512/M64BCST{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.M512, AsmSignatureEnum.M64BCST, AsmSignatureEnum.ER };
-                case "ZMM/M512/M64BCST{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.M512, AsmSignatureEnum.M64BCST, AsmSignatureEnum.SAE };
-
+              
                 #endregion
 
                 #region Misc
@@ -373,7 +372,7 @@ namespace AsmSourceTools
                 case "NONE": return new AsmSignatureEnum[] { AsmSignatureEnum.NONE };
 
                 default:
-                    // AsmDudeToolsStatic.Output_INFO("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
+                    Console.WriteLine("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
                     return new AsmSignatureEnum[] { AsmSignatureEnum.UNKNOWN };
             }
         }
@@ -766,7 +765,7 @@ namespace AsmSourceTools
             switch (type)
             {
                 case RegisterType.UNKNOWN:
-                    // AsmDudeToolsStatic.Output_INFO("AsmSignatureTools: isAllowedReg: registername " + regName + " could not be classified");
+                    // AsmDudeToolsStatic.Output_INFO("AsmSignatureTools: isAllowedReg: register name " + regName + " could not be classified");
                     break;
                 case RegisterType.BIT8:
                     if (allowedOperands.Contains(AsmSignatureEnum.R8))
