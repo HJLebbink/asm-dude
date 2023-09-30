@@ -44,7 +44,7 @@ namespace AsmDude2LS
             }
             if (operandIndex >= this.Operands.Count)
             {
-                //Console.WriteLine($"AsmSignatureInformation:Is_Allowed operandIndex={operandIndex} >= Operands.Count={this.Operands.Count}");
+                //LanguageServer.LogInfo($"AsmSignatureInformation:Is_Allowed operandIndex={operandIndex} >= Operands.Count={this.Operands.Count}");
                 return false;
             }
             foreach (AsmSignatureEnum operandType in this.Operands[operandIndex])
@@ -53,20 +53,20 @@ namespace AsmDude2LS
                 {
                     return true;
                 }
-                //Console.WriteLine($"AsmSignatureInformation:Is_Allowed operandType={operandType} is not allowed for op={op}");
+                //LanguageServer.LogInfo($"AsmSignatureInformation:Is_Allowed operandType={operandType} is not allowed for op={op}");
             }
             return false;
         }
 
         /// <summary>Return true if this Signature Element is allowed in the provided architectures</summary>
-        public bool Is_Allowed(ISet<Arch> selectedArchitectures)
+        public bool Is_Allowed(HashSet<Arch> selectedArchitectures)
         {
             System.Diagnostics.Contracts.Contract.Requires(selectedArchitectures != null);
             foreach (Arch a in this.Arch)
             {
                 if (selectedArchitectures.Contains(a))
                 {
-                    //Tools.Output_INFO("AsmSignatureElement: isAllowed: selected architectures=" + ArchTools.ToString(selectedArchitectures) + "; arch = " + ArchTools.ToString(_arch));
+                    //LanguageServer.LogInfo("AsmSignatureElement: isAllowed: selected architectures=" + ArchTools.ToString(selectedArchitectures) + "; arch = " + ArchTools.ToString(a));
                     return true;
                 }
             }

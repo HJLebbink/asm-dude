@@ -45,7 +45,7 @@ public partial class Worker : BackgroundService
         writerPipe.Connect();
 
         this._shutdownRequested = false;
-        this._languageServer = new LanguageServer(writerPipe, readerPipe);
+        this._languageServer = LanguageServer.Create(writerPipe, readerPipe);
         this._languageServer.Disconnected += this.OnDisconnected;
         this._languageServer.ShowWindow += this.OnShowWindow;
     }
@@ -58,7 +58,6 @@ public partial class Worker : BackgroundService
 
     public void OnShowWindow(object? sender, EventArgs e)
     {
-        _logger.LogInformation("OnShowWindow at: {time}", DateTimeOffset.Now);
         ShowWindow(GetConsoleWindow(), SW_SHOW);
     }
 

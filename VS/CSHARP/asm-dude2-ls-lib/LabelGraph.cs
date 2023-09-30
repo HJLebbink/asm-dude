@@ -39,7 +39,6 @@ namespace AsmDude2LS
     public sealed class LabelGraph
     {
         #region Fields
-        private readonly TraceSource traceSource;
         private readonly AsmLanguageServerOptions options;
 
         private readonly string[] lines;
@@ -71,11 +70,9 @@ namespace AsmDude2LS
                 string[] lines,
                 string filename,
                 bool caseSensitiveLabel,
-                TraceSource traceSource,
                 AsmLanguageServerOptions options)
         {
-            this.traceSource = traceSource;
-            this.LogInfo($"LabelGraph: constructor: creating a label graph for {filename}"); //NOTE first init traceSource!
+            LanguageServer.LogInfo($"LabelGraph: constructor: creating a label graph for {filename}"); //NOTE first init traceSource!
 
             this.lines = lines;
             this.thisFilename_ = filename;
@@ -95,7 +92,7 @@ namespace AsmDude2LS
             if (lines.Length >= options.MaxFileLines)
             {
                 this.Enabled = false;
-                this.LogWarning($"{this}:LabelGraph; file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
+                LanguageServer.LogWarning($"{this}:LabelGraph; file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
             }
 
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
@@ -144,7 +141,7 @@ namespace AsmDude2LS
                         }
                         catch (Exception ex)
                         {
-                            this.LogError(ex.ToString());
+                            LanguageServer.LogError(ex.ToString());
                         }
                     }
                 }
@@ -180,7 +177,7 @@ namespace AsmDude2LS
                 }
                 catch (Exception ex)
                 {
-                    this.LogError(ex.ToString());
+                    LanguageServer.LogError(ex.ToString());
                 }
             }
         }
@@ -193,19 +190,6 @@ namespace AsmDude2LS
             }
         }
 
-        private void LogInfo(string msg)
-        {
-            this.traceSource.TraceEvent(TraceEventType.Information, 0, msg);
-        }
-        private void LogWarning(string msg)
-        {
-            this.traceSource.TraceEvent(TraceEventType.Warning, 0, msg);
-        }
-        private void LogError(string msg)
-        {
-            this.traceSource.TraceEvent(TraceEventType.Error, 0, msg);
-        }
-
         #region Public Methods
 
         public string Get_Filename(KeywordID labelID)
@@ -216,7 +200,7 @@ namespace AsmDude2LS
             }
             else
             {
-                this.LogWarning("LabelGraph:Get_Filename: no filename for labelID=" + labelID + " (fileId " + labelID.File_Id + "; line " + labelID.LineNumber + ")");
+                LanguageServer.LogWarning("LabelGraph:Get_Filename: no filename for labelID=" + labelID + " (fileId " + labelID.File_Id + "; line " + labelID.LineNumber + ")");
                 return string.Empty;
             }
         }
@@ -289,7 +273,7 @@ namespace AsmDude2LS
         private void Disable()
         {
             string msg = $"Performance of LabelGraph is horrible: disabling label analysis for {this.thisFilename_}.";
-            this.LogWarning(msg);
+            LanguageServer.LogWarning(msg);
 
             this.Enabled = false;
             {
@@ -318,13 +302,13 @@ namespace AsmDude2LS
 
                 if ((extra_Tag_Info != null))// TODO && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO, StringComparison.Ordinal))
                 {
-                    this.LogInfo("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
+                    LanguageServer.LogInfo("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
                     Add_To_Dictionary(label, labelID, this.caseSensitiveLabel_, this.defAt_PROTO_);
                 }
                 else
                 {
                     string full_Qualified_Label = Tools.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssembler);
-                    this.LogInfo("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
+                    LanguageServer.LogInfo("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
                     Add_To_Dictionary(full_Qualified_Label, labelID, this.caseSensitiveLabel_, this.defAt_);
                 }
                 this.hasDef_.Add(labelID);
@@ -340,13 +324,13 @@ namespace AsmDude2LS
                     int startPos = lineStr.IndexOf(labelStr);
                     if (startPos < 0)
                     {
-                        this.LogError($"LabelGraph:Add_Linenumber: startPos {startPos}");
+                        LanguageServer.LogError($"LabelGraph:Add_Linenumber: startPos {startPos}");
                     } 
                     else
                     {
                         KeywordID labelID = new(lineNumber, fileID, startPos, startPos + labelStr.Length);
                         Add_To_Dictionary(full_Qualified_Label, labelID, this.caseSensitiveLabel_, this.usedAt_);
-                        this.LogInfo("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
+                        LanguageServer.LogInfo("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
                         this.hasLabel_.Add(labelID);
                     }
                 }
@@ -400,7 +384,7 @@ namespace AsmDude2LS
             {
                 if (includeFilename.Length < 1)
                 {
-                    //Tools.Output_INFO("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
+                    LanguageServer.LogInfo("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
                     return;
                 }
                 if (includeFilename.Length > 2)
@@ -418,18 +402,18 @@ namespace AsmDude2LS
 
                 if (!File.Exists(filePath))
                 {
-                    //Tools.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
+                    LanguageServer.LogInfo("LabelGraph:Handle_Include: file " + filePath + " does not exist");
                     this.undefined_includes_.Add((include_filename: includeFilename, path: filePath, source_filename: currentFilename, lineNumber: lineNumber));
                 }
                 else
                 {
                     if (this.filenames_.Values.Contains(filePath))
                     {
-                        //Tools.Output_INFO("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
+                        LanguageServer.LogInfo("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
                     }
                     else
                     {
-                        //Tools.Output_INFO("LabelGraph:Handle_Include: including file " + filePath);
+                        LanguageServer.LogInfo("LabelGraph:Handle_Include: including file " + filePath);
 
                         //ITextDocument doc = this.docFactory_.CreateAndLoadTextDocument(filePath, this.contentType_, true, out bool characterSubstitutionsOccurred);
                         //doc.FileActionOccurred += this.Doc_File_Action_Occurred;
@@ -442,7 +426,7 @@ namespace AsmDude2LS
             }
             catch (Exception e)
             {
-                this.LogWarning("LabelGraph:Handle_Include. Exception:" + e.Message);
+                LanguageServer.LogWarning("LabelGraph:Handle_Include. Exception:" + e.Message);
             }
         }
 

@@ -42,30 +42,20 @@ namespace AsmDude2LS
         private int version = 1;
         public TraceSetting traceSetting;
         private readonly LanguageServer server;
-        private readonly TraceSource traceSource;
 
-        public LanguageServerTarget(LanguageServer server, TraceSource traceSource)
+        public LanguageServerTarget(LanguageServer server)
         {
             this.server = server;
-            this.traceSource = traceSource;
         }
 
         public event EventHandler OnInitializeCompletion;
 
         public event EventHandler OnInitialized;
 
-        private void LogInfo(string message)
-        {
-            if (this.traceSetting == TraceSetting.Verbose) {
-                //Console.WriteLine($"INFO {message}");
-                this.traceSource.TraceEvent(TraceEventType.Information, 0, message);
-            }
-        }
-
         [JsonRpcMethod(Methods.InitializeName)]
         public object Initialize(JToken arg)
         {
-            this.LogInfo($"Initialize: Received: {arg}");
+            LanguageServer.LogInfo($"Initialize: Received: {arg}");
             var parameter = arg.ToObject<InitializeParams>();
             
 #if DEBUG
@@ -75,7 +65,7 @@ namespace AsmDude2LS
                 this.traceSetting = TraceSetting.Off;
 #endif
 
-            this.LogInfo($"Initialize: traceSetting={this.traceSetting}");
+            LanguageServer.LogInfo($"Initialize: traceSetting={this.traceSetting}");
 
             AsmLanguageServerOptions options = (parameter.InitializationOptions as JToken).ToObject<AsmLanguageServerOptions>();
 
@@ -102,7 +92,7 @@ namespace AsmDude2LS
                     },
                     SignatureHelpProvider = new SignatureHelpOptions()
                     {
-                        TriggerCharacters = new string[] { " ", ",", backspaceStr, "\t" },
+                        TriggerCharacters = new string[] { " ", ",", backspaceStr },
                         RetriggerCharacters = new string[] { "," },                       
                         WorkDoneProgress = false,
                     },
@@ -207,14 +197,14 @@ namespace AsmDude2LS
             };
 
             OnInitializeCompletion?.Invoke(this, EventArgs.Empty);
-            this.LogInfo($"Initialize: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"Initialize: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.InitializedName)]
         public void Initialized(JToken arg)
         {
-            this.LogInfo($"Initialized: Received: {arg}");
+            LanguageServer.LogInfo($"Initialized: Received: {arg}");
             this.server.Initialized();
             this.OnInitialized?.Invoke(this, EventArgs.Empty);
         }
@@ -222,51 +212,51 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.ProgressNotificationName)]
         public void ProgressNotification(JToken arg)
         {
-            this.LogInfo($"ProgressNotification: Received: {arg}");
+            LanguageServer.LogInfo($"ProgressNotification: Received: {arg}");
         }
 
         [JsonRpcMethod(Methods.PartialResultTokenName)]
         public void PartialResultToken(JToken arg)
         {
-            this.LogInfo($"PartialResultToken: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"PartialResultToken: NOT IMPLEMENTED. Received: {arg}");
             // TODO
         }
 
         [JsonRpcMethod(Methods.PartialResultTokenPropertyName)]
         public void PartialResultTokenProperty(JToken arg)
         {
-            this.LogInfo($"PartialResultTokenProperty: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"PartialResultTokenProperty: NOT IMPLEMENTED. Received: {arg}");
             // TODO
         }
 
         [JsonRpcMethod(Methods.WorkDoneTokenName)]
         public void WorkDoneToken(JToken arg)
         {
-            this.LogInfo($"WorkDoneToken: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"WorkDoneToken: NOT IMPLEMENTED. Received: {arg}");
             // TODO
         }
 
         [JsonRpcMethod(Methods.ProgressNotificationTokenName)]
         public void ProgressNotificationToken(JToken arg)
         {
-            this.LogInfo($"ProgressNotificationToken: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"ProgressNotificationToken: NOT IMPLEMENTED. Received: {arg}");
             // TODO
         }
 
         [JsonRpcMethod(Methods.TextDocumentCodeActionName)]
         public object TextDocumentCodeAction(JToken arg)
         {
-            this.LogInfo($"TextDocumentCodeAction: Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentCodeAction: Received: {arg}");
             var parameter = arg.ToObject<CodeActionParams>();
             var result = this.server.GetCodeActions(parameter);
-            this.LogInfo($"TextDocumentCodeAction: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"TextDocumentCodeAction: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentCodeLensName)]
         public object TextDocumentCodeLens(JToken arg)
         {
-            this.LogInfo($"TextDocumentCodeLens: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentCodeLens: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             // var parameter = arg.ToObject<ImplementationParams>();
             return null;
@@ -275,17 +265,17 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.CodeActionResolveName)]
         public object GetResolvedCodeAction(JToken arg)
         {
-            this.LogInfo($"GetResolvedCodeAction: Received: {arg}");
+            LanguageServer.LogInfo($"GetResolvedCodeAction: Received: {arg}");
             var parameter = arg.ToObject<CodeAction>();
             var result = this.server.GetResolvedCodeAction(parameter);
-            this.LogInfo($"GetResolvedCodeAction: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"GetResolvedCodeAction: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.CodeLensResolveName)]
         public object CodeLensResolve(JToken arg)
         {
-            this.LogInfo($"CodeLensResolve: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"CodeLensResolve: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -293,17 +283,17 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentCompletionName)]
         public CompletionList OnTextDocumentCompletion(JToken arg)
         {
-            this.LogInfo($"OnTextDocumentCompletion: Received: {arg}");
+            LanguageServer.LogInfo($"OnTextDocumentCompletion: Received: {arg}");
             var parameter = arg.ToObject<CompletionParams>();
             var result = this.server.GetTextDocumentCompletion(parameter);
-            this.LogInfo($"OnTextDocumentCompletion: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"OnTextDocumentCompletion: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentCompletionResolveName)]
         public object TextDocumentCompletionResolve(JToken arg)
         {
-            this.LogInfo($"TextDocumentCompletionResolve: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentCompletionResolve: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -311,7 +301,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDefinitionName)]
         public object TextDocumentDefinition(JToken arg)
         {
-            this.LogInfo($"TextDocumentDefinition: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentDefinition: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -319,7 +309,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDidOpenName)]
         public void OnTextDocumentOpened(JToken arg)
         {
-            this.LogInfo($"OnTextDocumentOpened: Received: {arg}");
+            LanguageServer.LogInfo($"OnTextDocumentOpened: Received: {arg}");
             var parameter = arg.ToObject<DidOpenTextDocumentParams>();
             Debug.WriteLine($"Document Open: {parameter.TextDocument.Uri.AbsolutePath}");
             this.server.OnTextDocumentOpened(parameter);
@@ -328,7 +318,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDidCloseName)]
         public void OnTextDocumentClosed(JToken arg)
         {
-            this.LogInfo($"OnTextDocumentClosed: Received: {arg}");
+            LanguageServer.LogInfo($"OnTextDocumentClosed: Received: {arg}");
             var parameter = arg.ToObject<DidCloseTextDocumentParams>();
             Debug.WriteLine($"Document Close: {parameter.TextDocument.Uri.AbsolutePath}");
             this.server.OnTextDocumentClosed(parameter);
@@ -337,11 +327,9 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDidChangeName)]
         public void OnTextDocumentChanged(JToken arg)
         {
-            //Console.WriteLine($"OnTextDocumentChanged: Received:{arg}");
-            this.LogInfo($"OnTextDocumentChanged: Received: {arg}");
+            LanguageServer.LogInfo($"OnTextDocumentChanged: Received: {arg}");
             var parameter = arg.ToObject<DidChangeTextDocumentParams>();
             Debug.WriteLine($"Document Change: {parameter.TextDocument.Uri.AbsolutePath}");
-
             this.server.UpdateServerSideTextDocument(parameter.ContentChanges[0].Text, parameter.TextDocument.Version, parameter.TextDocument.Uri);
             this.server.SendDiagnostics(parameter.TextDocument.Uri);
         }
@@ -349,7 +337,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDidSaveName)]
         public object TextDocumentDidSave(JToken arg)
         {
-            this.LogInfo($"TextDocumentDidSave: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentDidSave: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -357,16 +345,16 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDocumentHighlightName, UseSingleObjectParameterDeserialization = true)]
         public DocumentHighlight[] GetDocumentHighlights(DocumentHighlightParams arg, CancellationToken token)
         {
-            this.LogInfo($"GetDocumentHighlights: Received: {JToken.FromObject(arg)}");
+            LanguageServer.LogInfo($"GetDocumentHighlights: Received: {JToken.FromObject(arg)}");
             var result = this.server.GetDocumentHighlights(arg.PartialResultToken, arg.Position, arg.TextDocument.Uri, token);
-            this.LogInfo($"GetDocumentHighlights: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"GetDocumentHighlights: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentDocumentLinkName)]
         public object TextDocumentDocumentLink(JToken arg)
         {
-            this.LogInfo($"TextDocumentDocumentLink: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentDocumentLink: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -374,7 +362,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.DocumentLinkResolveName)]
         public object DocumentLinkResolve(JToken arg)
         {
-            this.LogInfo($"DocumentLinkResolve: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"DocumentLinkResolve: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -382,7 +370,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDocumentColorName)]
         public object TextDocumentDocumentColor(JToken arg)
         {
-            this.LogInfo($"TextDocumentDocumentColor: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentDocumentColor: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -390,27 +378,27 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentDocumentSymbolName)]
         public object GetDocumentSymbols(JToken arg)
         {
-            this.LogInfo($"GetDocumentSymbols: Received: {arg}");
+            LanguageServer.LogInfo($"GetDocumentSymbols: Received: {arg}");
             var parameters = arg.ToObject<DocumentSymbolParams>();
             var result = this.server.GetDocumentSymbols(parameters);
-            this.LogInfo($"GetDocumentSymbols: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"GetDocumentSymbols: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentFoldingRangeName)]
         public object GetFoldingRanges(JToken arg)
         {
-            this.LogInfo($"GetFoldingRanges: Received: {arg}");
+            LanguageServer.LogInfo($"GetFoldingRanges: Received: {arg}");
             var parameter = arg.ToObject<FoldingRangeParams>();
             var result = this.server.GetFoldingRanges(parameter);
-            this.LogInfo($"GetFoldingRanges: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"GetFoldingRanges: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentFormattingName)]
         public object TextDocumentFormatting(JToken arg)
         {
-            this.LogInfo($"TextDocumentFormatting: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentFormatting: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -418,17 +406,17 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentHoverName)]
         public Hover OnHover(JToken arg)
         {
-            this.LogInfo($"OnHover: Received: {arg}");
+            LanguageServer.LogInfo($"OnHover: Received: {arg}");
             var parameter = arg.ToObject<TextDocumentPositionParams>();
             var result = this.server.GetHover(parameter);
-            this.LogInfo($"OnHover: Sent: {((result == null) ? "NULL" : JToken.FromObject(result))}");           
+            LanguageServer.LogInfo($"OnHover: Sent: {((result == null) ? "NULL" : JToken.FromObject(result))}");           
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentOnTypeFormattingName)]
         public object TextDocumentOnTypeFormatting(JToken arg)
         {
-            this.LogInfo($"TextDocumentOnTypeFormatting: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentOnTypeFormatting: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -436,7 +424,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentPublishDiagnosticsName)]
         public object TextDocumentPublishDiagnostics(JToken arg)
         {
-            this.LogInfo($"TextDocumentPublishDiagnostics: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentPublishDiagnostics: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -444,7 +432,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentRangeFormattingName)]
         public object TextDocumentRangeFormatting(JToken arg)
         {
-            this.LogInfo($"TextDocumentRangeFormatting: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentRangeFormatting: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -452,7 +440,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentImplementationName)]
         public object TextDocumentImplementation(JToken arg)
         {
-            this.LogInfo($"TextDocumentImplementation: Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentImplementation: Received: {arg}");
             //var parameter = arg.ToObject<ImplementationParams>();
             return null;
         }
@@ -460,7 +448,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentTypeDefinitionName)]
         public object TextDocumentTypeDefinition(JToken arg)
         {
-            this.LogInfo($"TextDocumentRangeFormatting: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentRangeFormatting: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -468,16 +456,16 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentReferencesName, UseSingleObjectParameterDeserialization = true)]
         public object[] OnTextDocumentFindReferences(ReferenceParams parameter, CancellationToken token)
         {
-            this.LogInfo($"OnTextDocumentFindReferences: Received: {JToken.FromObject(parameter)}");
+            LanguageServer.LogInfo($"OnTextDocumentFindReferences: Received: {JToken.FromObject(parameter)}");
             var result = this.server.SendReferences(args: parameter, returnLocationsOnly: true, token: token);
-            this.LogInfo($"OnTextDocumentFindReferences: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"OnTextDocumentFindReferences: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentRenameName)]
         public WorkspaceEdit TextDocumentRename(JToken arg)
         {
-            this.LogInfo($"TextDocumentRename: Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentRename: Received: {arg}");
             var renameParams = arg.ToObject<RenameParams>();
             string fullText = File.ReadAllText(renameParams.TextDocument.Uri.LocalPath);
             string wordToReplace = this.GetWordAtPosition(fullText, renameParams.Position);
@@ -503,14 +491,14 @@ namespace AsmDude2LS
                 }
             };
 
-            this.LogInfo($"Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensFullName)]
         public object TextDocumentSemanticTokensFullName(JToken arg)
         {
-            this.LogInfo($"TextDocumentSemanticTokensFull: NOT IMPLEMENTED. Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentSemanticTokensFull: NOT IMPLEMENTED. Received: {arg}");
             // TODO
             return null;
         }
@@ -518,7 +506,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensRangeName)]
         public object TextDocumentSemanticTokensRange(JToken arg)
         {
-            this.LogInfo($"TextDocumentSemanticTokensRange: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentSemanticTokensRange: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -526,7 +514,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensFullDeltaName)]
         public object TextDocumentSemanticTokensFullDelta(JToken arg)
         {
-            this.LogInfo($"TextDocumentSemanticTokensFullDelta: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -534,17 +522,17 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentSignatureHelpName)]
         public SignatureHelp TextDocumentSignatureHelp(JToken arg)
         {
-            this.LogInfo($"TextDocumentSignatureHelp: Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentSignatureHelp: Received: {arg}");
             var parameter = arg.ToObject<SignatureHelpParams>();
             var result = this.server.GetTextDocumentSignatureHelp(parameter);
-            this.LogInfo($"TextDocumentSignatureHelp: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"TextDocumentSignatureHelp: Sent: {JToken.FromObject(result)}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentWillSaveName)]
         public object TextDocumentWillSave(JToken arg)
         {
-            this.LogInfo($"TextDocumentWillSave: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentWillSave: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -552,7 +540,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentLinkedEditingRangeName)]
         public object TextDocumentLinkedEditingRange(JToken arg)
         {
-            this.LogInfo($"TextDocumentLinkedEditingRange: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentLinkedEditingRange: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -560,7 +548,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.TextDocumentWillSaveWaitUntilName)]
         public object TextDocumentWillSaveWaitUntil(JToken arg)
         {
-            this.LogInfo($"TextDocumentWillSaveWaitUntil: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"TextDocumentWillSaveWaitUntil: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -568,7 +556,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WindowLogMessageName)]
         public object WindowLogMessage(JToken arg)
         {
-            this.LogInfo($"WindowLogMessage: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"WindowLogMessage: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -576,7 +564,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WindowShowMessageName)]
         public object WindowShowMessage(JToken arg)
         {
-            this.LogInfo($"WindowShowMessage: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"WindowShowMessage: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -584,7 +572,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WindowShowMessageRequestName)]
         public object WindowShowMessageRequest(JToken arg)
         {
-            this.LogInfo($"WindowShowMessageRequest: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"WindowShowMessageRequest: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -592,7 +580,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WorkspaceApplyEditName)]
         public object WorkspaceApplyEdit(JToken arg)
         {
-            this.LogInfo($"WorkspaceApplyEdit: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"WorkspaceApplyEdit: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -600,7 +588,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WorkspaceConfigurationName)]
         public object WorkspaceConfiguration(JToken arg)
         {
-            this.LogInfo($"WorkspaceConfiguration: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"WorkspaceConfiguration: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -608,7 +596,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WorkspaceDidChangeConfigurationName)]
         public void OnDidChangeConfiguration(JToken arg)
         {
-            this.LogInfo($"OnDidChangeConfiguration: Received: {arg}");
+            LanguageServer.LogInfo($"OnDidChangeConfiguration: Received: {arg}");
             var parameter = arg.ToObject<DidChangeConfigurationParams>();
             this.server.SendSettings(parameter);
         }
@@ -616,7 +604,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WorkspaceExecuteCommandName)]
         public object WorkspaceExecuteCommand(JToken arg)
         {
-            this.LogInfo($"WorkspaceExecuteCommand: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"WorkspaceExecuteCommand: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -624,7 +612,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WorkspaceSymbolName)]
         public object WorkspaceSymbol(JToken arg)
         {
-            this.LogInfo($"WorkspaceSymbol: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"WorkspaceSymbol: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -632,7 +620,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.WorkspaceDidChangeWatchedFilesName)]
         public object WorkspaceDidChangeWatchedFiles(JToken arg)
         {
-            this.LogInfo($"WorkspaceDidChangeWatchedFiles: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"WorkspaceDidChangeWatchedFiles: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -640,21 +628,21 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.ShutdownName)]
         public object Shutdown()
         {
-            this.LogInfo($"Received Shutdown notification");
+            LanguageServer.LogInfo($"Received Shutdown notification");
             return null;
         }
 
         [JsonRpcMethod(Methods.ExitName)]
         public void Exit()
         {
-            this.LogInfo($"Received Exit notification");
+            LanguageServer.LogInfo($"Received Exit notification");
             this.server.Exit();
         }
 
         [JsonRpcMethod(Methods.TelemetryEventName)]
         public object TelemetryEvent(JToken arg)
         {
-            this.LogInfo($"TelemetryEvent: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"TelemetryEvent: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -662,7 +650,7 @@ namespace AsmDude2LS
         [JsonRpcMethod(Methods.ClientUnregisterCapabilityName)]
         public object ClientUnregisterCapability(JToken arg)
         {
-            this.LogInfo($"ClientUnregisterCapability: NOT IMPLEMENTED.  Received: {arg}");
+            LanguageServer.LogInfo($"ClientUnregisterCapability: NOT IMPLEMENTED.  Received: {arg}");
             // TODO
             return null;
         }
@@ -674,7 +662,7 @@ namespace AsmDude2LS
         [JsonRpcMethod("textDocument/prepareRename")] // NOTE: not provided in Methods
         public object PrepareRename(JToken arg)
         {
-            this.LogInfo($"PrepareRename: Received: {arg}");
+            LanguageServer.LogInfo($"PrepareRename: Received: {arg}");
             //var renameParams = arg.ToObject<PrepareRenameParams>();
             return null; 
         }
@@ -682,9 +670,9 @@ namespace AsmDude2LS
         [JsonRpcMethod(VSMethods.GetProjectContextsName)]
         public object GetProjectContexts(JToken arg)
         {
-            this.LogInfo($"GetProjectContexts: Received: {arg}");
+            LanguageServer.LogInfo($"GetProjectContexts: Received: {arg}");
             var result = this.server.GetProjectContexts();
-            this.LogInfo($"GetProjectContexts: Sent: {JToken.FromObject(result)}");
+            LanguageServer.LogInfo($"GetProjectContexts: Sent: {JToken.FromObject(result)}");
             return result;
         }
 

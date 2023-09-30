@@ -72,16 +72,31 @@ namespace AsmDude2LS
 
         private readonly TraceSource traceSource;
 
-        private AsmTools.AsmDude2Tools asmDudeTools;
+        private AsmDude2Tools asmDudeTools;
         public MnemonicStore mnemonicStore;
         public PerformanceStore performanceStore;
         public AsmLanguageServerOptions options;
 
-        public LanguageServer(Stream sender, Stream reader)
+        public static LanguageServer Create(Stream sender, Stream reader)
+        {
+            if (Instance == null)
+            {
+                Instance = new LanguageServer(sender, reader);
+            }
+            return Instance;
+        }
+
+        private static LanguageServer Instance
+        {
+            get;
+            set;
+        }
+
+        private LanguageServer(Stream sender, Stream reader)
         {
             this.traceSource = Tools.CreateTraceSource();
             //LogInfo("LanguageServer: constructor"); // This lineNumber produces a crash
-            this.target = new LanguageServerTarget(this, this.traceSource);
+            this.target = new LanguageServerTarget(this);
             this.textDocuments = new Dictionary<Uri, TextDocumentItem>();
             this.textDocumentLines = new Dictionary<Uri, string[]>();
             this.parsedDocuments = new Dictionary<Uri, KeywordID[][]>();
@@ -95,11 +110,13 @@ namespace AsmDude2LS
             this.rpc = new JsonRpc(this.messageHandler, this.target);
             this.rpc.Disconnected += this.OnRpcDisconnected;
 
+            /* 30-09-23 why would we need the following code?
             this.rpc.ActivityTracingStrategy = new CorrelationManagerTracingStrategy()
             {
                 TraceSource = this.traceSource,
             };
             this.rpc.TraceSource = this.traceSource;
+            */
 
             ((JsonMessageFormatter)this.messageHandler.Formatter).JsonSerializer.Converters.Add(new VSExtensionConverter<TextDocumentIdentifier, VSTextDocumentIdentifier>());
 
@@ -220,7 +237,7 @@ namespace AsmDude2LS
             Range range,
             VSTextDocumentIdentifier vsTextDocumentIdentifier)
         {
-            //Console.WriteLine($"ScheduleDiagnosticMessage {message}");
+            //LogInfo($"ScheduleDiagnosticMessage {message}");
 
             this.diagnostics.Add(new VSDiagnostic()
             {
@@ -265,12 +282,12 @@ namespace AsmDude2LS
 
         private void OnTargetInitializeCompletion(object sender, EventArgs e)
         {
-            this.LogInfo("LanguageServer: OnTargetInitializeCompletion");
+            LogInfo("LanguageServer: OnTargetInitializeCompletion");
         }
 
         private void OnTargetInitialized(object sender, EventArgs e)
         {
-            this.LogInfo("LanguageServer: OnTargetInitialized");
+            LogInfo("LanguageServer: OnTargetInitialized");
             this.OnInitialized?.Invoke(this, EventArgs.Empty);
         }
 
@@ -287,14 +304,14 @@ namespace AsmDude2LS
             {
                 string filename_Regular = Path.Combine(path, "signature-may2019.txt");
                 string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
-                this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.traceSource, this.options);
+                this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.options);
             }
             {
                 string path_performance = Path.Combine(path, "Performance");
-                this.performanceStore = new PerformanceStore(path_performance, this.traceSource, this.options);
+                this.performanceStore = new PerformanceStore(path_performance, this.options);
             }
             {
-                this.asmDudeTools = AsmTools.AsmDude2Tools.Create(path, this.traceSource);
+                this.asmDudeTools = AsmDude2Tools.Create(path, this.traceSource);
             }
         }
 
@@ -345,14 +362,14 @@ namespace AsmDude2LS
 
         private void UpdateLabelGraph(Uri uri)
         {
-            this.LogInfo("UpdateLabelGraph");
+            LogInfo("UpdateLabelGraph");
             this.labelGraphs.Remove(uri);
 
             var textDocument = this.GetTextDocument(uri);
             string filename = textDocument.Uri.LocalPath;
             string[] lines = this.GetLines(uri);
             bool caseSensitiveLabels = true; //nasm has case sensitive labels
-            LabelGraph labelGraph = new(lines, filename, caseSensitiveLabels, this.traceSource, this.options);
+            LabelGraph labelGraph = new(lines, filename, caseSensitiveLabels, this.options);
             if (false) { // TODO 30-09-23: switch on the label diagnostics when most of the false positives are removed
 #pragma warning disable CS0162 // Unreachable code detected
                 labelGraph.UpdateDiagnostics();
@@ -703,7 +720,7 @@ namespace AsmDude2LS
 
         public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token)
         {
-            this.LogInfo($"Received: {JToken.FromObject(args)}");
+            LogInfo($"Received: {JToken.FromObject(args)}");
             var uri = args.TextDocument.Uri;
 
             var lines = this.GetLines(uri);
@@ -784,7 +801,7 @@ namespace AsmDude2LS
             bool extraLogging = false;
 #endif
 
-            if (extraLogging) Console.WriteLine($"Constrain_Signatures: operands={string.Join(',', operands2)} data.Count={data.Count<AsmSignatureInformation>()}");
+            if (extraLogging) LogInfo($"Constrain_Signatures: operands={string.Join(',', operands2)} data.Count={data.Count<AsmSignatureInformation>()}");
 
             foreach (AsmSignatureInformation asmSignatureElement in data)
             {
@@ -793,7 +810,7 @@ namespace AsmDude2LS
                 //1] constrain the signature on architecture
                 if (!asmSignatureElement.Is_Allowed(selectedArchitectures2))
                 {
-                    if (extraLogging) Console.WriteLine($"Constrain_Signatures: asmSignatureElement {asmSignatureElement} is not allowed based on arch");
+                    if (extraLogging) LogInfo($"Constrain_Signatures: asmSignatureElement {asmSignatureElement} is not allowed based on arch");
                     allowed = false;
                 }
 
@@ -803,7 +820,7 @@ namespace AsmDude2LS
                     if ((operands2 == null) || (operands2.Count == 0))
                     {
                         // do nothing
-                        if (extraLogging) Console.WriteLine($"Constrain_Signatures: operands2 is null or empty");
+                        if (extraLogging) LogInfo($"Constrain_Signatures: operands2 is null or empty");
                     }
                     else
                     {
@@ -812,14 +829,14 @@ namespace AsmDude2LS
                             Operand operand = operands2[i];
                             if (operand == null)
                             {
-                                this.LogError($"Constrain_Signatures: somehow got an operand that is null");
+                                LogError($"Constrain_Signatures: somehow got an operand that is null");
                             }
                             else if (operand.IsReg || operand.IsMem || operand.IsImm)
                             {
-                                if (extraLogging) Console.WriteLine($"Constrain_Signatures: trying operand={operand}");
+                                if (extraLogging) LogInfo($"Constrain_Signatures: trying operand={operand}");
                                 if (!asmSignatureElement.Is_Allowed(operand, i))
                                 {
-                                    if (extraLogging) Console.WriteLine($"Constrain_Signatures: asmSignatureElement {asmSignatureElement} is not allowed based on mnemonic");
+                                    if (extraLogging) LogInfo($"Constrain_Signatures: asmSignatureElement {asmSignatureElement} is not allowed based on mnemonic");
                                     allowed = false;
                                     break;
                                 }
@@ -846,7 +863,7 @@ namespace AsmDude2LS
 
                 if (!this.options.SignatureHelp_On)
                 {
-                    this.LogInfo($"TextDocumentSignatureHelp: switched off");
+                    LogInfo($"GetTextDocumentSignatureHelp: switched off");
                     return null;
                 }
 
@@ -854,14 +871,20 @@ namespace AsmDude2LS
                 int lineNumber = parameter.Position.Line;
                 string completeLineStr = lines[lineNumber];
                 int pos = parameter.Position.Character;
-                string lineStr = completeLineStr.Substring(0, pos);
+                if (pos == 0)
+                {
+                    LogInfo($"GetTextDocumentSignatureHelp: pos = {pos}");
+                    return null;
+                }
+                string lineStr = completeLineStr[..pos];
+
 
                 int fileID = 0; //TODO
                 (object _, string _, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
 
                 SignatureHelpTriggerKind kind = parameter.Context.TriggerKind;
 
-                if (extraLogging) Console.WriteLine($"===========================\nOnTextDocumentSignatureHelp: kind={kind}; completeLineStr=\"{completeLineStr}\"; lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
+                if (extraLogging) LogInfo($"===========================\nOnTextDocumentSignatureHelp: kind={kind}; completeLineStr=\"{completeLineStr}\"; lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
                 //if there was a backspace, and the mnemonic becomes null, cancel the signature help, and start the code completion
 
                 // we backspace we may backspace into the mnemonic
@@ -873,13 +896,13 @@ namespace AsmDude2LS
                 int mnemonicOffset = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
                 if (mnemonicOffset == -1)
                 {
-                    this.LogError($"TextDocumentSignatureHelp: should not happen: investigate");
+                    LogError($"TextDocumentSignatureHelp: should not happen: investigate");
                     return null;
                 }
 
                 int argsOffset = mnemonicOffset + mnemonic.ToString().Length + 1;
                 int argStrLength = parameter.Position.Character - argsOffset;
-                if (extraLogging) Console.WriteLine($"TextDocumentSignatureHelp: argsOffset={argsOffset}; argStrLength={argStrLength}");
+                if (extraLogging) LogInfo($"TextDocumentSignatureHelp: argsOffset={argsOffset}; argStrLength={argStrLength}");
                 /*
                 string[] args;
 
@@ -893,7 +916,7 @@ namespace AsmDude2LS
                     args = argsStr.Split(',', StringSplitOptions.TrimEntries);
                 }
                 */
-                if (extraLogging) Console.WriteLine($"TextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
+                if (extraLogging) LogInfo($"TextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
 
                 List<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
                 HashSet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
@@ -905,7 +928,7 @@ namespace AsmDude2LS
                 {
                     if (asmSignatureElement.Operands.Count > 0)
                     {
-                        this.LogInfo($"TextDocumentSignatureHelp: adding SignatureInformation: {asmSignatureElement.SignatureInformation.Label}");
+                        if (extraLogging) LogInfo($"TextDocumentSignatureHelp: adding SignatureInformation: {asmSignatureElement.SignatureInformation.Label}");
                         z.Add(asmSignatureElement.SignatureInformation);
                     }
                 }
@@ -916,7 +939,7 @@ namespace AsmDude2LS
 
                 int nCommas = Math.Max(0, operands.Count - 1);
 
-                if (extraLogging) Console.WriteLine($"TextDocumentSignatureHelp: lineStr=\"{lineStr}\"; pos={parameter.Position.Character}; mnemonic={mnemonic}, nCommas={nCommas}");
+                if (extraLogging) LogInfo($"TextDocumentSignatureHelp: lineStr=\"{lineStr}\"; pos={parameter.Position.Character}; mnemonic={mnemonic}, nCommas={nCommas}");
                 return new SignatureHelp()
                 {
                     ActiveSignature = 0,
@@ -925,7 +948,7 @@ namespace AsmDude2LS
                 };
             } catch (Exception e)
             {
-                this.LogError($"TextDocumentSignatureHelp: e ={e}");
+                LogError($"TextDocumentSignatureHelp: e ={e}");
                 return null;
             }
         }
@@ -966,8 +989,8 @@ namespace AsmDude2LS
                     string keyword = regName.ToString();
                     //if (use_AsmSim_In_Code_Completion && this.asmSimulator_.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
                     //{
-                    //    (string value, bool bussy) = this.asmSimulator_.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration, false));
-                    //    if (!bussy)
+                    //    (string value, bool buzzy) = this.asmSimulator_.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration, false));
+                    //    if (!buzzy)
                     //    {
                     //        additionalInfo = value;
                     //        LogInfo("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
@@ -980,7 +1003,7 @@ namespace AsmDude2LS
                     }
 
                     Arch arch = RegisterTools.GetArch(regName);
-                    //Tools.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+                    LogInfo("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
                     string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
@@ -1006,7 +1029,7 @@ namespace AsmDude2LS
                 string keyword2 = keyword;
                 bool selected = true;
 
-                //Tools.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
+                LogInfo("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected);
 
                 switch (type)
                 {
@@ -1178,7 +1201,7 @@ namespace AsmDude2LS
                             selected = this.options.Is_Arch_Switched_On(arch);
                         }
 
-                        this.LogInfo("CodeCompletionSource:Selected_Completions; keyword=" + keyword_uppercase + "; arch=" + arch + "; selected=" + selected);
+                        LogInfo("CodeCompletionSource:Selected_Completions; keyword=" + keyword_uppercase + "; arch=" + arch + "; selected=" + selected);
 
                         if (selected)
                         {
@@ -1216,7 +1239,7 @@ namespace AsmDude2LS
 
                 if (!this.options.CodeCompletion_On)
                 {
-                    this.LogInfo($"OnTextDocumentCompletion: switched off");
+                    LogInfo($"OnTextDocumentCompletion: switched off");
                     return new CompletionList();
                 }
 
@@ -1225,28 +1248,28 @@ namespace AsmDude2LS
                 string completeLineStr = lines[lineNumber];
                 int pos = parameter.Position.Character;
 
-                if (extraLogging) Console.WriteLine($"===========================\nOnTextDocumentCompletion: completeLineStr=\"{completeLineStr}\"; pos=\'{pos}\'");
+                if (extraLogging) LogInfo($"===========================\nOnTextDocumentCompletion: completeLineStr=\"{completeLineStr}\"; pos=\'{pos}\'");
 
                 // if the current characters is a asm separator, no code completion
                 char currentChar = this.GetChar(completeLineStr, pos - 1);
                 //if (AsmTools.AsmSourceTools.IsSeparatorChar(currentChar))
                 //{
-                //    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: we just typed a separator char \'{currentChar}\' thus no code completion");
+                //    if (extraLogging) LogInfo($"OnTextDocumentCompletion: we just typed a separator char \'{currentChar}\' thus no code completion");
                 //    return new CompletionList();
                 //}
 
                 // we only consider the line till (and including) the current position
                 string lineStr = completeLineStr[..pos];
-                if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: lineStr=\"{lineStr}\"; currentChar=\'{currentChar}\'");
+                if (extraLogging) LogInfo($"OnTextDocumentCompletion: lineStr=\"{lineStr}\"; currentChar=\'{currentChar}\'");
 
                 int fileID = 0; //TODO
                 (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
-                if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: label=\"{label}\"; mnemonic={mnemonic}; args={string.Join(',', args)}; remark=\"{remark}\"");
+                if (extraLogging) LogInfo($"OnTextDocumentCompletion: label=\"{label}\"; mnemonic={mnemonic}; args={string.Join(',', args)}; remark=\"{remark}\"");
 
                 // if we are typing in a remark: no code completion please
                 if (remark.Length > 0)
                 {
-                    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: we are in a remark: no code completion");
+                    if (extraLogging) LogInfo($"OnTextDocumentCompletion: we are in a remark: no code completion");
                     return new CompletionList();
                 }
 
@@ -1258,13 +1281,13 @@ namespace AsmDude2LS
                 //TODO if currentWord is only one letter, only return elements that start with that letter.
 
 
-                if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: currentWord=\"{currentWord}\"; useCapitals={useCapitals}");
+                if (extraLogging) LogInfo($"OnTextDocumentCompletion: currentWord=\"{currentWord}\"; useCapitals={useCapitals}");
 
                 // if the mnemonic is NONE we should suggest mnemonics
                 if (mnemonic == Mnemonic.NONE)
                 {
                     HashSet<AsmTokenType> selected = new() { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
-                    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: A");
+                    if (extraLogging) LogInfo($"OnTextDocumentCompletion: A");
                     return new CompletionList()
                     {
                         Items = Selected_Completions(useCapitals, selected, true).ToArray(),
@@ -1274,17 +1297,17 @@ namespace AsmDude2LS
                 int mnemonicOffsetStart = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
                 if (mnemonicOffsetStart == -1)
                 {
-                    this.LogError($"OnTextDocumentCompletion: should not happen: investigate");
+                    LanguageServer.LogError($"OnTextDocumentCompletion: should not happen: investigate");
                     return null;
                 }
 
                 // are we with the cursor in the mnemonic: then we should only suggest mnemonics:
                 int mnemonicOffsetEnd = mnemonicOffsetStart + mnemonic.ToString().Length;
-                if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: pos={pos}; mnemonicOffsetEnd={mnemonicOffsetEnd}");
+                if (extraLogging) LogInfo($"OnTextDocumentCompletion: pos={pos}; mnemonicOffsetEnd={mnemonicOffsetEnd}");
                 if (pos <= mnemonicOffsetEnd)
                 {
                     HashSet<AsmTokenType> selected = new() { AsmTokenType.Jump, AsmTokenType.Mnemonic };
-                    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: B");
+                    if (extraLogging) LogInfo($"OnTextDocumentCompletion: B");
                     return new CompletionList()
                     {
                         Items = Selected_Completions(useCapitals, selected, true).ToArray(),
@@ -1295,7 +1318,7 @@ namespace AsmDude2LS
                 if (AsmTools.AsmSourceTools.IsJump(mnemonic))
                 {
                     var labelGraph = this.GetLabelGraph(parameter.TextDocument.Uri);
-                    if (extraLogging) Console.WriteLine($"OnTextDocumentCompletion: C");
+                    if (extraLogging) LogInfo($"OnTextDocumentCompletion: C");
                     return new CompletionList()
                     {
                         Items = this.Label_Completions(labelGraph, useCapitals, true).ToArray(),
@@ -1314,10 +1337,10 @@ namespace AsmDude2LS
 
                 if (extraLogging)
                 {
-                    Console.WriteLine($"OnTextDocumentCompletion: nCommas={nCommas}; operands={string.Join(',', operands)}; allSignatures.Count={allSignatures.Count<AsmSignatureInformation>()}");
+                    LogInfo($"OnTextDocumentCompletion: nCommas={nCommas}; operands={string.Join(',', operands)}; allSignatures.Count={allSignatures.Count<AsmSignatureInformation>()}");
                     foreach (AsmSignatureInformation s in allSignatures)
                     {
-                        Console.WriteLine($"OnTextDocumentCompletion: available signatures: {s}");
+                        LogInfo($"OnTextDocumentCompletion: available signatures: {s}");
                     }
                 }
 
@@ -1333,10 +1356,10 @@ namespace AsmDude2LS
                     }
                 }
                 if (extraLogging) {
-                    Console.WriteLine($"OnTextDocumentCompletion: D: useCapitals={useCapitals}; allowed.Count={allowed.Count}");
+                    LogInfo($"OnTextDocumentCompletion: D: useCapitals={useCapitals}; allowed.Count={allowed.Count}");
                     foreach (AsmSignatureEnum sig in allowed)
                     {
-                        Console.WriteLine($"OnTextDocumentCompletion: D: allowed signature {sig}");
+                        LogInfo($"OnTextDocumentCompletion: D: allowed signature {sig}");
                     }
                 }
                 return new CompletionList()
@@ -1347,7 +1370,7 @@ namespace AsmDude2LS
             catch (Exception e)
             {
                 {
-                    this.LogError($"OnTextDocumentCompletion: e={e}");
+                    LogError($"OnTextDocumentCompletion: e={e}");
                     return new CompletionList();
                 }
             }
@@ -1357,13 +1380,13 @@ namespace AsmDude2LS
         {
             if (progress == null)
             {
-                this.LogInfo($"LanguageServer:GetDocumentHighlights: progress is null");
+                LogInfo($"LanguageServer:GetDocumentHighlights: progress is null");
                 return Array.Empty<DocumentHighlight>();
             }
             TextDocumentItem document = this.GetTextDocument(uri);
             if (document == null)
             {
-                this.LogInfo($"LanguageServer:GetDocumentHighlights: document is null");
+                LogInfo($"LanguageServer:GetDocumentHighlights: document is null");
                 return Array.Empty<DocumentHighlight>();
             }
 
@@ -1374,13 +1397,13 @@ namespace AsmDude2LS
 
             if (length <= 0)
             {
-                this.LogInfo($"LanguageServer:GetDocumentHighlights: argStrLength too small ({length})");
+                LogInfo($"LanguageServer:GetDocumentHighlights: argStrLength too small ({length})");
                 return Array.Empty<DocumentHighlight>();
             }
             string currentHighlightedWord = lineStr2.Substring(startPos, length);
             if (string.IsNullOrEmpty(currentHighlightedWord))
             {
-                this.LogInfo($"LanguageServer:GetDocumentHighlights: currentHighlightedWord is not significant ({currentHighlightedWord})");
+                LogInfo($"LanguageServer:GetDocumentHighlights: currentHighlightedWord is not significant ({currentHighlightedWord})");
                 return Array.Empty<DocumentHighlight>();
             }
 
@@ -1397,7 +1420,7 @@ namespace AsmDude2LS
                     currentHighlightedWords.Add(x);
                 }
             }
-            this.LogInfo($"LanguageServer:GetDocumentHighlights: currentHighlightedWords={string.Join(",", currentHighlightedWords)}");
+            LogInfo($"LanguageServer:GetDocumentHighlights: currentHighlightedWords={string.Join(",", currentHighlightedWords)}");
 
             List<DocumentHighlight> highlights = new();
             List<DocumentHighlight> chunk = new();
@@ -1465,7 +1488,7 @@ namespace AsmDude2LS
         {
             if (!this.options.AsmDoc_On)
             {
-                this.LogInfo($"OnHover: switched off");
+                LogInfo($"OnHover: switched off");
                 return null;
             }
             var lines = this.GetLines(parameter.TextDocument.Uri);
@@ -1570,7 +1593,7 @@ namespace AsmDude2LS
                             }
                             string full_Descr = AsmTools.AsmSourceTools.Linewrap(archStr + descr, MaxNumberOfCharsInToolTips);
                             hoverContent = new SumType<string, MarkedString>[]{
-                                new SumType<string, MarkedString>(new MarkedString
+                                new(new MarkedString
                                 {
                                     Language = MarkupKind.PlainText.ToString(),
                                     Value = $"Register {regStr}: {full_Descr}",
@@ -1662,7 +1685,7 @@ namespace AsmDude2LS
                             full_Qualified_Label = Tools.Make_Full_Qualified_Label(extra_Tag_Info, label, Tools.Used_Assembler);
                         }
 
-                        Tools.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: found label def " + full_Qualified_Label);
+                        LogInfo(("AsmQuickInfoSource:AugmentQuickInfoSession: found label def " + full_Qualified_Label);
 
                         description = new TextBlock();
                         description.Inlines.Add(Make_Run1("Label ", foreground));
@@ -1772,7 +1795,7 @@ namespace AsmDude2LS
                 description.Focusable = true;
                 description.FontSize = Tools.GetFontSize() + 2;
                 description.FontFamily = Tools.GetFontType();
-                //Tools.Output_INFO(string.Format(Tools.CultureUI, "{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
+                //LogInfo((string.Format(Tools.CultureUI, "{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
                 //quickInfoContent.Add(description);
                 return (new List<object> { "other" }, keywordSpan.Value);
             }
@@ -1918,25 +1941,26 @@ namespace AsmDude2LS
 
         #region Logging
 
-        public void LogInfo(string message)
+        public static void LogInfo(string message)
         {
-            if (this.target.traceSetting == TraceSetting.Verbose)
+            if (Instance.target.traceSetting == TraceSetting.Verbose)
             {
-                this.traceSource.TraceEvent(TraceEventType.Information, 0, message);
+                Console.WriteLine("\u001b[32m.INFO:\u001b[30m. " + message);
+                Instance.traceSource.TraceEvent(TraceEventType.Information, 0, message);
             }
         }
 
-        private void LogWarning(string message)
+        public static void LogWarning(string message)
         {
-            Console.WriteLine("WARNING: "+message);
-            this.traceSource.TraceEvent(TraceEventType.Warning, 0, message);
+            Console.WriteLine("\u001b[33m.WARNING:\u001b[30m. " + message);
+            Instance.traceSource.TraceEvent(TraceEventType.Warning, 0, message);
         }
 
-        private void LogError(string message)
+        public static void LogError(string message)
         {
-            Console.WriteLine("ERROR: " + message);
-            this.MakeWindowVisible();
-            this.traceSource.TraceEvent(TraceEventType.Error, 0, message);
+            Console.WriteLine("\u001b[31m.ERROR:\u001b[30m. " + message);
+            Instance.MakeWindowVisible();
+            Instance.traceSource.TraceEvent(TraceEventType.Error, 0, message);
         }
 
         public void LogMessage(object arg)
@@ -1960,7 +1984,7 @@ namespace AsmDude2LS
 
         public void ShowMessage(string message, MessageType messageType)
         {
-            this.LogInfo($"LanguageServer: ShowMessage: message={message}; messageType={messageType.ToString()}");
+            LogInfo($"LanguageServer: ShowMessage: message={message}; messageType={messageType.ToString()}");
             ShowMessageParams parameter = new()
             {
                 Message = message,
@@ -1992,7 +2016,7 @@ namespace AsmDude2LS
             JToken parsedSettings = JToken.Parse(this.CurrentSettings);
             int newMaxProblems = parsedSettings.Children().First().Values<int>("maxNumberOfProblems").First();
 
-            this.LogInfo($"SendSettings: received {parameter}");
+            LogInfo($"SendSettings: received {parameter}");
         }
 
         public void Exit()
@@ -2055,7 +2079,7 @@ namespace AsmDude2LS
 
         //        if (!response.Applied)
         //        {
-        //            Console.WriteLine($"Failed to apply edit: {response.FailureReason}");
+        //            LogInfo($"Failed to apply edit: {response.FailureReason}");
         //        }
         //    });
         //}
@@ -2125,6 +2149,7 @@ namespace AsmDude2LS
         {
             this.Exit();
         }
+        
         public void MakeWindowVisible() 
         {
             this.ShowWindow?.Invoke(this, EventArgs.Empty);
@@ -2143,72 +2168,6 @@ namespace AsmDude2LS
         private Task<TOut> SendMethodRequestAsync<TIn, TOut>(LspRequest<TIn, TOut> method, TIn param)
         {
             return this.rpc.InvokeWithParameterObjectAsync<TOut>(method.Name, param);
-        }
-    }
-
-    /*
-    public class DiagnosticsInfo
-    {
-        public DiagnosticsInfo(string Text, VSProjectContext context, DiagnosticTag tag, DiagnosticSeverity severity)
-        {
-            this.Text = Text;
-            this.Context = context;
-            this.Tag = tag;
-            this.Severity = severity;
-        }
-
-        public string Text
-        {
-            get;
-            set;
-        }
-
-        public VSProjectContext Context
-        {
-            get;
-            set;
-        }
-
-        public DiagnosticTag Tag
-        {
-            get;
-            set;
-        }
-
-        public DiagnosticSeverity Severity
-        {
-            get;
-            set;
-        }
-    }
-
-    */
-
-    public class SymbolInfo
-    {
-        public SymbolInfo(string name, SymbolKind kind, string container)
-        {
-            this.Name = name;
-            this.Kind = kind;
-            this.Container = container;
-        }
-
-        public string Name
-        {
-            get;
-            set;
-        }
-
-        public SymbolKind Kind
-        {
-            get;
-            set;
-        }
-
-        public string Container
-        {
-            get;
-            set;
         }
     }
 }
