@@ -263,7 +263,7 @@ namespace AsmDude2
 
             var pipeAccessRule = new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
             var pipeSecurity = new PipeSecurity();
-           // pipeSecurity.AddAccessRule(pipeAccessRule);
+            pipeSecurity.AddAccessRule(pipeAccessRule);
 
             var bufferSize = 256;
             var readerPipe = new NamedPipeServerStream(stdInPipeName, PipeDirection.InOut, 4, PipeTransmissionMode.Message, PipeOptions.Asynchronous, bufferSize, bufferSize, pipeSecurity);
@@ -323,7 +323,7 @@ namespace AsmDude2
         public Task<InitializationFailureContext> OnServerInitializeFailedAsync(ILanguageClientInitializationInfo initializationState)
         {
             AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: OnServerInitializeFailedAsync");
-            string message = "Asm Language Client failed to activate";
+            string message = $"Asm Language Client failed to activate\npath \"{ApplicationInformation.LspPath()}\"\n";
             string exception = initializationState.InitializationException?.ToString() ?? string.Empty;
 
             var failureContext = new InitializationFailureContext()
