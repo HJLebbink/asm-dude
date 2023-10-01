@@ -795,7 +795,7 @@ namespace AsmDude2LS
                 List<Operand> operands2,
                 HashSet<Arch> selectedArchitectures2)
         {
-#if _DEBUG
+#if DEBUG
                 bool extraLogging = true;
 #else
             bool extraLogging = false;
@@ -855,7 +855,7 @@ namespace AsmDude2LS
         {
             try
             {
-#if _DEBUG
+#if DEBUG
                 bool extraLogging = true;
 #else
                 bool extraLogging = false;
@@ -871,21 +871,32 @@ namespace AsmDude2LS
                 int lineNumber = parameter.Position.Line;
                 string completeLineStr = lines[lineNumber];
                 int pos = parameter.Position.Character;
-                if (pos == 0)
-                {
-                    LogInfo($"GetTextDocumentSignatureHelp: pos = {pos}");
-                    return null;
-                }
                 string lineStr = completeLineStr[..pos];
 
+                //LogInfo($"GetTextDocumentSignatureHelp: lineStr = {lineStr}");
+  
+                if (extraLogging)
+                {
+                    LogInfo("===========================");
+                    LogInfo($"GetTextDocumentSignatureHelp: TriggerKind={parameter.Context.TriggerKind}; triggerChar={parameter.Context.TriggerCharacter}; IsRetrigger={parameter.Context.IsRetrigger}");
+                }
+
+                if (parameter.Context.TriggerCharacter == ";")
+                {
+                    LogError($"GetTextDocumentSignatureHelp: TriggerCharacter = {parameter.Context.TriggerCharacter}");
+                    return null;
+                }
 
                 int fileID = 0; //TODO
                 (object _, string _, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
-
-                SignatureHelpTriggerKind kind = parameter.Context.TriggerKind;
-
-                if (extraLogging) LogInfo($"===========================\nOnTextDocumentSignatureHelp: kind={kind}; completeLineStr=\"{completeLineStr}\"; lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
+                if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: completeLineStr=\"{completeLineStr}\"; lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
                 //if there was a backspace, and the mnemonic becomes null, cancel the signature help, and start the code completion
+
+                if (remark.Length > 0)
+                {
+                    LogInfo($"GetTextDocumentSignatureHelp: No signature help in a remark");
+                    return null;
+                }
 
                 // we backspace we may backspace into the mnemonic
                 if ((mnemonic == Mnemonic.NONE))
@@ -896,27 +907,14 @@ namespace AsmDude2LS
                 int mnemonicOffset = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
                 if (mnemonicOffset == -1)
                 {
-                    LogError($"TextDocumentSignatureHelp: should not happen: investigate");
+                    LogError($"GetTextDocumentSignatureHelp: should not happen: investigate");
                     return null;
                 }
 
                 int argsOffset = mnemonicOffset + mnemonic.ToString().Length + 1;
                 int argStrLength = parameter.Position.Character - argsOffset;
-                if (extraLogging) LogInfo($"TextDocumentSignatureHelp: argsOffset={argsOffset}; argStrLength={argStrLength}");
-                /*
-                string[] args;
-
-                if (argStrLength <= 0)
-                {
-                    args = Array.Empty<string>();
-                }
-                else
-                {
-                    string argsStr = lineStr.Substring(argsOffset, argStrLength);
-                    args = argsStr.Split(',', StringSplitOptions.TrimEntries);
-                }
-                */
-                if (extraLogging) LogInfo($"TextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
+                if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: argsOffset={argsOffset}; argStrLength={argStrLength}");
+                if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
 
                 List<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
                 HashSet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
@@ -928,7 +926,7 @@ namespace AsmDude2LS
                 {
                     if (asmSignatureElement.Operands.Count > 0)
                     {
-                        if (extraLogging) LogInfo($"TextDocumentSignatureHelp: adding SignatureInformation: {asmSignatureElement.SignatureInformation.Label}");
+                        if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: adding SignatureInformation: {asmSignatureElement.SignatureInformation.Label}");
                         z.Add(asmSignatureElement.SignatureInformation);
                     }
                 }
@@ -939,7 +937,7 @@ namespace AsmDude2LS
 
                 int nCommas = Math.Max(0, operands.Count - 1);
 
-                if (extraLogging) LogInfo($"TextDocumentSignatureHelp: lineStr=\"{lineStr}\"; pos={parameter.Position.Character}; mnemonic={mnemonic}, nCommas={nCommas}");
+                if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: lineStr=\"{lineStr}\"; pos={parameter.Position.Character}; mnemonic={mnemonic}, nCommas={nCommas}");
                 return new SignatureHelp()
                 {
                     ActiveSignature = 0,
@@ -948,7 +946,7 @@ namespace AsmDude2LS
                 };
             } catch (Exception e)
             {
-                LogError($"TextDocumentSignatureHelp: e ={e}");
+                LogError($"GetTextDocumentSignatureHelp: e ={e}");
                 return null;
             }
         }
@@ -1003,7 +1001,7 @@ namespace AsmDude2LS
                     }
 
                     Arch arch = RegisterTools.GetArch(regName);
-                    LogInfo("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+                    //LogInfo("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
                     string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
@@ -1029,7 +1027,7 @@ namespace AsmDude2LS
                 string keyword2 = keyword;
                 bool selected = true;
 
-                LogInfo("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected);
+                //LogInfo("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected);
 
                 switch (type)
                 {
@@ -1050,7 +1048,7 @@ namespace AsmDude2LS
                 if (selected)
                 {
                     Arch arch = this.asmDudeTools.Get_Architecture(keyword);
-                    //Tools.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+                    //LogInfo("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
                     string insertionText = useCapitals ? keyword2 : keyword2.ToLowerInvariant();
@@ -1231,7 +1229,7 @@ namespace AsmDude2LS
 
             try
             {
-#if _DEBUG
+#if DEBUG
                 bool extraLogging = true;
 #else
                 bool extraLogging = false;
@@ -1276,10 +1274,6 @@ namespace AsmDude2LS
                 // determine if the current word we are typing is all capitals
                 (string currentWord, _, _) = GetWord(pos-1, lineStr);
                 bool useCapitals = (currentWord == currentWord.ToUpper());
-
-
-                //TODO if currentWord is only one letter, only return elements that start with that letter.
-
 
                 if (extraLogging) LogInfo($"OnTextDocumentCompletion: currentWord=\"{currentWord}\"; useCapitals={useCapitals}");
 
@@ -1945,20 +1939,20 @@ namespace AsmDude2LS
         {
             if (Instance.target.traceSetting == TraceSetting.Verbose)
             {
-                Console.WriteLine("\u001b[32m.INFO:\u001b[30m. " + message);
+                Console.WriteLine($"INFO {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
                 Instance.traceSource.TraceEvent(TraceEventType.Information, 0, message);
             }
         }
 
         public static void LogWarning(string message)
         {
-            Console.WriteLine("\u001b[33m.WARNING:\u001b[30m. " + message);
+            Console.WriteLine($"WARNING {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
             Instance.traceSource.TraceEvent(TraceEventType.Warning, 0, message);
         }
 
         public static void LogError(string message)
         {
-            Console.WriteLine("\u001b[31m.ERROR:\u001b[30m. " + message);
+            Console.WriteLine($"ERROR {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
             Instance.MakeWindowVisible();
             Instance.traceSource.TraceEvent(TraceEventType.Error, 0, message);
         }

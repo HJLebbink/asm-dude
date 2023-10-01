@@ -21,7 +21,7 @@ public partial class Worker : BackgroundService
 
     public Worker(ILogger<Worker> logger)
     {
-#if _DEBUG
+#if DEBUG
         // in a debug run we want to see the console with the LSP
         ShowWindow(GetConsoleWindow(), SW_SHOW);
 #else

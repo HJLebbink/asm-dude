@@ -71,8 +71,8 @@ namespace AsmDude2LS
 
             this.server.Initialize(options);
 
-            const char backspace = (char)8;
-            string backspaceStr = backspace + string.Empty;
+            string backspaceStr = (char)8 + string.Empty;
+            //string carriageReturnStr = (char)13 + string.Empty;
 
             var result = new InitializeResult
             {
@@ -93,7 +93,7 @@ namespace AsmDude2LS
                     SignatureHelpProvider = new SignatureHelpOptions()
                     {
                         TriggerCharacters = new string[] { " ", ",", backspaceStr },
-                        RetriggerCharacters = new string[] { "," },                       
+                        RetriggerCharacters = new string[] { ";" },                       
                         WorkDoneProgress = false,
                     },
 
