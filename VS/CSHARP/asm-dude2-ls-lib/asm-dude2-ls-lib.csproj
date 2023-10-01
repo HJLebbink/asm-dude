@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>CA1001,CA1305,CA1307,CA1721,CA1724,CA1801,CA1822,CA2007,CA2213,CS1591,CS1668</NoWarn>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+    <Authors>Henk-Jan Lebbink</Authors>
+    <Company>SnellerInc</Company>
+    <Product>AsmDude2.LSP.Lib</Product>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Resourses\**" />
+    <EmbeddedResource Remove="Resourses\**" />
+    <None Remove="Resourses\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\AsmDudeData.xml" />
+    <None Remove="Resources\Performance\Broadwell.tsv" />
+    <None Remove="Resources\Performance\Haswell.tsv" />
+    <None Remove="Resources\Performance\Instructions-Translations.tsv" />
+    <None Remove="Resources\Performance\IvyBridge.tsv" />
+    <None Remove="Resources\Performance\Skylake.tsv" />
+    <None Remove="Resources\Performance\SkylakeX.tsv" />
+    <None Remove="Resources\signature-hand-1.txt" />
+    <None Remove="Resources\signature-may2019.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\AsmDudeData.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\Broadwell.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\Haswell.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\Instructions-Translations.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\IvyBridge.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\Skylake.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Performance\SkylakeX.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\signature-hand-1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\signature-may2019.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-rc.1.23419.4" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.2.8" />
+    <PackageReference Include="StreamJsonRpc" Version="2.16.36" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
+  </ItemGroup>
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+</Project>

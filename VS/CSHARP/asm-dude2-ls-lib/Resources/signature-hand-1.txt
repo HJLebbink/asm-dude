@@ -1,0 +1,2051 @@
+;hand crafted ====================================================================
+;
+GENERAL	BND	Prefix to instruct that the next instruction is MPX-instrumented code.	
+
+GENERAL	REP	Repeat. Repeat string instruction the number of times specified in the count register.	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPE	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPZ	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPNE	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPNZ	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ
+
+REP		8086	REP	Repeat. Repeat string instruction the number of times specified in the count register.
+REPE		8086	REPE	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0.
+REPZ		8086	REPZ	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0.
+REPNE		8086	REPNE	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1.
+REPNZ		8086	REPNZ	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1.
+
+INT		8086	INT	Call to Interrupt Procedure.
+
+GENERAL	MOV	Move	MOV
+
+GENERAL	CMOVA	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc
+GENERAL	CMOVAE	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc
+GENERAL	CMOVB	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc
+GENERAL	CMOVBE	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc
+GENERAL	CMOVC	Move if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc
+GENERAL	CMOVE	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc
+GENERAL	CMOVG	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc
+GENERAL	CMOVGE	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc
+GENERAL	CMOVL	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc
+GENERAL	CMOVLE	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc
+GENERAL	CMOVNA	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc
+GENERAL	CMOVNAE	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc
+GENERAL	CMOVNB	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc
+GENERAL	CMOVNBE	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc
+GENERAL	CMOVNC	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc
+GENERAL	CMOVNE	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc
+GENERAL	CMOVNG	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc
+GENERAL	CMOVNGE	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc
+GENERAL	CMOVNL	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc
+GENERAL	CMOVNLE	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc
+GENERAL	CMOVNO	Move if not overflow (OF=0)	CMOVcc
+GENERAL	CMOVNP	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc
+GENERAL	CMOVNS	Move if not sign (SF=0)	CMOVcc
+GENERAL	CMOVNZ	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc
+GENERAL	CMOVO	Move if overflow (OF=1)	CMOVcc
+GENERAL	CMOVP	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc
+GENERAL	CMOVPE	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc
+GENERAL	CMOVPO	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc
+GENERAL	CMOVS	Move if sign (SF=1)	CMOVcc
+GENERAL	CMOVZ	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc
+;====================================================================
+GENERAL	CQO	Convert Qword to OWord	CWD_CDQ_CQO
+GENERAL	CWD	Convert Word to Dword	CWD_CDQ_CQO
+GENERAL	CDQ	Convert Dword to Qword	CWD_CDQ_CQO
+
+GENERAL	CBW	Convert Byte to Word	CBW_CWDE_CDQE
+GENERAL	CWDE	Convert Word to Dword	CBW_CWDE_CDQE
+GENERAL	CDQE	Convert Dword to Qword	CBW_CWDE_CDQE
+
+;====================================================================
+GENERAL	JA	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc
+GENERAL	JAE	Jump if above or equal (CF=0) (JAE=JNB)	Jcc
+GENERAL	JB	Jump if below (CF=1) (JB=JNAE)	Jcc
+GENERAL	JBE	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)	Jcc
+GENERAL	JC	Jump if carry (CF=1)	Jcc
+GENERAL	JE	Jump if equal (ZF=1) (JE=JZ)	Jcc
+GENERAL	JG	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)	Jcc
+GENERAL	JGE	Jump if greater or equal (SF=OF) (JGE=JNL)	Jcc
+GENERAL	JL	Jump if less (SF!=OF) (JL=JNGE)	Jcc
+GENERAL	JLE	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)	Jcc
+GENERAL	JNA	Jump if not above (CF=1 or ZF=1) (JBE=JNA)	Jcc
+GENERAL	JNAE	Jump if not above or equal (CF=1) (JB=JNAE)	Jcc
+GENERAL	JNB	Jump if not below (CF=0) (JAE=JNB)	Jcc
+GENERAL	JNBE	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)	Jcc
+GENERAL	JNC	Jump if not carry (CF=0)	Jcc
+GENERAL	JNE	Jump if not equal (ZF=0) (JNE=JNZ)	Jcc
+GENERAL	JNG	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)	Jcc
+GENERAL	JNGE	Jump if not greater or equal (SF!=OF) (JL=JNGE)	Jcc
+GENERAL	JNL	Jump if not less (SF=OF) (JGE=JNL)	Jcc
+GENERAL	JNLE	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)	Jcc
+GENERAL	JNO	Jump if not overflow (OF=0)	Jcc
+GENERAL	JNP	Jump if not parity (PF=0) (JNP=JPO)	Jcc
+GENERAL	JNS	Jump if not sign (SF=0)	Jcc
+GENERAL	JNZ	Jump if not zero (ZF=0) (JNE=JNZ)	Jcc
+GENERAL	JO	Jump if overflow (OF=1)	Jcc
+GENERAL	JP	Jump if parity (PF=1) (JP=JPE)	Jcc
+GENERAL	JPE	Jump if parity even (PF=1) (JP=JPE)	Jcc
+GENERAL	JPO	Jump if parity odd (PF=0) (JNP=JPO)	Jcc
+GENERAL	JS	Jump if sign (SF=1)	Jcc
+GENERAL	JZ	Jump if zero (ZF=1) (JE=JZ)	Jcc
+
+GENERAL	JMP	Unconditional Jump	JMP
+;====================================================================
+
+GENERAL	RCR	Rotate Carry Right. Rotate first operand carry right number of times as given by the second operand.	RCL_RCR_ROL_ROR
+GENERAL	RCL	Rotate Carry Left. Rotate first operand carry left number of times as given by the second operand.	RCL_RCR_ROL_ROR
+GENERAL	ROR	Rotate Right. Rotate first operand right number of times as given by the second operand.	RCL_RCR_ROL_ROR
+GENERAL	ROL	Rotate Left. Rotate first operand left number of times as given by the second operand.	RCL_RCR_ROL_ROR
+GENERAL	SAR	Shift Arithmetic Right. Shift first operand arithmethic right number of times as given by the second operand.	SAL_SAR_SHL_SHR
+GENERAL	SHL	Shift Logical Left. Shift first operand logical left number of times as given by the second operand.	SAL_SAR_SHL_SHR
+GENERAL	SHR	Shift Logical Right. Shift first operand logical right number of times as given by the second operand.	SAL_SAR_SHL_SHR
+GENERAL	SAL	Shift Arithmetic Left. Shift first operand arithmethic left number of times as given by the second operand.	SAL_SAR_SHL_SHR
+GENERAL	SARX	Shift Arithmetic Right Without Affecting Flags	SARX_SHLX_SHRX
+GENERAL	SHLX	Shift Logical Left Without Affecting Flags	SARX_SHLX_SHRX
+GENERAL	SHRX	Shift Logical Right Without Affecting Flags	SARX_SHLX_SHRX
+;====================================================================
+GENERAL	SETA	Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)	SETcc
+GENERAL	SETAE	Set byte if above or equal (CF=0) (SETAE=SETNC=SETNB)	SETcc
+GENERAL	SETB	Set byte if below (CF=1) (SETB=SETC=SETNAE)	SETcc
+GENERAL	SETBE	Set byte if below or equal (CF=1 or ZF=1) (SETBE=SETNA)	SETcc
+GENERAL	SETC	Set byte if carry (CF=1 SETB=SETC=SETNAE)	SETcc
+GENERAL	SETE	Set byte if equal (ZF=1) (SETE=SETZ)	SETcc
+GENERAL	SETG	Set byte if greater (ZF=0 and SF=OF) (SETG=SETNLE)	SETcc
+GENERAL	SETGE	Set byte if greater or equal (SF=OF) (SETGE=SETNL)	SETcc
+GENERAL	SETL	Set byte if less (SF!=OF) (SETL=SETNGE)	SETcc
+GENERAL	SETLE	Set byte if less or equal (ZF=1 or SF!=OF) (SETLE=SETNG)	SETcc
+GENERAL	SETNA	Set byte if not above (CF=1 or ZF=1) (SETBE=SETNA)	SETcc
+GENERAL	SETNAE	Set byte if not above or equal (CF=1) (SETB=SETC=SETNAE)	SETcc
+GENERAL	SETNB	Set byte if not below (CF=0) (SETAE=SETNC=SETNB)	SETcc
+GENERAL	SETNBE	Set byte if not below or equal (CF=0 and ZF=0) (SETA=SETNBE)	SETcc
+GENERAL	SETNC	Set byte if not carry (CF=0) (SETAE=SETNC=SETNB)	SETcc
+GENERAL	SETNE	Set byte if not equal (ZF=0) (SETNE=SETNZ)	SETcc
+GENERAL	SETNG	Set byte if not greater (ZF=1 or SF!=OF) (SETLE=SETNG)	SETcc
+GENERAL	SETNGE	Set byte if not greater or equal (SF!=OF) (SETL=SETNGE)	SETcc
+GENERAL	SETNL	Set byte if not less (SF=OF) (SETGE=SETNL)	SETcc
+GENERAL	SETNLE	Set byte if not less or equal (ZF=0 and SF=OF) (SETG=SETNLE)	SETcc
+GENERAL	SETNO	Set byte if not overflow (OF=0)	SETcc
+GENERAL	SETNP	Set byte if not parity (PF=0) (SETNP=SETPO)	SETcc
+GENERAL	SETNS	Set byte if not sign (SF=0)	SETcc
+GENERAL	SETNZ	Set byte if not zero (ZF=0) (SETNE=SETNZ)	SETcc
+GENERAL	SETO	Set byte if overflow (OF=1)	SETcc
+GENERAL	SETP	Set byte if parity (PF=1) (SETP=SETPE)	SETcc
+GENERAL	SETPE	Set byte if parity even (PF=1) (SETP=SETPE)	SETcc
+GENERAL	SETPO	Set byte if parity odd (PF=0) (SETNP=SETPO)	SETcc
+GENERAL	SETS	Set byte if sign (SF=1)	SETcc
+GENERAL	SETZ	Set byte if zero (ZF=1) (SETE=SETZ)	SETcc
+;CYRIX EMMX ====================================================================
+GENERAL	PADDSIW	Packed Add with Saturation	
+GENERAL	PSUBSIW	Packed Subtract with Saturation	
+GENERAL	PAVEB	Packed Average	
+GENERAL	PDISTIB	Packed Distance and Accumulate	
+GENERAL	PMACHRIW	Packed Multiply and Accumulate with Rounding	
+GENERAL	PMAGW	Packed Magnitude	
+GENERAL	PMULHRIW	Packed Multiply High with Rounding using implied destination	
+GENERAL	PMVZB	Packed Conditional Move (zero)	
+GENERAL	PMVNZB	Packed Conditional Move (not zero)	
+GENERAL	PMVLZB	Packed Conditional Move (less than zero)	
+GENERAL	PMVGEZB	Packed Conditional Move (greater than or equal to zero)	
+GENERAL	PMULHRWC	Packed Multiply High with Rounding	
+GENERAL	RDSHR	Packed Multiply High with Rounding	
+
+;====================================================================
+GENERAL	MOVS	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSB	Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSW	Move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSD	Move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+
+;
+PADDSIW	MM,MM/MEM	CYRIX	PADDSIW MM,MM/MEM	Packed Add with Saturation.
+PSUBSIW	MM,MM/MEM	CYRIX	PSUBSIW MM,MM/MEM	Packed Subtract with Saturation.
+PAVEB	MM,MM/MEM	CYRIX	PAVEB MM,MM/MEM	Packed Average.
+PDISTIB	MM,MEM	CYRIX	PDISTIB MM,MEM	Packed Distance and Accumulate.
+PMACHRIW	MM,MEM	CYRIX	PMACHRIW MM,MEM	Packed Multiply and Accumulate with Rounding.
+PMAGW	MM,MM/MEM	CYRIX	PMAGW MM,MM/MEM	Packed Magnitude.
+PMULHRIW	MM,MM/MEM	CYRIX	PMULHRIW MM,MM/MEM	Multiply High with Rounding using implied destination.
+PMVZB	MM,MEM	CYRIX	PMVZB MM,MEM	Packed Conditional Move (zero).
+PMVNZB	MM,MEM	CYRIX	PMVNZB MM,MEM	Packed Conditional Move (not zero).
+PMVLZB	MM,MEM	CYRIX	PMVLZB MM,MEM	Packed Conditional Move (less than zero).
+PMVGEZB	MM,MEM	CYRIX	PMVGEZB MM,MEM	Packed Conditional Move (greater than or equal to zero).
+PMULHRWC	MM,MM/MEM	CYRIX	PMULHRWC MM,MM/MEM	Packed Multiply High with Rounding.
+XSTORE		CYRIX	XSTORE	TODO
+XCRYPTECB		CYRIX	XCRYPTECB	TODO
+XCRYPTCBC		CYRIX	XCRYPTCBC	TODO
+XCRYPTCTR		CYRIX	XCRYPTCTR	TODO
+XCRYPTCFB		CYRIX	XCRYPTCFB	TODO
+XCRYPTOFB		CYRIX	XCRYPTOFB	TODO
+MONTMUL		CYRIX	MONTMUL	TODO
+XSHA1		CYRIX	XSHA1	TODO
+XSHA256		CYRIX	XSHA256	TODO
+PFRCPV	MM,MM/MEM	CYRIX	PFRCPV MM,MM/MEM	TODO
+PFRSQRTV	MM,MM/MEM	CYRIX	PFRSQRTV MM,MM/MEM	TODO
+SMINT		CYRIX	SMINT	TODO
+SMINTOLD		CYRIX	SMINTOLD	TODO
+RDM		CYRIX	RDM	TTODO
+BB0_RESET		CYRIX	BB0_RESET	TODO
+BB1_RESET		CYRIX	BB1_RESET	TODO
+CPU_READ		CYRIX	CPU_READ	TODO
+CPU_WRITE		CYRIX	CPU_WRITE	TODO
+DMINT		CYRIX	DMINT	TODO
+;CYRIX M ====================================================================
+RDSHR	R/M32	CYRIXM	RDSHR R/M32	TODO
+SVDC	M80,REG_SREG	CYRIXM	SVDC M80,REG_SREG	TODO
+SVLDT	M80	CYRIXM	SVLDT M80	TODO
+SVTS	M80	CYRIXM	SVTS M80	TODO
+RSDC	REG_SREG,M80	CYRIXM	RSDC REG_SREG,M80	TODO
+RSLDT	M80	CYRIXM	RSLDT M80	TODO
+
+RSTS	M80	CYRIXM	RSTS M80	TODO
+WRSHR	R/M32	CYRIXM	WRSHR R/M32	TODO
+
+;AMD ====================================================================
+INVLPGA	AX,ECX	AMD	INVLPGA AX,ECX	TODO
+INVLPGA	EAX,ECX	AMD	INVLPGA EAX,ECX	TODO
+INVLPGA	RAX,ECX	AMD	INVLPGA RAX,ECX	TODO
+INVLPGA		AMD	INVLPGA 	TODO
+CLZERO		X64,AMD	CLZERO 	TODO: X64,FUTURE,AMD
+
+;AMD VMX ====================================================================
+CLGI		VMX,AMD	CLGI 	TODO: VMX,AMD	
+STGI		VMX,AMD	STGI 	TODO: VMX,AMD	
+VMLOAD		VMX,AMD	VMLOAD 	TODO: VMX,AMD	
+VMMCALL		VMX,AMD	VMMCALL 	TODO: VMX,AMD	
+VMRUN		VMX,AMD	VMRUN 	TODO: VMX,AMD	
+VMSAVE		VMX,AMD	VMSAVE 	TODO: VMX,AMD	
+
+;INTEL VMX ====================================================================
+VMXON	MEM	VMX	VMXON MEM	Takes a single 64-bit source operand in memory. It causes a logical processor to enter VMX root operation and to use the memory referenced by the operand to support VMX operation
+VMPTRLD	MEM	VMX	VMPTRLD MEM	Takes a single 64-bit source operand in memory. It makes the referenced VMCS active and current
+VMPTRST	MEM	VMX	VMPTRST MEM	Takes a single 64-bit destination operand that is in memory. Current-VMCS pointer is stored into the destination operand
+VMCLEAR	MEM	VMX	VMCLEAR MEM	Takes a single 64-bit operand in memory. The instruction sets the launch state of the VMCS referenced by the operand to "clear", renders that VMCS inactive, and ensures that data for the VMCS have been written to the VMCS-data area in the referenced VMCS region
+VMREAD	R/M32,R32	VMX	VMREAD R/M32,R32	Reads a component from the VMCS (the encoding of that field is given in a register operand) and stores it into a destination operand
+VMREAD	R/M64,R64	VMX	VMREAD R/M64,R64	Reads a component from the VMCS (the encoding of that field is given in a register operand) and stores it into a destination operand
+VMWRITE	R32,R/M32	VMX	VMWRITE R32,R/M32	Writes a component to the VMCS (the encoding of that field is given in a register operand) from a source operand
+VMWRITE	R64,R/M64	VMX	VMWRITE R64,R/M64	Writes a component to the VMCS (the encoding of that field is given in a register operand) from a source operand
+VMLAUNCH		VMX	VMLAUNCH 	Launches a virtual machine managed by the VMCS. A VM entry occurs, transferring control to the VM
+VMRESUME		VMX	VMRESUME 	Resumes a virtual machine managed by the VMCS. A VM entry occurs, transferring control to the VM
+VMXOFF		VMX	VMXOFF 	Causes the processor to leave VMX operation
+
+INVEPT	R32,MEM	VMX	INVEPT R32,MEM	Invalidate cached EPT mappings in the processor to synchronize address translation in virtual machines with memory-resident EPT pages
+INVEPT	R64,MEM	VMX	INVEPT R64,MEM	Invalidate cached EPT mappings in the processor to synchronize address translation in virtual machines with memory-resident EPT pages
+INVVPID	R32,MEM	VMX	INVVPID R32,MEM	Invalidate cached mappings of address translation based on the Virtual Processor ID (VPID)
+INVVPID	R64,MEM	VMX	INVVPID R64,MEM	Invalidate cached mappings of address translation based on the Virtual Processor ID (VPID)
+
+VMCALL		VMX	VMCALL	Allows a guest in VMX non-root operation to call the VMM for service. A VM exit occurs, transferring control to the VMM
+VMFUNC		VMX	VMFUNC 	This instruction allows software in VMX non-root operation to invoke a VM function, which is processor functionality enabled and configured by software in VMX root operation. No VM exit occurs
+
+;AMD ====================================================================
+LZCNT	R16,R/M16	AMD	LZCNT R16,R/M16	Leading Zero Count
+LZCNT	R32,R/M32	AMD	LZCNT R32,R/M32	Leading Zero Count
+LZCNT	R64,R/M64	AMD	LZCNT r64,R/M64	Leading Zero Count
+LLWPCB	R32	AMD,386	LLWPCB R32	TODO: AMD,386,X64
+LLWPCB	R64	AMD,X64	LLWPCB r64	TODO: AMD,386,X64
+SLWPCB	R32	AMD,386	SLWPCB R32	TODO: AMD,386,X64
+SLWPCB	R64	AMD,X64	SLWPCB r64	TODO: AMD,386,X64
+LWPVAL	R32,R/M32,IMM32	AMD,386	LWPVAL R32,R/M32,IMM32	TODO: AMD,386
+LWPVAL	R64,R/M32,IMM32	AMD,X64	LWPVAL R64,R/M32,IMM32	TODO: AMD,X64
+LWPINS	R32,R/M32,IMM32	AMD,386	LWPINS R32,R/M32,IMM32	TODO: AMD,386
+LWPINS	R64,R/M32,IMM32	AMD,X64	LWPINS R64,R/M32,IMM32	TODO: AMD,X64
+
+;AMD SSE5 ====================================================================
+VFMADDPD	XMM,XMM,XMM/M128,XMM	SSE5	VFMADDPD XMM,XMM,XMM/M128,XMM	TODO
+VFMADDPD	YMM,YMM,YMM/M256,YMM	SSE5	VFMADDPD YMM,YMM,YMM/M256,YMM	TODO
+VFMADDPD	XMM,XMM,XMM,XMM/M128	SSE5	VFMADDPD XMM,XMM,XMM,XMM/M128	TODO
+VFMADDPD	YMM,YMM,YMM,YMM/M256	SSE5	VFMADDPD YMM,YMM,YMM,YMM/M256	TODO
+VFMADDPS	XMM,XMM,XMM/M128,XMM	SSE5	VFMADDPS XMM,XMM,XMM/M128,XMM	TODO
+VFMADDPS	YMM,YMM,YMM/M256,YMM	SSE5	VFMADDPS YMM,YMM,YMM/M256,YMM	TODO
+VFMADDPS	XMM,XMM,XMM,XMM/M128	SSE5	VFMADDPS XMM,XMM,XMM,XMM/M128	TODO
+VFMADDPS	YMM,YMM,YMM,YMM/M256	SSE5	VFMADDPS YMM,YMM,YMM,YMM/M256	TODO
+VFMADDSD	XMM,XMM,XMM/M64,XMM	SSE5	VFMADDSD XMM,XMM,XMM/M64,XMM	TODO
+VFMADDSD	XMM,XMM,XMM,XMM/M64	SSE5	VFMADDSD XMM,XMM,XMM,XMM/M64	TODO
+VFMADDSS	XMM,XMM,XMM/M32,XMM	SSE5	VFMADDSS XMM,XMM,XMM/M32,XMM	TODO
+VFMADDSS	XMM,XMM,XMM,XMM/M32	SSE5	VFMADDSS XMM,XMM,XMM,XMM/M32	TODO
+VFMADDSUBPD	XMM,XMM,XMM/M128,XMM	SSE5	VFMADDSUBPD XMM,XMM,XMM/M128,XMM	TODO
+VFMADDSUBPD	YMM,YMM,YMM/M256,YMM	SSE5	VFMADDSUBPD YMM,YMM,YMM/M256,YMM	TODO
+VFMADDSUBPD	XMM,XMM,XMM,XMM/M128	SSE5	VFMADDSUBPD XMM,XMM,XMM,XMM/M128	TODO
+VFMADDSUBPD	YMM,YMM,YMM,YMM/M256	SSE5	VFMADDSUBPD YMM,YMM,YMM,YMM/M256	TODO
+VFMADDSUBPS	XMM,XMM,XMM/M128,XMM	SSE5	VFMADDSUBPS XMM,XMM,XMM/M128,XMM	TODO
+VFMADDSUBPS	YMM,YMM,YMM/M256,YMM	SSE5	VFMADDSUBPS YMM,YMM,YMM/M256,YMM	TODO
+VFMADDSUBPS	XMM,XMM,XMM,XMM/M128	SSE5	VFMADDSUBPS XMM,XMM,XMM,XMM/M128	TODO
+VFMADDSUBPS	YMM,YMM,YMM,YMM/M256	SSE5	VFMADDSUBPS YMM,YMM,YMM,YMM/M256	TODO
+VFMSUBADDPD	XMM,XMM,XMM/M128,XMM	SSE5	VFMSUBADDPD XMM,XMM,XMM/M128,XMM	TODO
+VFMSUBADDPD	YMM,YMM,YMM/M256,YMM	SSE5	VFMSUBADDPD YMM,YMM,YMM/M256,YMM	TODO
+VFMSUBADDPD	XMM,XMM,XMM,XMM/M128	SSE5	VFMSUBADDPD XMM,XMM,XMM,XMM/M128	TODO
+VFMSUBADDPD	YMM,YMM,YMM,YMM/M256	SSE5	VFMSUBADDPD YMM,YMM,YMM,YMM/M256	TODO
+VFMSUBADDPS	XMM,XMM,XMM/M128,XMM	SSE5	VFMSUBADDPS XMM,XMM,XMM/M128,XMM	TODO
+VFMSUBADDPS	YMM,YMM,YMM/M256,YMM	SSE5	VFMSUBADDPS YMM,YMM,YMM/M256,YMM	TODO
+VFMSUBADDPS	XMM,XMM,XMM,XMM/M128	SSE5	VFMSUBADDPS XMM,XMM,XMM,XMM/M128	TODO
+VFMSUBADDPS	YMM,YMM,YMM,YMM/M256	SSE5	VFMSUBADDPS YMM,YMM,YMM,YMM/M256	TODO
+VFMSUBPD	XMM,XMM,XMM/M128,XMM	SSE5	VFMSUBPD XMM,XMM,XMM/M128,XMM	TODO
+VFMSUBPD	YMM,YMM,YMM/M256,YMM	SSE5	VFMSUBPD YMM,YMM,YMM/M256,YMM	TODO
+VFMSUBPD	XMM,XMM,XMM,XMM/M128	SSE5	VFMSUBPD XMM,XMM,XMM,XMM/M128	TODO
+VFMSUBPD	YMM,YMM,YMM,YMM/M256	SSE5	VFMSUBPD YMM,YMM,YMM,YMM/M256	TODO
+VFMSUBPS	XMM,XMM,XMM/M128,XMM	SSE5	VFMSUBPS XMM,XMM,XMM/M128,XMM	TODO
+VFMSUBPS	YMM,YMM,YMM/M256,YMM	SSE5	VFMSUBPS YMM,YMM,YMM/M256,YMM	TODO
+VFMSUBPS	XMM,XMM,XMM,XMM/M128	SSE5	VFMSUBPS XMM,XMM,XMM,XMM/M128	TODO
+VFMSUBPS	YMM,YMM,YMM,YMM/M256	SSE5	VFMSUBPS YMM,YMM,YMM,YMM/M256	TODO
+VFMSUBSD	XMM,XMM,XMM/M64,XMM	SSE5	VFMSUBSD XMM,XMM,XMM/M64,XMM	TODO
+VFMSUBSD	XMM,XMM,XMM,XMM/M64	SSE5	VFMSUBSD XMM,XMM,XMM,XMM/M64	TODO
+VFMSUBSS	XMM,XMM,XMM/M32,XMM	SSE5	VFMSUBSS XMM,XMM,XMM/M32,XMM	TODO
+VFMSUBSS	XMM,XMM,XMM,XMM/M32	SSE5	VFMSUBSS XMM,XMM,XMM,XMM/M32	TODO
+VFNMADDPD	XMM,XMM,XMM/M128,XMM	SSE5	VFNMADDPD XMM,XMM,XMM/M128,XMM	TODO
+VFNMADDPD	YMM,YMM,YMM/M256,YMM	SSE5	VFNMADDPD YMM,YMM,YMM/M256,YMM	TODO
+VFNMADDPD	XMM,XMM,XMM,XMM/M128	SSE5	VFNMADDPD XMM,XMM,XMM,XMM/M128	TODO
+VFNMADDPD	YMM,YMM,YMM,YMM/M256	SSE5	VFNMADDPD YMM,YMM,YMM,YMM/M256	TODO
+VFNMADDPS	XMM,XMM,XMM/M128,XMM	SSE5	VFNMADDPS XMM,XMM,XMM/M128,XMM	TODO
+VFNMADDPS	YMM,YMM,YMM/M256,YMM	SSE5	VFNMADDPS YMM,YMM,YMM/M256,YMM	TODO
+VFNMADDPS	XMM,XMM,XMM,XMM/M128	SSE5	VFNMADDPS XMM,XMM,XMM,XMM/M128	TODO
+VFNMADDPS	YMM,YMM,YMM,YMM/M256	SSE5	VFNMADDPS YMM,YMM,YMM,YMM/M256	TODO
+VFNMADDSD	XMM,XMM,XMM/M64,XMM	SSE5	VFNMADDSD XMM,XMM,XMM/M64,XMM	TODO
+VFNMADDSD	XMM,XMM,XMM,XMM/M64	SSE5	VFNMADDSD XMM,XMM,XMM,XMM/M64	TODO
+VFNMADDSS	XMM,XMM,XMM/M32,XMM	SSE5	VFNMADDSS XMM,XMM,XMM/M32,XMM	TODO
+VFNMADDSS	XMM,XMM,XMM,XMM/M32	SSE5	VFNMADDSS XMM,XMM,XMM,XMM/M32	TODO
+VFNMSUBPD	XMM,XMM,XMM/M128,XMM	SSE5	VFNMSUBPD XMM,XMM,XMM/M128,XMM	TODO
+VFNMSUBPD	YMM,YMM,YMM/M256,YMM	SSE5	VFNMSUBPD YMM,YMM,YMM/M256,YMM	TODO
+VFNMSUBPD	XMM,XMM,XMM,XMM/M128	SSE5	VFNMSUBPD XMM,XMM,XMM,XMM/M128	TODO
+VFNMSUBPD	YMM,YMM,YMM,YMM/M256	SSE5	VFNMSUBPD YMM,YMM,YMM,YMM/M256	TODO
+VFNMSUBPS	XMM,XMM,XMM/M128,XMM	SSE5	VFNMSUBPS XMM,XMM,XMM/M128,XMM	TODO
+VFNMSUBPS	YMM,YMM,YMM/M256,YMM	SSE5	VFNMSUBPS YMM,YMM,YMM/M256,YMM	TODO
+VFNMSUBPS	XMM,XMM,XMM,XMM/M128	SSE5	VFNMSUBPS XMM,XMM,XMM,XMM/M128	TODO
+VFNMSUBPS	YMM,YMM,YMM,YMM/M256	SSE5	VFNMSUBPS YMM,YMM,YMM,YMM/M256	TODO
+VFNMSUBSD	XMM,XMM,XMM/M64,XMM	SSE5	VFNMSUBSD XMM,XMM,XMM/M64,XMM	TODO
+VFNMSUBSD	XMM,XMM,XMM,XMM/M64	SSE5	VFNMSUBSD XMM,XMM,XMM,XMM/M64	TODO
+VFNMSUBSS	XMM,XMM,XMM/M32,XMM	SSE5	VFNMSUBSS XMM,XMM,XMM/M32,XMM	TODO
+VFNMSUBSS	XMM,XMM,XMM,XMM/M32	SSE5	VFNMSUBSS XMM,XMM,XMM,XMM/M32	TODO
+VFRCZPD	XMM,XMM/M128	SSE5	VFRCZPD XMM,XMM/M128	TODO
+VFRCZPD	YMM,YMM/M256	SSE5	VFRCZPD YMM,YMM/M256	TODO
+VFRCZPS	XMM,XMM/M128	SSE5	VFRCZPS XMM,XMM/M128	TODO
+VFRCZPS	YMM,YMM/M256	SSE5	VFRCZPS YMM,YMM/M256	TODO
+VFRCZSD	XMM,XMM/M64	SSE5	VFRCZSD XMM,XMM/M64	TODO
+VFRCZSS	XMM,XMM/M32	SSE5	VFRCZSS XMM,XMM/M32	TODO
+VPCMOV	XMM,XMM,XMM/M128,XMM	SSE5	VPCMOV XMM,XMM,XMM/M128,XMM	TODO
+VPCMOV	YMM,YMM,YMM/M256,YMM	SSE5	VPCMOV YMM,YMM,YMM/M256,YMM	TODO
+VPCMOV	XMM,XMM,XMM,XMM/M128	SSE5	VPCMOV XMM,XMM,XMM,XMM/M128	TODO
+VPCMOV	YMM,YMM,YMM,YMM/M256	SSE5	VPCMOV YMM,YMM,YMM,YMM/M256	TODO
+VPCOMB	XMM,XMM,XMM/M128,IMM8	SSE5	VPCOMB XMM,XMM,XMM/M128,IMM8	TODO
+VPCOMD	XMM,XMM,XMM/M128,IMM8	SSE5	VPCOMD XMM,XMM,XMM/M128,IMM8	TODO
+VPCOMQ	XMM,XMM,XMM/M128,IMM8	SSE5	VPCOMQ XMM,XMM,XMM/M128,IMM8	TODO
+VPCOMUB	XMM,XMM,XMM/M128,IMM8	SSE5	VPCOMUB XMM,XMM,XMM/M128,IMM8	TODO
+VPCOMUD	XMM,XMM,XMM/M128,IMM8	SSE5	VPCOMUD XMM,XMM,XMM/M128,IMM8	TODO
+VPCOMUQ	XMM,XMM,XMM/M128,IMM8	SSE5	VPCOMUQ XMM,XMM,XMM/M128,IMM8	TODO
+VPCOMUW	XMM,XMM,XMM/M128,IMM8	SSE5	VPCOMUW XMM,XMM,XMM/M128,IMM8	TODO
+VPCOMW	XMM,XMM,XMM/M128,IMM8	SSE5	VPCOMW XMM,XMM,XMM/M128,IMM8	TODO
+VPHADDBD	XMM,XMM/M128	SSE5	VPHADDBD XMM,XMM/M128	TODO
+VPHADDBQ	XMM,XMM/M128	SSE5	VPHADDBQ XMM,XMM/M128	TODO
+VPHADDBW	XMM,XMM/M128	SSE5	VPHADDBW XMM,XMM/M128	TODO
+VPHADDDQ	XMM,XMM/M128	SSE5	VPHADDDQ XMM,XMM/M128	TODO
+VPHADDUBD	XMM,XMM/M128	SSE5	VPHADDUBD XMM,XMM/M128	TODO
+VPHADDUBQ	XMM,XMM/M128	SSE5	VPHADDUBQ XMM,XMM/M128	TODO
+VPHADDUBW	XMM,XMM/M128	SSE5	VPHADDUBW XMM,XMM/M128	TODO
+VPHADDUDQ	XMM,XMM/M128	SSE5	VPHADDUDQ XMM,XMM/M128	TODO
+VPHADDUWD	XMM,XMM/M128	SSE5	VPHADDUWD XMM,XMM/M128	TODO
+VPHADDUWQ	XMM,XMM/M128	SSE5	VPHADDUWQ XMM,XMM/M128	TODO
+VPHADDWD	XMM,XMM/M128	SSE5	VPHADDWD XMM,XMM/M128	TODO
+VPHADDWQ	XMM,XMM/M128	SSE5	VPHADDWQ XMM,XMM/M128	TODO
+VPHSUBBW	XMM,XMM/M128	SSE5	VPHSUBBW XMM,XMM/M128	TODO
+VPHSUBDQ	XMM,XMM/M128	SSE5	VPHSUBDQ XMM,XMM/M128	TODO
+VPHSUBWD	XMM,XMM/M128	SSE5	VPHSUBWD XMM,XMM/M128	TODO
+VPMACSDD	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSDD XMM,XMM,XMM/M128,XMM	TODO
+VPMACSDQH	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSDQH XMM,XMM,XMM/M128,XMM	TODO
+VPMACSDQL	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSDQL XMM,XMM,XMM/M128,XMM	TODO
+VPMACSSDD	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSSDD XMM,XMM,XMM/M128,XMM	TODO
+VPMACSSDQH	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSSDQH XMM,XMM,XMM/M128,XMM	TODO
+VPMACSSDQL	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSSDQL XMM,XMM,XMM/M128,XMM	TODO
+VPMACSSWD	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSSWD XMM,XMM,XMM/M128,XMM	TODO
+VPMACSSWW	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSSWW XMM,XMM,XMM/M128,XMM	TODO
+VPMACSWD	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSWD XMM,XMM,XMM/M128,XMM	TODO
+VPMACSWW	XMM,XMM,XMM/M128,XMM	SSE5	VPMACSWW XMM,XMM,XMM/M128,XMM	TODO
+VPMADCSSWD	XMM,XMM,XMM/M128,XMM	SSE5	VPMADCSSWD XMM,XMM,XMM/M128,XMM	TODO
+VPMADCSWD	XMM,XMM,XMM/M128,XMM	SSE5	VPMADCSWD XMM,XMM,XMM/M128,XMM	TODO
+VPPERM	XMM,XMM,XMM,XMM/M128	SSE5	VPPERM XMM,XMM,XMM,XMM/M128	TODO
+VPPERM	XMM,XMM,XMM/M128,XMM	SSE5	VPPERM XMM,XMM,XMM/M128,XMM	TODO
+VPROTB	XMM,XMM/M128,XMM	SSE5	VPROTB XMM,XMM/M128,XMM	TODO
+VPROTB	XMM,XMM,XMM/M128	SSE5	VPROTB XMM,XMM,XMM/M128	TODO
+VPROTB	XMM,XMM/M128,IMM8	SSE5	VPROTB XMM,XMM/M128,IMM8	TODO
+VPROTD	XMM,XMM/M128,XMM	SSE5	VPROTD XMM,XMM/M128,XMM	TODO
+VPROTD	XMM,XMM,XMM/M128	SSE5	VPROTD XMM,XMM,XMM/M128	TODO
+VPROTD	XMM,XMM/M128,IMM8	SSE5	VPROTD XMM,XMM/M128,IMM8	TODO
+VPROTQ	XMM,XMM/M128,XMM	SSE5	VPROTQ XMM,XMM/M128,XMM	TODO
+VPROTQ	XMM,XMM,XMM/M128	SSE5	VPROTQ XMM,XMM,XMM/M128	TODO
+VPROTQ	XMM,XMM/M128,IMM8	SSE5	VPROTQ XMM,XMM/M128,IMM8	TODO
+VPROTW	XMM,XMM/M128,XMM	SSE5	VPROTW XMM,XMM/M128,XMM	TODO
+VPROTW	XMM,XMM,XMM/M128	SSE5	VPROTW XMM,XMM,XMM/M128	TODO
+VPROTW	XMM,XMM/M128,IMM8	SSE5	VPROTW XMM,XMM/M128,IMM8	TODO
+VPSHAB	XMM,XMM/M128,XMM	SSE5	VPSHAB XMM,XMM/M128,XMM	TODO
+VPSHAB	XMM,XMM,XMM/M128	SSE5	VPSHAB XMM,XMM,XMM/M128	TODO
+VPSHAD	XMM,XMM/M128,XMM	SSE5	VPSHAD XMM,XMM/M128,XMM	TODO
+VPSHAD	XMM,XMM,XMM/M128	SSE5	VPSHAD XMM,XMM,XMM/M128	TODO
+VPSHAQ	XMM,XMM/M128,XMM	SSE5	VPSHAQ XMM,XMM/M128,XMM	TODO
+VPSHAQ	XMM,XMM,XMM/M128	SSE5	VPSHAQ XMM,XMM,XMM/M128	TODO
+VPSHAW	XMM,XMM/M128,XMM	SSE5	VPSHAW XMM,XMM/M128,XMM	TODO
+VPSHAW	XMM,XMM,XMM/M128	SSE5	VPSHAW XMM,XMM,XMM/M128	TODO
+VPSHLB	XMM,XMM/M128,XMM	SSE5	VPSHLB XMM,XMM/M128,XMM	TODO
+VPSHLB	XMM,XMM,XMM/M128	SSE5	VPSHLB XMM,XMM,XMM/M128	TODO
+VPSHLD	XMM,XMM/M128,XMM	SSE5	VPSHLD XMM,XMM/M128,XMM	TODO
+VPSHLD	XMM,XMM,XMM/M128	SSE5	VPSHLD XMM,XMM,XMM/M128	TODO
+VPSHLQ	XMM,XMM/M128,XMM	SSE5	VPSHLQ XMM,XMM/M128,XMM	TODO
+VPSHLQ	XMM,XMM,XMM/M128	SSE5	VPSHLQ XMM,XMM,XMM/M128	TODO
+VPSHLW	XMM,XMM/M128,XMM	SSE5	VPSHLW XMM,XMM/M128,XMM	TODO
+VPSHLW	XMM,XMM,XMM/M128	SSE5	VPSHLW XMM,XMM,XMM/M128	TODO
+
+;AMD SSE4A ====================================================================
+EXTRQ	XMM,IMM,IMM	SSE4A	EXTRQ XMM,IMM,IMM	TODO
+EXTRQ	XMM,XMM	SSE4A	EXTRQ XMM,XMM	TODO
+INSERTQ	XMM,XMM,IMM,IMM	SSE4A	INSERTQ XMM,XMM,IMM,IMM	TODO
+INSERTQ	XMM,XMM	SSE4A	INSERTQ XMM,XMM	TODO
+MOVNTSD	MEM,XMM	SSE4A	MOVNTSD MEM,XMM	TODO
+MOVNTSS	MEM,XMM	SSE4A	MOVNTSS MEM,XMM	TODO: SSE4A
+
+;AMD 3DNOW;====================================================================
+FEMMS		3DNOW	FEMMS 	TODO: PENT,3DNOW
+PF2IW	MM,MM/MEM	3DNOW	PF2IW MM,MM/MEM	TODO: PENT,3DNOW
+PFNACC	MM,MM/MEM	3DNOW	PFNACC MM,MM/MEM	TODO: PENT,3DNOW
+PFPNACC	MM,MM/MEM	3DNOW	PFPNACC MM,MM/MEM	TODO: PENT,3DNOW
+PI2FW	MM,MM/MEM	3DNOW	PI2FW MM,MM/MEM	TODO: PENT,3DNOW
+PSWAPD	MM,MM/MEM	3DNOW	PSWAPD MM,MM/MEM	TODO: PENT,3DNOW
+PF2ID	MM,MM/MEM	3DNOW	PF2ID MM,MM/MEM	TODO: PENT,3DNOW
+PFACC	MM,MM/MEM	3DNOW	PFACC MM,MM/MEM	TODO: PENT,3DNOW
+PFADD	MM,MM/MEM	3DNOW	PFADD MM,MM/MEM	TODO: PENT,3DNOW
+PFCMPEQ	MM,MM/MEM	3DNOW	PFCMPEQ MM,MM/MEM	TODO: PENT,3DNOW
+PFCMPGE	MM,MM/MEM	3DNOW	PFCMPGE MM,MM/MEM	TODO: PENT,3DNOW
+PFCMPGT	MM,MM/MEM	3DNOW	PFCMPGT MM,MM/MEM	TODO: PENT,3DNOW
+PFMAX	MM,MM/MEM	3DNOW	PFMAX MM,MM/MEM	TODO: PENT,3DNOW
+PFMIN	MM,MM/MEM	3DNOW	PFMIN MM,MM/MEM	TODO: PENT,3DNOW
+PFMUL	MM,MM/MEM	3DNOW	PFMUL MM,MM/MEM	TODO: PENT,3DNOW
+PFRCP	MM,MM/MEM	3DNOW	PFRCP MM,MM/MEM	TODO: PENT,3DNOW
+PFRCPIT1	MM,MM/MEM	3DNOW	PFRCPIT1 MM,MM/MEM	TODO: PENT,3DNOW
+PFRCPIT2	MM,MM/MEM	3DNOW	PFRCPIT2 MM,MM/MEM	TODO: PENT,3DNOW
+PFRSQIT1	MM,MM/MEM	3DNOW	PFRSQIT1 MM,MM/MEM	TODO: PENT,3DNOW
+PFRSQRT	MM,MM/MEM	3DNOW	PFRSQRT MM,MM/MEM	TODO: PENT,3DNOW
+PFSUB	MM,MM/MEM	3DNOW	PFSUB MM,MM/MEM	TODO: PENT,3DNOW
+PFSUBR	MM,MM/MEM	3DNOW	PFSUBR MM,MM/MEM	TODO: PENT,3DNOW
+PI2FD	MM,MM/MEM	3DNOW	PI2FD MM,MM/MEM	TODO: PENT,3DNOW
+PPMULHRWA	MM,MM/MEM	3DNOW	PMULHRWA MM,MM/MEM	TODO: PENT,3DNOW
+PAVGUSB	MM,MM/MEM	3DNOW	PAVGUSB MM,MM/MEM	TODO: PENT,3DNOW
+PREFETCH	MEM	3DNOW	PREFETCH MEM	TODO: PENT,3DNOW
+PREFETCHW	MEM	3DNOW	PREFETCHW MEM	Prefetch Data into Caches in Anticipation of a Write
+
+;AMD: Trailing Bit Manipulation (TBM) ====================================================================
+TZMSK	R32,R/M32	TBM	TZMSK R32,R/M32	TODO: AMD, Trailing Bit Manipulation
+TZMSK	R64,R/M64	TBM	TZMSK R64,R/M64	TODO: AMD, Trailing Bit Manipulation
+T1MSKC	R32,R/M32	TBM	T1MSKC R32,R/M32	TODO: AMD, Trailing Bit Manipulation
+T1MSKC	R64,R/M64	TBM	T1MSKC R64,R/M64	TODO: AMD, Trailing Bit Manipulation
+
+;Undocumented INTEL ====================================================================
+FFREEP	ST	UNDOC	FFREEP ST	TODO: 286,UNDOC	
+FFREEP		UNDOC	FFREEP 	TODO: 286,UNDOC	
+IBTS	MEM,R16	UNDOC	IBTS MEM,R16	TODO: 386,UNDOC
+IBTS	R16,R16	UNDOC	IBTS R16,R16	TODO: 386,UNDOC
+IBTS	MEM,R32	UNDOC	IBTS MEM,R32	TODO: 386,UNDOC
+IBTS	R32,R32	UNDOC	IBTS R32,R32	TODO: 386,UNDOC
+CMPXCHG486	MEM,R8	UNDOC	CMPXCHG486 MEM,R8	TODO: 486,UNDOC
+CMPXCHG486	R8,R8	UNDOC	CMPXCHG486 R8,R8	TODO: 486,UNDOC
+CMPXCHG486	MEM,R16	UNDOC	CMPXCHG486 MEM,R16	TODO: 486,UNDOC
+CMPXCHG486	R16,R16	UNDOC	CMPXCHG486 R16,R16	TODO: 486,UNDOC
+CMPXCHG486	MEM,R32	UNDOC	CMPXCHG486 MEM,R32	TODO: 486,UNDOC
+CMPXCHG486	R32,R32	UNDOC	CMPXCHG486 R32,R32	TODO: 486,UNDOC
+SMI		UNDOC	SMI 	TODO: 386,UNDOC
+UMOV	MEM,R8	UNDOC	UMOV MEM,R8	TODO: 386,UNDOC
+UMOV	R8,R8	UNDOC	UMOV R8,R8	TODO: 386,UNDOC
+UMOV	MEM,R16	UNDOC	UMOV MEM,R16	TODO: 386,UNDOC
+UMOV	R16,R16	UNDOC	UMOV R16,R16	TODO: 386,UNDOC
+UMOV	MEM,R32	UNDOC	UMOV MEM,R32	TODO: 386,UNDOC
+UMOV	R32,R32	UNDOC	UMOV R32,R32	TODO: 386,UNDOC
+UMOV	R8,MEM	UNDOC	UMOV R8,MEM	TODO: 386,UNDOC
+UMOV	R8,R8	UNDOC	UMOV R8,R8	TODO: 386,UNDOC
+UMOV	R16,MEM	UNDOC	UMOV R16,MEM	TODO: 386,UNDOC
+UMOV	R16,R16	UNDOC	UMOV R16,R16	TODO: 386,UNDOC
+UMOV	R32,MEM	UNDOC	UMOV R32,MEM	TODO: 386,UNDOC
+UMOV	R32,R32	UNDOC	UMOV R32,R32	TODO: 386,UNDOC
+XBTS	R16,MEM	UNDOC	XBTS R16,MEM	TODO: 386,UNDOC
+XBTS	R16,R16	UNDOC	XBTS R16,R16	TODO: 386,UNDOC
+XBTS	R32,MEM	UNDOC	XBTS R32,MEM	TODO: 386,UNDOC
+XBTS	R32,R32	UNDOC	XBTS R32,R32	TODO: 386,UNDOC
+SALC		UNDOC	SALC 	TODO: 8086,UNDOC	
+LOADALL		UNDOC	LOADALL 	TODO: 386,UNDOC	
+LOADALL286		UNDOC	LOADALL286 	TODO: 286,UNDOC	
+
+;IA64 ====================================================================
+JMPE	IMM	IA64	JMPE IMM	TODO
+JMPE	IMM16	IA64	JMPE IMM16	TODO
+JMPE	IMM32	IA64	JMPE IMM32	TODO
+JMPE	R/M16	IA64	JMPE R/M16	TODO
+JMPE	R/M32	IA64	JMPE R/M32	TODO
+
+; INTEL ====================================================================
+JMP	M16	8086	JMP M16:16	Jump far, absolute indirect, address given in m16
+JMP	M32	386	JMP M16:32	Jump far, absolute indirect, address given in m32.
+JMP	M64	X64	JMP M16:64	Jump far, absolute indirect, address given in m64.
+JMP	R/M16	8086	JMP R/M16	Jump near, absolute indirect, address is zero-extended r/m16. Not supported in 64-bit mode.
+JMP	R/M32	386	JMP R/M32	Jump near, absolute indirect, address given in r/m32. Not supported in 64-bit mode.
+JMP	R/M64	X64	JMP R/M64	Jump near, absolute indirect, RIP = 64-Bit offset from register or memory.
+JMP	REL8	8086	JMP REL8	Jump short, RIP = RIP + 8-bit displacement sign extended to 64-bits.
+JMP	REL16	8086	JMP REL16	Jump near, relative, displacement relative to next instruction. Not supported in 64-bit mode.
+JMP	REL32	386	JMP REL32	Jump near, relative, RIP = RIP + 32-bit displacement sign extended to 64-bits.
+
+;====================================================================
+SETA	R/M8	386	SETA r/m8	Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)
+SETAE	R/M8	386	SETAE r/m8	Set byte if above or equal (CF=0) (SETAE=SETNC=SETNB)
+SETB	R/M8	386	SETB r/m8	Set byte if below (CF=1) (SETB=SETC=SETNAE)
+SETBE	R/M8	386	SETBE r/m8	Set byte if below or equal (CF=1 or ZF=1) (SETBE=SETNA)
+SETC	R/M8	386	SETC r/m8	Set byte if carry (CF=1 SETB=SETC=SETNAE)
+SETE	R/M8	386	SETE r/m8	Set byte if equal (ZF=1) (SETE=SETZ)
+SETG	R/M8	386	SETG r/m8	Set byte if greater (ZF=0 and SF=OF) (SETG=SETNLE)
+SETGE	R/M8	386	SETGE r/m8	Set byte if greater or equal (SF=OF) (SETGE=SETNL)
+SETL	R/M8	386	SETL r/m8	Set byte if less (SF!=OF) (SETL=SETNGE)
+SETLE	R/M8	386	SETLE r/m8	Set byte if less or equal (ZF=1 or SF!=OF) (SETLE=SETNG)
+SETNA	R/M8	386	SETNA r/m8	Set byte if not above (CF=1 or ZF=1) (SETBE=SETNA)
+SETNAE	R/M8	386	SETNAE r/m8	Set byte if not above or equal (CF=1) (SETB=SETC=SETNAE)
+SETNB	R/M8	386	SETNB r/m8	Set byte if not below (CF=0) (SETAE=SETNC=SETNB)
+SETNBE	R/M8	386	SETNBE r/m8	Set byte if not below or equal (CF=0 and ZF=0) (SETA=SETNBE)
+SETNC	R/M8	386	SETNC r/m8	Set byte if not carry (CF=0) (SETAE=SETNC=SETNB)
+SETNE	R/M8	386	SETNE r/m8	Set byte if not equal (ZF=0) (SETNE=SETNZ)
+SETNG	R/M8	386	SETNG r/m8	Set byte if not greater (ZF=1 or SF!=OF) (SETLE=SETNG)
+SETNGE	R/M8	386	SETNGE r/m8	Set byte if not greater or equal (SF!=OF) (SETL=SETNGE)
+SETNL	R/M8	386	SETNL r/m8	Set byte if not less (SF=OF) (SETGE=SETNL)
+SETNLE	R/M8	386	SETNLE r/m8	Set byte if not less or equal (ZF=0 and SF=OF) (SETG=SETNLE)
+SETNO	R/M8	386	SETNO r/m8	Set byte if not overflow (OF=0)
+SETNP	R/M8	386	SETNP r/m8	Set byte if not parity (PF=0) (SETNP=SETPO)
+SETNS	R/M8	386	SETNS r/m8	Set byte if not sign (SF=0)
+SETNZ	R/M8	386	SETNZ r/m8	Set byte if not zero (ZF=0) (SETNE=SETNZ)
+SETO	R/M8	386	SETO r/m8	Set byte if overflow (OF=1)
+SETP	R/M8	386	SETP r/m8	Set byte if parity (PF=1) (SETP=SETPE)
+SETPE	R/M8	386	SETPE r/m8	Set byte if parity even (PF=1) (SETP=SETPE)
+SETPO	R/M8	386	SETPO r/m8	Set byte if parity odd (PF=0 SETNP=SETPO)
+SETS	R/M8	386	SETS r/m8	Set byte if sign (SF=1)
+SETZ	R/M8	386	SETZ r/m8	Set byte if zero (ZF=1) (SETE=SETZ)
+;====================================================================
+JCXZ	REL8	8086	JCXZ REL8	Jump short if CX register is 0.
+JECXZ	REL8	386	JECXZ REL8	Jump short if ECX register is 0.
+JRCXZ	REL8	X64	JRCXZ REL8	Jump short if RCX register is 0.
+;====================================================================
+JA	REL8	8086	JA REL8	Jump short if above (CF=0 and ZF=0) (JA=JNBE)
+JAE	REL8	8086	JAE REL8	Jump short if above or equal (CF=0) (JAE=JNB)
+JB	REL8	8086	JB REL8	Jump short if below (CF=1) (JB=JNAE)
+JBE	REL8	8086	JBE REL8	Jump short if below or equal (CF=1 or ZF=1) (JBE=JNA)
+JC	REL8	8086	JC REL8	Jump short if carry (CF=1)
+JE	REL8	8086	JE REL8	Jump short if equal (ZF=1) (JE=JZ)
+JG	REL8	8086	JG REL8	Jump short if greater (ZF=0 and SF=OF) (JG=JNLE)
+JGE	REL8	8086	JGE REL8	Jump short if greater or equal (SF=OF) (JGE=JNL)
+JL	REL8	8086	JL REL8	Jump short if less (SF!=OF) (JL=JNGE)
+JLE	REL8	8086	JLE REL8	Jump short if less or equal (ZF=1 or SF!=OF) (JLE=JNG)
+JNA	REL8	8086	JNA REL8	Jump short if not above (CF=1 or ZF=1) (JBE=JNA)
+JNAE	REL8	8086	JNAE REL8	Jump short if not above or equal (CF=1) (JB=JNAE)
+JNB	REL8	8086	JNB REL8	Jump short if not below (CF=0) (JAE=JNB)
+JNBE	REL8	8086	JNBE REL8	Jump short if not below or equal (CF=0 and ZF=0) (JA=JNBE)
+JNC	REL8	8086	JNC REL8	Jump short if not carry (CF=0)
+JNE	REL8	8086	JNE REL8	Jump short if not equal (ZF=0) (JNE=JNZ)
+JNG	REL8	8086	JNG REL8	Jump short if not greater (ZF=1 or SF!=OF) (JLE=JNG)
+JNGE	REL8	8086	JNGE REL8	Jump short if not greater or equal (SF!=OF) (JL=JNGE)
+JNL	REL8	8086	JNL REL8	Jump short if not less (SF=OF) (JGE=JNL)
+JNLE	REL8	8086	JNLE REL8	Jump short if not less or equal (ZF=0 and SF=OF) (JG=JNLE)
+JNO	REL8	8086	JNO REL8	Jump short if not overflow (OF=0)
+JNP	REL8	8086	JNP REL8	Jump short if not parity (PF=0) (JNP=JPO)
+JNS	REL8	8086	JNS REL8	Jump short if not sign (SF=0)
+JNZ	REL8	8086	JNZ REL8	Jump short if not zero (ZF=0) (JNE=JNZ)
+JO	REL8	8086	JO REL8	Jump short if overflow (OF=1)
+JP	REL8	8086	JP REL8	Jump short if parity (PF=1) (JP=JPE)
+JPE	REL8	8086	JPE REL8	Jump short if parity even (PF=1) (JP=JPE)
+JPO	REL8	8086	JPO REL8	Jump short if parity odd (PF=0) (JNP=JPO)
+JS	REL8	8086	JS REL8	Jump short if sign (SF=1)
+JZ	REL8	8086	JZ REL8	Jump short if zero (ZF=1) (JE=JZ)
+;====================================================================
+JA	REL16	386	JA REL16	Jump near if above (CF=0 and ZF=0) (JA=JNBE). Not supported in 64-bit mode.
+JAE	REL16	386	JAE REL16	Jump near if above or equal (CF=0) (JAE=JNB). Not supported in 64-bit mode.
+JB	REL16	386	JB REL16	Jump near if below (CF=1) (JB=JNAE). Not supported in 64-bit mode.
+JBE	REL16	386	JBE REL16	Jump near if below or equal (CF=1 or ZF=1) (JBE=JNA). Not supported in 64-bit mode.
+JC	REL16	386	JC REL16	Jump near if carry (CF=1). Not supported in 64-bit mode.
+JE	REL16	386	JE REL16	Jump near if equal (ZF=1) (JE=JZ). Not supported in 64-bit mode.
+JG	REL16	386	JG REL16	Jump near if greater (ZF=0 and SF=OF) (JG=JNLE). Not supported in 64-bit mode.
+JGE	REL16	386	JGE REL16	Jump near if greater or equal (SF=OF) (JGE=JNL). Not supported in 64-bit mode.
+JL	REL16	386	JL REL16	Jump near if less (SF!=OF) (JL=JNGE). Not supported in 64-bit mode.
+JLE	REL16	386	JLE REL16	Jump near if less or equal (ZF=1 or SF!=OF) (JLE=JNG). Not supported in 64-bit mode.
+JNA	REL16	386	JNA REL16	Jump near if not above (CF=1 or ZF=1) (JBE=JNA). Not supported in 64-bit mode.
+JNAE	REL16	386	JNAE REL16	Jump near if not above or equal (CF=1) (JB=JNAE). Not supported in 64-bit mode.
+JNB	REL16	386	JNB REL16	Jump near if not below (CF=0) (JAE=JNB). Not supported in 64-bit mode.
+JNBE	REL16	386	JNBE REL16	Jump near if not below or equal (CF=0 and ZF=0) (JA=JNBE). Not supported in 64-bit mode.
+JNC	REL16	386	JNC REL16	Jump near if not carry (CF=0). Not supported in 64-bit mode.
+JNE	REL16	386	JNE REL16	Jump near if not equal (ZF=0) (JNE=JNZ). Not supported in 64-bit mode.
+JNG	REL16	386	JNG REL16	Jump near if not greater (ZF=1 or SF!=OF) (JLE=JNG). Not supported in 64-bit mode.
+JNGE	REL16	386	JNGE REL16	Jump near if not greater or equal (SF!=OF) (JL=JNGE). Not supported in 64-bit mode.
+JNL	REL16	386	JNL REL16	Jump near if not less (SF=OF) (JGE=JNL). Not supported in 64-bit mode.
+JNLE	REL16	386	JNLE REL16	Jump near if not less or equal (ZF=0 and SF=OF) (JG=JNLE). Not supported in 64-bit mode.
+JNO	REL16	386	JNO REL16	Jump near if not overflow (OF=0). Not supported in 64-bit mode.
+JNP	REL16	386	JNP REL16	Jump near if not parity (PF=0) (JNP=JPO). Not supported in 64-bit mode.
+JNS	REL16	386	JNS REL16	Jump near if not sign (SF=0). Not supported in 64-bit mode.
+JNZ	REL16	386	JNZ REL16	Jump near if not zero (ZF=0) (JNE=JNZ). Not supported in 64-bit mode.
+JO	REL16	386	JO REL16	Jump near if overflow (OF=1). Not supported in 64-bit mode.
+JP	REL16	386	JP REL16	Jump near if parity (PF=1) (JP=JPE). Not supported in 64-bit mode.
+JPE	REL16	386	JPE REL16	Jump near if parity even (PF=1) (JP=JPE). Not supported in 64-bit mode.
+JPO	REL16	386	JPO REL16	Jump near if parity odd (PF=0) (JNP=JPO). Not supported in 64-bit mode.
+JS	REL16	386	JS REL16	Jump near if sign (SF=1). Not supported in 64-bit mode.
+JZ	REL16	386	JZ REL16	Jump near if zero (ZF=1) (JE=JZ). Not supported in 64-bit mode.
+;====================================================================
+JA	REL32	386	JA REL32	Jump near if above (CF=0 and ZF=0) (JA=JNBE)
+JAE	REL32	386	JAE REL32	Jump near if above or equal (CF=0) (JAE=JNB)
+JB	REL32	386	JB REL32	Jump near if below (CF=1) (JB=JNAE)
+JBE	REL32	386	JBE REL32	Jump near if below or equal (CF=1 or ZF=1) (JBE=JNA)
+JC	REL32	386	JC REL32	Jump near if carry (CF=1)
+JE	REL32	386	JE REL32	Jump near if equal (ZF=1) (JE=JZ)
+JG	REL32	386	JG REL32	Jump near if greater (ZF=0 and SF=OF) (JG=JNLE)
+JGE	REL32	386	JGE REL32	Jump near if greater or equal (SF=OF) (JGE=JNL)
+JL	REL32	386	JL REL32	Jump near if less (SF!=OF) (JL=JNGE)
+JLE	REL32	386	JLE REL32	Jump near if less or equal (ZF=1 or SF!=OF) (JLE=JNG)
+JNA	REL32	386	JNA REL32	Jump near if not above (CF=1 or ZF=1) (JBE=JNA)
+JNAE	REL32	386	JNAE REL32	Jump near if not above or equal (CF=1) (JB=JNAE)
+JNB	REL32	386	JNB REL32	Jump near if not below (CF=0) (JAE=JNB)
+JNBE	REL32	386	JNBE REL32	Jump near if not below or equal (CF=0 and ZF=0) (JA=JNBE)
+JNC	REL32	386	JNC REL32	Jump near if not carry (CF=0)
+JNE	REL32	386	JNE REL32	Jump near if not equal (ZF=0) (JNE=JNZ)
+JNG	REL32	386	JNG REL32	Jump near if not greater (ZF=1 or SF!=OF) (JLE=JNG)
+JNGE	REL32	386	JNGE REL32	Jump near if not greater or equal (SF!=OF) (JL=JNGE)
+JNL	REL32	386	JNL REL32	Jump near if not less (SF=OF) (JGE=JNL)
+JNLE	REL32	386	JNLE REL32	Jump near if not less or equal (ZF=0 and SF=OF) (JG=JNLE)
+JNO	REL32	386	JNO REL32	Jump near if not overflow (OF=0)
+JNP	REL32	386	JNP REL32	Jump near if not parity (PF=0) (JNP=JPO)
+JNS	REL32	386	JNS REL32	Jump near if not sign (SF=0)
+JNZ	REL32	386	JNZ REL32	Jump near if not zero (ZF=0) (JNE=JNZ)
+JO	REL32	386	JO REL32	Jump near if overflow (OF=1)
+JP	REL32	386	JP REL32	Jump near if parity (PF=1) (JP=JPE)
+JPE	REL32	386	JPE REL32	Jump near if parity even (PF=1) (JP=JPE)
+JPO	REL32	386	JPO REL32	Jump near if parity odd (PF=0) (JNP=JPO)
+JS	REL32	386	JS REL32	Jump near if sign (SF=1)
+JZ	REL32	386	JZ REL32	Jump near if zero (ZF=1) (JE=JZ)
+;====================================================================
+JA	REL64	X64	JA REL64	Jump if above (CF=0 and ZF=0) (JA=JNBE)
+JAE	REL64	X64	JAE REL64	Jump if above or equal (CF=0) (JAE=JNB)
+JB	REL64	X64	JB REL64	Jump if below (CF=1) (JB=JNAE)
+JBE	REL64	X64	JBE REL64	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)
+JC	REL64	X64	JC REL64	Jump if carry (CF=1)
+JE	REL64	X64	JE REL64	Jump if equal (ZF=1) (JE=JZ)
+JG	REL64	X64	JG REL64	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)
+JGE	REL64	X64	JGE REL64	Jump if greater or equal (SF=OF) (JGE=JNL)
+JL	REL64	X64	JL REL64	Jump if less (SF!=OF) (JL=JNGE)
+JLE	REL64	X64	JLE REL64	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)
+JNA	REL64	X64	JNA REL64	Jump if not above (CF=1 or ZF=1) (JBE=JNA)
+JNAE	REL64	X64	JNAE REL64	Jump if not above or equal (CF=1) (JB=JNAE)
+JNB	REL64	X64	JNB REL64	Jump if not below (CF=0) (JAE=JNB)
+JNBE	REL64	X64	JNBE REL64	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)
+JNC	REL64	X64	JNC REL64	Jump if not carry (CF=0)
+JNE	REL64	X64	JNE REL64	Jump if not equal (ZF=0) (JNE=JNZ)
+JNG	REL64	X64	JNG REL64	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)
+JNGE	REL64	X64	JNGE REL64	Jump if not greater or equal (SF!=OF) (JL=JNGE)
+JNL	REL64	X64	JNL REL64	Jump if not less (SF=OF) (JGE=JNL)
+JNLE	REL64	X64	JNLE REL64	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)
+JNO	REL64	X64	JNO REL64	Jump if not overflow (OF=0)
+JNP	REL64	X64	JNP REL64	Jump if not parity (PF=0) (JNP=JPO)
+JNS	REL64	X64	JNS REL64	Jump if not sign (SF=0)
+JNZ	REL64	X64	JNZ REL64	Jump if not zero (ZF=0) (JNE=JNZ)
+JO	REL64	X64	JO REL64	Jump if overflow (OF=1)
+JP	REL64	X64	JP REL64	Jump if parity (PF=1) (JP=JPE)
+JPE	REL64	X64	JPE REL64	Jump if parity even (PF=1) (JP=JPE)
+JPO	REL64	X64	JPO REL64	Jump if parity odd (PF=0) (JNP=JPO)
+JS	REL64	X64	JS REL64	Jump if sign (SF=1)
+JZ	REL64	X64	JZ REL64	Jump if zero (ZF=1) (JE=JZ)
+;====================================================================
+CMOVA	R16,R/M16	P6	CMOVA R16,R/M16	Move r/m16 to r16 if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)
+CMOVAE	R16,R/M16	P6	CMOVAE R16,R/M16	Move r/m16 to r16 if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVB	R16,R/M16	P6	CMOVB R16,R/M16	Move r/m16 to r16 if below (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVBE	R16,R/M16	P6	CMOVBE R16,R/M16	Move r/m16 to r16 if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVC	R16,R/M16	P6	CMOVC R16,R/M16	Move r/m16 to r16 if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVE	R16,R/M16	P6	CMOVE R16,R/M16	Move r/m16 to r16 if equal (ZF=1) (CMOVE=CMOVZ)
+CMOVG	R16,R/M16	P6	CMOVG R16,R/M16	Move r/m16 to r16 if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
+CMOVGE	R16,R/M16	P6	CMOVGE R16,R/M16	Move r/m16 to r16 if greater or equal (SF=OF) (CMOVGE=CMOVNL)
+CMOVL	R16,R/M16	P6	CMOVL R16,R/M16	Move r/m16 to r16 if less (SF!=OF) (CMOVL=CMOVNGE)
+CMOVLE	R16,R/M16	P6	CMOVLE R16,R/M16	Move r/m16 to r16 if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)
+CMOVNA	R16,R/M16	P6	CMOVNA R16,R/M16	Move r/m16 to r16 if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVNAE	R16,R/M16	P6	CMOVNAE R16,R/M16	Move r/m16 to r16 if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVNB	R16,R/M16	P6	CMOVNB R16,R/M16	Move r/m16 to r16 if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVNBE	R16,R/M16	P6	CMOVNBE R16,R/M16	Move r/m16 to r16 if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)
+CMOVNC	R16,R/M16	P6	CMOVNC R16,R/M16	Move r/m16 to r16 if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVNE	R16,R/M16	P6	CMOVNE R16,R/M16	Move r/m16 to r16 if not equal (ZF=0) (CMOVNE=CMOVNZ)
+CMOVNG	R16,R/M16	P6	CMOVNG R16,R/M16	Move r/m16 to r16 if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)
+CMOVNGE	R16,R/M16	P6	CMOVNGE R16,R/M16	Move r/m16 to r16 if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)
+CMOVNL	R16,R/M16	P6	CMOVNL R16,R/M16	Move r/m16 to r16 if not less (SF=OF) (CMOVGE=CMOVNL)
+CMOVNLE	R16,R/M16	P6	CMOVNLE R16,R/M16	Move r/m16 to r16 if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
+CMOVNO	R16,R/M16	P6	CMOVNO R16,R/M16	Move r/m16 to r16 if not overflow (OF=0)
+CMOVNP	R16,R/M16	P6	CMOVNP R16,R/M16	Move r/m16 to r16 if not parity (PF=0) (CMOVNP=CMOVPO)
+CMOVNS	R16,R/M16	P6	CMOVNS R16,R/M16	Move r/m16 to r16 if not sign (SF=0)
+CMOVNZ	R16,R/M16	P6	CMOVNZ R16,R/M16	Move r/m16 to r16 if not zero (ZF=0) (CMOVNE=CMOVNZ)
+CMOVO	R16,R/M16	P6	CMOVO R16,R/M16	Move r/m16 to r16 if overflow (OF=1)
+CMOVP	R16,R/M16	P6	CMOVP R16,R/M16	Move r/m16 to r16 if parity (PF=1) (CMOVP=CMOVPE)
+CMOVPE	R16,R/M16	P6	CMOVPE R16,R/M16	Move r/m16 to r16 if parity even (PF=1) (CMOVP=CMOVPE)
+CMOVPO	R16,R/M16	P6	CMOVPO R16,R/M16	Move r/m16 to r16 if parity odd (PF=0) (CMOVNP=CMOVPO)
+CMOVS	R16,R/M16	P6	CMOVS R16,R/M16	Move r/m16 to r16 if sign (SF=1)
+CMOVZ	R16,R/M16	P6	CMOVZ R16,R/M16	Move r/m16 to r16 if zero (ZF=1) (CMOVE=CMOVZ)
+;====================================================================
+CMOVA	R32,R/M32	P6	CMOVA R32,R/M32	Move r/m32 to r32 if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)
+CMOVAE	R32,R/M32	P6	CMOVAE R32,R/M32	Move r/m32 to r32 if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVB	R32,R/M32	P6	CMOVB R32,R/M32	Move r/m32 to r32 if below (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVBE	R32,R/M32	P6	CMOVBE R32,R/M32	Move r/m32 to r32 if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVC	R32,R/M32	P6	CMOVC R32,R/M32	Move r/m32 to r32 if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVE	R32,R/M32	P6	CMOVE R32,R/M32	Move r/m32 to r32 if equal (ZF=1) (CMOVE=CMOVZ)
+CMOVG	R32,R/M32	P6	CMOVG R32,R/M32	Move r/m32 to r32 if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
+CMOVGE	R32,R/M32	P6	CMOVGE R32,R/M32	Move r/m32 to r32 if greater or equal (SF=OF) (CMOVGE=CMOVNL)
+CMOVL	R32,R/M32	P6	CMOVL R32,R/M32	Move r/m32 to r32 if less (SF!=OF) (CMOVL=CMOVNGE)
+CMOVLE	R32,R/M32	P6	CMOVLE R32,R/M32	Move r/m32 to r32 if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)
+CMOVNA	R32,R/M32	P6	CMOVNA R32,R/M32	Move r/m32 to r32 if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVNAE	R32,R/M32	P6	CMOVNAE R32,R/M32	Move r/m32 to r32 if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVNB	R32,R/M32	P6	CMOVNB R32,R/M32	Move r/m32 to r32 if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVNBE	R32,R/M32	P6	CMOVNBE R32,R/M32	Move r/m32 to r32 if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)
+CMOVNC	R32,R/M32	P6	CMOVNC R32,R/M32	Move r/m32 to r32 if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVNE	R32,R/M32	P6	CMOVNE R32,R/M32	Move r/m32 to r32 if not equal (ZF=0) (CMOVNE=CMOVNZ)
+CMOVNG	R32,R/M32	P6	CMOVNG R32,R/M32	Move r/m32 to r32 if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)
+CMOVNGE	R32,R/M32	P6	CMOVNGE R32,R/M32	Move r/m32 to r32 if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)
+CMOVNL	R32,R/M32	P6	CMOVNL R32,R/M32	Move r/m32 to r32 if not less (SF=OF) (CMOVGE=CMOVNL)
+CMOVNLE	R32,R/M32	P6	CMOVNLE R32,R/M32	Move r/m32 to r32 if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
+CMOVNO	R32,R/M32	P6	CMOVNO R32,R/M32	Move r/m32 to r32 if not overflow (OF=0)
+CMOVNP	R32,R/M32	P6	CMOVNP R32,R/M32	Move r/m32 to r32 if not parity (PF=0) (CMOVNP=CMOVPO)
+CMOVNS	R32,R/M32	P6	CMOVNS R32,R/M32	Move r/m32 to r32 if not sign (SF=0)
+CMOVNZ	R32,R/M32	P6	CMOVNZ R32,R/M32	Move r/m32 to r32 if not zero (ZF=0) (CMOVNE=CMOVNZ)
+CMOVO	R32,R/M32	P6	CMOVO R32,R/M32	Move r/m32 to r32 if overflow (OF=1)
+CMOVP	R32,R/M32	P6	CMOVP R32,R/M32	Move r/m32 to r32 if parity (PF=1) (CMOVP=CMOVPE)
+CMOVPE	R32,R/M32	P6	CMOVPE R32,R/M32	Move r/m32 to r32 if parity even (PF=1) (CMOVP=CMOVPE)
+CMOVPO	R32,R/M32	P6	CMOVPO R32,R/M32	Move r/m32 to r32 if parity odd (PF=0) (CMOVNP=CMOVPO)
+CMOVS	R32,R/M32	P6	CMOVS R32,R/M32	Move r/m32 to r32 if sign (SF=1)
+CMOVZ	R32,R/M32	P6	CMOVZ R32,R/M32	Move r/m32 to r32 if zero (ZF=1) (CMOVE=CMOVZ)
+;====================================================================
+CMOVA	R64,R/M64	X64	CMOVA R64,R/M64	Move r/m64 to r64 if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)
+CMOVAE	R64,R/M64	X64	CMOVAE R64,R/M64	Move r/m64 to r64 if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVB	R64,R/M64	X64	CMOVB R64,R/M64	Move r/m64 to r64 if below (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVBE	R64,R/M64	X64	CMOVBE R64,R/M64	Move r/m64 to r64 if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVC	R64,R/M64	x64	CMOVC R64,R/M64	Move r/m64 to r64 if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVE	R64,R/M64	X64	CMOVE R64,R/M64	Move r/m64 to r64 if equal (ZF=1) (CMOVE=CMOVZ)
+CMOVG	R64,R/M64	X64	CMOVG R64,R/M64	Move r/m64 to r64 if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
+CMOVGE	R64,R/M64	X64	CMOVGE R64,R/M64	Move r/m64 to r64 if greater or equal (SF=OF) (CMOVGE=CMOVNL)
+CMOVL	R64,R/M64	X64	CMOVL R64,R/M64	Move r/m64 to r64 if less (SF!=OF) (CMOVL=CMOVNGE)
+CMOVLE	R64,R/M64	X64	CMOVLE R64,R/M64	Move r/m64 to r64 if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)
+CMOVNA	R64,R/M64	X64	CMOVNA R64,R/M64	Move r/m64 to r64 if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVNAE	R64,R/M64	X64	CMOVNAE R64,R/M64	Move r/m64 to r64 if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)
+CMOVNB	R64,R/M64	X64	CMOVNB R64,R/M64	Move r/m64 to r64 if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVNBE	R64,R/M64	X64	CMOVNBE R64,R/M64	Move r/m64 to r64 if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)
+CMOVNC	R64,R/M64	X64	CMOVNC R64,R/M64	Move r/m64 to r64 if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)
+CMOVNE	R64,R/M64	X64	CMOVNE R64,R/M64	Move r/m64 to r64 if not equal (ZF=0) (CMOVNE=CMOVNZ)
+CMOVNG	R64,R/M64	X64	CMOVNG R64,R/M64	Move r/m64 to r64 if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)
+CMOVNGE	R64,R/M64	X64	CMOVNGE R64,R/M64	Move r/m64 to r64 if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)
+CMOVNL	R64,R/M64	X64	CMOVNL R64,R/M64	Move r/m64 to r64 if not less (SF=OF) (CMOVGE=CMOVNL)
+CMOVNLE	R64,R/M64	X64	CMOVNLE R64,R/M64	Move r/m64 to r64 if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
+CMOVNO	R64,R/M64	X64	CMOVNO R64,R/M64	Move r/m64 to r64 if not overflow (OF=0)
+CMOVNP	R64,R/M64	X64	CMOVNP R64,R/M64	Move r/m64 to r64 if not parity (PF=0) (CMOVNP=CMOVPO)
+CMOVNS	R64,R/M64	X64	CMOVNS R64,R/M64	Move r/m64 to r64 if not sign (SF=0)
+CMOVNZ	R64,R/M64	X64	CMOVNZ R64,R/M64	Move r/m64 to r64 if not zero (ZF=0) (CMOVNE=CMOVNZ)
+CMOVO	R64,R/M64	X64	CMOVO R64,R/M64	Move r/m64 to r64 if overflow (OF=1)
+CMOVP	R64,R/M64	X64	CMOVP R64,R/M64	Move r/m64 to r64 if parity (PF=1) (CMOVP=CMOVPE)
+CMOVPE	R64,R/M64	X64	CMOVPE R64,R/M64	Move r/m64 to r64 if parity even (PF=1) (CMOVP=CMOVPE)
+CMOVPO	R64,R/M64	X64	CMOVPO R64,R/M64	Move r/m64 to r64 if parity odd (PF=0) (CMOVNP=CMOVPO)
+CMOVS	R64,R/M64	X64	CMOVS R64,R/M64	Move r/m64 to r64 if sign (SF=1)
+CMOVZ	R64,R/M64	X64	CMOVZ R64,R/M64	Move r/m64 to r64 if zero (ZF=1) (CMOVE=CMOVZ)
+;====================================================================
+AAA		8086	AAA	ASCII adjust AL after addition.
+AAD		8086	AAD	ASCII adjust AX before division.
+AAD	IMM8	8086	AAD IMM8	Adjust AX before division to number base imm8.
+AAM		8086	AAM	ASCII adjust AX after multiply.
+AAM	IMM8	8086	AAM IMM8	Adjust AX after multiply to number base imm8.
+AAS		8086	AAS	ASCII adjust AL after subtraction.
+;====================================================================
+ADC	R/M8,IMM8	8086	ADC R/M8,IMM8	Add with CF imm8 to r/m8.
+ADC	R/M8,R8	8086	ADC R/M8,R8	Add with CF byte register to r/m8.
+ADC	R/M16,IMM16	8086	ADC R/M16,IMM16	Add with CF imm16 to r/m16.
+ADC	R/M16,IMM8	8086	ADC R/M16,IMM8	Add with CF sign-extended imm8 to r/m16.
+ADC	R/M16,R16	8086	ADC R/M16,R16	Add with CF r16 to r/m16.
+ADC	R/M32,IMM32	386	ADC R/M32,IMM32	Add with CF imm32 to r/m32.
+ADC	R/M32,IMM8	386	ADC R/M32,IMM8	Add with CF sign-extended imm8 into r/m32.
+ADC	R/M32,R32	386	ADC R/M32,R32	Add with CF r32 to r/m32.
+ADC	R/M64,IMM32	X64	ADC R/M64,IMM32	Add with CF imm32 sign extended to 64-bits to r/m64.
+ADC	R/M64,IMM8	X64	ADC R/M64,IMM8	Add with CF sign-extended imm8 into r/m64.
+ADC	R/M64,R64	X64	ADC R/M64,R64	Add with CF r64 to r/m64.
+ADC	R8,R/M8	8086	ADC R8,R/M8	Add with CF r/m8 to byte register.
+ADC	R16,R/M16	8086	ADC R16,R/M16	Add with CF r/m16 to r16.
+ADC	R32,R/M32	386	ADC R32,R/M32	Add with CF r/m32 to r32.
+ADC	R64,R/M64	X64	ADC R64,R/M64	Add with CF r/m64 to r64.
+
+ADD	R/M8,IMM8	8086	ADD R/M8,IMM8	Add imm8 to r/m8.
+ADD	R/M8,R8	8086	ADD R/M8,R8	Add r8 to r/m8.
+ADD	R/M16,IMM16	8086	ADD R/M16,IMM16	Add imm16 to r/m16.
+ADD	R/M16,IMM8	8086	ADD R/M16,IMM8	Add sign-extended imm8 to r/m16.
+ADD	R/M16,R16	8086	ADD R/M16,R16	Add r16 to r/m16.
+ADD	R/M32,IMM32	386	ADD R/M32,IMM32	Add imm32 to r/m32.
+ADD	R/M32,IMM8	386	ADD R/M32,IMM8	Add sign-extended imm8 to r/m32.
+ADD	R/M32,R32	386	ADD R/M32,R32	Add r32 to r/m32.
+ADD	R/M64,IMM32	X64	ADD R/M64,IMM32	Add imm32 sign-extended to 64-bits to r/m64.
+ADD	R/M64,IMM8	X64	ADD R/M64,IMM8	Add sign-extended imm8 to r/m64.
+ADD	R/M64,R64	X64	ADD R/M64,R64	Add r64 to r/m64.
+ADD	R8,R/M8	8086	ADD R8,R/M8	Add r/m8 to r8.
+ADD	R16,R/M16	8086	ADD R16,R/M16	Add r/m16 to r16.
+ADD	R32,R/M32	386	ADD R32,R/M32	Add r/m32 to r32.
+ADD	R64,R/M64	X64	ADD R64,R/M64	Add r/m64 to r64.
+
+AND	R/M8,IMM8	8086	AND R/M8,IMM8	r/m8 AND imm8.
+AND	R/M8,R8	8086	AND R/M8,R8	r/m8 AND r8.
+AND	R/M16,IMM16	8086	AND R/M16,IMM16	r/m16 AND imm16.
+AND	R/M16,IMM8	8086	AND R/M16,IMM8	r/m16 AND imm8 (sign-extended).
+AND	R/M16,R16	8086	AND R/M16,R16	r/m16 AND r16.
+AND	R/M32,IMM32	386	AND R/M32,IMM32	r/m32 AND imm32.
+AND	R/M32,IMM8	386	AND R/M32,IMM8	r/m32 AND imm8 (sign-extended).
+AND	R/M32,R32	386	AND R/M32,R32	r/m32 AND r32.
+AND	R/M64,IMM32	X64	AND R/M64,IMM32	r/m64 AND imm32 sign extended to 64-bits.
+AND	R/M64,IMM8	X64	AND R/M64,IMM8	r/m64 AND imm8 (sign-extended).
+AND	R/M64,R64	X64	AND R/M64,R64	r/m64 AND r32.
+AND	R8,R/M8	8086	AND R8,R/M8	r8 AND r/m8.
+AND	R16,R/M16	8086	AND R16,R/M16	r16 AND r/m16.
+AND	R32,R/M32	386	AND R32,R/M32	r32 AND r/m32.
+AND	R64,R/M64	X64	AND R64,R/M64	r64 AND r/m64.
+
+ARPL	R/M16,R16	286	ARPL R/M16,R16	Adjust RPL of r/m16 to not less than RPL of r16.
+BOUND	R16,M16&16	186	BOUND R16,M16&16	Check if r16 (array index) is within bounds specified by m16&amp;16.
+BOUND	R32,M32&32	386	BOUND R32,M32&32	Check if r32 (array index) is within bounds specified by m32&amp;32.
+BSF	R16,R/M16	386	BSF R16,R/M16	Bit scan forward on r/m16. Scan second operand for set bit, store result in first operand.
+BSF	R32,R/M32	386	BSF R32,R/M32	Bit scan forward on r/m32. Scan second operand for set bit, store result in first operand.
+BSF	R64,R/M64	X64	BSF R64,R/M64	Bit scan forward on r/m64. Scan second operand for set bit, store result in first operand.
+BSR	R16,R/M16	386	BSR R16,R/M16	Bit scan reverse on r/m16. Scan second operand for set bit, store result in first operand.
+BSR	R32,R/M32	386	BSR R32,R/M32	Bit scan reverse on r/m32. Scan second operand for set bit, store result in first operand.
+BSR	R64,R/M64	X64	BSR R64,R/M64	Bit scan reverse on r/m64. Scan second operand for set bit, store result in first operand.
+BSWAP	R32	486	BSWAP R32	Reverses the byte order of a 32-bit register.
+BSWAP	R64	X64	BSWAP R64	Reverses the byte order of a 64-bit register.
+
+BT	R/M16,IMM8	386	BT R/M16,IMM8	Store selected bit in CF flag.
+BT	R/M16,R16	386	BT R/M16,R16	Store selected bit in CF flag.
+BT	R/M32,IMM8	386	BT R/M32,IMM8	Store selected bit in CF flag.
+BT	R/M32,R32	386	BT R/M32,R32	Store selected bit in CF flag.
+BT	R/M64,IMM8	X64	BT R/M64,IMM8	Store selected bit in CF flag.
+BT	R/M64,R64	X64	BT R/M64,R64	Store selected bit in CF flag.
+BTC	R/M16,IMM8	386	BTC R/M16,IMM8	Store selected bit in CF flag and complement.
+BTC	R/M16,R16	386	BTC R/M16,R16	Store selected bit in CF flag and complement.
+BTC	R/M32,IMM8	386	BTC R/M32,IMM8	Store selected bit in CF flag and complement.
+BTC	R/M32,R32	386	BTC R/M32,R32	Store selected bit in CF flag and complement.
+BTC	R/M64,IMM8	X64	BTC R/M64,IMM8	Store selected bit in CF flag and complement.
+BTC	R/M64,R64	X64	BTC R/M64,R64	Store selected bit in CF flag and complement.
+
+BTR	R/M16,IMM8	386	BTR R/M16,IMM8	Store selected bit in CF flag and clear.
+BTR	R/M16,R16	386	BTR R/M16,R16	Store selected bit in CF flag and clear.
+BTR	R/M32,IMM8	386	BTR R/M32,IMM8	Store selected bit in CF flag and clear.
+BTR	R/M32,R32	386	BTR R/M32,R32	Store selected bit in CF flag and clear.
+BTR	R/M64,IMM8	X64	BTR R/M64,IMM8	Store selected bit in CF flag and clear.
+BTR	R/M64,R64	X64	BTR R/M64,R64	Store selected bit in CF flag and clear.
+BTS	R/M16,IMM8	386	BTS R/M16,IMM8	Store selected bit in CF flag and set.
+BTS	R/M16,R16	386	BTS R/M16,R16	Store selected bit in CF flag and set.
+BTS	R/M32,IMM8	386	BTS R/M32,IMM8	Store selected bit in CF flag and set.
+BTS	R/M32,R32	386	BTS R/M32,R32	Store selected bit in CF flag and set.
+BTS	R/M64,IMM8	X64	BTS R/M64,IMM8	Store selected bit in CF flag and set.
+BTS	R/M64,R64	X64	BTS R/M64,R64	Store selected bit in CF flag and set.
+
+CALL	M16:16	8086	CALL M16:16	Call far, absolute indirect address given in m16:16. In 32-bit mode: if selector points to a gate, then RIP = 32-bit zero extended displacement taken from gate; else RIP = zero extended 16-bit offset from far pointer referenced in the instruction.
+CALL	M16:32	386	CALL M16:32	In 64-bit mode: If selector points to a gate, then RIP = 64-bit displacement taken from gate; else RIP = zero extended 32-bit offset from far pointer referenced in the instruction.
+CALL	M16:64	X64	CALL M16:64	In 64-bit mode: If selector points to a gate, then RIP = 64-bit displacement taken from gate; else RIP = 64-bit offset from far pointer referenced in the instruction.
+CALL	PTR16:16	8086	CALL PTR16:16	Call far, absolute, address given in operand.
+CALL	PTR16:32	386	CALL PTR16:32	Call far, absolute, address given in operand.
+CALL	R/M16	8086	CALL R/M16	Call near, absolute indirect, address given in r/m16.
+CALL	R/M32	386	CALL R/M32	Call near, absolute indirect, address given in r/m32.
+CALL	R/M64	X64	CALL R/M64	Call near, absolute indirect, address given in r/m64.
+CALL	REL16	8086	CALL REL16	Call near, relative, displacement relative to next instruction.
+CALL	REL32	386	CALL REL32	Call near, relative, displacement relative to next instruction. 32-bit displacement sign extended to 64-bits in 64-bit mode.
+
+CBW		8086	CBW	AX ← sign-extend of AL.
+CDQ		386	CDQ	EDX:EAX ← sign-extend of EAX.
+CDQE		X64	CDQE	RAX ← sign-extend of EAX.
+CLAC		486	CLAC	Clear the Alignment Check (AC) flag in the EFLAGS register.
+CLC		8086	CLC	Clear carry (CF) flag.
+CLD		8086	CLD	Clear direction (DF) flag.
+
+CLFLUSH	M8	SSE2	CLFLUSH M8	Flushes cache line containing m8.
+CLFLUSHOPT	M8	X64	CLFLUSHOPT M8	Flushes cache line containing m8.
+
+CLI		8086	CLI	Clear interrupt flag; interrupts disabled when interrupt flag cleared.
+CLTS		286	CLTS	Clears TS flag in CR0.
+CMC		8086	CMC	Complement CF flag.
+
+CMP	R/M8,IMM8	8086	CMP R/M8,IMM8	Compare imm8 with r/m8.
+CMP	R/M8,R8	8086	CMP R/M8,R8	Compare r8 with r/m8.
+CMP	R/M16,IMM16	8086	CMP R/M16,IMM16	Compare imm16 with r/m16.
+CMP	R/M16,IMM8	8086	CMP R/M16,IMM8	Compare imm8 with r/m16.
+CMP	R/M16,R16	8086	CMP R/M16,R16	Compare r16 with r/m16.
+CMP	R/M32,IMM32	386	CMP R/M32,IMM32	Compare imm32 with r/m32.
+CMP	R/M32,IMM8	386	CMP R/M32,IMM8	Compare imm8 with r/m32.
+CMP	R/M32,R32	386	CMP R/M32,R32	Compare r32 with r/m32.
+CMP	R/M64,IMM32	X64	CMP R/M64,IMM32	Compare imm32 sign-extended to 64-bits with r/m64.
+CMP	R/M64,IMM8	X64	CMP R/M64,IMM8	Compare imm8 with r/m64.
+CMP	R/M64,R64	X64	CMP R/M64,R64	Compare r64 with r/m64.
+CMP	R8,R/M8	8086	CMP R8,R/M8	Compare r/m8 with r8.
+CMP	R16,R/M16	8086	CMP R16,R/M16	Compare r/m16 with r16.
+CMP	R32,R/M32	386	CMP R32,R/M32	Compare r/m32 with r32.
+CMP	R64,R/M64	X64	CMP R64,R/M64	Compare r/m64 with r64.
+
+CMPS	M16,M16	8086	CMPS M16,M16	For legacy mode, compare word at address DS:(E)SI with word at address ES:(E)DI; For 64-bit mode compare word at address (R|E)SI with word at address (R|E)DI. The status flags are set accordingly.
+CMPS	M32,M32	386	CMPS M32,M32	For legacy mode, compare Dword at address DS:(E)SI at Dword at address ES:(E)DI; For 64-bit mode compare Dword at address (R|E)SI at Dword at address (R|E)DI. The status flags are set accordingly.
+CMPS	M64,M64	X64	CMPS M64,M64	Compares Qword at address (R|E)SI with Qword at address (R|E)DI and sets the status flags accordingly.
+CMPS	M8,M8	8086	CMPS M8,M8	For legacy mode, compare byte at address DS:(E)SI with byte at address ES:(E)DI; For 64-bit mode compare byte at address (R|E)SI to byte at address (R|E)DI. The status flags are set accordingly.
+CMPSB		8086	CMPSB	For legacy mode, compare byte at address DS:(E)SI with byte at address ES:(E)DI; For 64-bit mode compare byte at address (R|E)SI with byte at address (R|E)DI. The status flags are set accordingly.
+CMPSD		386	CMPSD	For legacy mode, compare Dword at address DS:(E)SI with Dword at address ES:(E)DI; For 64-bit mode compare Dword at address (R|E)SI with Dword at address (R|E)DI. The status flags are set accordingly.
+CMPSQ		X64	CMPSQ	Compares Qword at address (R|E)SI with Qword at address (R|E)DI and sets the status flags accordingly.
+CMPSW		8086	CMPSW	For legacy mode, compare word at address DS:(E)SI with word at address ES:(E)DI; For 64-bit mode compare word at address (R|E)SI with word at address (R|E)DI. The status flags are set accordingly.
+CMPXCHG	R/M16,R16	PENT	CMPXCHG R/M16,R16	Compare AX with r/m16. If equal, ZF is set and r16 is loaded into r/m16. Else, clear ZF and load r/m16 into AX.
+CMPXCHG	R/M32,R32	PENT	CMPXCHG R/M32,R32	Compare EAX with r/m32. If equal, ZF is set and r32 is loaded into r/m32. Else, clear ZF and load r/m32 into EAX.
+CMPXCHG	R/M64,R64	X64	CMPXCHG R/M64,R64	Compare RAX with r/m64. If equal, ZF is set and r64 is loaded into r/m64. Else, clear ZF and load r/m64 into RAX.
+CMPXCHG	R/M8,R8	PENT	CMPXCHG R/M8,R8	Compare AL with r/m8. If equal, ZF is set and r8 is loaded into r/m8. Else, clear ZF and load r/m8 into AL.
+CMPXCHG16B	M128	X64	CMPXCHG16B M128	Compare RDX:RAX with m128. If equal, set ZF and load RCX:RBX into m128. Else, clear ZF and load m128 into RDX:RAX.
+CMPXCHG8B	M64	PENT	CMPXCHG8B M64	Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
+CPUID		PENT	CPUID	Returns processor identification and feature information to the EAX, EBX, ECX, and EDX registers, as determined by input entered in EAX (in some cases, ECX as well).
+CQO		X64	CQO	RDX:RAX← sign-extend of RAX.
+
+CRC32	R32,R/M8	SSE42	CRC32 R32,R/M8	Accumulate CRC32 on r/m8.
+CRC32	R32,R/M16	SSE42	CRC32 R32,R/M16	Accumulate CRC32 on r/m16.
+CRC32	R32,R/M32	SSE42	CRC32 R32,R/M32	Accumulate CRC32 on r/m32.
+CRC32	R64,R/M8	SSE42	CRC32 R64,R/M8	Accumulate CRC32 on r/m8.
+CRC32	R64,R/M64	SSE42	CRC32 R64,R/M64	Accumulate CRC32 on r/m64.
+
+CVTPD2PI	MM,XMM/M128	SSE2	CVTPD2PI MM,XMM/M128	Convert two packed Double-Precision FP values from xmm/m128 to two packed signed Dword integers in mm.
+CVTPI2PD	XMM,MM/M64	SSE2	CVTPI2PD XMM,MM/M64	Convert two packed signed Dword integers from mm/meM64 to two packed Double-Precision FP values in xmm.
+CVTPI2PS	XMM,MM/M64	SSE2	CVTPI2PS XMM,MM/M64	Convert two signed Dword integers from mm/m64 to two Single-Precision FP values in xmm.
+CVTPS2PI	MM,XMM/M64	SSE2	CVTPS2PI MM,XMM/M64	Convert two packed Single-Precision FP values from xmm/m64 to two packed signed Dword integers in mm.
+CVTTPD2PI	MM,XMM/M128	SSE2	CVTTPD2PI MM,XMM/M128	Convert two packer Double-Precision FP values from xmm/m128 to two packed signed Dword integers in mm using truncation.
+CVTTPS2PI	MM,XMM/M64	SSE2	CVTTPS2PI MM,XMM/M64	Convert two Single-Precision FP values from xmm/m64 to two signed Dword signed integers in mm using truncation.
+
+CWD		8086	CWD	DX:AX ← sign-extend of AX.
+CWDE		386	CWDE	EAX ← sign-extend of AX.
+DAA		8086	DAA	Decimal adjust AL after addition.
+DAS		8086	DAS	Decimal adjust AL after subtraction.
+
+DEC	R/M8	8086	DEC R/M8	Decrement r/m8 by 1 (does not update CF!).
+DEC	R/M16	8086	DEC R/M16	Decrement r/m16 by 1 (does not update CF!).
+DEC	R/M32	386	DEC R/M32	Decrement r/m32 by 1 (does not update CF!).
+DEC	R/M64	X64	DEC R/M64	Decrement r/m64 by 1 (does not update CF!).
+
+DIV	R/M8	8086	DIV R/M8	Unsigned divide AX by r/m8, with result stored in AL ← Quotient, AH ← Remainder.
+DIV	R/M16	8086	DIV R/M16	Unsigned divide DX:AX by r/m16, with result stored in AX ← Quotient, DX ← Remainder.
+DIV	R/M32	386	DIV R/M32	Unsigned divide EDX:EAX by r/m32, with result stored in EAX ← Quotient, EDX ← Remainder.
+DIV	R/M64	X64	DIV R/M64	Unsigned divide RDX:RAX by r/m64, with result stored in RAX ← Quotient, RDX ← Remainder.
+
+EMMS		PENT	EMMS	Set the x87 FPU tag word to empty.
+ENTER	IMM16,0	186	ENTER IMM16,0	Create a stack frame for a procedure.
+ENTER	IMM16,1	186	ENTER IMM16,1	Create a stack frame with a nested pointer for a procedure.
+ENTER	IMM16,IMM8	186	ENTER IMM16,IMM8	Create a stack frame with nested pointers for a procedure.
+F2XM1		8086	F2XM1	Replace ST(0) with (2ST(0) – 1).
+FABS		8086	FABS	Replace ST with its absolute value.
+FADD	M32FP	8086	FADD M32FP	Add M32fp to ST(0) and store result in ST(0).
+FADD	M64FP	8086	FADD M64FP	Add M64fp to ST(0) and store result in ST(0).
+FADD	ST(0),ST(I)	8086	FADD ST(0),ST(I)	Add ST(0) to ST(i) and store result in ST(0).
+FADD	ST(I),ST(0)	8086	FADD ST(I),ST(0)	Add ST(i) to ST(0) and store result in ST(i).
+FADDP		8086	FADDP	Add ST(0) to ST(1), store result in ST(1), and pop the register stack.
+FADDP	ST(I),ST(0)	8086	FADDP ST(I),ST(0)	Add ST(0) to ST(i), store result in ST(i), and pop the register stack.
+FBLD	M80DEC	8086	FBLD M80DEC	Convert BCD value to FP and push onto the FPU stack.
+FBSTP	M80BCD	8086	FBSTP M80BCD	Store ST(0) in m80bcd and pop ST(0).
+FCHS		8086	FCHS	Complements sign of ST(0).
+FCLEX		8086	FCLEX	Clear FP exception flags after checking for pending unmasked FP exceptions.
+FCMOVB	ST(0),ST(I)	P6	FCMOVB ST(0),ST(I)	Move if below (CF=1).
+FCMOVBE	ST(0),ST(I)	P6	FCMOVBE ST(0),ST(I)	Move if below or equal (CF=1 or ZF=1).
+FCMOVE	ST(0),ST(I)	P6	FCMOVE ST(0),ST(I)	Move if equal (ZF=1).
+FCMOVNB	ST(0),ST(I)	P6	FCMOVNB ST(0),ST(I)	Move if not below (CF=0).
+FCMOVNBE	ST(0),ST(I)	P6	FCMOVNBE ST(0),ST(I)	Move if not below or equal (CF=0 and ZF=0).
+FCMOVNE	ST(0),ST(I)	P6	FCMOVNE ST(0),ST(I)	Move if not equal (ZF=0).
+FCMOVU	ST(0),ST(I)	P6	FCMOVU ST(0),ST(I)	Move if unordered (PF=1).
+FCOM		8086	FCOM	Compare ST(0) with ST(1).
+FCOM	M32FP	8086	FCOM M32FP	Compare ST(0) with M32fp.
+FCOM	M64FP	8086	FCOM M64FP	Compare ST(0) with M64fp.
+FCOM	ST(I)	8086	FCOM ST(I)	Compare ST(0) with ST(i).
+FCOMI	ST,ST(I)	P6	FCOMI ST,ST(I)	Compare ST(0) with ST(i) and set status flags accordingly.
+FCOMIP	ST,ST(I)	P6	FCOMIP ST,ST(I)	Compare ST(0) with ST(i), set status flags accordingly, and pop register stack.
+FCOMP		8086	FCOMP	Compare ST(0) with ST(1) and pop register stack.
+FCOMP	M32FP	8086	FCOMP M32FP	Compare ST(0) with M32fp and pop register stack.
+FCOMP	M64FP	8086	FCOMP M64FP	Compare ST(0) with M64fp and pop register stack.
+FCOMP	ST(I)	8086	FCOMP ST(I)	Compare ST(0) with ST(i) and pop register stack.
+FCOMPP		8086	FCOMPP	Compare ST(0) with ST(1) and pop register stack twice.
+FCOS		386	FCOS	Replace ST(0) with its approximate cosine.
+FDECSTP		8086	FDECSTP	Decrement TOP field in FPU status word.
+FDIV	M32FP	8086	FDIV M32FP	Divide ST(0) by M32fp and store result in ST(0).
+FDIV	M64FP	8086	FDIV M64FP	Divide ST(0) by M64fp and store result in ST(0).
+FDIV	ST(0),ST(I)	8086	FDIV ST(0),ST(I)	Divide ST(0) by ST(i) and store result in ST(0).
+FDIV	ST(I),ST(0)	8086	FDIV ST(I),ST(0)	Divide ST(i) by ST(0) and store result in ST(i).
+FDIVP		8086	FDIVP	Divide ST(1) by ST(0), store result in ST(1), and pop the register stack.
+FDIVP	ST(I),ST(0)	8086	FDIVP ST(I),ST(0)	Divide ST(i) by ST(0), store result in ST(i), and pop the register stack.
+FDIVR	M32FP	8086	FDIVR M32FP	Divide M32fp by ST(0) and store result in ST(0).
+FDIVR	M64FP	8086	FDIVR M64FP	Divide M64fp by ST(0) and store result in ST(0).
+FDIVR	ST(0),ST(I)	8086	FDIVR ST(0),ST(I)	Divide ST(i) by ST(0) and store result in ST(0).
+FDIVR	ST(I),ST(0)	8086	FDIVR ST(I),ST(0)	Divide ST(0) by ST(i) and store result in ST(i).
+FDIVRP		8086	FDIVRP	Divide ST(0) by ST(1), store result in ST(1), and pop the register stack.
+FDIVRP	ST(I),ST(0)	8086	FDIVRP ST(I),ST(0)	Divide ST(0) by ST(i), store result in ST(i), and pop the register stack.
+FFREE	ST(I)	8086	FFREE ST(I)	Sets tag for ST(i) to empty.
+FIADD	M16INT	8086	FIADD M16INT	Add m16int to ST(0) and store result in ST(0).
+FIADD	M32INT	8086	FIADD M32INT	Add M32int to ST(0) and store result in ST(0).
+FICOM	M16INT	8086	FICOM M16INT	Compare ST(0) with m16int.
+FICOM	M32INT	8086	FICOM M32INT	Compare ST(0) with M32int.
+FICOMP	M16INT	8086	FICOMP M16INT	Compare ST(0) with m16int and pop stack register.
+FICOMP	M32INT	8086	FICOMP M32INT	Compare ST(0) with M32int and pop stack register.
+FIDIV	M16INT	8086	FIDIV M16INT	Divide ST(0) by m16int and store result in ST(0).
+FIDIV	M32INT	8086	FIDIV M32INT	Divide ST(0) by M32int and store result in ST(0).
+FIDIVR	M16INT	8086	FIDIVR M16INT	Divide m16int by ST(0) and store result in ST(0).
+FIDIVR	M32INT	8086	FIDIVR M32INT	Divide M32int by ST(0) and store result in ST(0).
+FILD	M16INT	8086	FILD M16INT	Push m16int onto the FPU register stack.
+FILD	M32INT	8086	FILD M32INT	Push M32int onto the FPU register stack.
+FILD	M64INT	8086	FILD M64INT	Push M64int onto the FPU register stack.
+FIMUL	M16INT	8086	FIMUL M16INT	Multiply ST(0) by m16int and store result in ST(0).
+FIMUL	M32INT	8086	FIMUL M32INT	Multiply ST(0) by M32int and store result in ST(0).
+FINCSTP		8086	FINCSTP	Increment the TOP field in the FPU status register.
+FINIT		8086	FINIT	Initialize FPU after checking for pending unmasked FP exceptions.
+FIST	M16INT	8086	FIST M16INT	Store ST(0) in m16int.
+FIST	M32INT	8086	FIST M32INT	Store ST(0) in M32int.
+FISTP	M16INT	8086	FISTP M16INT	Store ST(0) in m16int and pop register stack.
+FISTP	M32INT	8086	FISTP M32INT	Store ST(0) in M32int and pop register stack.
+FISTP	M64INT	8086	FISTP M64INT	Store ST(0) in M64int and pop register stack.
+FISTTP	M16INT	SSE3	FISTTP M16INT	Store ST(0) in m16int with truncation.
+FISTTP	M32INT	SSE3	FISTTP M32INT	Store ST(0) in M32int with truncation.
+FISTTP	M64INT	SSE3	FISTTP M64INT	Store ST(0) in M64int with truncation.
+FISUB	M16INT	8086	FISUB M16INT	Subtract m16int from ST(0) and store result in ST(0).
+FISUB	M32INT	8086	FISUB M32INT	Subtract M32int from ST(0) and store result in ST(0).
+FISUBR	M16INT	8086	FISUBR M16INT	Subtract ST(0) from m16int and store result in ST(0).
+FISUBR	M32INT	8086	FISUBR M32INT	Subtract ST(0) from M32int and store result in ST(0).
+FLD	M32FP	8086	FLD M32FP	Push M32fp onto the FPU register stack.
+FLD	M64FP	8086	FLD M64FP	Push M64fp onto the FPU register stack.
+FLD	M80FP	8086	FLD M80FP	Push m80fp onto the FPU register stack.
+FLD	ST(I)	8086	FLD ST(I)	Push ST(i) onto the FPU register stack.
+FLD1		8086	FLD1	Push +1.0 onto the FPU register stack.
+FLDCW	M2BYTE	8086	FLDCW M2BYTE	Load FPU control word from m2byte.
+FLDENV	M14/28BYTE	8086	FLDENV M14/28BYTE	Load FPU environment from m14byte or m28byte.
+FLDL2E		8086	FLDL2E	Push log2e onto the FPU register stack.
+FLDL2T		8086	FLDL2T	Push log210 onto the FPU register stack.
+FLDLG2		8086	FLDLG2	Push log102 onto the FPU register stack.
+FLDLN2		8086	FLDLN2	Push loge2 onto the FPU register stack.
+FLDPI		8086	FLDPI	Push π onto the FPU register stack.
+FLDZ		8086	FLDZ	Push +0.0 onto the FPU register stack.
+FMUL	M32FP	8086	FMUL M32FP	Multiply ST(0) by M32fp and store result in ST(0).
+FMUL	M64FP	8086	FMUL M64FP	Multiply ST(0) by M64fp and store result in ST(0).
+FMUL	ST(0),ST(I)	8086	FMUL ST(0),ST(I)	Multiply ST(0) by ST(i) and store result in ST(0).
+FMUL	ST(I),ST(0)	8086	FMUL ST(I),ST(0)	Multiply ST(i) by ST(0) and store result in ST(i).
+FMULP		8086	FMULP	Multiply ST(1) by ST(0), store result in ST(1), and pop the register stack.
+FMULP	ST(I),ST(0)	8086	FMULP ST(I),ST(0)	Multiply ST(i) by ST(0), store result in ST(i), and pop the register stack.
+FNCLEX		8086	FNCLEX	Clear FP exception flags without checking for pending unmasked FP exceptions.
+FNINIT		8086	FNINIT	Initialize FPU without checking for pending unmasked FP exceptions.
+FNOP		8086	FNOP	No operation is performed.
+FNSAVE	M94/108BYTE	8086	FNSAVE M94/108BYTE	Store FPU environment to m94byte or m108byte without checking for pending unmasked FP exceptions. Then re-initialize the FPU.
+FNSTCW	M2BYTE	8086	FNSTCW M2BYTE	Store FPU control word to m2byte without checking for pending unmasked FP exceptions.
+FNSTENV	M14/28BYTE	8086	FNSTENV M14/28BYTE	Store FPU environment to m14byte or m28byte without checking for pending unmasked FP exceptions. Then mask all FP exceptions.
+FNSTSW	AX	286	FNSTSW AX	Store FPU status word in AX register without checking for pending unmasked FP exceptions.
+FNSTSW	M2BYTE	8086	FNSTSW M2BYTE	Store FPU status word at m2byte without checking for pending unmasked FP exceptions.
+FPATAN		286	FPATAN	Replace ST(1) with arctan(ST(1)/ST(0)) and pop the register stack.
+FPREM		286	FPREM	Replace ST(0) with the remainder obtained from dividing ST(0) by ST(1).
+FPREM1		386	FPREM1	Replace ST(0) with the IEEE remainder obtained from dividing ST(0) by ST(1).
+FPTAN		8086	FPTAN	Replace ST(0) with its approximate tangent and push 1 onto the FPU stack.
+FRNDINT		8086	FRNDINT	Round ST(0) to an integer.
+FRSTOR	M94/108BYTE	8086	FRSTOR M94/108BYTE	Load FPU state from m94byte or m108byte.
+FSAVE	M94/108BYTE	8086	FSAVE M94/108BYTE	Store FPU state to m94byte or m108byte after checking for pending unmasked FP exceptions. Then re-initialize the FPU.
+FSCALE		8086	FSCALE	Scale ST(0) by ST(1).
+FSIN		386	FSIN	Replace ST(0) with the approximate of its sine.
+FSINCOS		386	FSINCOS	Compute the sine and cosine of ST(0); replace ST(0) with the approximate sine, and push the approximate cosine onto the register stack.
+FSQRT		8086	FSQRT	Computes square root of ST(0) and stores the result in ST(0).
+FST	M32FP	8086	FST M32FP	Copy ST(0) to M32fp.
+FST	M64FP	8086	FST M64FP	Copy ST(0) to M64fp.
+FST	ST(I)	8086	FST ST(I)	Copy ST(0) to ST(i).
+FSTCW	M2BYTE	8086	FSTCW M2BYTE	Store FPU control word to m2byte after checking for pending unmasked FP exceptions.
+FSTENV	M14/28BYTE	8086	FSTENV M14/28BYTE	Store FPU environment to m14byte or m28byte after checking for pending unmasked FP exceptions. Then mask all FP exceptions.
+FSTP	M32FP	8086	FSTP M32FP	Copy ST(0) to M32fp and pop register stack.
+FSTP	M64FP	8086	FSTP M64FP	Copy ST(0) to M64fp and pop register stack.
+FSTP	M80FP	8086	FSTP M80FP	Copy ST(0) to m80fp and pop register stack.
+FSTP	ST(I)	8086	FSTP ST(I)	Copy ST(0) to ST(i) and pop register stack.
+FSTSW	AX	286	FSTSW AX	Store FPU status word in AX register after checking for pending unmasked FP exceptions.
+FSTSW	M2BYTE	8086	FSTSW M2BYTE	Store FPU status word at m2byte after checking for pending unmasked FP exceptions.
+FSUB	M32FP	8086	FSUB M32FP	Subtract M32fp from ST(0) and store result in ST(0).
+FSUB	M64FP	8086	FSUB M64FP	Subtract M64fp from ST(0) and store result in ST(0).
+FSUB	ST(0),ST(I)	8086	FSUB ST(0),ST(I)	Subtract ST(i) from ST(0) and store result in ST(0).
+FSUB	ST(I),ST(0)	8086	FSUB ST(I),ST(0)	Subtract ST(0) from ST(i) and store result in ST(i).
+FSUBP		8086	FSUBP	Subtract ST(0) from ST(1), store result in ST(1), and pop register stack.
+FSUBP	ST(I),ST(0)	8086	FSUBP ST(I),ST(0)	Subtract ST(0) from ST(i), store result in ST(i), and pop register stack.
+FSUBR	M32FP	8086	FSUBR M32FP	Subtract ST(0) from M32fp and store result in ST(0).
+FSUBR	M64FP	8086	FSUBR M64FP	Subtract ST(0) from M64fp and store result in ST(0).
+FSUBR	ST(0),ST(I)	8086	FSUBR ST(0),ST(I)	Subtract ST(0) from ST(i) and store result in ST(0).
+FSUBR	ST(I),ST(0)	8086	FSUBR ST(I),ST(0)	Subtract ST(i) from ST(0) and store result in ST(i).
+FSUBRP		8086	FSUBRP	Subtract ST(1) from ST(0), store result in ST(1), and pop register stack.
+FSUBRP	ST(I),ST(0)	8086	FSUBRP ST(I),ST(0)	Subtract ST(i) from ST(0), store result in ST(i), and pop register stack.
+FTST		8086	FTST	Compare ST(0) with 0.0.
+FUCOM		386	FUCOM	Compare ST(0) with ST(1).
+FUCOM	ST(I)	386	FUCOM ST(I)	Compare ST(0) with ST(i).
+FUCOMI	ST,ST(I)	P6	FUCOMI ST,ST(I)	Compare ST(0) with ST(i), check for ordered values, and set status flags accordingly.
+FUCOMIP	ST,ST(I)	P6	FUCOMIP ST,ST(I)	Compare ST(0) with ST(i), check for ordered values, set status flags accordingly, and pop register stack.
+FUCOMP		386	FUCOMP	Compare ST(0) with ST(1) and pop register stack.
+FUCOMP	ST(I)	386	FUCOMP ST(I)	Compare ST(0) with ST(i) and pop register stack.
+FUCOMPP		386	FUCOMPP	Compare ST(0) with ST(1) and pop register stack twice.
+
+FXAM		8086	FXAM	Classify value or number in ST(0).
+FXCH		8086	FXCH	Exchange the contents of ST(0) and ST(1).
+FXCH	ST(I)	8086	FXCH ST(I)	Exchange the contents of ST(0) and ST(i).
+FXRSTOR	M512BYTE	SSE3	FXRSTOR M512BYTE	Restore the x87 FPU, MMX, XMM, and MXCSR register state from m512byte.
+FXSAVE	M512BYTE	SSE3	FXSAVE M512BYTE	Save the x87 FPU, MMX, XMM, and MXCSR register state to m512byte.
+FXTRACT		8086	FXTRACT	Separate value in ST(0) into exponent and significand, store exponent in ST(0), and push the significand onto the register stack.
+FYL2X		8086	FYL2X	Replace ST(1) with (ST(1) ∗ log2ST(0)) and pop the register stack.
+FYL2XP1		8086	FYL2XP1	Replace ST(1) with ST(1) ∗ log2(ST(0) + 1.0) and pop the register stack.
+HLT		8086	HLT	Halt
+IDIV	R/M8	8086	IDIV R/M8	Signed divide AX by r/m8, with result stored in: AL ← Quotient, AH ← Remainder.
+IDIV	R/M16	8086	IDIV R/M16	Signed divide DX:AX by r/m16, with result stored in AX ← Quotient, DX ← Remainder.
+IDIV	R/M32	386	IDIV R/M32	Signed divide EDX:EAX by r/m32, with result stored in EAX ← Quotient, EDX ← Remainder.
+IDIV	R/M64	X64	IDIV R/M64	Signed divide RDX:RAX by r/m64, with result stored in RAX ← Quotient, RDX ← Remainder.
+IMUL	R/M8	8086	IMUL R/M8	AX← AL ∗ r/m byte.
+IMUL	R/M16	8086	IMUL R/M16	DX:AX ← AX ∗ r/m word.
+IMUL	R/M32	386	IMUL R/M32	EDX:EAX ← EAX ∗ r/m32.
+IMUL	R/M64	X64	IMUL R/M64	RDX:RAX ← RAX ∗ r/m64.
+IMUL	R16,R/M16	8086	IMUL R16,R/M16	word register ← word register ∗ r/m16.
+IMUL	R16,R/M16,IMM16	8086	IMUL R16,R/M16,IMM16	word register ← r/m16 ∗ immediate word.
+IMUL	R16,R/M16,IMM8	8086	IMUL R16,R/M16,IMM8	word register ← r/m16 ∗ sign-extended immediate byte.
+IMUL	R32,R/M32	386	IMUL R32,R/M32	Dword register ← Dword register ∗ r/m32.
+IMUL	R32,R/M32,IMM32	386	IMUL R32,R/M32,IMM32	Dword register ← r/m32 ∗ immediate Dword.
+IMUL	R32,R/M32,IMM8	386	IMUL R32,R/M32,IMM8	Dword register ← r/m32 ∗ sign-extended immediate byte.
+IMUL	R64,R/M64	X64	IMUL R64,R/M64	Qword register ← Qword register ∗ r/m64.
+IMUL	R64,R/M64,IMM32	X64	IMUL R64,R/M64,IMM32	Qword register ← r/m64 ∗ immediate Dword.
+IMUL	R64,R/M64,IMM8	X64	IMUL R64,R/M64,IMM8	Qword register ← r/m64 ∗ sign-extended immediate byte.
+IN	AL,DX	8086	IN AL,DX	Input byte from I/O port in DX into AL.
+IN	AL,IMM8	8086	IN AL,IMM8	Input byte from imm8 I/O port address into AL.
+IN	AX,DX	8086	IN AX,DX	Input word from I/O port in DX into AX.
+IN	AX,IMM8	8086	IN AX,IMM8	Input word from imm8 I/O port address into AX.
+IN	EAX,DX	386	IN EAX,DX	Input Dword from I/O port in DX into EAX.
+IN	EAX,IMM8	386	IN EAX,IMM8	Input Dword from imm8 I/O port address into EAX.
+
+INC	R/M8	8086	INC R/M8	Increment r/m8 by 1 (does not update CF!).
+INC	R/M16	8086	INC R/M16	Increment r/m16 by 1 (does not update CF!).
+INC	R/M32	386	INC R/M32	Increment r/m32 by 1 (does not update CF!).
+INC	R/M64	X64	INC R/M64	Increment r/m64 by 1 (does not update CF!).
+
+INS	M8,DX	8086	INS M8,DX	Input byte from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.
+INS	M16,DX	8086	INS M16,DX	Input word from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
+INS	M32,DX	386	INS M32,DX	Input Dword from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
+
+INSB		186	INSB	Input byte from I/O port specified in DX into memory location specified with ES:(E)DI or RDI.1
+INSD		386	INSD	Input Dword from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
+INSW		186	INSW	Input word from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
+INTO		8086	INTO	Interrupt 4—if overflow flag is 1.
+INVD		486	INVD	Flush internal caches; initiate flushing of external caches.
+INVLPG	MEM	486	INVLPG MEM	Invalidate Translation Lookaside Buffer (TLB) entries for page containing mem.
+
+IRET		8086	IRET	Interrupt return (16-bit operand size).
+IRETD		386	IRETD	Interrupt return (32-bit operand size).
+
+LAHF		8086	LAHF	Load the lower 8 bits of the EFLAGS into AH: AH ← EFLAGS(SF:ZF:0:AF:0:PF:1:CF) (not supported in 64-bit mode).
+LAR	R16,R16/M16	286	LAR R16,R16/M16	r16 ← access rights referenced by r16/m16
+LAR	REG,R32/M16	386	LAR REG,R32/M16	reg ← access rights referenced by r32/m16
+
+
+
+LDS	R16,M16:16	8086	LDS R16,M16:16	Load DS:r16 with far pointer from memory.
+LDS	R32,M16:32	386	LDS R32,M16:32	Load DS:r32 with far pointer from memory.
+LEA	R16,MEM	8086	LEA R16,MEM	Store effective address for mem in register r16.
+LEA	R32,MEM	386	LEA R32,MEM	Store effective address for mem in register r32.
+LEA	R64,MEM	X64	LEA R64,MEM	Store effective address for mem in register r64.
+LEAVE		186	LEAVE	Set SP to BP, then pop BP.
+LES	R16,M16:16	8086	LES R16,M16:16	Load ES:r16 with far pointer from memory.
+LES	R32,M16:32	386	LES R32,M16:32	Load ES:r32 with far pointer from memory.
+LFENCE		SSE2	LFENCE	Serializes load operations.
+LFS	R16,M16:16	386	LFS R16,M16:16	Load FS:r16 with far pointer from memory.
+LFS	R32,M16:32	386	LFS R32,M16:32	Load FS:r32 with far pointer from memory.
+LFS	R64,M16:64	X64	LFS R64,M16:64	Load FS:r64 with far pointer from memory.
+LGDT	M16&32	286	LGDT M16&32	Load mem into Global Descriptor Table Register (GDTR).
+LGDT	M16&64	X64	LGDT M16&64	Load mem into Global Descriptor Table Register (GDTR).
+LGS	R16,M16:16	386	LGS R16,M16:16	Load GS:r16 with far pointer from memory.
+LGS	R32,M16:32	386	LGS R32,M16:32	Load GS:r32 with far pointer from memory.
+LGS	R64,M16:64	X64	LGS R64,M16:64	Load GS:r64 with far pointer from memory.
+LIDT	M16&32	386	LIDT M16&32	Load m into Interrupt Descriptor Table Register (IDTR).
+LIDT	M16&64	X64	LIDT M16&64	Load m into Interrupt Descriptor Table Register (IDTR).
+LLDT	R/M16	286	LLDT R/M16	Load segment selector r/m16 into LDTR.
+LMSW	R/M16	286	LMSW R/M16	Loads r/m16 in machine status word of CR0.
+
+LOCK		8086	LOCK	Asserts LOCK# signal for duration of the accompanying instruction.
+LODS	M8	8086	LODS M8	For legacy mode, Load byte at address DS:(E)SI into AL. For 64-bit mode load byte at address (R)SI into AL.
+LODS	M16	8086	LODS M16	For legacy mode, Load word at address DS:(E)SI into AX. For 64-bit mode load word at address (R)SI into AX.
+LODS	M32	386	LODS M32	For legacy mode, Load Dword at address DS:(E)SI into EAX. For 64-bit mode load Dword at address (R)SI into EAX.
+LODS	M64	X64	LODS M64	Load Qword at address (R)SI into RAX.
+
+LODSB		8086	LODSB	For legacy mode, Load byte at address DS:(E)SI into AL. For 64-bit mode load byte at address (R)SI into AL.
+LODSW		8086	LODSW	For legacy mode, Load word at address DS:(E)SI into AX. For 64-bit mode load word at address (R)SI into AX.
+LODSD		386	LODSD	For legacy mode, Load Dword at address DS:(E)SI into EAX. For 64-bit mode load Dword at address (R)SI into EAX.
+LODSQ		X64	LODSQ	Load Qword at address (R)SI into RAX.
+
+LOOP	REL8	8086	LOOP REL8	Decrement CX; jump short if CX!=0.
+LOOP	REL8,CX	8086	LOOP REL8,CX	Decrement CX; jump short if CX!=0.
+LOOP	REL8,ECX	386	LOOP REL8,ECX	Decrement ECX; jump short if ECX!=0.
+LOOP	REL8,RCX	X64	LOOP REL8,RCX	Decrement RCX; jump short if RCX!=0.
+
+LOOPE	REL8	8086	LOOPE REL8	Decrement CX; jump short if CX ≠ 0 and ZF = 1.
+LOOPE	REL8,CX	8086	LOOPE REL8,CX	Decrement CX; jump short if CX ≠ 0 and ZF = 1.
+LOOPE	REL8,ECX	386	LOOPE REL8,ECX	Decrement ECX; jump short if ECX ≠ 0 and ZF = 1.
+LOOPE	REL8,RCX	X64	LOOPE REL8,RCX	Decrement RCX; jump short if RCX ≠ 0 and ZF = 1.
+
+LOOPZ	REL8	8086	LOOPE REL8	Decrement CX; jump short if CX ≠ 0 and ZF = 1.
+LOOPZ	REL8,CX	8086	LOOPE REL8,CX	Decrement CX; jump short if CX ≠ 0 and ZF = 1.
+LOOPZ	REL8,ECX	386	LOOPE REL8,ECX	Decrement ECX; jump short if ECX ≠ 0 and ZF = 1.
+LOOPZ	REL8,RCX	X64	LOOPE REL8,RCX	Decrement RCX; jump short if RCX ≠ 0 and ZF = 1.
+
+LOOPNE	REL8	8086	LOOPNE REL8	Decrement CX; jump short if CX ≠ 0 and ZF = 0.
+LOOPNE	REL8,CX	8086	LOOPNE REL8,CX	Decrement CX; jump short if CX ≠ 0 and ZF = 0.
+LOOPNE	REL8,ECX	386	LOOPNE REL8,ECX	Decrement ECX; jump short if ECX ≠ 0 and ZF = 0.
+LOOPNE	REL8,RCX	X64	LOOPNE REL8,RCX	Decrement RCX; jump short if RCX ≠ 0 and ZF = 0.
+
+LOOPNZ	REL8	8086	LOOPNE REL8	Decrement CX; jump short if CX ≠ 0 and ZF = 0.
+LOOPNZ	REL8,CX	8086	LOOPNE REL8,CX	Decrement CX; jump short if CX ≠ 0 and ZF = 0.
+LOOPNZ	REL8,ECX	386	LOOPNE REL8,ECX	Decrement ECX; jump short if ECX ≠ 0 and ZF = 0.
+LOOPNZ	REL8,RCX	X64	LOOPNE REL8,RCX	Decrement RCX; jump short if RCX ≠ 0 and ZF = 0.
+
+LSL	R16,R16/M16	286	LSL R16,R16/M16	Load: r16 ← segment limit, selector r16/m16.
+LSL	R32,R32/M16	386	LSL R32,R32/M16	Load: r32 ← segment limit, selector r32/m16.
+LSL	R64,R32/M16	X64	LSL R64,R32/M16	Load: r64 ← segment limit, selector r32/m16
+LSS	R16,M16:16	286	LSS R16,M16:16	Load SS:r16 with far pointer from memory.
+LSS	R32,M16:32	386	LSS R32,M16:32	Load SS:r32 with far pointer from memory.
+LSS	R64,M16:64	X64	LSS R64,M16:64	Load SS:r64 with far pointer from memory.
+LTR	R/M16	286	LTR R/M16	Load r/m16 into task register.
+
+MASKMOVQ	MM,MM	MMX	MASKMOVQ MM1,MM2	Selectively write bytes from mm1 to memory location using the byte mask in mm2. The default memory location is specified by DS:DI/EDI/RDI.
+
+MFENCE		SSE2	MFENCE	Serializes load and store operations.
+MONITOR		SSE3	MONITOR	Sets up a linear address range to be monitored by hardware and activates the monitor. The address range should be a write-back memory caching type. The address is DS:EAX (DS:RAX in 64-bit mode).
+
+MOV	AL,MOFFS8	8086	MOV AL,MOFFS8	Move byte at (seg:offset) to AL.
+MOV	AX,MOFFS16	8086	MOV AX,MOFFS16	Move word at (seg:offset) to AX.
+MOV	EAX,MOFFS32	386	MOV EAX,MOFFS32	Move Dword at (seg:offset) to EAX.
+MOV	RAX,MOFFS64	X64	MOV RAX,MOFFS64	Move Qword at (offset) to RAX.
+MOV	MOFFS16,AX	8086	MOV MOFFS16,AX	Move AX to (seg:offset).
+MOV	MOFFS32,EAX	386	MOV MOFFS32,EAX	Move EAX to (seg:offset).
+MOV	MOFFS64,RAX	X64	MOV MOFFS64,RAX	Move RAX to (offset).
+MOV	MOFFS8,AL	8086	MOV MOFFS8,AL	Move AL to (seg:offset).
+MOV	R/M8,IMM8	8086	MOV R/M8,IMM8	Move imm8 to r/m8.
+MOV	R/M8,R8	8086	MOV R/M8,R8	Move r8 to r/m8.
+MOV	R/M16,IMM16	8086	MOV R/M16,IMM16	Move imm16 to r/m16.
+MOV	R/M16,R16	8086	MOV R/M16,R16	Move r16 to r/m16.
+MOV	R/M16,SREG	8086	MOV R/M16,SREG	Move segment register to r/m16.
+MOV	R/M32,IMM32	386	MOV R/M32,IMM32	Move imm32 to r/m32.
+MOV	R/M32,R32	386	MOV R/M32,R32	Move r32 to r/m32.
+MOV	R/M64,IMM32	X64	MOV R/M64,IMM32	Move imm32 sign extended to 64-bits to r/m64.
+MOV	R/M64,R64	X64	MOV R/M64,R64	Move r64 to r/m64.
+MOV	R/M64,SREG	X64	MOV R/M64,SREG	Move zero extended 16-bit segment register to r/m64.
+MOV	R8,IMM8	8086	MOV R8,IMM8	Move imm8 to r8.
+MOV	R8,R/M8	8086	MOV R8,R/M8	Move r/m8 to r8.
+MOV	R16,IMM16	8086	MOV R16,IMM16	Move imm16 to r16.
+MOV	R16,R/M16	8086	MOV R16,R/M16	Move r/m16 to r16.
+MOV	R32,IMM32	386	MOV R32,IMM32	Move imm32 to r32.
+MOV	R32,R/M32	386	MOV R32,R/M32	Move r/m32 to r32.
+MOV	R64,IMM64	X64	MOV R64,IMM64	Move imm64 to r64.
+MOV	R64,R/M64	X64	MOV R64,R/M64	Move r/m64 to r64.
+MOV	SREG,R/M16	8086	MOV SREG,R/M16	Move r/m16 to segment register.
+MOV	SREG,R/M64	X64	MOV SREG,R/M64	Move lower 16 bits of r/m64 to segment register.
+
+MOVBE	M16,R16	SSE42	MOVBE M16,R16	Reverse byte order in r16 and move to m16.
+MOVBE	M32,R32	SSE42	MOVBE M32,R32	Reverse byte order in r32 and move to m32.
+MOVBE	M64,R64	SSE42	MOVBE M64,R64	Reverse byte order in r64 and move to m64.
+MOVBE	R16,M16	SSE42	MOVBE R16,M16	Reverse byte order in m16 and move to r16.
+MOVBE	R32,M32	SSE42	MOVBE R32,M32	Reverse byte order in m32 and move to r32.
+MOVBE	R64,M64	SSE42	MOVBE R64,M64	Reverse byte order in m64 and move to r64.
+
+MOVDQ2Q	MM,XMM	SSE2	MOVDQ2Q MM,XMM	Move low Qword from xmm to mmx register.
+MOVQ2DQ	XMM,MM	SSE2	MOVQ2DQ XMM,MM	Move Qword from mmx to low Qword of xmm.
+MOVNTI	M32,R32	MMX	MOVNTI M32,R32	Move Dword from r32 to m32 using non-temporal hint.
+MOVNTI	M64,R64	X64	MOVNTI M64,R64	Move Qword from r64 to m64 using non-temporal hint.
+MOVNTQ	M64,MM	MMX	MOVNTQ M64,MM	Move Qword from mm to m64 using non-temporal hint.
+
+MOVS	M8,M8	8086	MOVS M8,M8	For legacy mode, Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.
+MOVS	M16,M16	8086	MOVS M16,M16	For legacy mode, move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.
+MOVS	M32,M32	386	MOVS M32,M32	For legacy mode, move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.
+MOVS	M64,M64	X64	MOVS M64,M64	Move Qword from address (R|E)SI to (R|E)DI.
+
+MOVSB		8086	MOVSB	For legacy mode, Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.
+MOVSD		386	MOVSD	For legacy mode, move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.
+MOVSW		8086	MOVSW	For legacy mode, move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.
+MOVSQ		X64	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.
+
+MOVSX	R16,R/M8	386	MOVSX R16,R/M8	Move byte to word with sign-extension.
+MOVSX	R32,R/M16	386	MOVSX R32,R/M16	Move word to Dword, with sign-extension.
+MOVSX	R32,R/M8	386	MOVSX R32,R/M8	Move byte to Dword with sign-extension.
+MOVSX	R64,R/M16	X64	MOVSX R64,R/M16	Move word to Qword with sign-extension.
+MOVSX	R64,R/M8	X64	MOVSX R64,R/M8	Move byte to Qword with sign-extension.
+MOVSXD	R64,R/M32	X64	MOVSXD R64,R/M32	Move Dword to Qword with sign-extension.
+MOVZX	R16,R/M8	386	MOVZX R16,R/M8	Move byte to word with zero-extension.
+MOVZX	R32,R/M16	386	MOVZX R32,R/M16	Move word to Dword, zero-extension.
+MOVZX	R32,R/M8	386	MOVZX R32,R/M8	Move byte to Dword, zero-extension.
+MOVZX	R64,R/M16	X64	MOVZX R64,R/M16	Move word to Qword, zero-extension.
+MOVZX	R64,R/M8	X64	MOVZX R64,R/M8	Move byte to Qword, zero-extension.
+
+MUL	R/M8	8086	MUL R/M8	Unsigned multiply (AX ← AL ∗ r/m8).
+MUL	R/M16	8086	MUL R/M16	Unsigned multiply (DX:AX ← AX ∗ r/m16).
+MUL	R/M32	386	MUL R/M32	Unsigned multiply (EDX:EAX ← EAX ∗ r/m32).
+MUL	R/M64	X64	MUL R/M64	Unsigned multiply (RDX:RAX ← RAX ∗ r/m64).
+MWAIT		SSE3	MWAIT	A hint that allow the processor to stop instruction execution and enter an implementation-dependent optimized state until occurrence of a class of events.
+NEG	R/M8	8086	NEG R/M8	Two's complement negate r/m8.
+NEG	R/M16	8086	NEG R/M16	Two's complement negate r/m16.
+NEG	R/M32	386	NEG R/M32	Two's complement negate r/m32.
+NEG	R/M64	X64	NEG R/M64	Two's complement negate r/m64.
+
+NOP		8086	NOP	One byte no-operation instruction.
+NOP	R/M16	8086	NOP R/M16	Multi-byte no-operation instruction.
+NOP	R/M32	386	NOP R/M32	Multi-byte no-operation instruction.
+
+NOT	R/M8	8086	NOT R/M8	Reverse each bit of r/m8.
+NOT	R/M16	8086	NOT R/M16	Reverse each bit of r/m16.
+NOT	R/M32	386	NOT R/M32	Reverse each bit of r/m32.
+NOT	R/M64	X64	NOT R/M64	Reverse each bit of r/m64.
+
+OR	R/M8,IMM8	8086	OR R/M8,IMM8	r/m8 OR imm8.
+OR	R/M8,R8	8086	OR R/M8,R8	r/m8 OR r8.
+OR	R/M16,IMM16	8086	OR R/M16,IMM16	r/m16 OR imm16.
+OR	R/M16,IMM8	8086	OR R/M16,IMM8	r/m16 OR imm8 (sign-extended).
+OR	R/M16,R16	8086	OR R/M16,R16	r/m16 OR r16.
+OR	R/M32,IMM32	386	OR R/M32,IMM32	r/m32 OR imm32.
+OR	R/M32,IMM8	386	OR R/M32,IMM8	r/m32 OR imm8 (sign-extended).
+OR	R/M32,R32	386	OR R/M32,R32	r/m32 OR r32.
+OR	R/M64,IMM32	X64	OR R/M64,IMM32	r/m64 OR imm32 (sign-extended).
+OR	R/M64,IMM8	X64	OR R/M64,IMM8	r/m64 OR imm8 (sign-extended).
+OR	R/M64,R64	X64	OR R/M64,R64	r/m64 OR r64.
+OR	R8,R/M8	8086	OR R8,R/M8	r8 OR r/m8.
+OR	R16,R/M16	8086	OR R16,R/M16	r16 OR r/m16.
+OR	R32,R/M32	386	OR R32,R/M32	r32 OR r/m32.
+OR	R64,R/M64	X64	OR R64,R/M64	r64 OR r/m64.
+
+OUT	DX,AL	8086	OUT DX,AL	Output byte in AL to I/O port address in DX.
+OUT	DX,AX	8086	OUT DX,AX	Output word in AX to I/O port address in DX.
+OUT	DX,EAX	386	OUT DX,EAX	Output Dword in EAX to I/O port address in DX.
+OUT	IMM8,AL	8086	OUT IMM8,AL	Output byte in AL to I/O port address imm8.
+OUT	IMM8,AX	8086	OUT IMM8,AX	Output word in AX to I/O port address imm8.
+OUT	IMM8,EAX	386	OUT IMM8,EAX	Output Dword in EAX to I/O port address imm8.
+OUTS	DX,M16	8086	OUTS DX,M16	Output word from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
+OUTS	DX,M32	386	OUTS DX,M32	Output Dword from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
+OUTS	DX,M8	8086	OUTS DX,M8	Output byte from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
+OUTSB		186	OUTSB	Output byte from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
+OUTSD		386	OUTSD	Output Dword from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
+OUTSW		186	OUTSW	Output word from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
+PAUSE		8086	PAUSE	Gives hint to processor that improves performance of spin-wait loops.
+
+POP	DS	8086	POP DS	Pop top of stack into DS; increment stack pointer (not supported in 64-bit mode).
+POP	SS	8086	POP SS	Pop top of stack into SS; increment stack pointer (not supported in 64-bit mode).
+POP	ES	8086	POP ES	Pop top of stack into ES; increment stack pointer (not supported in 64-bit mode).
+POP	FS	386	POP FS	Pop top of stack into FS; increment stack pointer by 16 bits.
+POP	GS	386	POP GS	Pop top of stack into GS; increment stack pointer by 16 bits.
+POP	R/M16	8086	POP R/M16	Pop top of stack into r/m16; increment stack pointer.
+POP	R/M32	386	POP R/M32	Pop top of stack into r/m32; increment stack pointer.
+POP	R/M64	X64	POP R/M64	Pop top of stack into r/m64; increment stack pointer. Cannot encode 32-bit operand size.
+
+POPA		186	POPA	Pop DI, SI, BP, BX, DX, CX, and AX.
+POPAD		386	POPAD	Pop EDI, ESI, EBP, EBX, EDX, ECX, and EAX.
+POPCNT	R16,R/M16	SSE42	POPCNT R16,R/M16	Count the number of bits set to 1 in r/m16, store result in r16.
+POPCNT	R32,R/M32	SSE42	POPCNT R32,R/M32	Count the number of bits set to 1 in r/m32, store result in r32.
+POPCNT	R64,R/M64	SSE42	POPCNT R64,R/M64	Count the number of bits set to 1 in r/m64, store result in r64.
+POPF		8086	POPF	Pop top of stack into lower 16 bits of EFLAGS.
+POPFD		386	POPFD	Pop top of stack into EFLAGS (Not supported in 64-bit mode).
+POPFQ		X64	POPFQ	Pop top of stack and zero-extend into RFLAGS.
+
+PREFETCHNTA	M8	SSE	PREFETCHNTA M8	Move data from m8 closer to the processor using NTA hint.
+PREFETCHT0	M8	SSE	PREFETCHT0 M8	Move data from m8 closer to the processor using T0 hint.
+PREFETCHT1	M8	SSE	PREFETCHT1 M8	Move data from m8 closer to the processor using T1 hint.
+PREFETCHT2	M8	SSE	PREFETCHT2 M8	Move data from m8 closer to the processor using T2 hint.
+PSHUFW	MM,MM/M64,IMM8	MMX	PSHUFW MM1,MM2/M64,IMM8	Shuffle the words in mm2/m64 based on the encoding in imm8 and store the result in mm1.
+
+PUSH	CS	8086	PUSH CS	Push CS onto stack (not supported in 64-bit mode).
+PUSH	DS	8086	PUSH DS	Push DS onto stack (not supported in 64-bit mode).
+PUSH	SS	8086	PUSH SS	Push SS onto stack (not supported in 64-bit mode).
+PUSH	ES	8086	PUSH ES	Push ES onto stack (not supported in 64-bit mode).
+PUSH	FS	386	PUSH FS	Push FS onto stack.
+PUSH	GS	386	PUSH GS	Push GS onto stack.
+PUSH	IMM8	8086	PUSH IMM8	Push imm8 onto stack.
+PUSH	IMM16	8086	PUSH IMM16	Push imm16 onto stack.
+PUSH	IMM32	386	PUSH IMM32	Push imm32 onto stack.
+PUSH	R/M16	8086	PUSH R/M16	Push r/m16 onto stack.
+PUSH	R/M32	386	PUSH R/M32	Push r/m32 onto stack.
+PUSH	R/M64	X64	PUSH R/M64	Push r/m64 onto stack.
+
+PUSHA		186	PUSHA	Push AX, CX, DX, BX, original SP, BP, SI, and DI.
+PUSHAD		386	PUSHAD	Push EAX, ECX, EDX, EBX, original ESP, EBP, ESI, and EDI.
+PUSHF		8086	PUSHF	Push lower 16 bits of EFLAGS onto stack.
+PUSHFD		386	PUSHFD	Push EFLAGS onto stack (not supported in 64-bit mode).
+PUSHFQ		X64	PUSHFQ	Push RFLAGS onto stack (64-bits mode only).
+
+RCL	R/M8,1	8086	RCL R/M8,1	Rotate 9 bits (CF, r/m8) left once.
+RCL	R/M8,CL	8086	RCL R/M8,CL	Rotate 9 bits (CF, r/m8) left CL times.
+RCL	R/M8,IMM8	186	RCL R/M8,IMM8	Rotate 9 bits (CF, r/m8) left imm8 times.
+RCL	R/M16,1	8086	RCL R/M16,1	Rotate 17 bits (CF, r/m16) left once.
+RCL	R/M16,CL	8086	RCL R/M16,CL	Rotate 17 bits (CF, r/m16) left CL times.
+RCL	R/M16,IMM8	186	RCL R/M16,IMM8	Rotate 17 bits (CF, r/m16) left imm8 times.
+RCL	R/M32,1	386	RCL R/M32,1	Rotate 33 bits (CF, r/m32) left once.
+RCL	R/M32,CL	386	RCL R/M32,CL	Rotate 33 bits (CF, r/m32) left CL times.
+RCL	R/M32,IMM8	386	RCL R/M32,IMM8	Rotate 33 bits (CF, r/m32) left imm8 times.
+RCL	R/M64,1	X64	RCL R/M64,1	Rotate 65 bits (CF, r/m64) left once. Uses a 6 bit count.
+RCL	R/M64,CL	X64	RCL R/M64,CL	Rotate 65 bits (CF, r/m64) left CL times. Uses a 6 bit count.
+RCL	R/M64,IMM8	X64	RCL R/M64,IMM8	Rotate 65 bits (CF, r/m64) left imm8 times. Uses a 6 bit count.
+
+RCR	R/M8,1	8086	RCR R/M8,1	Rotate 9 bits (CF, r/m8) right once.
+RCR	R/M8,CL	186	RCR R/M8,CL	Rotate 9 bits (CF, r/m8) right CL times.
+RCR	R/M8,IMM8	8086	RCR R/M8,IMM8	Rotate 9 bits (CF, r/m8) right imm8 times.
+RCR	R/M16,1	8086	RCR R/M16,1	Rotate 17 bits (CF, r/m16) right once.
+RCR	R/M16,CL	8086	RCR R/M16,CL	Rotate 17 bits (CF, r/m16) right CL times.
+RCR	R/M16,IMM8	186	RCR R/M16,IMM8	Rotate 17 bits (CF, r/m16) right imm8 times.
+RCR	R/M32,1	386	RCR R/M32,1	Rotate 33 bits (CF, r/m32) right once. Uses a 6 bit count.
+RCR	R/M32,CL	386	RCR R/M32,CL	Rotate 33 bits (CF, r/m32) right CL times.
+RCR	R/M32,IMM8	386	RCR R/M32,IMM8	Rotate 33 bits (CF, r/m32) right imm8 times.
+RCR	R/M64,1	X64	RCR R/M64,1	Rotate 65 bits (CF, r/m64) right once. Uses a 6 bit count.
+RCR	R/M64,CL	X64	RCR R/M64,CL	Rotate 65 bits (CF, r/m64) right CL times. Uses a 6 bit count.
+RCR	R/M64,IMM8	X64	RCR R/M64,IMM8	Rotate 65 bits (CF, r/m64) right imm8 times. Uses a 6 bit count.
+
+RDMSR		PENT	RDMSR	Read MSR specified by ECX into EDX:EAX.
+RDPKRU		X64	RDPKRU	Reads PKRU (Protection Key Rights for User Pages) into EAX.
+RDPMC		P6	RDPMC	Read performance-monitoring counter specified by ECX into EDX:EAX.
+RDTSC		PENT	RDTSC	Read time-stamp counter into EDX:EAX.
+RDTSCP		X64	RDTSCP	Read 64-bit time-stamp counter and IA32_TSC_AUX value into EDX:EAX and ECX.
+
+RET		8086	RET	Near return to calling procedure.
+RET	IMM16	8086	RET IMM16	Near return to calling procedure and pop imm16 bytes from stack.
+
+ROL	R/M8,1	8086	ROL R/M8,1	Rotate 8 bits r/m8 left once.
+ROL	R/M8,CL	186	ROL R/M8,CL	Rotate 8 bits r/m8 left CL times.
+ROL	R/M8,IMM8	8086	ROL R/M8,IMM8	Rotate 8 bits r/m8 left imm8 times.
+ROL	R/M16,1	8086	ROL R/M16,1	Rotate 16 bits r/m16 left once.
+ROL	R/M16,CL	186	ROL R/M16,CL	Rotate 16 bits r/m16 left CL times.
+ROL	R/M16,IMM8	8086	ROL R/M16,IMM8	Rotate 16 bits r/m16 left imm8 times.
+ROL	R/M32,1	386	ROL R/M32,1	Rotate 32 bits r/m32 left once.
+ROL	R/M32,CL	386	ROL R/M32,CL	Rotate 32 bits r/m32 left CL times.
+ROL	R/M32,IMM8	386	ROL R/M32,IMM8	Rotate 32 bits r/m32 left imm8 times.
+ROL	R/M64,1	X64	ROL R/M64,1	Rotate 64 bits r/m64 left once. Uses a 6 bit count.
+ROL	R/M64,CL	X64	ROL R/M64,CL	Rotate 64 bits r/m64 left CL times. Uses a 6 bit count.
+ROL	R/M64,IMM8	X64	ROL R/M64,IMM8	Rotate 64 bits r/m64 left imm8 times. Uses a 6 bit count.
+
+ROR	R/M8,1	8086	ROL R/M8,1	Rotate 8 bits r/m8 right once.
+ROR	R/M8,CL	186	ROL R/M8,CL	Rotate 8 bits r/m8 right CL times.
+ROR	R/M8,IMM8	8086	ROL R/M8,IMM8	Rotate 8 bits r/m8 right imm8 times.
+ROR	R/M16,1	8086	ROR R/M16,1	Rotate 16 bits r/m16 right once.
+ROR	R/M16,CL	186	ROR R/M16,CL	Rotate 16 bits r/m16 right CL times.
+ROR	R/M16,IMM8	8086	ROR R/M16,IMM8	Rotate 16 bits r/m16 right imm8 times.
+ROR	R/M32,1	386	ROR R/M32,1	Rotate 32 bits r/m32 right once.
+ROR	R/M32,CL	386	ROR R/M32,CL	Rotate 32 bits r/m32 right CL times.
+ROR	R/M32,IMM8	386	ROR R/M32,IMM8	Rotate 32 bits r/m32 right imm8 times.
+ROR	R/M64,1	X64	ROR R/M64,1	Rotate 64 bits r/m64 right once. Uses a 6 bit count.
+ROR	R/M64,CL	X64	ROR R/M64,CL	Rotate 64 bits r/m64 right CL times. Uses a 6 bit count.
+ROR	R/M64,IMM8	X64	ROR R/M64,IMM8	Rotate 64 bits r/m64 right imm8 times. Uses a 6 bit count.
+
+RSM		PENT	RSM	Resume operation of interrupted program.
+SAHF		8086	SAHF	Loads SF, ZF, AF, PF, and CF from AH into EFLAGS register (not supported in 64-bit mode).
+
+SAL	R/M8,1	8086	SAL R/M8,1	Multiply r/m8 by 2, once.
+SAL	R/M8,CL	186	SAL R/M8,CL	Multiply r/m8 by 2, CL times.
+SAL	R/M8,IMM8	8086	SAL R/M8,IMM8	Multiply r/m8 by 2, imm8 times.
+SAL	R/M16,1	8086	SAL R/M16,1	Multiply r/m16 by 2, once.
+SAL	R/M16,CL	186	SAL R/M16,CL	Multiply r/m16 by 2, CL times.
+SAL	R/M16,IMM8	8086	SAL R/M16,IMM8	Multiply r/m16 by 2, imm8 times.
+SAL	R/M32,1	386	SAL R/M32,1	Multiply r/m32 by 2, once.
+SAL	R/M32,CL	386	SAL R/M32,CL	Multiply r/m32 by 2, CL times.
+SAL	R/M32,IMM8	386	SAL R/M32,IMM8	Multiply r/m32 by 2, imm8 times.
+SAL	R/M64,1	X64	SAL R/M64,1	Multiply r/m64 by 2, once.
+SAL	R/M64,CL	X64	SAL R/M64,CL	Multiply r/m64 by 2, CL times.
+SAL	R/M64,IMM8	X64	SAL R/M64,IMM8	Multiply r/m64 by 2, imm8 times.
+
+SAR	R/M8,1	8086	SAR R/M8,1	Signed divide r/m8 by 2, once.
+SAR	R/M8,CL	186	SAR R/M8,CL	Signed divide r/m8 by 2, CL times.
+SAR	R/M8,IMM8	8086	SAR R/M8,IMM8	Signed divide r/m8 by 2, imm8 time.
+SAR	R/M16,1	8086	SAR R/M16,1	Signed divide r/m16 by 2, once.
+SAR	R/M16,CL	186	SAR R/M16,CL	Signed divide r/m16 by 2, CL times.
+SAR	R/M16,IMM8	8086	SAR R/M16,IMM8	Signed divide r/m16 by 2, imm8 times.
+SAR	R/M32,1	386	SAR R/M32,1	Signed divide r/m32 by 2, once.
+SAR	R/M32,CL	386	SAR R/M32,CL	Signed divide r/m32 by 2, CL times.
+SAR	R/M32,IMM8	386	SAR R/M32,IMM8	Signed divide r/m32 by 2, imm8 times.
+SAR	R/M64,1	X64	SAR R/M64,1	Signed divide r/m64 by 2, once.
+SAR	R/M64,CL	X64	SAR R/M64,CL	Signed divide r/m64 by 2, CL times.
+SAR	R/M64,IMM8	X64	SAR R/M64,IMM8	Signed divide r/m64 by 2, imm8 times
+
+SHR	R/M8,1	8086	SHR R/M8,1	Unsigned divide r/m8 by 2, once.
+SHR	R/M8,CL	186	SHR R/M8,CL	Unsigned divide r/m8 by 2, CL times.
+SHR	R/M8,IMM8	8086	SHR R/M8,Unsigned divide	Unsigned divide r/m8 by 2, imm8 times.
+SHR	R/M16,1	8086	SHR R/M16,1	Multiply r/m16 by 2, once.
+SHR	R/M16,CL	186	SHR R/M16,CL	Unsigned divide r/m16 by 2, CL times.
+SHR	R/M16,IMM8	8086	SHR R/M16,IMM8	Unsigned divide r/m16 by 2, imm8 times.
+SHR	R/M32,1	386	SHR R/M32,1	Unsigned divide r/m32 by 2, once.
+SHR	R/M32,CL	386	SHR R/M32,CL	Unsigned divide r/m32 by 2, CL times.
+SHR	R/M32,IMM8	386	SHR R/M32,IMM8	Unsigned divide r/m32 by 2, imm8 times.
+SHR	R/M64,1	X64	SHR R/M64,1	Unsigned divide r/m64 by 2, once.
+SHR	R/M64,CL	X64	SHR R/M64,CL	Unsigned divide r/m64 by 2, CL times.
+SHR	R/M64,IMM8	X64	SHR R/M64,IMM8	Unsigned divide r/m64 by 2, imm8 times.
+
+SBB	R/M8,IMM8	8086	SBB R/M8,IMM8	Subtract with borrow imm8 from r/m8.
+SBB	R/M8,R8	8086	SBB R/M8,R8	Subtract with borrow r8 from r/m8.
+SBB	R/M16,IMM8	8086	SBB R/M16,IMM8	Subtract with borrow sign-extended imm8 from r/m16.
+SBB	R/M16,IMM16	8086	SBB R/M16,IMM16	Subtract with borrow imm16 from r/m16.
+SBB	R/M16,R16	8086	SBB R/M16,R16	Subtract with borrow r16 from r/m16.
+SBB	R/M32,IMM8	386	SBB R/M32,IMM8	Subtract with borrow sign-extended imm8 from r/m32.
+SBB	R/M32,IMM32	8086	SBB R/M32,IMM32	Subtract with borrow imm32 from r/m32.
+SBB	R/M32,R32	386	SBB R/M32,R32	Subtract with borrow r32 from r/m32.
+SBB	R/M64,IMM8	X64	SBB R/M64,IMM8	Subtract with borrow sign-extended imm8 from r/m64.
+SBB	R/M64,IMM32	X64	SBB R/M64,IMM32	Subtract with borrow sign-extended imm32 to 64-bits from r/m64.
+SBB	R/M64,R64	X64	SBB R/M64,R64	Subtract with borrow r64 from r/m64.
+SBB	R8,R/M8	8086	SBB R8,R/M8	Subtract with borrow r/m8 from r8.
+SBB	R16,R/M16	8086	SBB R16,R/M16	Subtract with borrow r/m16 from r16.
+SBB	R32,R/M32	386	SBB R32,R/M32	Subtract with borrow r/m32 from r32.
+SBB	R64,R/M64	X64	SBB R64,R/M64	Subtract with borrow r/m64 from r64.
+
+SCAS	M8	8086	SCAS M8	Compare AL with byte at ES:(E)DI or RDI, then set status flags.
+SCAS	M16	8086	SCAS M16	Compare AX with word at ES:(E)DI or RDI, then set status flags.
+SCAS	M32	386	SCAS M32	Compare EAX with Dword at ES(E)DI or RDI then set status flags.
+SCAS	M64	X64	SCAS M64	Compare RAX with Qword at RDI or EDI then set status flags.
+
+SCASB		8086	SCASB	Compare AL with byte at ES:(E)DI or RDI then set status flags.
+SCASD		386	SCASD	Compare EAX with Dword at ES:(E)DI or RDI then set status flags.
+SCASW		8086	SCASW	Compare AX with word at ES:(E)DI or RDI then set status flags.
+SFENCE		X64	SFENCE	Serializes store operations.
+SGDT	MEM	286	SGDT MEM	Store Global Descriptor Table Register (GDTR) to mem.
+
+SHL	R/M8,1	8086	SHL R/M8,1	Multiply r/m8 by 2, once.
+SHL	R/M8,CL	186	SHL R/M8,CL	Multiply r/m8 by 2, CL times.
+SHL	R/M8,IMM8	8086	SHL R/M8,IMM8	Multiply r/m8 by 2, imm8 times.
+SHL	R/M16,1	8086	SHL R/M16,1	Multiply r/m16 by 2, once.
+SHL	R/M16,CL	186	SHL R/M16,CL	Multiply r/m16 by 2, CL times.
+SHL	R/M16,IMM8	8086	SHL R/M16,IMM8	Multiply r/m16 by 2, imm8 times.
+SHL	R/M32,1	386	SHL R/M32,1	Multiply r/m32 by 2, once.
+SHL	R/M32,CL	386	SHL R/M32,CL	Multiply r/m32 by 2, CL times.
+SHL	R/M32,IMM8	386	SHL R/M32,IMM8	Multiply r/m32 by 2, imm8 times.
+SHL	R/M64,1	X64	SHL R/M64,1	Multiply r/m64 by 2, once.
+SHL	R/M64,CL	X64	SHL R/M64,CL	Multiply r/m64 by 2, CL times.
+SHL	R/M64,IMM8	X64	SHL R/M64,IMM8	Multiply r/m64 by 2, imm8 times.
+
+SHLD	R/M16,R16,CL	386	SHLD R/M16,R16,CL	Shift r/m16 to left CL places while shifting bits from r16 in from the right.
+SHLD	R/M16,R16,IMM8	386	SHLD R/M16,R16,IMM8	Shift r/m16 to left imm8 places while shifting bits from r16 in from the right.
+SHLD	R/M32,R32,CL	386	SHLD R/M32,R32,CL	Shift r/m32 to left CL places while shifting bits from r32 in from the right.
+SHLD	R/M32,R32,IMM8	386	SHLD R/M32,R32,IMM8	Shift r/m32 to left imm8 places while shifting bits from r32 in from the right.
+SHLD	R/M64,R64,CL	X64	SHLD R/M64,R64,CL	Shift r/m64 to left CL places while shifting bits from r64 in from the right.
+SHLD	R/M64,R64,IMM8	X64	SHLD R/M64,R64,IMM8	Shift r/m64 to left imm8 places while shifting bits from r64 in from the right.
+
+SHRD	R/M16,R16,CL	386	SHRD R/M16,R16,CL	Shift r/m16 to right CL places while shifting bits from r16 in from the left.
+SHRD	R/M16,R16,IMM8	386	SHRD R/M16,R16,IMM8	Shift r/m16 to right imm8 places while shifting bits from r16 in from the left.
+SHRD	R/M32,R32,CL	386	SHRD R/M32,R32,CL	Shift r/m32 to right CL places while shifting bits from r32 in from the left.
+SHRD	R/M32,R32,IMM8	386	SHRD R/M32,R32,IMM8	Shift r/m32 to right imm8 places while shifting bits from r32 in from the left.
+SHRD	R/M64,R64,CL	X64	SHRD R/M64,R64,CL	Shift r/m64 to right CL places while shifting bits from r64 in from the left.
+SHRD	R/M64,R64,IMM8	X64	SHRD R/M64,R64,IMM8	Shift r/m64 to right imm8 places while shifting bits from r64 in from the left.
+
+SIDT	MEM	286	SIDT MEM	Store Interrupt Descriptor Table Register (IDTR) to mem.
+SLDT	R/M16	286	SLDT R/M16	Stores segment selector from Local Descriptor Table Register (LDTR) in r/m16.
+SLDT	R64/M16	X64	SLDT R64/M16	Stores segment selector from Local Descriptor Table Register (LDTR) in r64/m16.
+
+SMSW	R/M16	286	SMSW R/M16	Store machine status word to r/m16.
+SMSW	R32/M16	386	SMSW R32/M16	Store machine status word in low-order 16 bits of r32/m16; high-order 16 bits of r32 are undefined.
+SMSW	R64/M16	X64	SMSW R64/M16	Store machine status word in low-order 16 bits of r64/m16; high-order 16 bits of r32 are undefined.
+
+STAC		486	STAC	Set the Alignment Check (AC) flag in the EFLAGS register.
+STC		8086	STC	Set CF flag.
+STD		8086	STD	Set DF flag.
+STI		8086	STI	Set interrupt flag; external, maskable interrupts enabled at the end of the next instruction.
+
+STOS	M8	8086	STOS M8	For legacy mode, store AL at address ES:(E)DI; For 64-bit mode store AL at address RDI or EDI.
+STOS	M16	8086	STOS M16	For legacy mode, store AX at address ES:(E)DI; For 64-bit mode store AX at address RDI or EDI.
+STOS	M32	386	STOS M32	For legacy mode, store EAX at address ES:(E)DI; For 64-bit mode store EAX at address RDI or EDI.
+STOS	M64	X64	STOS M64	Store RAX at address RDI or EDI.
+
+STOSB		8086	STOSB	For legacy mode, store AL at address ES:(E)DI; For 64-bit mode store AL at address RDI or EDI.
+STOSD		386	STOSD	For legacy mode, store EAX at address ES:(E)DI; For 64-bit mode store EAX at address RDI or EDI.
+STOSQ		X64	STOSQ	Store RAX at address RDI or EDI.
+STOSW		8086	STOSW	For legacy mode, store AX at address ES:(E)DI; For 64-bit mode store AX at address RDI or EDI.
+
+STR	R/M16	286	STR R/M16	Stores segment selector from Task Register (TR) in r/m16.
+STR	R32	386	STR R32	Stores segment selector from Task Register (TR) in r32.
+STR	R64	X64	STR R64	Stores segment selector from Task Register (TR) in r64.
+
+SUB	R/M8,IMM8	8086	SUB R/M8,IMM8	Subtract imm8 from r/m8.
+SUB	R/M8,R8	8086	SUB R/M8,R8	Subtract r8 from r/m8.
+SUB	R/M16,IMM8	8086	SUB R/M16,IMM8	Subtract sign-extended imm8 from r/m16.
+SUB	R/M16,IMM16	8086	SUB R/M16,IMM16	Subtract imm16 from r/m16.
+SUB	R/M16,R16	8086	SUB R/M16,R16	Subtract r16 from r/m16.
+SUB	R/M32,IMM8	386	SUB R/M32,IMM8	Subtract sign-extended imm8 from r/m32.
+SUB	R/M32,IMM32	386	SUB R/M32,IMM32	Subtract imm32 from r/m32.
+SUB	R/M32,R32	386	SUB R/M32,R32	Subtract r32 from r/m32.
+SUB	R/M64,IMM8	X64	SUB R/M64,IMM8	Subtract sign-extended imm8 from r/m64.
+SUB	R/M64,IMM32	X64	SUB R/M64,IMM32	Subtract imm32 sign-extended to 64-bits from r/m64.
+SUB	R/M64,R64	X64	SUB R/M64,R64	Subtract r64 from r/m64.
+SUB	R8,R/M8	8086	SUB R8,R/M8	Subtract r/m8 from r8.
+SUB	R16,R/M16	8086	SUB R16,R/M16	Subtract r/m16 from r16.
+SUB	R32,R/M32	386	SUB R32,R/M32	Subtract r/m32 from r32.
+SUB	R64,R/M64	X64	SUB R64,R/M64	Subtract r/m64 from r64.
+
+SWAPGS		X64	SWAPGS	Exchanges the current GS base register value with the value contained in MSR address C0000102H.
+SYSCALL		P6	SYSCALL	Fast call to privilege level 0 system procedures.
+SYSENTER		P6	SYSENTER	Fast call to privilege level 0 system procedures.
+SYSEXIT		P6	SYSEXIT	Fast return to privilege level 3 user code.
+SYSRET		P6	SYSRET	Return to compatibility mode from fast system call
+
+TEST	R/M8,IMM8	8086	TEST R/M8,IMM8	AND imm8 with r/m8; set SF, ZF, PF according to result.
+TEST	R/M8,R8	8086	TEST R/M8,R8	AND r8 with r/m8; set SF, ZF, PF according to result.
+TEST	R/M16,IMM16	8086	TEST R/M16,IMM16	AND imm16 with r/m16; set SF, ZF, PF according to result.
+TEST	R/M16,R16	8086	TEST R/M16,R16	AND r16 with r/m16; set SF, ZF, PF according to result.
+TEST	R/M32,IMM32	386	TEST R/M32,IMM32	AND imm32 with r/m32; set SF, ZF, PF according to result.
+TEST	R/M32,R32	386	TEST R/M32,R32	AND r32 with r/m32; set SF, ZF, PF according to result.
+TEST	R/M64,IMM32	X64	TEST R/M64,IMM32	AND imm32 sign-extended to 64-bits with r/m64; set SF, ZF, PF according to result.
+TEST	R/M64,R64	X64	TEST R/M64,R64	AND r64 with r/m64; set SF, ZF, PF according to result.
+
+VERR	R/M16	286	VERR R/M16	Set ZF=1 if segment specified with r/m16 can be read.
+VERW	R/M16	286	VERW R/M16	Set ZF=1 if segment specified with r/m16 can be written.
+
+WAIT		8086	WAIT	Check pending unmasked FP exceptions.
+FWAIT		8086	FWAIT	Check pending unmasked FP exceptions.
+
+WBINVD		486	WBINVD	Write back and flush Internal caches; initiate writing-back and flushing of external caches.
+WRMSR		PENT	WRMSR	Write the value in EDX:EAX to Model Specific Register (MSR) specified by ECX.
+WRPKRU		X64	WRPKRU	Writes EAX into PKRU (Protection Key Rights for User Pages).
+
+XADD	R/M8,R8	486	XADD R/M8,R8	Exchange r8 and r/m8; load sum into r/m8.
+XADD	R/M16,R16	486	XADD R/M16,R16	Exchange r16 and r/m16; load sum into r/m16.
+XADD	R/M32,R32	486	XADD R/M32,R32	Exchange r32 and r/m32; load sum into r/m32.
+XADD	R/M64,R64	X64	XADD R/M64,R64	Exchange r64 and r/m64; load sum into r/m64.
+
+XCHG	R/M8,R8	8086	XCHG R/M8,R8	Exchange r8 (byte register) with byte from r/m8.
+XCHG	R/M16,R16	8086	XCHG R/M16,R16	Exchange r16 with word from r/m16.
+XCHG	R/M32,R32	386	XCHG R/M32,R32	Exchange r32 with Dword from r/m32.
+XCHG	R/M64,R64	X64	XCHG R/M64,R64	Exchange r64 with Qword from r/m64.
+XCHG	R8,R/M8	8086	XCHG R8,R/M8	Exchange byte from r/m8 with r8 (byte register).
+XCHG	R16,R/M16	8086	XCHG R16,R/M16	Exchange word from r/m16 with r16.
+XCHG	R32,R/M32	386	XCHG R32,R/M32	Exchange Dword from r/m32 with r32.
+XCHG	R64,R/M64	X64	XCHG R64,R/M64	Exchange Qword from r/m64 with r64.
+
+XLAT	M8	8086	XLAT M8	Set AL to memory byte DS:[(E)BX + unsigned AL].
+XLATB		8086	XLATB	Set AL to memory byte DS:[(E)BX + unsigned AL].
+
+XOR	R/M8,IMM8	8086	XOR R/M8,IMM8	r/m8 XOR imm8.
+XOR	R/M8,R8	8086	XOR R/M8,R8	r/m8 XOR r8.
+XOR	R/M16,IMM16	8086	XOR R/M16,IMM16	r/m16 XOR imm16.
+XOR	R/M16,IMM8	8086	XOR R/M16,IMM8	r/m16 XOR imm8 (sign-extended).
+XOR	R/M16,R16	8086	XOR R/M16,R16	r/m16 XOR r16.
+XOR	R/M32,IMM32	386	XOR R/M32,IMM32	r/m32 XOR imm32.
+XOR	R/M32,IMM8	386	XOR R/M32,IMM8	r/m32 XOR imm8 (sign-extended).
+XOR	R/M32,R32	386	XOR R/M32,R32	r/m32 XOR r32.
+XOR	R/M64,IMM32	X64	XOR R/M64,IMM32	r/m64 XOR imm32 (sign-extended).
+XOR	R/M64,IMM8	X64	XOR R/M64,IMM8	r/m64 XOR imm8 (sign-extended).
+XOR	R/M64,R64	X64	XOR R/M64,R64	r/m64 XOR r64.
+XOR	R8,R/M8	8086	XOR R8,R/M8	r8 XOR r/m8.
+XOR	R16,R/M16	8086	XOR R16,R/M16	r16 XOR r/m16.
+XOR	R32,R/M32	386	XOR R32,R/M32	r32 XOR r/m32.
+XOR	R64,R/M64	X64	XOR R64,R/M64	r64 XOR r/m64.
+
+XGETBV		SSE42	XGETBV	Reads an XCR specified by ECX into EDX:EAX.
+XRSTOR	MEM	SSE42	XRSTOR MEM	Restore state components specified by EDX:EAX from mem.
+XRSTORS	MEM	SSE42	XRSTORS MEM	Restore state components specified by EDX:EAX from mem.
+XSAVE	MEM	SSE42	XSAVE MEM	Save state components specified by EDX:EAX to mem.
+XSAVEC	MEM	SSE42	XSAVEC MEM	Save state components specified by EDX:EAX to mem with compaction.
+XSAVES	MEM	SSE42	XSAVES MEM	Save state components specified by EDX:EAX to mem with compaction, optimizing if possible.
+XSETBV		SSE42	XSETBV	Write the value in EDX:EAX to the XCR specified by ECX.
+
+ANDN	R32,R32,R/M32	BMI1	ANDN R32A,R32B,R/M32	Bitwise AND of inverted r32b with r/m32, store result in r32a.
+ANDN	R64,R64,R/M64	BMI1	ANDN R64A,R64B,R/M64	Bitwise AND of inverted r64b with r/m64, store result in r64a.
+
+BEXTR	R32,R/M32,R32	BMI1	BEXTR R32A,R/M32,R32B	Contiguous bitwise extract from r/m32 using r32b as control; store result in r32a.
+BEXTR	R64,R64,R/M64	BMI1	BEXTR R64A,R/M64,R64B	Contiguous bitwise extract from r/m64 using r64b as control; store result in r64a.
+
+BLSI	R32,R/M32	BMI1	BLSI R32,R/M32	Extract lowest set bit from r/m32 and set that bit in r32.
+BLSI	R64,R/M64	BMI1	BLSI R64,R/M64	Extract lowest set bit from r/m64, and set that bit in r64.
+BLSMSK	R32,R/M32	BMI1	BLSMSK R32,R/M32	Set all lower bits in r32 to “1” starting from bit 0 to lowest set bit in r/m32.
+BLSMSK	R64,R/M64	BMI1	BLSMSK R64,R/M64	Set all lower bits in r64 to “1” starting from bit 0 to lowest set bit in r/m64.
+BLSR	R32,R/M32	BMI1	BLSR R32,R/M32	Reset lowest set bit of r/m32, keep all other bits of r/m32 and write result to r32.
+BLSR	R64,R/M64	BMI1	BLSR R64,R/M64	Reset lowest set bit of r/m64, keep all other bits of r/m64 and write result to r64.
+
+BZHI	R32,R/M32,R32	BMI2	BZHI R32A,R/M32,R32B	Zero bits in r/m32 starting with the position in r32b, write result to r32a.
+BZHI	R64,R64,R/M64	BMI2	BZHI R64A,R/M64,R64B	Zero bits in r/m64 starting with the position in r64b, write result to r64a.
+
+MULX	R32,R32,R/M32	BMI2	MULX R32A,R32B,R/M32	Unsigned multiply of r/m32 with EDX without affecting arithmetic flags.
+MULX	R64,R64,R/M64	BMI2	MULX R64A,R64B,R/M64	Unsigned multiply of r/m64 with RDX without affecting arithmetic flags.
+
+SARX	R32,R/M32,R32	BMI2	SARX R32A,R/M32,R32B	Shift r/m32 arithmetically right with count specified in r32b.
+SHLX	R32,R/M32,R32	BMI2	SHLX R32A,R/M32,R32B	Shift r/m32 logically left with count specified in r32b.
+SHRX	R32,R/M32,R32	BMI2	SHRX R32A,R/M32,R32B	Shift r/m32 logically right with count specified in r32b.
+
+SARX	R64,R/M64,R64	BMI2	SARX R64A,R/M64,R64B	Shift r/m64 arithmetically right with count specified in r64b.
+SHLX	R64,R/M64,R64	BMI2	SHLX R64A,R/M64,R64B	Shift r/m64 logically left with count specified in r64b.
+SHRX	R64,R/M64,R64	BMI2	SHRX R64A,R/M64,R64B	Shift r/m64 logically right with count specified in r64b.
+
+; Carry-Less multiplications ====================================================================
+
+GENERAL	PCLMULQDQ	Carry-Less Multiplication Qword 	PCLMULQDQ
+GENERAL	VPCLMULQDQ	Carry-Less Multiplication Qword 	PCLMULQDQ
+
+GENERAL	PCLMULLQLQDQ	Carry-Less Multiplication Qword with Imm8 = 0000_0000B 	PCLMULQDQ
+GENERAL	PCLMULHQLQDQ	Carry-Less Multiplication Qword with Imm8 = 0000_0001B	PCLMULQDQ
+GENERAL	PCLMULLQHQDQ	Carry-Less Multiplication Qword with Imm8 = 0001_0000B	PCLMULQDQ
+GENERAL	PCLMULHQHQDQ	Carry-Less Multiplication Qword with Imm8 = 0001_0001B	PCLMULQDQ
+
+GENERAL	VPCLMULLQLQDQ	Carry-Less Multiplication Qword with Imm8 = 0000_0000B 	PCLMULQDQ
+GENERAL	VPCLMULHQLQDQ	Carry-Less Multiplication Qword with Imm8 = 0000_0001B	PCLMULQDQ
+GENERAL	VPCLMULLQHQDQ	Carry-Less Multiplication Qword with Imm8 = 0001_0000B	PCLMULQDQ
+GENERAL	VPCLMULHQHQDQ	Carry-Less Multiplication Qword with Imm8 = 0001_0001B	PCLMULQDQ
+
+PCLMULQDQ	XMM,XMM/M128,IMM8	PCLMULQDQ	PCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
+VPCLMULQDQ	XMM,XMM/M128,IMM8	PCLMULQDQ	VPCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
+
+PCLMULLQLQDQ	XMM,XMM/M128	PCLMULQDQ	PCLMULLQLQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0000_0000B.
+PCLMULHQLQDQ	XMM,XMM/M128	PCLMULQDQ	PCLMULHQLQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0000_0001B.
+PCLMULLQHQDQ	XMM,XMM/M128	PCLMULQDQ	PCLMULLQHQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0001_0000B.
+PCLMULHQHQDQ	XMM,XMM/M128	PCLMULQDQ	PCLMULHQHQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0001_0001B.
+
+VPCLMULLQLQDQ	XMM,XMM/M128	PCLMULQDQ	VPCLMULLQLQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0000_0000B.
+VPCLMULHQLQDQ	XMM,XMM/M128	PCLMULQDQ	VPCLMULHQLQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0000_0001B.
+VPCLMULLQHQDQ	XMM,XMM/M128	PCLMULQDQ	VPCLMULLQHQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0001_0000B.
+VPCLMULHQHQDQ	XMM,XMM/M128	PCLMULQDQ	VPCLMULHQHQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0001_0001B.
+
+; Compare CMPPD ====================================================================
+
+GENERAL	CMPPD	Compare Packed Double-Precision FP Values	CMPPD
+CMPPD	XMM,XMM/M128,IMM8	SSE2	CMPPD XMM1,XMM2/M128,IMM8	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using bits 2:0 of imm8 as a comparison predicate.
+
+GENERAL	CMPEQPD	Compare Packed Double-Precision FP Values. CMPEQPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 0	CMPPD
+GENERAL	CMPLTPD	Compare Packed Double-Precision FP Values. CMPLTPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 1	CMPPD
+GENERAL	CMPLEPD	Compare Packed Double-Precision FP Values. CMPLEPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 2	CMPPD
+GENERAL	CMPUNORDPD	Compare Packed Double-Precision FP Values. CMPUNORDPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 3	CMPPD
+GENERAL	CMPNEQPD	Compare Packed Double-Precision FP Values. CMPNEQPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 4	CMPPD
+GENERAL	CMPNLTPD	Compare Packed Double-Precision FP Values. CMPNLTPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 5	CMPPD
+GENERAL	CMPNLEPD	Compare Packed Double-Precision FP Values. CMPNLEPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 6	CMPPD
+GENERAL	CMPORDPD	Compare Packed Double-Precision FP Values. CMPORDPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 7	CMPPD
+
+CMPEQPD	XMM,XMM/M128	SSE2	CMPEQPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 0.
+CMPLTPD	XMM,XMM/M128	SSE2	CMPLTPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 1.
+CMPLEPD	XMM,XMM/M128	SSE2	CMPLEPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 2.
+CMPUNORDPD	XMM,XMM/M128	SSE2	CMPUNORDPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 3.
+CMPNEQPD	XMM,XMM/M128	SSE2	CMPNEQPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 4.
+CMPNLTPD	XMM,XMM/M128	SSE2	CMPNLTPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 5.
+CMPNLEPD	XMM,XMM/M128	SSE2	CMPNLEPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 6.
+CMPORDPD	XMM,XMM/M128	SSE2	CMPORDPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 7.
+
+GENERAL	VCMPPD	Compare Packed Double-Precision FP Values	CMPPD
+VCMPPD	XMM,XMM,XMM/M128,IMM8	AVX	VCMPPD XMM1,XMM2,XMM3/M128,IMM8	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using bits 4:0 of imm8 as a comparison predicate.
+VCMPPD	YMM,YMM,YMM/M256,IMM8	AVX	VCMPPD YMM1,YMM2,YMM3/M256,IMM8	Compare packed Double-Precision FP values in ymm3/m256 and ymm2 using bits 4:0 of imm8 as a comparison predicate.
+VCMPPD	K{K},XMM,XMM/M128/M64BCST,IMM8	AVX512VL,AVX512F	VCMPPD K1{K2},XMM2,XMM3/M128/M64BCST,IMM8	Compare packed Double-Precision FP values in xmm3/m128/m64bcst and xmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPD	K{K},YMM,YMM/M256/M64BCST,IMM8	AVX512VL,AVX512F	VCMPPD K1{K2},YMM2,YMM3/M256/M64BCST,IMM8	Compare packed Double-Precision FP values in ymm3/m256/m64bcst and ymm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPD	K{K},ZMM,ZMM/M512/M64BCST{SAE},IMM8	AVX512F	VCMPPD K1{K2},ZMM2,ZMM3/M512/M64BCST{SAE},IMM8	Compare packed Double-Precision FP values in zmm3/m512/m64bcst and zmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+
+GENERAL	VCMPEQPD	Compare Packed Double-Precision FP Values. VCMPEQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0	CMPPD
+GENERAL	VCMPLTPD	Compare Packed Double-Precision FP Values. VCMPLTPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1	CMPPD
+GENERAL	VCMPLEPD	Compare Packed Double-Precision FP Values. VCMPLEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 2	CMPPD
+GENERAL	VCMPUNORDPD	Compare Packed Double-Precision FP Values. VCMPUNORDPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 3	CMPPD
+GENERAL	VCMPNEQPD	Compare Packed Double-Precision FP Values. VCMPNEQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 4	CMPPD
+GENERAL	VCMPNLTPD	Compare Packed Double-Precision FP Values. VCMPNLTPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 5	CMPPD
+GENERAL	VCMPNLEPD	Compare Packed Double-Precision FP Values. VCMPNLEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 6	CMPPD
+GENERAL	VCMPORDPD	Compare Packed Double-Precision FP Values. VCMPORDPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 7	CMPPD
+GENERAL	VCMPEQ_UQPD	Compare Packed Double-Precision FP Values. VCMPEQ_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 8	CMPPD
+GENERAL	VCMPNGEPD	Compare Packed Double-Precision FP Values. VCMPNGEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 9	CMPPD
+GENERAL	VCMPNGTPD	Compare Packed Double-Precision FP Values. VCMPNGTPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0AH	CMPPD
+GENERAL	VCMPFALSEPD	Compare Packed Double-Precision FP Values. VCMPFALSEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0BH	CMPPD
+GENERAL	VCMPNEQ_OQPD	Compare Packed Double-Precision FP Values. VCMPNEQ_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0CH	CMPPD
+GENERAL	VCMPGEPD	Compare Packed Double-Precision FP Values. VCMPGEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0DH	CMPPD
+GENERAL	VCMPGTPD	Compare Packed Double-Precision FP Values. VCMPGTPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0EH	CMPPD
+GENERAL	VCMPTRUEPD	Compare Packed Double-Precision FP Values. VCMPTRUEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0FH	CMPPD
+GENERAL	VCMPEQ_OSPD	Compare Packed Double-Precision FP Values. VCMPEQ_OSPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 10H	CMPPD
+GENERAL	VCMPLT_OQPD	Compare Packed Double-Precision FP Values. VCMPLT_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 11H	CMPPD
+GENERAL	VCMPLE_OQPD	Compare Packed Double-Precision FP Values. VCMPLE_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 12H	CMPPD
+GENERAL	VCMPUNORD_SPD	Compare Packed Double-Precision FP Values. VCMPUNORD_SPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 13H	CMPPD
+GENERAL	VCMPNEQ_USPD	Compare Packed Double-Precision FP Values. VCMPNEQ_USPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 14H	CMPPD
+GENERAL	VCMPNLT_UQPD	Compare Packed Double-Precision FP Values. VCMPNLT_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 15H	CMPPD
+GENERAL	VCMPNLE_UQPD	Compare Packed Double-Precision FP Values. VCMPNLE_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 16H	CMPPD
+GENERAL	VCMPORD_SPD	Compare Packed Double-Precision FP Values. VCMPORD_SPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 17H	CMPPD
+GENERAL	VCMPEQ_USPD	Compare Packed Double-Precision FP Values. VCMPEQ_USPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 18H	CMPPD
+GENERAL	VCMPNGE_UQPD	Compare Packed Double-Precision FP Values. VCMPNGE_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 19H	CMPPD
+GENERAL	VCMPNGT_UQPD	Compare Packed Double-Precision FP Values. VCMPNGT_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1AH	CMPPD
+GENERAL	VCMPFALSE_OSPD	Compare Packed Double-Precision FP Values. VCMPFALSE_OSPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1BH	CMPPD
+GENERAL	VCMPNEQ_OSPD	Compare Packed Double-Precision FP Values. VCMPNEQ_OSPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1CH	CMPPD
+GENERAL	VCMPGE_OQPD	Compare Packed Double-Precision FP Values. VCMPGE_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1DH	CMPPD
+GENERAL	VCMPGT_OQPD	Compare Packed Double-Precision FP Values. VCMPGT_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1EH	CMPPD
+GENERAL	VCMPTRUE_USPD	Compare Packed Double-Precision FP Values. VCMPTRUE_USPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1FH	CMPPD
+
+VCMPEQPD	XMM,XMM,XMM/M128	AVX	VCMPEQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0.
+VCMPLTPD	XMM,XMM,XMM/M128	AVX	VCMPLTPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1.
+VCMPLEPD	XMM,XMM,XMM/M128	AVX	VCMPLEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 2.
+VCMPUNORDPD	XMM,XMM,XMM/M128	AVX	VCMPUNORDPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 3.
+VCMPNEQPD	XMM,XMM,XMM/M128	AVX	VCMPNEQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 4.
+VCMPNLTPD	XMM,XMM,XMM/M128	AVX	VCMPNLTPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 5.
+VCMPNLEPD	XMM,XMM,XMM/M128	AVX	VCMPNLEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 6.
+VCMPORDPD	XMM,XMM,XMM/M128	AVX	VCMPORDPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 7.
+VCMPEQ_UQPD	XMM,XMM,XMM/M128	AVX	VCMPEQ_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 8.
+VCMPNGEPD	XMM,XMM,XMM/M128	AVX	VCMPNGEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 9.
+VCMPNGTPD	XMM,XMM,XMM/M128	AVX	VCMPNGTPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0AH.
+VCMPFALSEPD	XMM,XMM,XMM/M128	AVX	VCMPFALSEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0BH.
+VCMPNEQ_OQPD	XMM,XMM,XMM/M128	AVX	VCMPNEQ_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0CH.
+VCMPGEPD	XMM,XMM,XMM/M128	AVX	VCMPGEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0DH.
+VCMPGTPD	XMM,XMM,XMM/M128	AVX	VCMPGTPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0EH.
+VCMPTRUEPD	XMM,XMM,XMM/M128	AVX	VCMPTRUEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0FH.
+VCMPEQ_OSPD	XMM,XMM,XMM/M128	AVX	VCMPEQ_OSPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 10H.
+VCMPLT_OQPD	XMM,XMM,XMM/M128	AVX	VCMPLT_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 11H.
+VCMPLE_OQPD	XMM,XMM,XMM/M128	AVX	VCMPLE_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 12H.
+VCMPUNORD_SPD	XMM,XMM,XMM/M128	AVX	VCMPUNORD_SPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 13H.
+VCMPNEQ_USPD	XMM,XMM,XMM/M128	AVX	VCMPNEQ_USPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 14H.
+VCMPNLT_UQPD	XMM,XMM,XMM/M128	AVX	VCMPNLT_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 15H.
+VCMPNLE_UQPD	XMM,XMM,XMM/M128	AVX	VCMPNLE_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 16H.
+VCMPORD_SPD	XMM,XMM,XMM/M128	AVX	VCMPORD_SPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 17H.
+VCMPEQ_USPD	XMM,XMM,XMM/M128	AVX	VCMPEQ_USPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 18H.
+VCMPNGE_UQPD	XMM,XMM,XMM/M128	AVX	VCMPNGE_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 19H.
+VCMPNGT_UQPD	XMM,XMM,XMM/M128	AVX	VCMPNGT_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1AH.
+VCMPFALSE_OSPD	XMM,XMM,XMM/M128	AVX	VCMPFALSE_OSPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1BH.
+VCMPNEQ_OSPD	XMM,XMM,XMM/M128	AVX	VCMPNEQ_OSPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1CH.
+VCMPGE_OQPD	XMM,XMM,XMM/M128	AVX	VCMPGE_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1DH.
+VCMPGT_OQPD	XMM,XMM,XMM/M128	AVX	VCMPGT_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1EH.
+VCMPTRUE_USPD	XMM,XMM,XMM/M128	AVX	VCMPTRUE_USPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1FH.
+;TODO add the other 4 signatures
+
+; Compare CMPPS ====================================================================
+
+GENERAL	CMPPS	Compare Packed Single-Precision FP Values	CMPPS
+CMPPS	XMM,XMM/M128,IMM8	SSE	CMPPS XMM1,XMM2/M128,IMM8	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using bits 2:0 of imm8 as a comparison predicate.
+
+GENERAL	CMPEQPS	Compare Packed Single-Precision FP Values. CMPEQPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 0	CMPPS
+GENERAL	CMPLTPS	Compare Packed Single-Precision FP Values. CMPLTPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 1	CMPPS
+GENERAL	CMPLEPS	Compare Packed Single-Precision FP Values. CMPLEPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 2	CMPPS
+GENERAL	CMPUNORDPS	Compare Packed Single-Precision FP Values. CMPUNORDPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 3	CMPPS
+GENERAL	CMPNEQPS	Compare Packed Single-Precision FP Values. CMPNEQPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 4	CMPPS
+GENERAL	CMPNLTPS	Compare Packed Single-Precision FP Values. CMPNLTPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 5	CMPPS
+GENERAL	CMPNLEPS	Compare Packed Single-Precision FP Values. CMPNLEPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 6	CMPPS
+GENERAL	CMPORDPS	Compare Packed Single-Precision FP Values. CMPORDPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 7	CMPPS
+
+CMPEQPS	XMM,XMM/M128	SSE2	CMPEQPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 0.
+CMPLTPS	XMM,XMM/M128	SSE2	CMPLTPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 1.
+CMPLEPS	XMM,XMM/M128	SSE2	CMPLEPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 2.
+CMPUNORDPS	XMM,XMM/M128	SSE2	CMPUNORDPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 3.
+CMPNEQPS	XMM,XMM/M128	SSE2	CMPNEQPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 4.
+CMPNLTPS	XMM,XMM/M128	SSE2	CMPNLTPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 5.
+CMPNLEPS	XMM,XMM/M128	SSE2	CMPNLEPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 6.
+CMPORDPS	XMM,XMM/M128	SSE2	CMPORDPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 7.
+
+GENERAL	VCMPPS	Compare Packed Single-Precision FP Values	CMPPS
+VCMPPS	K{K},XMM,XMM/M128/M32BCST,IMM8	AVX512VL,AVX512F	VCMPPS K1{K2},XMM2,XMM3/M128/M32BCST,IMM8	Compare packed Single-Precision FP values in xmm3/m128/m32bcst and xmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPS	K{K},YMM,YMM/M256/M32BCST,IMM8	AVX512VL,AVX512F	VCMPPS K1{K2},YMM2,YMM3/M256/M32BCST,IMM8	Compare packed Single-Precision FP values in ymm3/m256/m32bcst and ymm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPS	K{K},ZMM,ZMM/M512/M32BCST{SAE},IMM8	AVX512F	VCMPPS K1{K2},ZMM2,ZMM3/M512/M32BCST{SAE},IMM8	Compare packed Single-Precision FP values in zmm3/m512/m32bcst and zmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPS	XMM,XMM,XMM/M128,IMM8	AVX	VCMPPS XMM1,XMM2,XMM3/M128,IMM8	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using bits 4:0 of imm8 as a comparison predicate.
+VCMPPS	YMM,YMM,YMM/M256,IMM8	AVX	VCMPPS YMM1,YMM2,YMM3/M256,IMM8	Compare packed Single-Precision FP values in ymm3/m256 and ymm2 using bits 4:0 of imm8 as a comparison predicate.
+
+GENERAL	VCMPEQPS	Compare Packed Single-Precision FP Values. VCMPEQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0	CMPPS
+GENERAL	VCMPLTPS	Compare Packed Single-Precision FP Values. VCMPLTPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1	CMPPS
+GENERAL	VCMPLEPS	Compare Packed Single-Precision FP Values. VCMPLEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 2	CMPPS
+GENERAL	VCMPUNORDPS	Compare Packed Single-Precision FP Values. VCMPUNORDPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 3	CMPPS
+GENERAL	VCMPNEQPS	Compare Packed Single-Precision FP Values. VCMPNEQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 4	CMPPS
+GENERAL	VCMPNLTPS	Compare Packed Single-Precision FP Values. VCMPNLTPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 5	CMPPS
+GENERAL	VCMPNLEPS	Compare Packed Single-Precision FP Values. VCMPNLEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 6	CMPPS
+GENERAL	VCMPORDPS	Compare Packed Single-Precision FP Values. VCMPORDPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 7	CMPPS
+GENERAL	VCMPEQ_UQPS	Compare Packed Single-Precision FP Values. VCMPEQ_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 8	CMPPS
+GENERAL	VCMPNGEPS	Compare Packed Single-Precision FP Values. VCMPNGEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 9	CMPPS
+GENERAL	VCMPNGTPS	Compare Packed Single-Precision FP Values. VCMPNGTPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0AH	CMPPS
+GENERAL	VCMPFALSEPS	Compare Packed Single-Precision FP Values. VCMPFALSEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0BH	CMPPS
+GENERAL	VCMPNEQ_OQPS	Compare Packed Single-Precision FP Values. VCMPNEQ_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0CH	CMPPS
+GENERAL	VCMPGEPS	Compare Packed Single-Precision FP Values. VCMPGEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0DH	CMPPS
+GENERAL	VCMPGTPS	Compare Packed Single-Precision FP Values. VCMPGTPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0EH	CMPPS
+GENERAL	VCMPTRUEPS	Compare Packed Single-Precision FP Values. VCMPTRUEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0FH	CMPPS
+GENERAL	VCMPEQ_OSPS	Compare Packed Single-Precision FP Values. VCMPEQ_OSPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 10H	CMPPS
+GENERAL	VCMPLT_OQPS	Compare Packed Single-Precision FP Values. VCMPLT_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 11H	CMPPS
+GENERAL	VCMPLE_OQPS	Compare Packed Single-Precision FP Values. VCMPLE_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 12H	CMPPS
+GENERAL	VCMPUNORD_SPS	Compare Packed Single-Precision FP Values. VCMPUNORD_SPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 13H	CMPPS
+GENERAL	VCMPNEQ_USPS	Compare Packed Single-Precision FP Values. VCMPNEQ_USPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 14H	CMPPS
+GENERAL	VCMPNLT_UQPS	Compare Packed Single-Precision FP Values. VCMPNLT_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 15H	CMPPS
+GENERAL	VCMPNLE_UQPS	Compare Packed Single-Precision FP Values. VCMPNLE_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 16H	CMPPS
+GENERAL	VCMPORD_SPS	Compare Packed Single-Precision FP Values. VCMPORD_SPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 17H	CMPPS
+GENERAL	VCMPEQ_USPS	Compare Packed Single-Precision FP Values. VCMPEQ_USPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 18H	CMPPS
+GENERAL	VCMPNGE_UQPS	Compare Packed Single-Precision FP Values. VCMPNGE_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 19H	CMPPS
+GENERAL	VCMPNGT_UQPS	Compare Packed Single-Precision FP Values. VCMPNGT_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1AH	CMPPS
+GENERAL	VCMPFALSE_OSPS	Compare Packed Single-Precision FP Values. VCMPFALSE_OSPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1BH	CMPPS
+GENERAL	VCMPNEQ_OSPS	Compare Packed Single-Precision FP Values. VCMPNEQ_OSPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1CH	CMPPS
+GENERAL	VCMPGE_OQPS	Compare Packed Single-Precision FP Values. VCMPGE_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1DH	CMPPS
+GENERAL	VCMPGT_OQPS	Compare Packed Single-Precision FP Values. VCMPGT_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1EH	CMPPS
+GENERAL	VCMPTRUE_USPS	Compare Packed Single-Precision FP Values. VCMPTRUE_USPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1FH	CMPPS
+
+VCMPEQPS	XMM,XMM,XMM/M128	AVX	VCMPEQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0.
+VCMPLTPS	XMM,XMM,XMM/M128	AVX	VCMPLTPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1.
+VCMPLEPS	XMM,XMM,XMM/M128	AVX	VCMPLEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 2.
+VCMPUNORDPS	XMM,XMM,XMM/M128	AVX	VCMPUNORDPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 3.
+VCMPNEQPS	XMM,XMM,XMM/M128	AVX	VCMPNEQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 4.
+VCMPNLTPS	XMM,XMM,XMM/M128	AVX	VCMPNLTPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 5.
+VCMPNLEPS	XMM,XMM,XMM/M128	AVX	VCMPNLEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 6.
+VCMPORDPS	XMM,XMM,XMM/M128	AVX	VCMPORDPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 7.
+VCMPEQ_UQPS	XMM,XMM,XMM/M128	AVX	VCMPEQ_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 8.
+VCMPNGEPS	XMM,XMM,XMM/M128	AVX	VCMPNGEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 9.
+VCMPNGTPS	XMM,XMM,XMM/M128	AVX	VCMPNGTPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0AH.
+VCMPFALSEPS	XMM,XMM,XMM/M128	AVX	VCMPFALSEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0BH.
+VCMPNEQ_OQPS	XMM,XMM,XMM/M128	AVX	VCMPNEQ_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0CH.
+VCMPGEPS	XMM,XMM,XMM/M128	AVX	VCMPGEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0DH.
+VCMPGTPS	XMM,XMM,XMM/M128	AVX	VCMPGTPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0EH.
+VCMPTRUEPS	XMM,XMM,XMM/M128	AVX	VCMPTRUEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0FH.
+VCMPEQ_OSPS	XMM,XMM,XMM/M128	AVX	VCMPEQ_OSPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 10H.
+VCMPLT_OQPS	XMM,XMM,XMM/M128	AVX	VCMPLT_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 11H.
+VCMPLE_OQPS	XMM,XMM,XMM/M128	AVX	VCMPLE_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 12H.
+VCMPUNORD_SPS	XMM,XMM,XMM/M128	AVX	VCMPUNORD_SPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 13H.
+VCMPNEQ_USPS	XMM,XMM,XMM/M128	AVX	VCMPNEQ_USPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 14H.
+VCMPNLT_UQPS	XMM,XMM,XMM/M128	AVX	VCMPNLT_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 15H.
+VCMPNLE_UQPS	XMM,XMM,XMM/M128	AVX	VCMPNLE_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 16H.
+VCMPORD_SPS	XMM,XMM,XMM/M128	AVX	VCMPORD_SPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 17H.
+VCMPEQ_USPS	XMM,XMM,XMM/M128	AVX	VCMPEQ_USPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 18H.
+VCMPNGE_UQPS	XMM,XMM,XMM/M128	AVX	VCMPNGE_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 19H.
+VCMPNGT_UQPS	XMM,XMM,XMM/M128	AVX	VCMPNGT_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1AH.
+VCMPFALSE_OSPS	XMM,XMM,XMM/M128	AVX	VCMPFALSE_OSPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1BH.
+VCMPNEQ_OSPS	XMM,XMM,XMM/M128	AVX	VCMPNEQ_OSPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1CH.
+VCMPGE_OQPS	XMM,XMM,XMM/M128	AVX	VCMPGE_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1DH.
+VCMPGT_OQPS	XMM,XMM,XMM/M128	AVX	VCMPGT_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1EH.
+VCMPTRUE_USPS	XMM,XMM,XMM/M128	AVX	VCMPTRUE_USPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1FH.
+;TODO add the other 4 signatures
+
+; Compare CMPSD ====================================================================
+
+GENERAL	CMPSD	Compare Scalar Double-Precision FP Value	CMPSD
+GENERAL	VCMPSD	Compare Scalar Double-Precision FP Value	CMPSD
+
+GENERAL	CMPEQSD	Compare Scalar Double-Precision FP Values. CMPEQSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 0	CMPSD
+GENERAL	CMPLTSD	Compare Scalar Double-Precision FP Values. CMPLTSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 1	CMPSD
+GENERAL	CMPLESD	Compare Scalar Double-Precision FP Values. CMPLESD xmm1, xmm2 equals CMPSD xmm1, xmm2, 2	CMPSD
+GENERAL	CMPUNORDSD	Compare Scalar Double-Precision FP Values. CMPUNORDSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 3	CMPSD
+GENERAL	CMPNEQSD	Compare Scalar Double-Precision FP Values. CMPNEQSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 4	CMPSD
+GENERAL	CMPNLTSD	Compare Scalar Double-Precision FP Values. CMPNLTSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 5	CMPSD
+GENERAL	CMPNLESD	Compare Scalar Double-Precision FP Values. CMPNLESD xmm1, xmm2 equals CMPSD xmm1, xmm2, 6	CMPSD
+GENERAL	CMPORDSD	Compare Scalar Double-Precision FP Values. CMPORDSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 7	CMPSD
+
+CMPEQSD	XMM,XMM/M128	SSE2	CMPEQSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 0.
+CMPLTSD	XMM,XMM/M128	SSE2	CMPLTSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 1.
+CMPLESD	XMM,XMM/M128	SSE2	CMPLESD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 2.
+CMPUNORDSD	XMM,XMM/M128	SSE2	CMPUNORDSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 3.
+CMPNEQSD	XMM,XMM/M128	SSE2	CMPNEQSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 4.
+CMPNLTSD	XMM,XMM/M128	SSE2	CMPNLTSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 5.
+CMPNLESD	XMM,XMM/M128	SSE2	CMPNLESD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 6.
+CMPORDSD	XMM,XMM/M128	SSE2	CMPORDSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 7.
+
+VCMPSD	XMM,XMM,XMM/M64,IMM8	AVX	VCMPSD XMM1,XMM2,XMM3/M64,IMM8	Compare low Double-Precision FP value in xmm3/m64 and xmm2 using bits 4:0 of imm8 as comparison predicate.
+VCMPSD	K{K},XMM,XMM/M64{SAE},IMM8	AVX512F	VCMPSD K1{K2},XMM2,XMM3/M64{SAE},IMM8	Compare low Double-Precision FP value in xmm3/m64 and xmm2 using bits 4:0 of imm8 as comparison predicate with writemask k2 and leave the result in mask register k1.
+
+GENERAL	VCMPEQSD	Compare Scalar Double-Precision FP Values. VCMPEQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0	CMPSD
+GENERAL	VCMPLTSD	Compare Scalar Double-Precision FP Values. VCMPLTSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1	CMPSD
+GENERAL	VCMPLESD	Compare Scalar Double-Precision FP Values. VCMPLESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 2	CMPSD
+GENERAL	VCMPUNORDSD	Compare Scalar Double-Precision FP Values. VCMPUNORDSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 3	CMPSD
+GENERAL	VCMPNEQSD	Compare Scalar Double-Precision FP Values. VCMPNEQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 4	CMPSD
+GENERAL	VCMPNLTSD	Compare Scalar Double-Precision FP Values. VCMPNLTSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 5	CMPSD
+GENERAL	VCMPNLESD	Compare Scalar Double-Precision FP Values. VCMPNLESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 6	CMPSD
+GENERAL	VCMPORDSD	Compare Scalar Double-Precision FP Values. VCMPORDSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 7	CMPSD
+GENERAL	VCMPEQ_UQSD	Compare Scalar Double-Precision FP Values. VCMPEQ_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 8	CMPSD
+GENERAL	VCMPNGESD	Compare Scalar Double-Precision FP Values. VCMPNGESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 9	CMPSD
+GENERAL	VCMPNGTSD	Compare Scalar Double-Precision FP Values. VCMPNGTSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0AH	CMPSD
+GENERAL	VCMPFALSESD	Compare Scalar Double-Precision FP Values. VCMPFALSESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0BH	CMPSD
+GENERAL	VCMPNEQ_OQSD	Compare Scalar Double-Precision FP Values. VCMPNEQ_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0CH	CMPSD
+GENERAL	VCMPGESD	Compare Scalar Double-Precision FP Values. VCMPGESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0DH	CMPSD
+GENERAL	VCMPGTSD	Compare Scalar Double-Precision FP Values. VCMPGTSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0EH	CMPSD
+GENERAL	VCMPTRUESD	Compare Scalar Double-Precision FP Values. VCMPTRUESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0FH	CMPSD
+GENERAL	VCMPEQ_OSSD	Compare Scalar Double-Precision FP Values. VCMPEQ_OSSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 10H	CMPSD
+GENERAL	VCMPLT_OQSD	Compare Scalar Double-Precision FP Values. VCMPLT_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 11H	CMPSD
+GENERAL	VCMPLE_OQSD	Compare Scalar Double-Precision FP Values. VCMPLE_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 12H	CMPSD
+GENERAL	VCMPUNORD_SSD	Compare Scalar Double-Precision FP Values. VCMPUNORD_SSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 13H	CMPSD
+GENERAL	VCMPNEQ_USSD	Compare Scalar Double-Precision FP Values. VCMPNEQ_USSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 14H	CMPSD
+GENERAL	VCMPNLT_UQSD	Compare Scalar Double-Precision FP Values. VCMPNLT_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 15H	CMPSD
+GENERAL	VCMPNLE_UQSD	Compare Scalar Double-Precision FP Values. VCMPNLE_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 16H	CMPSD
+GENERAL	VCMPORD_SSD	Compare Scalar Double-Precision FP Values. VCMPORD_SSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 17H	CMPSD
+GENERAL	VCMPEQ_USSD	Compare Scalar Double-Precision FP Values. VCMPEQ_USSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 18H	CMPSD
+GENERAL	VCMPNGE_UQSD	Compare Scalar Double-Precision FP Values. VCMPNGE_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 19H	CMPSD
+GENERAL	VCMPNGT_UQSD	Compare Scalar Double-Precision FP Values. VCMPNGT_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1AH	CMPSD
+GENERAL	VCMPFALSE_OSSD	Compare Scalar Double-Precision FP Values. VCMPFALSE_OSSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1BH	CMPSD
+GENERAL	VCMPNEQ_OSSD	Compare Scalar Double-Precision FP Values. VCMPNEQ_OSSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1CH	CMPSD
+GENERAL	VCMPGE_OQSD	Compare Scalar Double-Precision FP Values. VCMPGE_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1DH	CMPSD
+GENERAL	VCMPGT_OQSD	Compare Scalar Double-Precision FP Values. VCMPGT_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1EH	CMPSD
+GENERAL	VCMPTRUE_USSD	Compare Scalar Double-Precision FP Values. VCMPTRUE_USSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1FH	CMPSD
+
+VCMPEQSD	XMM,XMM,XMM/M64	AVX	VCMPEQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0.
+VCMPLTSD	XMM,XMM,XMM/M64	AVX	VCMPLTSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1.
+VCMPLESD	XMM,XMM,XMM/M64	AVX	VCMPLESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 2.
+VCMPUNORDSD	XMM,XMM,XMM/M64	AVX	VCMPUNORDSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 3.
+VCMPNEQSD	XMM,XMM,XMM/M64	AVX	VCMPNEQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 4.
+VCMPNLTSD	XMM,XMM,XMM/M64	AVX	VCMPNLTSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 5.
+VCMPNLESD	XMM,XMM,XMM/M64	AVX	VCMPNLESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 6.
+VCMPORDSD	XMM,XMM,XMM/M64	AVX	VCMPORDSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 7.
+VCMPEQ_UQSD	XMM,XMM,XMM/M64	AVX	VCMPEQ_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 8.
+VCMPNGESD	XMM,XMM,XMM/M64	AVX	VCMPNGESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 9.
+VCMPNGTSD	XMM,XMM,XMM/M64	AVX	VCMPNGTSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0AH.
+VCMPFALSESD	XMM,XMM,XMM/M64	AVX	VCMPFALSESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0BH.
+VCMPNEQ_OQSD	XMM,XMM,XMM/M64	AVX	VCMPNEQ_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0CH.
+VCMPGESD	XMM,XMM,XMM/M64	AVX	VCMPGESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0DH.
+VCMPGTSD	XMM,XMM,XMM/M64	AVX	VCMPGTSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0EH.
+VCMPTRUESD	XMM,XMM,XMM/M64	AVX	VCMPTRUESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0FH.
+VCMPEQ_OSSD	XMM,XMM,XMM/M64	AVX	VCMPEQ_OSSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 10H.
+VCMPLT_OQSD	XMM,XMM,XMM/M64	AVX	VCMPLT_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 11H.
+VCMPLE_OQSD	XMM,XMM,XMM/M64	AVX	VCMPLE_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 12H.
+VCMPUNORD_SSD	XMM,XMM,XMM/M64	AVX	VCMPUNORD_SSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 13H.
+VCMPNEQ_USSD	XMM,XMM,XMM/M64	AVX	VCMPNEQ_USSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 14H.
+VCMPNLT_UQSD	XMM,XMM,XMM/M64	AVX	VCMPNLT_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 15H.
+VCMPNLE_UQSD	XMM,XMM,XMM/M64	AVX	VCMPNLE_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 16H.
+VCMPORD_SSD	XMM,XMM,XMM/M64	AVX	VCMPORD_SSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 17H.
+VCMPEQ_USSD	XMM,XMM,XMM/M64	AVX	VCMPEQ_USSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 18H.
+VCMPNGE_UQSD	XMM,XMM,XMM/M64	AVX	VCMPNGE_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 19H.
+VCMPNGT_UQSD	XMM,XMM,XMM/M64	AVX	VCMPNGT_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1AH.
+VCMPFALSE_OSSD	XMM,XMM,XMM/M64	AVX	VCMPFALSE_OSSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1BH.
+VCMPNEQ_OSSD	XMM,XMM,XMM/M64	AVX	VCMPNEQ_OSSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1CH.
+VCMPGE_OQSD	XMM,XMM,XMM/M64	AVX	VCMPGE_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1DH.
+VCMPGT_OQSD	XMM,XMM,XMM/M64	AVX	VCMPGT_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1EH.
+VCMPTRUE_USSD	XMM,XMM,XMM/M64	AVX	VCMPTRUE_USSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1FH.
+;TODO add the other 1 signature
+
+; Compare CMPSS ====================================================================
+
+GENERAL	CMPSS	Compare Scalar Single-Precision FP Value	CMPSS
+GENERAL	VCMPSS	Compare Scalar Single-Precision FP Value	CMPSS
+
+GENERAL	CMPEQSS	Compare Scalar Single-Precision FP Values. CMPEQSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 0	CMPSS
+GENERAL	CMPLTSS	Compare Scalar Single-Precision FP Values. CMPLTSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 1	CMPSS
+GENERAL	CMPLESS	Compare Scalar Single-Precision FP Values. CMPLESS xmm1, xmm2 equals CMPSS xmm1, xmm2, 2	CMPSS
+GENERAL	CMPUNORDSS	Compare Scalar Single-Precision FP Values. CMPUNORDSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 3	CMPSS
+GENERAL	CMPNEQSS	Compare Scalar Single-Precision FP Values. CMPNEQSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 4	CMPSS
+GENERAL	CMPNLTSS	Compare Scalar Single-Precision FP Values. CMPNLTSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 5	CMPSS
+GENERAL	CMPNLESS	Compare Scalar Single-Precision FP Values. CMPNLESS xmm1, xmm2 equals CMPSS xmm1, xmm2, 6	CMPSS
+GENERAL	CMPORDSS	Compare Scalar Single-Precision FP Values. CMPORDSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 7	CMPSS
+
+CMPEQSS	XMM,XMM/M128	SSE2	CMPEQSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 0.
+CMPLTSS	XMM,XMM/M128	SSE2	CMPLTSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 1.
+CMPLESS	XMM,XMM/M128	SSE2	CMPLESS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 2.
+CMPUNORDSS	XMM,XMM/M128	SSE2	CMPUNORDSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 3.
+CMPNEQSS	XMM,XMM/M128	SSE2	CMPNEQSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 4.
+CMPNLTSS	XMM,XMM/M128	SSE2	CMPNLTSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 5.
+CMPNLESS	XMM,XMM/M128	SSE2	CMPNLESS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 6.
+CMPORDSS	XMM,XMM/M128	SSE2	CMPORDSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 7.
+
+VCMPSS	XMM,XMM,XMM/M32,IMM8	AVX	VCMPSS XMM1,XMM2,XMM3/M32,IMM8	Compare low Single-Precision FP value in xmm3/m32 and xmm2 using bits 4:0 of imm8 as comparison predicate.
+VCMPSS	K{K},XMM,XMM/M32{SAE},IMM8	AVX512F	VCMPSS K1{K2},XMM2,XMM3/M32{SAE},IMM8	Compare low Single-Precision FP value in xmm3/m32 and xmm2 using bits 4:0 of imm8 as comparison predicate with writemask k2 and leave the result in mask register k1.
+
+GENERAL	VCMPEQSS	Compare Scalar Single-Precision FP Values. VCMPEQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0	CMPSS
+GENERAL	VCMPLTSS	Compare Scalar Single-Precision FP Values. VCMPLTSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1	CMPSS
+GENERAL	VCMPLESS	Compare Scalar Single-Precision FP Values. VCMPLESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 2	CMPSS
+GENERAL	VCMPUNORDSS	Compare Scalar Single-Precision FP Values. VCMPUNORDSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 3	CMPSS
+GENERAL	VCMPNEQSS	Compare Scalar Single-Precision FP Values. VCMPNEQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 4	CMPSS
+GENERAL	VCMPNLTSS	Compare Scalar Single-Precision FP Values. VCMPNLTSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 5	CMPSS
+GENERAL	VCMPNLESS	Compare Scalar Single-Precision FP Values. VCMPNLESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 6	CMPSS
+GENERAL	VCMPORDSS	Compare Scalar Single-Precision FP Values. VCMPORDSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 7	CMPSS
+GENERAL	VCMPEQ_UQSS	Compare Scalar Single-Precision FP Values. VCMPEQ_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 8	CMPSS
+GENERAL	VCMPNGESS	Compare Scalar Single-Precision FP Values. VCMPNGESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 9	CMPSS
+GENERAL	VCMPNGTSS	Compare Scalar Single-Precision FP Values. VCMPNGTSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0AH	CMPSS
+GENERAL	VCMPFALSESS	Compare Scalar Single-Precision FP Values. VCMPFALSESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0BH	CMPSS
+GENERAL	VCMPNEQ_OQSS	Compare Scalar Single-Precision FP Values. VCMPNEQ_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0CH	CMPSS
+GENERAL	VCMPGESS	Compare Scalar Single-Precision FP Values. VCMPGESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0DH	CMPSS
+GENERAL	VCMPGTSS	Compare Scalar Single-Precision FP Values. VCMPGTSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0EH	CMPSS
+GENERAL	VCMPTRUESS	Compare Scalar Single-Precision FP Values. VCMPTRUESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0FH	CMPSS
+GENERAL	VCMPEQ_OSSS	Compare Scalar Single-Precision FP Values. VCMPEQ_OSSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 10H	CMPSS
+GENERAL	VCMPLT_OQSS	Compare Scalar Single-Precision FP Values. VCMPLT_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 11H	CMPSS
+GENERAL	VCMPLE_OQSS	Compare Scalar Single-Precision FP Values. VCMPLE_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 12H	CMPSS
+GENERAL	VCMPUNORD_SSS	Compare Scalar Single-Precision FP Values. VCMPUNORD_SSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 13H	CMPSS
+GENERAL	VCMPNEQ_USSS	Compare Scalar Single-Precision FP Values. VCMPNEQ_USSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 14H	CMPSS
+GENERAL	VCMPNLT_UQSS	Compare Scalar Single-Precision FP Values. VCMPNLT_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 15H	CMPSS
+GENERAL	VCMPNLE_UQSS	Compare Scalar Single-Precision FP Values. VCMPNLE_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 16H	CMPSS
+GENERAL	VCMPORD_SSS	Compare Scalar Single-Precision FP Values. VCMPORD_SSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 17H	CMPSS
+GENERAL	VCMPEQ_USSS	Compare Scalar Single-Precision FP Values. VCMPEQ_USSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 18H	CMPSS
+GENERAL	VCMPNGE_UQSS	Compare Scalar Single-Precision FP Values. VCMPNGE_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 19H	CMPSS
+GENERAL	VCMPNGT_UQSS	Compare Scalar Single-Precision FP Values. VCMPNGT_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1AH	CMPSS
+GENERAL	VCMPFALSE_OSSS	Compare Scalar Single-Precision FP Values. VCMPFALSE_OSSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1BH	CMPSS
+GENERAL	VCMPNEQ_OSSS	Compare Scalar Single-Precision FP Values. VCMPNEQ_OSSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1CH	CMPSS
+GENERAL	VCMPGE_OQSS	Compare Scalar Single-Precision FP Values. VCMPGE_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1DH	CMPSS
+GENERAL	VCMPGT_OQSS	Compare Scalar Single-Precision FP Values. VCMPGT_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1EH	CMPSS
+GENERAL	VCMPTRUE_USSS	Compare Scalar Single-Precision FP Values. VCMPTRUE_USSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1FH	CMPSS
+
+VCMPEQSS	XMM,XMM,XMM/M64	AVX	VCMPEQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0.
+VCMPLTSS	XMM,XMM,XMM/M64	AVX	VCMPLTSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1.
+VCMPLESS	XMM,XMM,XMM/M64	AVX	VCMPLESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 2.
+VCMPUNORDSS	XMM,XMM,XMM/M64	AVX	VCMPUNORDSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 3.
+VCMPNEQSS	XMM,XMM,XMM/M64	AVX	VCMPNEQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 4.
+VCMPNLTSS	XMM,XMM,XMM/M64	AVX	VCMPNLTSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 5.
+VCMPNLESS	XMM,XMM,XMM/M64	AVX	VCMPNLESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 6.
+VCMPORDSS	XMM,XMM,XMM/M64	AVX	VCMPORDSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 7.
+VCMPEQ_UQSS	XMM,XMM,XMM/M64	AVX	VCMPEQ_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 8.
+VCMPNGESS	XMM,XMM,XMM/M64	AVX	VCMPNGESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 9.
+VCMPNGTSS	XMM,XMM,XMM/M64	AVX	VCMPNGTSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0AH.
+VCMPFALSESS	XMM,XMM,XMM/M64	AVX	VCMPFALSESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0BH.
+VCMPNEQ_OQSS	XMM,XMM,XMM/M64	AVX	VCMPNEQ_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0CH.
+VCMPGESS	XMM,XMM,XMM/M64	AVX	VCMPGESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0DH.
+VCMPGTSS	XMM,XMM,XMM/M64	AVX	VCMPGTSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0EH.
+VCMPTRUESS	XMM,XMM,XMM/M64	AVX	VCMPTRUESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0FH.
+VCMPEQ_OSSS	XMM,XMM,XMM/M64	AVX	VCMPEQ_OSSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 10H.
+VCMPLT_OQSS	XMM,XMM,XMM/M64	AVX	VCMPLT_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 11H.
+VCMPLE_OQSS	XMM,XMM,XMM/M64	AVX	VCMPLE_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 12H.
+VCMPUNORD_SSS	XMM,XMM,XMM/M64	AVX	VCMPUNORD_SSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 13H.
+VCMPNEQ_USSS	XMM,XMM,XMM/M64	AVX	VCMPNEQ_USSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 14H.
+VCMPNLT_UQSS	XMM,XMM,XMM/M64	AVX	VCMPNLT_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 15H.
+VCMPNLE_UQSS	XMM,XMM,XMM/M64	AVX	VCMPNLE_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 16H.
+VCMPORD_SSS	XMM,XMM,XMM/M64	AVX	VCMPORD_SSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 17H.
+VCMPEQ_USSS	XMM,XMM,XMM/M64	AVX	VCMPEQ_USSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 18H.
+VCMPNGE_UQSS	XMM,XMM,XMM/M64	AVX	VCMPNGE_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 19H.
+VCMPNGT_UQSS	XMM,XMM,XMM/M64	AVX	VCMPNGT_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1AH.
+VCMPFALSE_OSSS	XMM,XMM,XMM/M64	AVX	VCMPFALSE_OSSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1BH.
+VCMPNEQ_OSSS	XMM,XMM,XMM/M64	AVX	VCMPNEQ_OSSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1CH.
+VCMPGE_OQSS	XMM,XMM,XMM/M64	AVX	VCMPGE_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1DH.
+VCMPGT_OQSS	XMM,XMM,XMM/M64	AVX	VCMPGT_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1EH.
+VCMPTRUE_USSS	XMM,XMM,XMM/M64	AVX	VCMPTRUE_USSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1FH.
+;TODO add the other 1 signature

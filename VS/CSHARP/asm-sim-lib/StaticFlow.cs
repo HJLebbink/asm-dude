@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -353,7 +353,7 @@ namespace AsmSim
 
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
-                    (string label, Mnemonic mnemonic, string[] args, string remark) line = AsmSourceTools.ParseLine(lines[lineNumber]);
+                    (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) line = AsmSourceTools.ParseLine(lines[lineNumber], -1, -1);
                     this.EvalArgs(ref line.args);
                     current.Add((line.label, line.mnemonic, line.args));
 

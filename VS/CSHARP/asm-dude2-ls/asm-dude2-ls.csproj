@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+	<Title>AsmDude2 Language Server Protocol (LSP)</Title>
+	<Version>1.0.0.4</Version>
+	<Authors>Henk-Jan Lebbink</Authors>
+	<Description>AsmDude2 Language Server Protocol (LSP) for assembly language</Description>
+	<AssemblyName>AsmDude2.LSP</AssemblyName>
+	<Company></Company>
+	<TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-WindowsService-7b46c878-2e29-4de0-b355-fe97116ed91a</UserSecretsId>
+    <PlatformTarget>x64</PlatformTarget>
+    <ApplicationIcon>AsmDudePackage.ico</ApplicationIcon>    
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <RootNamespace>AsmDude2LS</RootNamespace>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/SnellerInc/asm-dude</RepositoryUrl>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="AsmDudePackage.ico" />
+    <Content Include="lsp-version.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\asm-dude2-ls-lib\asm-dude2-ls-lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

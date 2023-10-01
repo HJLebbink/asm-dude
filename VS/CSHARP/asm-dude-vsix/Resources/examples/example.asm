@@ -12,6 +12,16 @@ include "bla"
 	rep stos
 	rep SCAS
 
+    VPXORD 
+
+    #region
+    #region
+
+    #endregion
+    #endregion
+
+
+
 #region 1 bit full adder
 ; ymm0 = A
 ; ymm1 = B

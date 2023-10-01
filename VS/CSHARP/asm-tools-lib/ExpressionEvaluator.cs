@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ namespace AsmTools
         public static (bool valid, ulong value, int nBits) Parse_Constant(string str, bool isCapitals = false)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             string token2;
             bool isHex = false;
@@ -177,12 +178,13 @@ namespace AsmTools
             }
 
             int nBits = parsedSuccessfully ? AsmSourceTools.NBitsStorageNeeded(value, isNegative) : -1;
-            return (valid: parsedSuccessfully, value: value, nBits: nBits);
+            return (valid: parsedSuccessfully, value, nBits);
         }
 
         public static (bool valid, ulong value, int nBits) Evaluate_Constant(string str, bool isCapitals = false)
         {
             Contract.Requires(str != null);
+            Contract.Assume(str != null);
 
             // 1] test whether str has digits, if it has none it is not a constant
             if (!str.Any(char.IsDigit))
@@ -207,7 +209,7 @@ namespace AsmTools
                     System.Threading.Tasks.Task<ulong> t = CSharpScript.EvaluateAsync<ulong>(str);
                     ulong value = t.Result;
                     bool isNegative = false;
-                    return (valid: true, value: value, nBits: AsmSourceTools.NBitsStorageNeeded(value, isNegative));
+                    return (valid: true, value, nBits: AsmSourceTools.NBitsStorageNeeded(value, isNegative));
                 }
                 catch (Exception)
                 {

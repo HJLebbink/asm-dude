@@ -49,9 +49,9 @@ namespace AsmSim
             for (int i = 0; i < nInstructions; ++i)
             {
                 Mnemonic m = this._eligibleMnemonics[this._rand.Next(this._eligibleMnemonics.Count)];
-                Rn reg1 = RandomReg();
-                Rn reg2 = RandomReg();
-                sb.AppendLine(MakeCodeLine(m, reg1, reg2));
+                Rn reg1 = this.RandomReg();
+                Rn reg2 = this.RandomReg();
+                sb.AppendLine(this.MakeCodeLine(m, reg1, reg2));
             }
             return sb.ToString().TrimEnd();
         }
@@ -76,12 +76,12 @@ namespace AsmSim
 
         private string ToString(Flags flag, State state)
         {
-            char c = ToolsZ3.ToStringBin(state.GetTv5(flag));
+            char c = ToolsZ3.ToStringBin(state.GetTv(flag));
             return c+"";
         }
         private string ToString(Rn name, State state)
         {
-            Tv[] array = state.GetTv5Array(name);
+            Tv[] array = state.GetTvArray(name);
             var tup = ToolsZ3.HasOneValue(array);
             if (tup.hasOneValue)
             {

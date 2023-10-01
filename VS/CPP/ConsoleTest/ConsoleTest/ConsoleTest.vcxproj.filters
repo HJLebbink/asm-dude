@@ -11,4 +11,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\example_semantic_analysis2.asm">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

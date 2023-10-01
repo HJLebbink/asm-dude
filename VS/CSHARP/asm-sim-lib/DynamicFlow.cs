@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2021 Henk-Jan Lebbink
+// Copyright (c) 2023 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ namespace AsmSim
         private readonly IDictionary<int, string> lineNumber_2_Key_;
         private readonly IDictionary<string, int> key_2_LineNumber_;
         private string rootKey_;
-        private readonly object updateLock_ = new object();
+        private readonly object updateLock_ = new();
         #endregion
 
         #region Constructors
@@ -249,7 +249,7 @@ namespace AsmSim
         {
             get
             {
-                HashSet<string> alreadyVisisted = new HashSet<string>();
+                HashSet<string> alreadyVisisted = new();
                 foreach (string key in Get_Leafs_LOCAL(this.rootKey_))
                 {
                     yield return this.Create_State_Private(key, true);
@@ -349,7 +349,7 @@ namespace AsmSim
 
                 return;
             }
-            Stack<string> nextKeys = new Stack<string>();
+            Stack<string> nextKeys = new();
 
             // Get the head of the current state, this head will be the prevKey of the update, nextKey is fresh.
             // When state is updated, tail is not changed; head is set to the fresh nextKey.
@@ -471,7 +471,7 @@ namespace AsmSim
 
                 return;
             }
-            Stack<string> prevKeys = new Stack<string>();
+            Stack<string> prevKeys = new();
 
             // Get the tail of the current state, this tail will be the nextKey, the prevKey is fresh.
             // When the state is updated, the head is unaltered, tail is set to the fresh prevKey.
@@ -581,7 +581,7 @@ namespace AsmSim
 
         public string ToString(StaticFlow flow)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (KeyValuePair<string, int> k in this.key_2_LineNumber_)
             {
                 sb.AppendLine("Key " + k.Key + " -> LineNumber " + k.Value);
@@ -624,10 +624,9 @@ namespace AsmSim
 
         #region Private Methods
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private State Create_State_Private(string key, bool after)
         {
-            List<string> visisted = new List<string>();
+            List<string> visisted = new();
             lock (this.updateLock_)
             {
                 State result = Construct_State_Private_LOCAL(key, after, visisted) ?? new State(this.tools_, key, key);
@@ -636,7 +635,7 @@ namespace AsmSim
             }
 
             #region Local Methods
-            State Construct_State_Private_LOCAL(string key_LOCAL, bool after_LOCAL, ICollection<string> visited_LOCAL)
+            State? Construct_State_Private_LOCAL(string key_LOCAL, bool after_LOCAL, ICollection<string> visited_LOCAL)
             {
                 #region Payload
                 if (visited_LOCAL.Contains(key_LOCAL)) // found a cycle
@@ -650,7 +649,7 @@ namespace AsmSim
                     return new State(this.tools_, key_LOCAL, key_LOCAL);
                 }
 
-                State result;
+                State? result;
                 visited_LOCAL.Add(key_LOCAL);
 
                 switch (this.graph_.InDegree(key_LOCAL))
@@ -704,8 +703,8 @@ namespace AsmSim
                             result.Update_Forward(edge.Tag.stateUpdate);
                             break;
                         case 2:
-                            using (State state1 = new State(result))
-                            using (State state2 = new State(result))
+                            using (State state1 = new(result))
+                            using (State state2 = new(result))
                             {
                                 TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge1 = this.graph_.OutEdge(key_LOCAL, 0);
                                 state1.Update_Forward(edge1.Tag.stateUpdate);
@@ -752,13 +751,13 @@ namespace AsmSim
                         update1.NextKey = nextKey1;
                         state1.Update_Forward(update1);
                     }
-                    State result_State = new State(this.tools_, state1.TailKey, state1.HeadKey);
+                    State result_State = new(this.tools_, state1.TailKey, state1.HeadKey);
 
                     IList<StateUpdate> mergeStateUpdates = new List<StateUpdate>();
-                    HashSet<BoolExpr> tempSet1 = new HashSet<BoolExpr>();
-                    HashSet<BoolExpr> tempSet2 = new HashSet<BoolExpr>();
-                    HashSet<string> sharedBranchConditions = new HashSet<string>();
-                    List<BranchInfo> allBranchConditions = new List<BranchInfo>();
+                    HashSet<BoolExpr> tempSet1 = new();
+                    HashSet<BoolExpr> tempSet2 = new();
+                    HashSet<string> sharedBranchConditions = new();
+                    List<BranchInfo> allBranchConditions = new();
 
                     foreach (BoolExpr v1 in state1.Solver.Assertions)
                     {
@@ -776,7 +775,7 @@ namespace AsmSim
                     }
 
                     int counter = 0;
-                    List<(string source, StateUpdate stateUpdate)> incoming_Branches_list = new List<(string source, StateUpdate stateUpdate)>(incoming_Branches);
+                    List<(string source, StateUpdate stateUpdate)> incoming_Branches_list = new(incoming_Branches);
                     incoming_Branches_list.Reverse(); //TODO does this always works??
                     int nBranches = incoming_Branches_list.Count;
                     foreach ((string source, StateUpdate stateUpdate) incoming_Branch in incoming_Branches_list)
@@ -799,7 +798,7 @@ namespace AsmSim
 
                             BoolExpr bc = null;
                             {
-                                using (Context ctx = new Context(this.tools_.ContextSettings))
+                                using (Context ctx = new(this.tools_.ContextSettings))
                                 {
                                     string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this.graph_);
                                     BranchInfo branchInfo = Get_Branch_Condition_LOCAL(branchKey);
@@ -816,7 +815,7 @@ namespace AsmSim
                                 }
                                 string nextKey3 = (counter == nBranches) ? target : target + "A" + counter;
 
-                                using (StateUpdate stateUpdate = new StateUpdate(bc, nextKey2, nextKey1, nextKey3, this.tools_))
+                                using (StateUpdate stateUpdate = new(bc, nextKey2, nextKey1, nextKey3, this.tools_))
                                 {
                                     nextKey1 = nextKey3;
                                     mergeStateUpdates.Add(stateUpdate);
@@ -863,7 +862,7 @@ namespace AsmSim
                 }
             }
 
-            BranchInfo Get_Branch_Condition_LOCAL(string branchKey)
+            BranchInfo? Get_Branch_Condition_LOCAL(string branchKey)
             {
                 if (branchKey == null)
                 {

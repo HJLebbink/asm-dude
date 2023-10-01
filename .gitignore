@@ -34,3 +34,4 @@ VS/CSHARP/asm-dude-vsix/Resources/Performance/instruction_tables.ods
 
 #VS/CSHARP/asm-sim-lib/libs/*
 **/.idea/*
+/VS/CSHARP/asm-dude2-vsix/vsix/**
