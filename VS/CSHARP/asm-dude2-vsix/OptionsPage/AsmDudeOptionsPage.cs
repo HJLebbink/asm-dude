@@ -682,66 +682,6 @@ namespace AsmDude2
             store.CloseCategory();
         }
 
-        private async System.Threading.Tasks.Task UpdateItalicAsync(string colorKeyName, bool b)
-        {
-            if (!ThreadHelper.CheckAccess())
-            {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            }
-
-            Guid textEditorFontCategoryGuid = Guid.Parse("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}");
-            __FCSTORAGEFLAGS flags = __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES;
-
-            IVsFontAndColorStorage store = this.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
-            if (store.OpenCategory(ref textEditorFontCategoryGuid, (uint)flags) != VSConstants.S_OK)
-            {
-                return;
-            }
-
-            ColorableItemInfo x = new ColorableItemInfo
-            {
-                //bFontFlagsValid = 1,
-                //dwFontFlags = 1 // bold
-                //dwFontFlags = 2 // italic
-                //dwFontFlags = 4 // nothing
-                //dwFontFlags = 8
-            };
-
-            ColorableItemInfo[] y = new[] { x };
-            AsmDudeToolsStatic.Output_INFO("UpdateItalic: flags before: " + y[0].dwFontFlags);
-            store.GetItem(colorKeyName, y);
-            AsmDudeToolsStatic.Output_INFO("UpdateItalic: flags before save: " + y[0].dwFontFlags);
-            if (b)
-            {
-                y[0].dwFontFlags = y[0].dwFontFlags | 0x0002;
-            }
-            else
-            {
-                y[0].dwFontFlags = y[0].dwFontFlags & 0xFFFD;
-            }
-            y[0].bFontFlagsValid = 1;
-
-            AsmDudeToolsStatic.Output_INFO("UpdateItalic: flags after save:  " + y[0].dwFontFlags);
-
-            store.SetItem(colorKeyName, y);
-            store.CloseCategory();
-
-            /*
-            if (store.OpenCategory(ref TextEditorFontCategoryGuid, (uint)flags) != VSConstants.S_OK) return;
-            SelectedTextSymbol symbol = sender as SelectedTextSymbol;
-
-
-            IClassificationFormatMap map = symbol.ClassificationMap;
-            map.BeginBatchUpdate();
-            TextFormattingRunProperties props = map.GetTextProperties(symbol.ClassificationType);
-
-            props = props.SetItalic(symbol.Italic);
-            map.SetTextProperties(symbol.ClassificationType, props);
-            map.EndBatchUpdate();
-            store.CloseCategory();
-            */
-        }
-
         private async System.Threading.Tasks.Task SaveAsync()
         {
             if (!ThreadHelper.CheckAccess())

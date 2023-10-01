@@ -82,6 +82,8 @@ namespace AsmDude2LS
                     {
                         OpenClose = true,
                         Change = TextDocumentSyncKind.Full,
+                        //TODO 30-09-23: use TextDocumentSyncKind.Incremental
+                        //Change = TextDocumentSyncKind.Incremental,
                     },
                     CompletionProvider = new CompletionOptions
                     {

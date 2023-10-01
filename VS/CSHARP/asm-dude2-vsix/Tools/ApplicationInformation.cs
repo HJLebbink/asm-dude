@@ -38,13 +38,20 @@ namespace AsmDude2.Tools
         private static string vsixVersion = string.Empty;
         private static string vsixBuildInfo = string.Empty;
         private static string lspVersion = string.Empty;
-        private static string lspBuildInfo = string.Empty;
 
         public static string VsixVersion()
         {
             if (vsixVersion == string.Empty)
             {
-                vsixVersion = typeof(AsmDude2Package).Assembly.GetName().Version.ToString();
+                try
+                {
+                    string file = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "asmdude2-version.txt");
+                    vsixVersion = File.ReadAllText(file);
+                }
+                catch (Exception)
+                {
+                    vsixVersion = "UNKNOWN";
+                }
             }
             return vsixVersion;
         }
@@ -53,7 +60,15 @@ namespace AsmDude2.Tools
         {
             if (lspVersion == string.Empty)
             {
-                lspVersion = FileVersionInfo.GetVersionInfo(LspPath()).FileVersion;
+                try
+                {
+                    string file = Path.Combine(AsmDudeToolsStatic.Get_Install_Path(), "Server", "lsp-version.txt");
+                    lspVersion = File.ReadAllText(file);
+                }
+                catch (Exception)
+                {
+                    lspVersion = "UNKNOWN";
+                }
             }
             return lspVersion;
         }
@@ -67,35 +82,6 @@ namespace AsmDude2.Tools
                 vsixBuildInfo = d.ToUniversalTime().ToString(AsmDudeToolsStatic.CultureUI);
             }
             return vsixBuildInfo;
-        }
-
-        public static string LspBuildInfo()
-        {
-            if (lspBuildInfo == string.Empty)
-            {
-                /*
-                string lspPath = LspPath();
-                lspPath = lspPath.Substring(0, lspPath.Length - 3);// remove the exe
-                lspPath += "dll";
-
-                if (!File.Exists(lspPath))
-                {
-                    lspBuildInfo = $"file {lspPath} does not exist";
-                } 
-                else
-                {
-                    //var x = Assembly.LoadFrom(lspPath);
-
-
-                    var x = Assembly.LoadFile(lspPath);
-                    var d = GetBuildDate(x);
-                    //d.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(d).Hours);
-                    //lspBuildInfo = d.ToUniversalTime().ToString(AsmDudeToolsStatic.CultureUI);
-                }
-                */
-                lspBuildInfo = "TODO";
-            }
-            return lspBuildInfo;
         }
 
         /// <summary>
