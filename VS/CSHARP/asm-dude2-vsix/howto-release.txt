@@ -1,4 +1,4 @@
-
+What to do to update the versions: (TODO: make one file with versions...)
 
 
 1.A] Edit "asm-dude\VS\CSHARP\asm-dude2-vsix\asmdude2-version.txt".
@@ -7,8 +7,6 @@
 
 2.A] Edit "asm-dude\VS\CSHARP\asm-dude2-ls\lsp-version.txt".
 2.B] Edit asm-dude2-ls.csproj. Search for: <Version>1.0.0.4</Version>.
-2.B
-
 
 3] Delete "bin" and "obj" directory in "asm-dude\VS\CSHARP\asm-dude2-vsix"
 
@@ -16,7 +14,7 @@
 
 5] Copy: asm-dude\VS\CSHARP\asm-dude2-vsix\bin\Release\net48\asm-dude2-vsix.vsix
 
-6] Rename asm-dude2-vsix.vsix to AsmDude2-2_0_0_2.vsix
+6] Rename asm-dude2-vsix.vsix to AsmDude2-2_0_0_4.vsix
 
 7] Upload to Github: https://github.com/HJLebbink/asm-dude/releases
 

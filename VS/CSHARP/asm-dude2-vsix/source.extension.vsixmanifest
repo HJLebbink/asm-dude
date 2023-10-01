@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="AsmDude2" Version="2.0.0.2" Language="en-US" Publisher="Henk-Jan Lebbink" />
+        <Identity Id="AsmDude2" Version="2.0.0.4" Language="en-US" Publisher="Henk-Jan Lebbink" />
         <DisplayName>AsmDude2</DisplayName>
 		<Description xml:space="preserve">Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window.</Description>
     </Metadata>
