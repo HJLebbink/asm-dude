@@ -7,8 +7,8 @@ Transitioning from a Visual Studio 2019 extension to one compatible with Visual 
 straightforward. Many of the features from the older AsmDude have yet to be ported, and some may 
 never be. See the list of known issues and things still todo.
 
-This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e)
-or download latest installer [AsmDude.vsix (v2.0.0.2)](https://github.com/HJLebbink/asm-dude/releases/download/1.9.6.14/AsmDude.vsix). 
+This extension can be found in the [visual studio extensions gallery](https://marketplace.visualstudio.com/items?itemName=Henk-JanLebbink.AsmDude2)
+or download latest installer [AsmDude.vsix (v2.0.0.4)](https://github.com/HJLebbink/asm-dude/releases/download/v2.0.0.4/Asmdude2.v2-0-0-4.vsix). 
 
 ### Features
 
