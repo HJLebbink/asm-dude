@@ -479,7 +479,7 @@ namespace AsmSim
                 if (this.NOperands == 1)
                 {
                     this.op1_ = new Operand(args[0], false);
-                    if (this.op1_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op1_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage);
                     }
@@ -532,12 +532,12 @@ namespace AsmSim
                 {
                     this.op1_ = new Operand(args[0], false);
                     this.op2_ = new Operand(args[1], false);
-                    if (this.op1_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op1_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage);
                     }
 
-                    if (this.op2_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op2_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2_.ErrorMessage);
                     }
@@ -597,17 +597,17 @@ namespace AsmSim
                     this.op2_ = new Operand(args[1], false);
                     this.op3_ = new Operand(args[2], false);
 
-                    if (this.op1_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op1_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage);
                     }
 
-                    if (this.op2_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op2_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2_.ErrorMessage);
                     }
 
-                    if (this.op3_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op3_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3_.ErrorMessage);
                     }
@@ -668,7 +668,7 @@ namespace AsmSim
                 if (this.NOperands >= 1)
                 {
                     this.op1_ = new Operand(args[0], false);
-                    if (this.op1_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op1_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage);
                     }
@@ -676,7 +676,7 @@ namespace AsmSim
                 if (this.NOperands >= 2)
                 {
                     this.op2_ = new Operand(args[1], false);
-                    if (this.op2_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op2_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2_.ErrorMessage);
                     }
@@ -684,7 +684,7 @@ namespace AsmSim
                 if (this.NOperands >= 3)
                 {
                     this.op3_ = new Operand(args[2], false);
-                    if (this.op3_.ErrorMessage != null)
+                    if (!string.IsNullOrEmpty(this.op3_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3_.ErrorMessage);
                     }
