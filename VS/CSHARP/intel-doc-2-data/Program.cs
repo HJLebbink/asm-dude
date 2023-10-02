@@ -12,6 +12,8 @@ namespace intel_doc_2_data
         [STAThread]
         static void Main(string[] args)
         {
+            // Executable to load the AsmDude wiki pages, and turn them into source files for AsmDude
+
             DateTime startTime = DateTime.Now;
 
             Payload();
@@ -24,8 +26,7 @@ namespace intel_doc_2_data
 
         static void Payload()
         {
-            //string path = "../../../../asm-dude.wiki/doc";
-            string path = "C:/Users/henk/Documents/Github/asm-dude.wiki/doc";
+            string path = "C:/Source/Github/asm-dude.wiki/doc";
 
             if (!Directory.Exists(path))
             {
@@ -76,10 +77,10 @@ namespace intel_doc_2_data
                     }
                     #endregion
                 }
-                System.IO.File.WriteAllText(@"C:\Temp\VS\signature-dec2018.txt", sb.ToString());
+                File.WriteAllText(@"C:\Temp\VS\signature-dec2018.txt", sb.ToString());
             }
             sb2.AppendLine("</table>");
-            System.IO.File.WriteAllText(@"C:\Temp\VS\overview.txt", sb2.ToString());
+            File.WriteAllText(@"C:\Temp\VS\overview.txt", sb2.ToString());
 
             foreach (Arch a in dictionary.Keys.OrderBy(f => f))
             {
@@ -112,13 +113,13 @@ namespace intel_doc_2_data
 
         static (string Description, IList<Signature> Signatures) Parse(string content)
         {
-            //1] get everthing before the first occurance of "<table>"
+            //1] get everting before the first occurrence of "<table>"
             int pos_Start_Table = content.IndexOf("<table>");
-            string substr1 = content.Substring(0, pos_Start_Table);
+            string substr1 = content[..pos_Start_Table];
             int pos_Hyphen = Find_First_Hyphen_Position(substr1);
-            string Description = substr1.Substring(pos_Hyphen + 1).Trim().Replace("\r\n", " ");
+            string Description = substr1[(pos_Hyphen + 1)..].Trim().Replace("\r\n", " ");
             int pos_End_Table = content.IndexOf("</table>");
-            var table = Parse_Table(content.Substring(pos_Start_Table, pos_End_Table - pos_Start_Table).Replace("<table>", ""));
+            var table = Parse_Table(content[pos_Start_Table..pos_End_Table].Replace("<table>", ""));
             var signatures = To_Signature(table);
             return (Description, signatures);
         }
@@ -131,19 +132,18 @@ namespace intel_doc_2_data
             public IList<Arch> archs;
             public string description;
 
-            override
-            public string ToString()
+            public override readonly string ToString()
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 sb.Append(this.mnemonic.ToString() + "\t");
                 sb.Append(this.parameters + "\t");
 
                 for (int i = 0; i < this.archs.Count; ++i)
                 {
                     sb.Append(ArchTools.ToString(this.archs[i]));
-                    if (i < (this.archs.Count - 1)) sb.Append(",");
+                    if (i < (this.archs.Count - 1)) sb.Append(',');
                 }
-                sb.Append("\t");
+                sb.Append('\t');
                 sb.Append(this.parameter_descriptions + "\t");
 
                 sb.Append(this.description);
@@ -235,11 +235,11 @@ namespace intel_doc_2_data
                 IList<Arch> archs;
                 if (arch_column == -1)
                 {
-                    string desr = " " + Parameters.Parameter_Descriptions;
+                    string descr = " " + Parameters.Parameter_Descriptions;
 
-                    if (desr.Contains(" CMOV"))
+                    if (descr.Contains(" CMOV"))
                     {
-                        if (desr.Contains("R64"))
+                        if (descr.Contains("R64"))
                         {
                             archs = new List<Arch> { Arch.ARCH_X64 };
                         }
@@ -248,19 +248,19 @@ namespace intel_doc_2_data
                             archs = new List<Arch> { Arch.ARCH_P6 };
                         }
                     }
-                    else if (desr.Contains("REL16") || desr.Contains("REL32"))
+                    else if (descr.Contains("REL16") || descr.Contains("REL32"))
                     {
                         archs = new List<Arch> { Arch.ARCH_386 };
                     }
-                    else if (desr.Contains("REL64"))
+                    else if (descr.Contains("REL64"))
                     {
                         archs = new List<Arch> { Arch.ARCH_X64 };
                     }
-                    else if (desr.Contains("M64") || desr.Contains("R64") || desr.Contains("RCX"))
+                    else if (descr.Contains("M64") || descr.Contains("R64") || descr.Contains("RCX"))
                     {
                         archs = new List<Arch> { Arch.ARCH_X64 };
                     }
-                    else if (desr.Contains("IMM32") || desr.Contains("M32") || desr.Contains("R32") || desr.Contains("ECX"))
+                    else if (descr.Contains("IMM32") || descr.Contains("M32") || descr.Contains("R32") || descr.Contains("ECX"))
                     {
                         archs = new List<Arch> { Arch.ARCH_386 };
                     }
@@ -321,7 +321,7 @@ namespace intel_doc_2_data
                 if (pos_mnemonic != -1)
                 {
                     mnemonic = m;
-                    string tmp = str2.Substring(pos_mnemonic + mnemonic_str.Length).Replace(" ", "").Trim().ToUpper();
+                    string tmp = str2[(pos_mnemonic + mnemonic_str.Length)..].Replace(" ", "").Trim().ToUpper();
                     parameters = Cleanup_Parameters(tmp);
                     parameter_descriptions = (tmp.Length > 0) ? (mnemonic_str + " " + tmp) : mnemonic_str;
                     break;
@@ -332,7 +332,7 @@ namespace intel_doc_2_data
                     if (pos_mnemonic != -1)
                     {
                         mnemonic = m;
-                        string tmp = str2.Substring(pos_mnemonic + mnemonic_str.Length).Replace("[", "").Replace("]", "").Replace(" ", "").Trim().ToUpper();
+                        string tmp = str2[(pos_mnemonic + mnemonic_str.Length)..].Replace("[", "").Replace("]", "").Replace(" ", "").Trim().ToUpper();
                         parameters = Cleanup_Parameters(tmp);
                         parameter_descriptions = (tmp.Length > 0) ? (mnemonic_str + " " + tmp) : mnemonic_str;
                         break;
@@ -397,10 +397,10 @@ namespace intel_doc_2_data
             int pos_Tr_Begin = str.IndexOf("<tr>");
             int pos_Tr_End = str.IndexOf("</tr>");
 
-            string subStr = str.Substring(pos_Tr_Begin, pos_Tr_End - pos_Tr_Begin).Replace("<tr>", "");
+            string subStr = str[pos_Tr_Begin..pos_Tr_End].Replace("<tr>", "");
             IList<string> Row = Parse_Table_Cells(subStr);
 
-            string Remainder = str.Substring(pos_Tr_End + 5).Trim();
+            string Remainder = str[(pos_Tr_End + 5)..].Trim();
             return (Row, Remainder);
         }
 
@@ -411,7 +411,7 @@ namespace intel_doc_2_data
 
             string str2 = str.Replace("</td>", "");
             int pos_td = str2.IndexOf("<td>");
-            str2 = str2.Substring(pos_td + 4);
+            str2 = str2[(pos_td + 4)..];
 
             foreach (string s1 in str2.Split("<td>"))
             {
