@@ -37,7 +37,7 @@ namespace AsmSim
             Contract.Requires(a != null);
 
             BitVecExpr zero = ctx.MkBV(0, a.SortSize);
-            return Substract(zero, a, ctx);
+            return Subtract(zero, a, ctx);
         }
 
         #endregion
@@ -54,7 +54,7 @@ namespace AsmSim
             BoolExpr cf = ToolsFlags.Create_CF_Add(a, b, a.SortSize, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Add(a, b, a.SortSize, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Add(a, b, ctx);
-            return (result: result, cf: cf, of: of, af: af);
+            return (result, cf, of, af);
         }
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Addition(
@@ -80,10 +80,10 @@ namespace AsmSim
             BoolExpr cf = ToolsFlags.Create_CF_Add(ax, bx2, nBits, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Add(ax, bx2, nBits, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Add(ax, bx2, ctx);
-            return (result: result, cf: cf, of: of, af: af);
+            return (result, cf, of, af);
         }
 
-        public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Substract(
+        public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Subtract(
             BitVecExpr a, BitVecExpr b, Context ctx)
         {
             Contract.Requires(ctx != null);
@@ -94,10 +94,10 @@ namespace AsmSim
             BoolExpr cf = ToolsFlags.Create_CF_Sub(a, b, nBits, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Sub(a, b, nBits, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Sub(a, b, ctx);
-            return (result: result, cf: cf, of: of, af: af);
+            return (result, cf, of, af);
         }
 
-        public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Substract(
+        public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Subtract(
             BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx)
         {
             Contract.Requires(a != null);
@@ -107,7 +107,7 @@ namespace AsmSim
 
             if (carry.IsFalse)
             {
-                return Substract(a, b, ctx);
+                return Subtract(a, b, ctx);
             }
 
             uint nBits = a.SortSize;
@@ -124,7 +124,7 @@ namespace AsmSim
             BoolExpr cf = ToolsFlags.Create_CF_Sub(ax, bx2, nBits, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Sub(ax, bx2, nBits, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Sub(ax, bx2, ctx);
-            return (result: result, cf: cf, of: of, af: af);
+            return (result, cf, of, af);
         }
 
         #endregion
@@ -189,7 +189,7 @@ namespace AsmSim
 
             BoolExpr cF_undef = Tools.Create_Flag_Key_Fresh(Flags.CF, rand, ctx);
             BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), cF_undef, bitValue) as BoolExpr;
-            return (result: value_out, cf: cf);
+            return (result: value_out, cf);
         }
 
         public static (BitVecExpr result, BoolExpr cf) ShiftOperations(
@@ -238,7 +238,7 @@ namespace AsmSim
 
             BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), cf_current, bitValue) as BoolExpr;
             //Console.WriteLine("ShiftOperations:cf=" + cf);
-            return (result: value_out, cf: cf);
+            return (result: value_out, cf);
         }
         #endregion
     }

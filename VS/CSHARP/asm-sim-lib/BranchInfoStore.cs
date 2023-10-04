@@ -126,7 +126,7 @@ namespace AsmSim
                 }
             }
 
-            BranchInfoStore mergeBranchStore = new BranchInfoStore(ctx);
+            BranchInfoStore mergeBranchStore = new(ctx);
             if (sharedKeys.Count == 0)
             {
                 if (store1.branchInfo_ != null)
@@ -232,7 +232,7 @@ namespace AsmSim
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             if ((this.branchInfo_ != null) && (this.branchInfo_.Count > 0))
             {
                 sb.AppendLine("Branch control flow constraints:");

@@ -32,7 +32,6 @@ namespace AsmSim
     using Microsoft.Z3;
     using QuikGraph;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     internal class AsmSimMain
     {
         private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
@@ -60,7 +59,7 @@ namespace AsmSim
             }
             // TestDynamicFlow();
             // TestSIMD();
-            if (false)
+            if (true)
             {
                 EmptyMemoryTest();
             }
@@ -99,7 +98,7 @@ namespace AsmSim
                             Microsoft.Z3.Global.SetParameter(System.String,System.String)
             */
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -131,18 +130,18 @@ namespace AsmSim
                 "           jnz     label1                      " + Environment.NewLine +
                 "           mov     rbx,        10              ";
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "1000" },
             };
-            Tools tools = new Tools(settings)
+            Tools tools = new(settings)
             {
                 Quiet = false,
             };
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             Console.WriteLine("sFlow=" + sFlow.ToString());
 
@@ -154,31 +153,29 @@ namespace AsmSim
 
         private static void TestSIMD()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "1000" },
             };
-            Tools tools = new Tools(settings);
+            Tools tools = new(settings);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.SIMD = true;
             tools.ShowUndefConstraints = true;
-            using (Context ctx = new Context(settings))
-            {
-                string line1 = "xorpd xmm1, xmm1";
-                string line2 = "addpd xmm1, xmm1";
+            using Context ctx = new(settings);
+            string line1 = "xorpd xmm1, xmm1";
+            string line2 = "addpd xmm1, xmm1";
 
-                { // forward
-                    string rootKey = "!0";
-                    State state = new State(tools, rootKey, rootKey);
+            { // forward
+                string rootKey = "!0";
+                State state = new(tools, rootKey, rootKey);
 
-                    state = Runner.SimpleStep_Forward(line1, state);
-                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-                    state = Runner.SimpleStep_Forward(line2, state);
-                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-                }
+                state = Runner.SimpleStep_Forward(line1, state);
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                state = Runner.SimpleStep_Forward(line2, state);
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
             }
         }
 
@@ -268,14 +265,14 @@ namespace AsmSim
                 return y;
             }
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "60000" },        // 60000=1min
             };
-            using (Context ctx = new Context(settings))
+            using (Context ctx = new(settings))
             {
                 // Solver solver = ctx.MkSolver();
                 Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
@@ -519,7 +516,7 @@ namespace AsmSim
                 return y;
             }
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -538,7 +535,7 @@ namespace AsmSim
    //5: (= RSP!6DE3EBEB4605B058(bvadd #x0000000000000008 RSP!3D50632C10EAA838))
    //6: (= MEM!6DE3EBEB4605B058 MEM!3D50632C10EAA838)
 
-            using (Context ctx = new Context(settings))
+            using (Context ctx = new(settings))
             {
                 // Solver solver = ctx.MkSolver();
                 Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
@@ -727,7 +724,7 @@ namespace AsmSim
 
         private static void TestGraph()
         {
-            BidirectionalGraph<long, TaggedEdge<long, bool>> graph = new BidirectionalGraph<long, TaggedEdge<long, bool>>(false);
+            BidirectionalGraph<long, TaggedEdge<long, bool>> graph = new(false);
             int rootVertex = 1;
 
             graph.AddVertex(1);
@@ -772,7 +769,7 @@ namespace AsmSim
         /// </summary>
         private static void TestTactic()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -780,37 +777,35 @@ namespace AsmSim
                 { "timeout", "20000" },
             };
 
-            using (Context ctx = new Context(settings))
+            using Context ctx = new(settings);
+            IntExpr x = ctx.MkIntConst("x");
+            BoolExpr y = ctx.MkOr(ctx.MkGt(x, ctx.MkInt(6)), ctx.MkGt(x, ctx.MkInt(12)));
+            Console.WriteLine("y  = " + y.ToString());
+            Console.WriteLine("z0 = " + y.Simplify().ToString());
+
+            Tactic ctx_solver_simplify = ctx.MkTactic("ctx-solver-simplify");
+            Tactic propagate_values = ctx.MkTactic("propagate-values");
+            Tactic split_clause = ctx.MkTactic("split-clause");
+            Tactic propagate_ineqs = ctx.MkTactic("propagate-ineqs");
+            Tactic skip = ctx.MkTactic("skip");
+
+            Tactic tactic = ctx.AndThen(ctx_solver_simplify, ctx.AndThen(propagate_values, ctx.AndThen(ctx.Repeat(ctx.OrElse(split_clause, skip), 10), propagate_ineqs)));
+            Goal goal = ctx.MkGoal();
+            goal.Assert(y);
+            ApplyResult apply_result = tactic.Apply(goal);
+
+            foreach (Goal subgoal in apply_result.Subgoals)
             {
-                IntExpr x = ctx.MkIntConst("x");
-                BoolExpr y = ctx.MkOr(ctx.MkGt(x, ctx.MkInt(6)), ctx.MkGt(x, ctx.MkInt(12)));
-                Console.WriteLine("y  = " + y.ToString());
-                Console.WriteLine("z0 = " + y.Simplify().ToString());
-
-                Tactic ctx_solver_simplify = ctx.MkTactic("ctx-solver-simplify");
-                Tactic propagate_values = ctx.MkTactic("propagate-values");
-                Tactic split_clause = ctx.MkTactic("split-clause");
-                Tactic propagate_ineqs = ctx.MkTactic("propagate-ineqs");
-                Tactic skip = ctx.MkTactic("skip");
-
-                Tactic tactic = ctx.AndThen(ctx_solver_simplify, ctx.AndThen(propagate_values, ctx.AndThen(ctx.Repeat(ctx.OrElse(split_clause, skip), 10), propagate_ineqs)));
-                Goal goal = ctx.MkGoal();
-                goal.Assert(y);
-                ApplyResult apply_result = tactic.Apply(goal);
-
-                foreach (Goal subgoal in apply_result.Subgoals)
+                foreach (BoolExpr e in subgoal.Formulas)
                 {
-                    foreach (BoolExpr e in subgoal.Formulas)
-                    {
-                        Console.WriteLine("z1 = " + e.ToString());
-                    }
+                    Console.WriteLine("z1 = " + e.ToString());
                 }
             }
         }
 
         private static void TestMem2()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -818,108 +813,104 @@ namespace AsmSim
                 { "timeout", "20000" },
             };
 
-            using (Context ctx = new Context(settings))
+            using Context ctx = new(settings);
+            Tactic tactic = ctx.MkTactic("qfbv");
+            Solver solver = ctx.MkSolver(tactic);
+            Params p = ctx.MkParams();
+            p.Add("mbqi", true); // use Model-based Quantifier Instantiation
+            solver.Parameters = p;
+
+            Sort domain = ctx.MkBitVecSort(64);
+            Sort range = ctx.MkBitVecSort(8);
+
+            ArrayExpr mem0 = ctx.MkArrayConst("MEM!0", domain, range);
+            ArrayExpr mem1 = ctx.MkArrayConst("MEM!1", domain, range);
+            BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
+            BitVecExpr rbx1 = ctx.MkBVConst("RBX!1", 64);
+
+            Expr address1 = ctx.MkBV(10, 64);
+            Expr address2 = ctx.MkBV(7, 64);
+            Expr value1 = ctx.MkBV(0x1, 8);
+            Expr value2 = ctx.MkBV(0x2, 8);
+
+            if (false)
             {
-                Tactic tactic = ctx.MkTactic("qfbv");
-                Solver solver = ctx.MkSolver(tactic);
-                Params p = ctx.MkParams();
-                p.Add("mbqi", true); // use Model-based Quantifier Instantiation
-                solver.Parameters = p;
-
-                Sort domain = ctx.MkBitVecSort(64);
-                Sort range = ctx.MkBitVecSort(8);
-
-                ArrayExpr mem0 = ctx.MkArrayConst("MEM!0", domain, range);
-                ArrayExpr mem1 = ctx.MkArrayConst("MEM!1", domain, range);
-                BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
-                BitVecExpr rbx1 = ctx.MkBVConst("RBX!1", 64);
-
-                Expr address1 = ctx.MkBV(10, 64);
-                Expr address2 = ctx.MkBV(7, 64);
-                Expr value1 = ctx.MkBV(0x1, 8);
-                Expr value2 = ctx.MkBV(0x2, 8);
-
-                if (false)
-                {
-                    solver.Assert(ctx.MkEq(mem1, ctx.MkStore(ctx.MkStore(mem0, address2, value2), address1, value1)));
-                    solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
-                    solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
-                }
-                else
-                {
-                    BitVecExpr address = ctx.MkBVConst("address", 64);
-                    // solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkAnd(ctx.MkBVULE(ctx.MkBV(10, 64), address), ctx.MkBVULE(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
-                    solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkOr(ctx.MkEq(ctx.MkBV(10, 64), address), ctx.MkEq(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
-                    solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
-                    solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
-                }
-                Console.WriteLine("solver " + solver);
-                Console.WriteLine("rax=" + ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver, ctx)));
-                Console.WriteLine("rbx=" + ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rbx1, 64, solver, ctx)));
+                solver.Assert(ctx.MkEq(mem1, ctx.MkStore(ctx.MkStore(mem0, address2, value2), address1, value1)));
+                solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
+                solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
             }
+            else
+            {
+                BitVecExpr address = ctx.MkBVConst("address", 64);
+                // solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkAnd(ctx.MkBVULE(ctx.MkBV(10, 64), address), ctx.MkBVULE(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
+                solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkOr(ctx.MkEq(ctx.MkBV(10, 64), address), ctx.MkEq(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
+                solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
+                solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
+            }
+            Console.WriteLine("solver " + solver);
+            Console.WriteLine("rax=" + ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver, ctx)));
+            Console.WriteLine("rbx=" + ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rbx1, 64, solver, ctx)));
         }
 
         private static void Test_Rep()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "1000" },
             };
-            Tools tools = new Tools(settings);
+            Tools tools = new(settings);
             tools.StateConfig.Set_All_Off();
-            using (Context ctx = new Context(settings))
+            using Context ctx = new(settings);
+            if (true)
             {
-                if (true)
-                {
-                    tools.StateConfig.Set_All_Off();
-                    tools.StateConfig.DF = true;
-                    tools.StateConfig.RCX = true;
-                    tools.StateConfig.RSI = true;
-                    tools.StateConfig.RDI = true;
-                    tools.StateConfig.Mem = true;
+                tools.StateConfig.Set_All_Off();
+                tools.StateConfig.DF = true;
+                tools.StateConfig.RCX = true;
+                tools.StateConfig.RSI = true;
+                tools.StateConfig.RDI = true;
+                tools.StateConfig.Mem = true;
 
-                    string line1 = "std"; // std = set direction flag
-                    string line2 = "mov rdi, 100";
-                    string line3 = "mov rsi, 200";
-                    string line4 = "mov rcx, 3";
-                    string line5 = "rep movs";
+                string line1 = "std"; // std = set direction flag
+                string line2 = "mov rdi, 100";
+                string line3 = "mov rsi, 200";
+                string line4 = "mov rcx, 3";
+                string line5 = "rep movs";
 
-                    { // forward
-                        string rootKey = "!INIT";
-                        State state = new State(tools, rootKey, rootKey);
+                { // forward
+                    string rootKey = "!INIT";
+                    State state = new(tools, rootKey, rootKey);
 
-                        state = Runner.SimpleStep_Forward(line1, state);
-                        state = Runner.SimpleStep_Forward(line2, state);
-                        state = Runner.SimpleStep_Forward(line3, state);
-                        state = Runner.SimpleStep_Forward(line4, state);
+                    state = Runner.SimpleStep_Forward(line1, state);
+                    state = Runner.SimpleStep_Forward(line2, state);
+                    state = Runner.SimpleStep_Forward(line3, state);
+                    state = Runner.SimpleStep_Forward(line4, state);
 
-                        Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
-                        state = Runner.SimpleStep_Forward(line5, state);
-                        Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
-                    }
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                    state = Runner.SimpleStep_Forward(line5, state);
+                    Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
                 }
             }
         }
 
         private static void Test_Usage()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "1000" },
             };
-            Tools tools = new Tools(settings);
+            Tools tools = new(settings);
 
             (string, string, string) keys = ("dummy1", "dummy2", "dummy3");
 
             Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]" }, keys, tools);
-            SortedSet<Rn> read = new SortedSet<Rn>(opcode.RegsReadStatic);
-            SortedSet<Rn> write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+            SortedSet<Rn> read = new(opcode.RegsReadStatic);
+            SortedSet<Rn> write = new(opcode.RegsWriteStatic);
 
             Console.WriteLine("read = " + string.Join(",", read));
             Console.WriteLine("write = " + string.Join(",", write));
@@ -927,288 +918,286 @@ namespace AsmSim
 
         private static void TestMnemonic()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "1000" },
             };
-            Tools tools = new Tools(settings);
+            Tools tools = new(settings);
             tools.StateConfig.Set_All_Off();
-            using (Context ctx = new Context(settings))
+            using Context ctx = new(settings);
+            if (false)
             {
-                if (false)
-                {
-                    tools.StateConfig.Set_All_Off();
-                    // tools.StateConfig.Set_All_Flags_On();
-                    tools.StateConfig.RAX = true;
+                tools.StateConfig.Set_All_Off();
+                // tools.StateConfig.Set_All_Flags_On();
+                tools.StateConfig.RAX = true;
 
-                    string line1 = "mov rax, 1";
-                    string line2 = "shl rax, 65"; // special behaviour: shift left too large; 65 mod 64 = 1
+                string line1 = "mov rax, 1";
+                string line2 = "shl rax, 65"; // special behaviour: shift left too large; 65 mod 64 = 1
 
-                    { // forward
-                        string rootKey = "!INIT";
-                        State state = new State(tools, rootKey, rootKey);
+                { // forward
+                    string rootKey = "!INIT";
+                    State state = new(tools, rootKey, rootKey);
 
-                        Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
-                        state = Runner.SimpleStep_Forward(line1, state);
-                        Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-                        state = Runner.SimpleStep_Forward(line2, state);
-                        Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-
-                        Console.WriteLine("IsConsistent=" + state.IsConsistent);
-                    }
-                }
-                if (false)
-                {
-                    bool logToDisplay = true;
-
-                    tools.StateConfig.Set_All_Off();
-                    tools.StateConfig.Set_All_Flags_On();
-                    tools.StateConfig.RAX = true;
-                    tools.StateConfig.RBX = true;
-                    tools.ShowUndefConstraints = true;
-
-                    Random rand = new Random((int)DateTime.Now.Ticks);
-
-                    for (int i = 0; i < 1; ++i)
-                    {
-                        ulong value_rax = ToolsZ3.GetRandomUlong(rand);
-                        ulong value_rbx = ToolsZ3.GetRandomUlong(rand);
-                        ulong value_result = value_rax ^ value_rbx;
-
-                        string line1 = "mov rax, " + value_rax;
-                        string line2 = "mov rbx, " + value_rbx;
-                        string line3 = "xor rax, rbx";
-
-                        State state = new State(tools, "!0", "!0");
-                        if (logToDisplay)
-                        {
-                            Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
-                        }
-
-                        state = Runner.SimpleStep_Backward(line3, state);
-                        if (logToDisplay)
-                        {
-                            Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
-                        }
-
-                        state = Runner.SimpleStep_Backward(line2, state);
-                        if (logToDisplay)
-                        {
-                            Console.WriteLine("After line 2 with \"" + line2 + "\", we know:\n" + state);
-                        }
-
-                        state = Runner.SimpleStep_Backward(line1, state);
-                        if (logToDisplay)
-                        {
-                            Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
-                        }
-                    }
-                }
-                if (false)
-                {
-#pragma warning disable CS0162 // Unreachable code detected
-                    tools.StateConfig.RAX = true;
-                    tools.StateConfig.RBX = true;
-                    tools.StateConfig.RCX = true;
-                    tools.StateConfig.CF = true;
-
-                    string line1 = "mov rax, rbx";
-                    string line2 = "xor rax, rbx";
-                    string line3 = "rcl rax, cl";
-
-                    string rootKey = "!0";
-                    State state = new State(tools, rootKey, rootKey);
-
+                    Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
                     state = Runner.SimpleStep_Forward(line1, state);
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                     state = Runner.SimpleStep_Forward(line2, state);
-                    state = Runner.SimpleStep_Forward(line3, state);
-                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
-                }
-                if (false)
-                {
-                    tools.StateConfig.RAX = true;
-                    tools.StateConfig.RBX = true;
-
-                    string line1 = "mov rax, 10";
-                    string line2 = "mov rbx, 20";
-                    string line3 = "add rax, rbx";
-
-                    string rootKey = "!0";
-                    State state = new State(tools, rootKey, rootKey);
-
-                    Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
-                    state = Runner.SimpleStep_Backward(line3, state);
-                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
-                    state = Runner.SimpleStep_Backward(line2, state);
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+
+                    Console.WriteLine("IsConsistent=" + state.IsConsistent);
+                }
+            }
+            if (false)
+            {
+                bool logToDisplay = true;
+
+                tools.StateConfig.Set_All_Off();
+                tools.StateConfig.Set_All_Flags_On();
+                tools.StateConfig.RAX = true;
+                tools.StateConfig.RBX = true;
+                tools.ShowUndefConstraints = true;
+
+                Random rand = new((int)DateTime.Now.Ticks);
+
+                for (int i = 0; i < 1; ++i)
+                {
+                    ulong value_rax = ToolsZ3.GetRandomUlong(rand);
+                    ulong value_rbx = ToolsZ3.GetRandomUlong(rand);
+                    ulong value_result = value_rax ^ value_rbx;
+
+                    string line1 = "mov rax, " + value_rax;
+                    string line2 = "mov rbx, " + value_rbx;
+                    string line3 = "xor rax, rbx";
+
+                    State state = new(tools, "!0", "!0");
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
+                    }
+
+                    state = Runner.SimpleStep_Backward(line3, state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
+                    }
+
+                    state = Runner.SimpleStep_Backward(line2, state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("After line 2 with \"" + line2 + "\", we know:\n" + state);
+                    }
+
                     state = Runner.SimpleStep_Backward(line1, state);
-                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
+                    }
                 }
-                if (false)
-                {
-                    ulong a = 0b0000_1000;
-                    ulong b = 0b0000_0100;
+            }
+            if (false)
+            {
+#pragma warning disable CS0162 // Unreachable code detected
+                tools.StateConfig.RAX = true;
+                tools.StateConfig.RBX = true;
+                tools.StateConfig.RCX = true;
+                tools.StateConfig.CF = true;
 
-                    string tailKey = Tools.CreateKey(tools.Rand);
-                    string headKey = Tools.CreateKey(tools.Rand);
-                    State state = new State(tools, tailKey, headKey);
+                string line1 = "mov rax, rbx";
+                string line2 = "xor rax, rbx";
+                string line3 = "rcl rax, cl";
 
-                    string line1 = "add al, bl";
+                string rootKey = "!0";
+                State state = new(tools, rootKey, rootKey);
 
-                    string nextKey = Tools.CreateKey(state.Tools.Rand);
-                    StateUpdate updateState = new StateUpdate(state.TailKey, nextKey, state.Tools);
-                    updateState.Set(Rn.AL, a);
-                    updateState.Set(Rn.BL, b);
+                state = Runner.SimpleStep_Forward(line1, state);
+                state = Runner.SimpleStep_Forward(line2, state);
+                state = Runner.SimpleStep_Forward(line3, state);
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
+            if (false)
+            {
+                tools.StateConfig.RAX = true;
+                tools.StateConfig.RBX = true;
 
-                    state.Update_Forward(updateState);
-                    // if (logToDisplay) Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
+                string line1 = "mov rax, 10";
+                string line2 = "mov rbx, 20";
+                string line3 = "add rax, rbx";
 
-                    state = Runner.SimpleStep_Forward(line1, state);
-                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                string rootKey = "!0";
+                State state = new(tools, rootKey, rootKey);
 
-                    Console.WriteLine(ToolsZ3.ToStringBin(state.GetTvArray(Rn.AL)));
-                }
-                if (false)
-                {
-                    tools.StateConfig.Set_All_Off();
-                    tools.StateConfig.RAX = true;
-                    tools.StateConfig.RBX = true;
-                    tools.StateConfig.ZF = true;
+                Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+                state = Runner.SimpleStep_Backward(line3, state);
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                state = Runner.SimpleStep_Backward(line2, state);
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                state = Runner.SimpleStep_Backward(line1, state);
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            }
+            if (false)
+            {
+                ulong a = 0b0000_1000;
+                ulong b = 0b0000_0100;
 
-                    string programStr =
-                        // "           xor     rax,        rax             " + Environment.NewLine +
-                        "           jz      label1                      " + Environment.NewLine +
-                        "           mov     rax,        1               " + Environment.NewLine +
-                        "           jmp     label2                      " + Environment.NewLine +
-                        "label1:                                        " + Environment.NewLine +
-                        "           mov     rax,        2               " + Environment.NewLine +
-                        "label2:                                        " + Environment.NewLine +
-                        "           mov     rbx,        0               ";
+                string tailKey = Tools.CreateKey(tools.Rand);
+                string headKey = Tools.CreateKey(tools.Rand);
+                State state = new(tools, tailKey, headKey);
 
-                    StaticFlow sFlow1 = new StaticFlow(tools);
-                    sFlow1.Update(programStr);
-                    Console.WriteLine(sFlow1);
+                string line1 = "add al, bl";
 
-                    tools.Quiet = false;
-                    DynamicFlow tree1 = new DynamicFlow(tools);
-                    tree1.Reset(sFlow1, false);
-                    Console.WriteLine(tree1.Create_EndState);
-                }
-                if (false)
-                {
-                    tools.StateConfig.Set_All_Off();
-                    tools.StateConfig.RAX = true;
-                    tools.StateConfig.RBX = true;
-                    tools.StateConfig.ZF = true;
-                    tools.StateConfig.Mem = true;
+                string nextKey = Tools.CreateKey(state.Tools.Rand);
+                StateUpdate updateState = new(state.TailKey, nextKey, state.Tools);
+                updateState.Set(Rn.AL, a);
+                updateState.Set(Rn.BL, b);
 
-                    string programStr0 =
+                state.Update_Forward(updateState);
+                // if (logToDisplay) Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line1, state);
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+
+                Console.WriteLine(ToolsZ3.ToStringBin(state.GetTvArray(Rn.AL)));
+            }
+            if (false)
+            {
+                tools.StateConfig.Set_All_Off();
+                tools.StateConfig.RAX = true;
+                tools.StateConfig.RBX = true;
+                tools.StateConfig.ZF = true;
+
+                string programStr =
+                    // "           xor     rax,        rax             " + Environment.NewLine +
                     "           jz      label1                      " + Environment.NewLine +
-                    "           mov     byte ptr[rax],     10      " + Environment.NewLine +
+                    "           mov     rax,        1               " + Environment.NewLine +
                     "           jmp     label2                      " + Environment.NewLine +
                     "label1:                                        " + Environment.NewLine +
-                    "           mov     byte ptr[rax],     20      " + Environment.NewLine +
+                    "           mov     rax,        2               " + Environment.NewLine +
                     "label2:                                        " + Environment.NewLine +
-                    "           mov     bl, byte ptr[rax]         ";
+                    "           mov     rbx,        0               ";
 
-                    StaticFlow sFlow = new StaticFlow(tools);
-                    sFlow.Update(programStr0);
-                    Console.WriteLine(sFlow);
+                StaticFlow sFlow1 = new(tools);
+                sFlow1.Update(programStr);
+                Console.WriteLine(sFlow1);
 
-                    if (false)
-                    {
-                        tools.Quiet = false;
-                        DynamicFlow tree0 = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+                tools.Quiet = false;
+                DynamicFlow tree1 = new(tools);
+                tree1.Reset(sFlow1, false);
+                Console.WriteLine(tree1.Create_EndState);
+            }
+            if (false)
+            {
+                tools.StateConfig.Set_All_Off();
+                tools.StateConfig.RAX = true;
+                tools.StateConfig.RBX = true;
+                tools.StateConfig.ZF = true;
+                tools.StateConfig.Mem = true;
 
-                        int lineNumber_JZ = 0;
-                        State state_FirstLine = tree0.Create_States_Before(lineNumber_JZ, 0);
-                        BranchInfo branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), true);
+                string programStr0 =
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     byte ptr[rax],     10      " + Environment.NewLine +
+                "           jmp     label2                      " + Environment.NewLine +
+                "label1:                                        " + Environment.NewLine +
+                "           mov     byte ptr[rax],     20      " + Environment.NewLine +
+                "label2:                                        " + Environment.NewLine +
+                "           mov     bl, byte ptr[rax]         ";
 
-                        State state0 = tree0.Create_EndState;
-                        state0.BranchInfoStore.Add(branchInfo, true);
-                        Console.WriteLine("State0:" + state0);
-                    }
+                StaticFlow sFlow = new(tools);
+                sFlow.Update(programStr0);
+                Console.WriteLine(sFlow);
+
+                if (false)
+                {
+                    tools.Quiet = false;
+                    DynamicFlow tree0 = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+
+                    int lineNumber_JZ = 0;
+                    State state_FirstLine = tree0.Create_States_Before(lineNumber_JZ, 0);
+                    BranchInfo branchInfo = new(state_FirstLine.Create(Flags.ZF), true);
+
+                    State state0 = tree0.Create_EndState;
+                    state0.BranchInfoStore.Add(branchInfo, true);
+                    Console.WriteLine("State0:" + state0);
+                }
 #pragma warning restore CS0162 // Unreachable code detected
-                    if (true)
-                    {
-                        tools.Quiet = false;
-                        DynamicFlow tree1 = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-
-                        int lineNumber_JZ = 0;
-                        State state_FirstLine = tree1.Create_States_Before(lineNumber_JZ, 0);
-                        BranchInfo branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), false);
-
-                        State state1 = tree1.Create_EndState;
-                        state1.BranchInfoStore.Add(branchInfo, true);
-                        Console.WriteLine("State1:" + state1);
-                    }
-                }
-                if (false)
+                if (true)
                 {
-                    string programStr1 =
-                        "mov rax, 0" + Environment.NewLine +
-                        "mov ptr qword[rax], 2";
+                    tools.Quiet = false;
+                    DynamicFlow tree1 = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
-                    string programStr2 =
-                        "mov rbx, 1" + Environment.NewLine +
-                        "mov ptr qword[rbx], 3";
+                    int lineNumber_JZ = 0;
+                    State state_FirstLine = tree1.Create_States_Before(lineNumber_JZ, 0);
+                    BranchInfo branchInfo = new(state_FirstLine.Create(Flags.ZF), false);
 
-                    StaticFlow sFlow1 = new StaticFlow(tools);
-                    sFlow1.Update(programStr1);
-                    StaticFlow sFlow2 = new StaticFlow(tools);
-                    sFlow2.Update(programStr2);
-
-                    tools.Quiet = true;
-                    tools.StateConfig.Set_All_Off();
-                    tools.StateConfig.RAX = true;
-                    tools.StateConfig.RBX = true;
-                    tools.StateConfig.Mem = true;
-
-                    DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
-                    DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
-
-                    // Console.WriteLine(tree1.ToString(flow1));
                     State state1 = tree1.Create_EndState;
-                    State state2 = tree2.Create_EndState;
-
-                    Console.WriteLine("state1:" + state1);
-                    Console.WriteLine("state2:" + state2);
-                    State mergedState = new State(state1, state2, true);
-                    Console.WriteLine("mergedState:" + mergedState);
+                    state1.BranchInfoStore.Add(branchInfo, true);
+                    Console.WriteLine("State1:" + state1);
                 }
-                if (false)
-                {
-                    string programStr1 =
-                       "mov rax, 0" + Environment.NewLine +
-                       "mov rbx, 0";
+            }
+            if (false)
+            {
+                string programStr1 =
+                    "mov rax, 0" + Environment.NewLine +
+                    "mov ptr qword[rax], 2";
 
-                    string programStr2 =
-                        "mov rax, 1" + Environment.NewLine +
-                        "mov rbx, 1";
+                string programStr2 =
+                    "mov rbx, 1" + Environment.NewLine +
+                    "mov ptr qword[rbx], 3";
 
-                    StaticFlow sFlow1 = new StaticFlow(tools);
-                    sFlow1.Update(programStr1);
-                    StaticFlow sFlow2 = new StaticFlow(tools);
-                    sFlow2.Update(programStr2);
+                StaticFlow sFlow1 = new(tools);
+                sFlow1.Update(programStr1);
+                StaticFlow sFlow2 = new(tools);
+                sFlow2.Update(programStr2);
 
-                    tools.Quiet = true;
+                tools.Quiet = true;
+                tools.StateConfig.Set_All_Off();
+                tools.StateConfig.RAX = true;
+                tools.StateConfig.RBX = true;
+                tools.StateConfig.Mem = true;
 
-                    DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
-                    DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
+                DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
+                DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
 
-                    // Console.WriteLine(tree1.ToString(flow1));
+                // Console.WriteLine(tree1.ToString(flow1));
+                State state1 = tree1.Create_EndState;
+                State state2 = tree2.Create_EndState;
 
-                    State state1 = tree1.Create_Leafs.ElementAt(0);
-                    State state2 = tree2.Create_Leafs.ElementAt(0);
+                Console.WriteLine("state1:" + state1);
+                Console.WriteLine("state2:" + state2);
+                State mergedState = new(state1, state2, true);
+                Console.WriteLine("mergedState:" + mergedState);
+            }
+            if (false)
+            {
+                string programStr1 =
+                   "mov rax, 0" + Environment.NewLine +
+                   "mov rbx, 0";
 
-                    Console.WriteLine("state1:" + state1);
-                    Console.WriteLine("state2:" + state2);
-                    State mergedState = new State(state1, state2, true);
-                    Console.WriteLine("mergedState:" + mergedState);
-                }
+                string programStr2 =
+                    "mov rax, 1" + Environment.NewLine +
+                    "mov rbx, 1";
+
+                StaticFlow sFlow1 = new(tools);
+                sFlow1.Update(programStr1);
+                StaticFlow sFlow2 = new(tools);
+                sFlow2.Update(programStr2);
+
+                tools.Quiet = true;
+
+                DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
+                DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
+
+                // Console.WriteLine(tree1.ToString(flow1));
+
+                State state1 = tree1.Create_Leafs.ElementAt(0);
+                State state2 = tree2.Create_Leafs.ElementAt(0);
+
+                Console.WriteLine("state1:" + state1);
+                Console.WriteLine("state2:" + state2);
+                State mergedState = new(state1, state2, true);
+                Console.WriteLine("mergedState:" + mergedState);
             }
         }
 
@@ -1296,7 +1285,7 @@ namespace AsmSim
                 "           movbe   dword ptr [rbx], eax        " + Environment.NewLine +
                 "           mov     eax,        dword ptr [rbx] ";
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -1304,12 +1293,12 @@ namespace AsmSim
                 { "timeout", "1000" },
             };
 
-            Tools tools = new Tools(settings)
+            Tools tools = new(settings)
             {
                 ShowUndefConstraints = false,
             };
 
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr8);
             Console.WriteLine(sFlow.ToString());
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -1347,54 +1336,52 @@ namespace AsmSim
 
         private static void EmptyMemoryTest()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
             };
 
-            using (Context ctx = new Context(settings))
+            using Context ctx = new(settings);
+            Tactic tactic = ctx.MkTactic("qfbv");
+            Solver solver = ctx.MkSolver(tactic);
+
+            if (false)
             {
-                Tactic tactic = ctx.MkTactic("qfbv");
-                Solver solver = ctx.MkSolver(tactic);
+                ArrayExpr mem0 = ctx.MkArrayConst("memory", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                Expr address1 = ctx.MkBV(10, 64);
+                Expr address2 = ctx.MkBV(12, 64);
+                Expr value = ctx.MkBV(0xFF, 8);
 
-                if (false)
-                {
-                    ArrayExpr mem0 = ctx.MkArrayConst("memory", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
-                    Expr address1 = ctx.MkBV(10, 64);
-                    Expr address2 = ctx.MkBV(12, 64);
-                    Expr value = ctx.MkBV(0xFF, 8);
+                ArrayExpr mem1 = ctx.MkStore(mem0, address1, value);
+                Console.WriteLine("Stored value " + value);
 
-                    ArrayExpr mem1 = ctx.MkStore(mem0, address1, value);
-                    Console.WriteLine("Stored value " + value);
+                Expr retrievedValue1 = ctx.MkSelect(mem1, address1);
+                Console.WriteLine("Retrieved value 1 " + retrievedValue1);
+                Console.WriteLine("Retrieved value 1 Simplified " + retrievedValue1.Simplify());
 
-                    Expr retrievedValue1 = ctx.MkSelect(mem1, address1);
-                    Console.WriteLine("Retrieved value 1 " + retrievedValue1);
-                    Console.WriteLine("Retrieved value 1 Simplified " + retrievedValue1.Simplify());
+                Expr retrievedValue2 = ctx.MkSelect(mem1, address2);
+                Console.WriteLine("Retrieved value 2 " + retrievedValue2);
+                Console.WriteLine("Retrieved value 2 Simplified " + retrievedValue2.Simplify());
+            }
+            if (true)
+            {
+                ArrayExpr mem0 = ctx.MkConstArray(ctx.MkBitVecSort(64), ctx.MkBV(0, 8));
+                Expr address1 = ctx.MkBV(10, 64);
+                Expr address2 = ctx.MkBV(12, 64);
+                Expr value = ctx.MkBV(0xFF, 8);
 
-                    Expr retrievedValue2 = ctx.MkSelect(mem1, address2);
-                    Console.WriteLine("Retrieved value 2 " + retrievedValue2);
-                    Console.WriteLine("Retrieved value 2 Simplified " + retrievedValue2.Simplify());
-                }
-                if (true)
-                {
-                    ArrayExpr mem0 = ctx.MkConstArray(ctx.MkBitVecSort(64), ctx.MkBV(0, 8));
-                    Expr address1 = ctx.MkBV(10, 64);
-                    Expr address2 = ctx.MkBV(12, 64);
-                    Expr value = ctx.MkBV(0xFF, 8);
+                ArrayExpr mem1 = ctx.MkStore(mem0, address1, value);
+                Console.WriteLine("Stored value " + value);
 
-                    ArrayExpr mem1 = ctx.MkStore(mem0, address1, value);
-                    Console.WriteLine("Stored value " + value);
+                Expr retrievedValue1 = ctx.MkSelect(mem1, address1);
+                // Console.WriteLine("Retrieved value 1 " + retrievedValue1);
+                Console.WriteLine("Retrieved value 1 Simplified " + retrievedValue1.Simplify());
 
-                    Expr retrievedValue1 = ctx.MkSelect(mem1, address1);
-                    // Console.WriteLine("Retrieved value 1 " + retrievedValue1);
-                    Console.WriteLine("Retrieved value 1 Simplified " + retrievedValue1.Simplify());
-
-                    Expr retrievedValue2 = ctx.MkSelect(mem1, address2);
-                    // Console.WriteLine("Retrieved value 2 " + retrievedValue2);
-                    Console.WriteLine("Retrieved value 2 Simplified " + retrievedValue2.Simplify());
-                }
+                Expr retrievedValue2 = ctx.MkSelect(mem1, address2);
+                // Console.WriteLine("Retrieved value 2 " + retrievedValue2);
+                Console.WriteLine("Retrieved value 2 Simplified " + retrievedValue2.Simplify());
             }
         }
 
@@ -1402,297 +1389,291 @@ namespace AsmSim
         {
             if (false)
             {
-                Dictionary<string, string> settings = new Dictionary<string, string>
+                Dictionary<string, string> settings = new()
                 {
                     { "unsat-core", "false" },    // enable generation of unsat cores
                     { "model", "true" },         // enable model generation
                     { "proof", "false" },         // enable proof generation
                 };
-                using (Context ctx = new Context(settings))
+                using Context ctx = new(settings);
+                Solver solver = ctx.MkSolver();
+
+                BoolExpr b1 = ctx.MkBoolConst("b1");
+                BoolExpr b2 = ctx.MkBoolConst("b2");
+                IntExpr i1 = ctx.MkIntConst("i1");
+                IntExpr i2 = ctx.MkIntConst("i2");
+
+                if (false)
                 {
-                    Solver solver = ctx.MkSolver();
+                    solver.Assert(ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2))));
+                    Console.WriteLine(solver);
+                }
+                else
+                {
+                    FuncDecl myFunc = ctx.MkFuncDecl("MyFunc", ctx.MkIntSort(), ctx.MkBoolSort());
 
-                    BoolExpr b1 = ctx.MkBoolConst("b1");
-                    BoolExpr b2 = ctx.MkBoolConst("b2");
-                    IntExpr i1 = ctx.MkIntConst("i1");
-                    IntExpr i2 = ctx.MkIntConst("i2");
+                    BoolExpr newState = ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2)));
+                    solver.Assert(ctx.MkQuantifier(true, new Expr[] { i1 }, ctx.MkEq(myFunc.Apply(i1), ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2))))));
 
-                    if (false)
+                    solver.Assert(b1);
+
+                    Console.WriteLine(solver);
+                    Status status = solver.Check();
+                    Console.WriteLine("Status = " + status);
+                    if (status == Status.SATISFIABLE)
                     {
-                        solver.Assert(ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2))));
-                        Console.WriteLine(solver);
-                    }
-                    else
-                    {
-                        FuncDecl myFunc = ctx.MkFuncDecl("MyFunc", ctx.MkIntSort(), ctx.MkBoolSort());
-
-                        BoolExpr newState = ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2)));
-                        solver.Assert(ctx.MkQuantifier(true, new Expr[] { i1 }, ctx.MkEq(myFunc.Apply(i1), ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2))))));
-
-                        solver.Assert(b1);
-
-                        Console.WriteLine(solver);
-                        Status status = solver.Check();
-                        Console.WriteLine("Status = " + status);
-                        if (status == Status.SATISFIABLE)
-                        {
-                            Console.WriteLine(solver.Model);
-                        }
+                        Console.WriteLine(solver.Model);
                     }
                 }
             }
             else if (true)
             {
-                Dictionary<string, string> settings = new Dictionary<string, string>
+                Dictionary<string, string> settings = new()
                 {
                     { "unsat-core", "true" },    // enable generation of unsat cores
                     { "model", "true" },         // enable model generation
                     { "proof", "false" },         // enable proof generation
                 };
-                using (Context ctx = new Context(settings))
+                using Context ctx = new(settings);
+                Solver solver = ctx.MkSolver();
+
+                IList<BoolExpr> switchList = new List<BoolExpr>();
+
+                BitVecExpr rax_0 = ctx.MkBVConst("RAX!0", 8); // register values
+                BitVecExpr rax_1 = ctx.MkBVConst("RAX!1", 8);
+
+                BoolExpr switch_XOR_RAX_RAX = ctx.MkBoolConst("switch_XOR_RAX_RAX"); // switch on/off instruction 1
+                BoolExpr switch_INC_RAX = ctx.MkBoolConst("switch_INC_RAX"); // switch on/off instruction 2
+
+                // solver.Assert(switch_XOR_RAX_RAX); // this instruction should not be allowed
+                solver.Assert(switch_INC_RAX); // this instruction has to be allowed
+
+                solver.Assert(ctx.MkImplies(switch_XOR_RAX_RAX, ctx.MkEq(rax_1, ctx.MkBV(0, 8))));
+                solver.Assert(ctx.MkImplies(switch_INC_RAX, ctx.MkEq(rax_1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))));
+
+                // atleast and atmost one instruction must be executed
+                solver.Assert(ctx.MkAtMost(new BoolExpr[] { switch_XOR_RAX_RAX, switch_INC_RAX }, 1));
+                solver.Assert(ctx.MkOr(new BoolExpr[] { switch_XOR_RAX_RAX, switch_INC_RAX }));
+
+                // after executing we want rax to be 0
+                if (false)
                 {
-                    Solver solver = ctx.MkSolver();
+                    solver.Assert(ctx.MkEq(rax_1, ctx.MkBV(0b0000_0000, 8)));
+                }
+                else
+                {
+                    BitVecExpr reg_0 = ctx.MkBVConst("reg0", 8);
+                    BitVecExpr reg_1 = ctx.MkBVConst("reg1", 8);
 
-                    IList<BoolExpr> switchList = new List<BoolExpr>();
+                    solver.Assert(ctx.MkNot(ctx.MkQuantifier(true, new Expr[] { reg_0, reg_1 },
+                        ctx.MkIff(
+                            ctx.MkAnd(
+                                ctx.MkEq(ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)), reg_0),
+                                ctx.MkEq(rax_1, reg_1)
+                            ),
+                            ctx.MkEq(reg_0, reg_1))
+                        )
+                    ));
+                    // solver.Assert(ctx.MkNot(ctx.MkEq(rax_0, ctx.MkBV(0, 64))));
+                    /*
+                    solver.Assert(ctx.MkNot(ctx.MkQuantifier(false, new Expr[] { reg1 },
+                        ctx.MkAnd(ctx.MkEq(reg1, rax_1), ctx.MkNot(ctx.MkEq(reg1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))))
+                    )));
+                    */
+                    /*
+                    solver.Assert(ctx.MkQuantifier(true, new Expr[] { reg1 }, ctx.MkAnd(
+                        ctx.MkIff(ctx.MkEq(reg1, rax_1), ctx.MkEq(reg1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))),
+                        ctx.MkIff(ctx.MkEq(reg2, rax_1), ctx.MkEq(reg2, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))),
+                        ctx.MkNot(ctx.MkEq(reg1, reg2))
+                    )));
+                    */
+                }
 
-                    BitVecExpr rax_0 = ctx.MkBVConst("RAX!0", 8); // register values
-                    BitVecExpr rax_1 = ctx.MkBVConst("RAX!1", 8);
+                foreach (BoolExpr b in solver.Assertions)
+                {
+                    Console.WriteLine("Solver A: " + b);
+                }
 
-                    BoolExpr switch_XOR_RAX_RAX = ctx.MkBoolConst("switch_XOR_RAX_RAX"); // switch on/off instruction 1
-                    BoolExpr switch_INC_RAX = ctx.MkBoolConst("switch_INC_RAX"); // switch on/off instruction 2
+                Console.WriteLine("-------------");
 
-                    // solver.Assert(switch_XOR_RAX_RAX); // this instruction should not be allowed
-                    solver.Assert(switch_INC_RAX); // this instruction has to be allowed
-
-                    solver.Assert(ctx.MkImplies(switch_XOR_RAX_RAX, ctx.MkEq(rax_1, ctx.MkBV(0, 8))));
-                    solver.Assert(ctx.MkImplies(switch_INC_RAX, ctx.MkEq(rax_1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))));
-
-                    // atleast and atmost one instruction must be executed
-                    solver.Assert(ctx.MkAtMost(new BoolExpr[] { switch_XOR_RAX_RAX, switch_INC_RAX }, 1));
-                    solver.Assert(ctx.MkOr(new BoolExpr[] { switch_XOR_RAX_RAX, switch_INC_RAX }));
-
-                    // after executing we want rax to be 0
-                    if (false)
+                Status status = solver.Check();
+                Console.WriteLine("Status = " + status);
+                if (status == Status.SATISFIABLE)
+                {
+                    foreach (FuncDecl funcDecl in solver.Model.ConstDecls)
                     {
-                        solver.Assert(ctx.MkEq(rax_1, ctx.MkBV(0b0000_0000, 8)));
+                        Console.WriteLine("Model A: " + funcDecl.Name + "=" + solver.Model.ConstInterp(funcDecl));
                     }
-                    else
+                }
+                else
+                {
+                    foreach (BoolExpr b in solver.UnsatCore)
                     {
-                        BitVecExpr reg_0 = ctx.MkBVConst("reg0", 8);
-                        BitVecExpr reg_1 = ctx.MkBVConst("reg1", 8);
-
-                        solver.Assert(ctx.MkNot(ctx.MkQuantifier(true, new Expr[] { reg_0, reg_1 },
-                            ctx.MkIff(
-                                ctx.MkAnd(
-                                    ctx.MkEq(ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)), reg_0),
-                                    ctx.MkEq(rax_1, reg_1)
-                                ),
-                                ctx.MkEq(reg_0, reg_1))
-                            )
-                        ));
-                        // solver.Assert(ctx.MkNot(ctx.MkEq(rax_0, ctx.MkBV(0, 64))));
-                        /*
-                        solver.Assert(ctx.MkNot(ctx.MkQuantifier(false, new Expr[] { reg1 },
-                            ctx.MkAnd(ctx.MkEq(reg1, rax_1), ctx.MkNot(ctx.MkEq(reg1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))))
-                        )));
-                        */
-                        /*
-                        solver.Assert(ctx.MkQuantifier(true, new Expr[] { reg1 }, ctx.MkAnd(
-                            ctx.MkIff(ctx.MkEq(reg1, rax_1), ctx.MkEq(reg1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))),
-                            ctx.MkIff(ctx.MkEq(reg2, rax_1), ctx.MkEq(reg2, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))),
-                            ctx.MkNot(ctx.MkEq(reg1, reg2))
-                        )));
-                        */
-                    }
-
-                    foreach (BoolExpr b in solver.Assertions)
-                    {
-                        Console.WriteLine("Solver A: " + b);
-                    }
-
-                    Console.WriteLine("-------------");
-
-                    Status status = solver.Check();
-                    Console.WriteLine("Status = " + status);
-                    if (status == Status.SATISFIABLE)
-                    {
-                        foreach (FuncDecl funcDecl in solver.Model.ConstDecls)
-                        {
-                            Console.WriteLine("Model A: " + funcDecl.Name + "=" + solver.Model.ConstInterp(funcDecl));
-                        }
-                    }
-                    else
-                    {
-                        foreach (BoolExpr b in solver.UnsatCore)
-                        {
-                            Console.WriteLine("Uncore: " + b);
-                        }
+                        Console.WriteLine("Uncore: " + b);
                     }
                 }
             }
             else if (false)
             {
-                Dictionary<string, string> settings = new Dictionary<string, string>
+                Dictionary<string, string> settings = new()
                 {
                     { "unsat-core", "true" },    // enable generation of unsat cores
                     { "model", "true" },         // enable model generation
                     { "proof", "false" },         // enable proof generation
                 };
-                using (Context ctx = new Context(settings))
-                {
-                    Solver solver = ctx.MkSolver();
+                using Context ctx = new(settings);
+                Solver solver = ctx.MkSolver();
 
-                    BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
-                    BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
-                    BitVecExpr rbx0 = ctx.MkBVConst("RBX!0", 64);
-                    BitVecExpr rbx1 = ctx.MkBVConst("RBX!1", 64);
+                BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
+                BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
+                BitVecExpr rbx0 = ctx.MkBVConst("RBX!0", 64);
+                BitVecExpr rbx1 = ctx.MkBVConst("RBX!1", 64);
 
-                    BoolExpr rax0_input = ctx.MkBoolConst("RAX!0!input");
-                    BoolExpr rax1_input = ctx.MkBoolConst("RAX!1!input");
-                    BoolExpr rbx0_input = ctx.MkBoolConst("RBX!0!input");
-                    BoolExpr rbx1_input = ctx.MkBoolConst("RBX!1!input");
+                BoolExpr rax0_input = ctx.MkBoolConst("RAX!0!input");
+                BoolExpr rax1_input = ctx.MkBoolConst("RAX!1!input");
+                BoolExpr rbx0_input = ctx.MkBoolConst("RBX!0!input");
+                BoolExpr rbx1_input = ctx.MkBoolConst("RBX!1!input");
 
-                    BoolExpr rax0_goal = ctx.MkBoolConst("RAX!0!goal");
-                    BoolExpr rax1_goal = ctx.MkBoolConst("RAX!1!goal");
-                    BoolExpr rbx0_goal = ctx.MkBoolConst("RBX!0!goal");
-                    BoolExpr rbx1_goal = ctx.MkBoolConst("RBX!1!goal");
+                BoolExpr rax0_goal = ctx.MkBoolConst("RAX!0!goal");
+                BoolExpr rax1_goal = ctx.MkBoolConst("RAX!1!goal");
+                BoolExpr rbx0_goal = ctx.MkBoolConst("RBX!0!goal");
+                BoolExpr rbx1_goal = ctx.MkBoolConst("RBX!1!goal");
 
-                    // switches
-                    BoolExpr switch_L1_INC_RAX = ctx.MkBoolConst("switch_L1_INC_RAX");
-                    BoolExpr switch_L1_INC_RBX = ctx.MkBoolConst("switch_L1_INC_RBX");
+                // switches
+                BoolExpr switch_L1_INC_RAX = ctx.MkBoolConst("switch_L1_INC_RAX");
+                BoolExpr switch_L1_INC_RBX = ctx.MkBoolConst("switch_L1_INC_RBX");
 
-                    BoolExpr switch_L1_XOR_RAX_RAX = ctx.MkBoolConst("switch_L1_XOR_RAX_RAX");
-                    BoolExpr switch_L1_XOR_RBX_RBX = ctx.MkBoolConst("switch_L1_XOR_RBX_RBX");
+                BoolExpr switch_L1_XOR_RAX_RAX = ctx.MkBoolConst("switch_L1_XOR_RAX_RAX");
+                BoolExpr switch_L1_XOR_RBX_RBX = ctx.MkBoolConst("switch_L1_XOR_RBX_RBX");
 
-                    solver.Assert(ctx.MkAtMost(new BoolExpr[] { switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX }, 1));
-                    solver.Assert(ctx.MkOr(new BoolExpr[] { switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX }));
+                solver.Assert(ctx.MkAtMost(new BoolExpr[] { switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX }, 1));
+                solver.Assert(ctx.MkOr(new BoolExpr[] { switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX }));
 
-                    BitVecExpr zERO = ctx.MkBV(0, 64);
-                    BitVecExpr oNE = ctx.MkBV(1, 64);
+                BitVecExpr zERO = ctx.MkBV(0, 64);
+                BitVecExpr oNE = ctx.MkBV(1, 64);
 
-                    // INC RAX
-                    solver.Assert(ctx.MkImplies(
-                        ctx.MkAnd(switch_L1_INC_RAX),
-                        ctx.MkAnd(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, oNE)),
-                        rax0_goal, // make the prerequisite a goal
-                        rax1_goal, // make application of this rule goal directed
-                        rax0_input, // rax0 is  based on (variable) input but is not a constant
-                        rax1_input)) // rax1 is  based on (variable) input but is not a constant
-                    );
+                // INC RAX
+                solver.Assert(ctx.MkImplies(
+                    ctx.MkAnd(switch_L1_INC_RAX),
+                    ctx.MkAnd(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, oNE)),
+                    rax0_goal, // make the prerequisite a goal
+                    rax1_goal, // make application of this rule goal directed
+                    rax0_input, // rax0 is  based on (variable) input but is not a constant
+                    rax1_input)) // rax1 is  based on (variable) input but is not a constant
+                );
 
-                    // INC RBX
-                    solver.Assert(ctx.MkImplies(
-                        ctx.MkAnd(switch_L1_INC_RBX),
-                        ctx.MkAnd(ctx.MkEq(rax1, ctx.MkBVAdd(rbx0, oNE)),
-                        rbx0_goal, // make the prerequisite a goal
-                        rbx1_goal, // make application of this rule goal directed
-                        rbx0_input, // rax0 is  based on (variable) input but is not a constant
-                        rbx1_input)) // rax1 is  based on (variable) input but is not a constant
-                    );
+                // INC RBX
+                solver.Assert(ctx.MkImplies(
+                    ctx.MkAnd(switch_L1_INC_RBX),
+                    ctx.MkAnd(ctx.MkEq(rax1, ctx.MkBVAdd(rbx0, oNE)),
+                    rbx0_goal, // make the prerequisite a goal
+                    rbx1_goal, // make application of this rule goal directed
+                    rbx0_input, // rax0 is  based on (variable) input but is not a constant
+                    rbx1_input)) // rax1 is  based on (variable) input but is not a constant
+                );
 
-                    // XOR RAX, RAX
-                    solver.Assert(ctx.MkImplies(
-                        ctx.MkAnd(switch_L1_XOR_RAX_RAX),
-                        ctx.MkAnd(ctx.MkEq(rax1, zERO),
-                        // rax0_goal is irelevant
-                        rax1_goal, // make application of this rule goal directed
-                        ctx.MkNot(rax0_input), // TODO: could this create inconsistencies with other instructions that updated rax!0
-                        ctx.MkNot(rax1_input))) // rax1 is not based on (variable) input but is a constant
-                    );
+                // XOR RAX, RAX
+                solver.Assert(ctx.MkImplies(
+                    ctx.MkAnd(switch_L1_XOR_RAX_RAX),
+                    ctx.MkAnd(ctx.MkEq(rax1, zERO),
+                    // rax0_goal is irelevant
+                    rax1_goal, // make application of this rule goal directed
+                    ctx.MkNot(rax0_input), // TODO: could this create inconsistencies with other instructions that updated rax!0
+                    ctx.MkNot(rax1_input))) // rax1 is not based on (variable) input but is a constant
+                );
 
-                    // XOR RBX, RBX
-                    solver.Assert(ctx.MkImplies(
-                        ctx.MkAnd(switch_L1_XOR_RBX_RBX),
-                        ctx.MkAnd(ctx.MkEq(rbx1, zERO),
-                        // rbx0_goal is irelevant
-                        rbx1_goal, // make application of this rule goal directed
-                        ctx.MkNot(rbx0_input), // TODO: could this create inconsistencies with other instructions that updated rax!0
-                        ctx.MkNot(rbx1_input))) // rax1 is not based on (variable) input but is a constant
-                    );
+                // XOR RBX, RBX
+                solver.Assert(ctx.MkImplies(
+                    ctx.MkAnd(switch_L1_XOR_RBX_RBX),
+                    ctx.MkAnd(ctx.MkEq(rbx1, zERO),
+                    // rbx0_goal is irelevant
+                    rbx1_goal, // make application of this rule goal directed
+                    ctx.MkNot(rbx0_input), // TODO: could this create inconsistencies with other instructions that updated rax!0
+                    ctx.MkNot(rbx1_input))) // rax1 is not based on (variable) input but is a constant
+                );
 
-                    { // check INC RAX
-                        solver.Push();
-                        solver.Assert(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, ctx.MkBV(1, 64))));
-                        solver.Assert(rax0_input, rax1_goal);
+                { // check INC RAX
+                    solver.Push();
+                    solver.Assert(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, ctx.MkBV(1, 64))));
+                    solver.Assert(rax0_input, rax1_goal);
 
-                        if (solver.Check(switch_L1_INC_RAX) == Status.UNSATISFIABLE)
-                        {
-                            Console.WriteLine("A: INC RAX: switch_INC SHOULD HAVE BEEN ALLOWED");
-                        }
-
-                        if (solver.Check(switch_L1_XOR_RAX_RAX) == Status.SATISFIABLE)
-                        {
-                            Console.WriteLine("A: XOR RAX, RAX: switch_XOR SHOULD NOT HAVE BEEN ALLOWED");
-                        }
-
-                        solver.Pop();
-                    }
-                    { // check XOR RAX, RAX
-                        solver.Push();
-                        solver.Assert(ctx.MkEq(rax1, ctx.MkBV(0, 64)));
-                        solver.Assert(ctx.MkNot(rax0_input));
-
-                        if (solver.Check(switch_L1_INC_RAX) == Status.SATISFIABLE)
-                        {
-                            Console.WriteLine("B: INC RAX: switch_INC SHOULD NOT HAVE BEEN ALLOWED");
-                        }
-
-                        if (solver.Check(switch_L1_XOR_RAX_RAX) == Status.UNSATISFIABLE)
-                        {
-                            Console.WriteLine("B: XOR RAX, RAX: switch_XOR SHOULD HAVE BEEN ALLOWED");
-                        }
-
-                        solver.Pop();
-                    }
-
-                    Console.WriteLine(string.Empty);
-                    foreach (BoolExpr b in solver.Assertions)
+                    if (solver.Check(switch_L1_INC_RAX) == Status.UNSATISFIABLE)
                     {
-                        Console.WriteLine("Solver = " + b);
+                        Console.WriteLine("A: INC RAX: switch_INC SHOULD HAVE BEEN ALLOWED");
                     }
 
-                    Console.WriteLine(string.Empty);
-
-                    Status status = solver.Check();
-                    Console.WriteLine("Status = " + status + "\n");
-                    if (status == Status.SATISFIABLE)
+                    if (solver.Check(switch_L1_XOR_RAX_RAX) == Status.SATISFIABLE)
                     {
-                        foreach (FuncDecl f in solver.Model.ConstDecls)
-                        {
-                            Console.WriteLine("Model: " + f.Name + " = " + solver.Model.ConstInterp(f));
-                        }
+                        Console.WriteLine("A: XOR RAX, RAX: switch_XOR SHOULD NOT HAVE BEEN ALLOWED");
                     }
-                    else
-                    {
-                        foreach (BoolExpr b in solver.UnsatCore)
-                        {
-                            Console.WriteLine("Unsat: " + b);
-                        }
-                    }
-                    Console.WriteLine(string.Empty);
 
-                    /*
-
-    (declare-const RAX!0 (_ BitVec 8))
-    (declare-const RAX!1 (_ BitVec 8))
-
-    (declare-const switch_inc bool)
-    (declare-const switch_xor_xor bool)
-
-    (assert ((_ at-most 1) switch_inc switch_xor_xor))
-    (assert (or switch_inc switch_xor_xor))
-
-    (assert (=> switch_inc (= RAX!1 (bvadd RAX!0 #x01))))
-    (assert (=> switch_xor_xor (= RAX!1 #x00)))
-
-    ;(assert (= RAX!1 (bvadd RAX!0 #x01)))
-    (assert (forall ((RAX1 (_ BitVec 8))) (= RAX!1 (bvadd RAX!0 #x01))))
-    (assert (not switch_inc))
-
-    (check-sat)
-    (get-model)
-                     */
+                    solver.Pop();
                 }
+                { // check XOR RAX, RAX
+                    solver.Push();
+                    solver.Assert(ctx.MkEq(rax1, ctx.MkBV(0, 64)));
+                    solver.Assert(ctx.MkNot(rax0_input));
+
+                    if (solver.Check(switch_L1_INC_RAX) == Status.SATISFIABLE)
+                    {
+                        Console.WriteLine("B: INC RAX: switch_INC SHOULD NOT HAVE BEEN ALLOWED");
+                    }
+
+                    if (solver.Check(switch_L1_XOR_RAX_RAX) == Status.UNSATISFIABLE)
+                    {
+                        Console.WriteLine("B: XOR RAX, RAX: switch_XOR SHOULD HAVE BEEN ALLOWED");
+                    }
+
+                    solver.Pop();
+                }
+
+                Console.WriteLine(string.Empty);
+                foreach (BoolExpr b in solver.Assertions)
+                {
+                    Console.WriteLine("Solver = " + b);
+                }
+
+                Console.WriteLine(string.Empty);
+
+                Status status = solver.Check();
+                Console.WriteLine("Status = " + status + "\n");
+                if (status == Status.SATISFIABLE)
+                {
+                    foreach (FuncDecl f in solver.Model.ConstDecls)
+                    {
+                        Console.WriteLine("Model: " + f.Name + " = " + solver.Model.ConstInterp(f));
+                    }
+                }
+                else
+                {
+                    foreach (BoolExpr b in solver.UnsatCore)
+                    {
+                        Console.WriteLine("Unsat: " + b);
+                    }
+                }
+                Console.WriteLine(string.Empty);
+
+                /*
+
+(declare-const RAX!0 (_ BitVec 8))
+(declare-const RAX!1 (_ BitVec 8))
+
+(declare-const switch_inc bool)
+(declare-const switch_xor_xor bool)
+
+(assert ((_ at-most 1) switch_inc switch_xor_xor))
+(assert (or switch_inc switch_xor_xor))
+
+(assert (=> switch_inc (= RAX!1 (bvadd RAX!0 #x01))))
+(assert (=> switch_xor_xor (= RAX!1 #x00)))
+
+;(assert (= RAX!1 (bvadd RAX!0 #x01)))
+(assert (forall ((RAX1 (_ BitVec 8))) (= RAX!1 (bvadd RAX!0 #x01))))
+(assert (not switch_inc))
+
+(check-sat)
+(get-model)
+                 */
             }
             else
             {
@@ -1709,186 +1690,182 @@ namespace AsmSim
 
         private static void TestFunctions()
         {
-            using (Context ctx = new Context())
+            using Context ctx = new();
             {
-                {
-                    Solver solver1 = ctx.MkSolver();
-                    BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
-                    BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
+                Solver solver1 = ctx.MkSolver();
+                BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
+                BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
 
-                    BitVecExpr var = ctx.MkBVConst("var", 64);
-                    FuncDecl incFunc64 = ctx.MkFuncDecl("INC_64", ctx.MkBitVecSort(64), ctx.MkBitVecSort(64));
-                    solver1.Assert(ctx.MkQuantifier(true, new Expr[] { var }, ctx.MkEq(incFunc64.Apply(var), ctx.MkBVAdd(var, ctx.MkBV(1, 64)))));
+                BitVecExpr var = ctx.MkBVConst("var", 64);
+                FuncDecl incFunc64 = ctx.MkFuncDecl("INC_64", ctx.MkBitVecSort(64), ctx.MkBitVecSort(64));
+                solver1.Assert(ctx.MkQuantifier(true, new Expr[] { var }, ctx.MkEq(incFunc64.Apply(var), ctx.MkBVAdd(var, ctx.MkBV(1, 64)))));
 
-                    solver1.Assert(ctx.MkEq(rax0, ctx.MkBV(0, 64)));
-                    solver1.Assert(ctx.MkEq(rax1, incFunc64.Apply(rax0)));
+                solver1.Assert(ctx.MkEq(rax0, ctx.MkBV(0, 64)));
+                solver1.Assert(ctx.MkEq(rax1, incFunc64.Apply(rax0)));
 
-                    Console.WriteLine(solver1);
-                    Console.WriteLine(ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver1, ctx)));
-                }
-                {
-                    Solver solver2 = ctx.MkSolver();
-                    BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
-                    BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
+                Console.WriteLine(solver1);
+                Console.WriteLine(ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver1, ctx)));
+            }
+            {
+                Solver solver2 = ctx.MkSolver();
+                BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
+                BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
 
-                    solver2.Assert(ctx.MkEq(rax0, ctx.MkBV(0, 64)));
-                    solver2.Assert(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, ctx.MkBV(1, 64))));
+                solver2.Assert(ctx.MkEq(rax0, ctx.MkBV(0, 64)));
+                solver2.Assert(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, ctx.MkBV(1, 64))));
 
-                    Console.WriteLine(solver2);
-                    Console.WriteLine(ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver2, ctx)));
-                }
+                Console.WriteLine(solver2);
+                Console.WriteLine(ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver2, ctx)));
             }
         }
 
         private static void TacticTest()
         {
-            using (Context ctx = new Context())
+            using Context ctx = new();
+            if (false)
             {
-                if (false)
+                #region Doc
+                /*
+                    tacticName ackermannize_bv: A tactic for performing full Ackermannization on bv instances.
+                    tacticName subpaving: tactic for testing subpaving module.
+                    tacticName horn: apply tactic for horn clauses.
+                    tacticName horn-simplify: simplify horn clauses.
+                    tacticName nlsat: (try to) solve goal using a nonlinear arithmetic solver.
+                    tacticName qfnra-nlsat: builtin strategy for solving QF_NRA problems using only nlsat.
+                    tacticName nlqsat: apply a NL-QSAT solver.
+                    tacticName qe-light: apply light-weight quantifier elimination.
+                    tacticName qe-sat: check satisfiability of quantified formulas using quantifier elimination.
+                    tacticName qe: apply quantifier elimination.
+                    tacticName qsat: apply a QSAT solver.
+                    tacticName qe2: apply a QSAT based quantifier elimination.
+                    tacticName qe_rec: apply a QSAT based quantifier elimination recursively.
+                    tacticName vsubst: checks satsifiability of quantifier-free non-linear constraints using virtual substitution.
+                    tacticName sat: (try to) solve goal using a SAT solver.
+                    tacticName sat-preprocess: Apply SAT solver preprocessing procedures (bounded resolution, Boolean constant propagation, 2-SAT, subsumption, subsumption resolution).
+                    tacticName ctx-solver-simplify: apply solver-based contextual simplification rules.
+                    tacticName smt: apply a SAT based SMT solver.
+                    tacticName unit-subsume-simplify: unit subsumption simplification.
+                    tacticName aig: simplify Boolean structure using AIGs.
+                    tacticName add-bounds: add bounds to unbounded variables (under approximation).
+                    tacticName card2bv: convert pseudo-boolean constraints to bit-vectors.
+                    tacticName degree-shift: try to reduce degree of polynomials (remark: :mul2power simplification is automatically applied).
+                    tacticName diff-neq: specialized solver for integer arithmetic problems that contain only atoms of the form (<= k x) (<= x k) and (not (= (- x y) k)), where x and y are constants and k is a numeral, and all constants are bounded.
+                    tacticName elim01: eliminate 0-1 integer variables, replace them by Booleans.
+                    tacticName eq2bv: convert integer variables used as finite domain elements to bit-vectors.
+                    tacticName factor: polynomial factorization.
+                    tacticName fix-dl-var: if goal is in the difference logic fragment, then fix the variable with the most number of occurrences at 0.
+                    tacticName fm: eliminate variables using fourier-motzkin elimination.
+                    tacticName lia2card: introduce cardinality constraints from 0-1 integer.
+                    tacticName lia2pb: convert bounded integer variables into a sequence of 0-1 variables.
+                    tacticName nla2bv: convert a nonlinear arithmetic problem into a bit-vector problem, in most cases the resultant goal is an under approximation and is useul for finding models.
+                    tacticName normalize-bounds: replace a variable x with lower bound k <= x with x' = x - k.
+                    tacticName pb2bv: convert pseudo-boolean constraints to bit-vectors.
+                    tacticName propagate-ineqs: propagate ineqs/bounds, remove subsumed inequalities.
+                    tacticName purify-arith: eliminate unnecessary operators: -, /, div, mod, rem, is-int, to-int, ^, root-objects.
+                    tacticName recover-01: recover 0-1 variables hidden as Boolean variables.
+                    tacticName bit-blast: reduce bit-vector expressions into SAT.
+                    tacticName bv1-blast: reduce bit-vector expressions into bit-vectors of size 1 (notes: only equality, extract and concat are supported).
+                    tacticName bv_bound_chk: attempts to detect inconsistencies of bounds on bv expressions.
+                    tacticName propagate-bv-bounds: propagate bit-vector bounds by simplifying implied or contradictory bounds.
+                    tacticName reduce-bv-size: try to reduce bit-vector sizes using inequalities.
+                    tacticName bvarray2uf: Rewrite bit-vector arrays into bit-vector (uninterpreted) functions.
+                    tacticName dt2bv: eliminate finite domain data-types. Replace by bit-vectors.
+                    tacticName elim-small-bv: eliminate small, quantified bit-vectors by expansion.
+                    tacticName max-bv-sharing: use heuristics to maximize the sharing of bit-vector expressions such as adders and multipliers.
+                    tacticName blast-term-ite: blast term if-then-else by hoisting them.
+                    tacticName cofactor-term-ite: eliminate term if-the-else using cofactors.
+                    tacticName collect-statistics: Collects various statistics.
+                    tacticName ctx-simplify: apply contextual simplification rules.
+                    tacticName der: destructive equality resolution.
+                    tacticName distribute-forall: distribute forall over conjunctions.
+                    tacticName elim-term-ite: eliminate term if-then-else by adding fresh auxiliary declarations.
+                    tacticName elim-uncnstr: eliminate application containing unconstrained variables.
+                    tacticName snf: put goal in skolem normal form.
+                    tacticName nnf: put goal in negation normal form.
+                    tacticName occf: put goal in one constraint per clause normal form (notes: fails if proof generation is enabled; only clauses are considered).
+                    tacticName pb-preprocess: pre-process pseudo-Boolean constraints a la Davis Putnam.
+                    tacticName propagate-values: propagate constants.
+                    tacticName reduce-args: reduce the number of arguments of function applications, when for all occurrences of a function f the i-th is a value.
+                    tacticName simplify: apply simplification rules.
+                    tacticName elim-and: convert (and a b) into (not (or (not a) (not b))).
+                    tacticName solve-eqs: eliminate variables by solving equations.
+                    tacticName split-clause: split a clause in many subgoals.
+                    tacticName symmetry-reduce: apply symmetry reduction.
+                    tacticName tseitin-cnf: convert goal into CNF using tseitin-like encoding (note: quantifiers are ignored).
+                    tacticName tseitin-cnf-core: convert goal into CNF using tseitin-like encoding (note: quantifiers are ignored). This tactic does not apply required simplifications to the input goal like the tseitin-cnf tactic.
+                    tacticName fpa2bv: convert floating point numbers to bit-vectors.
+                    tacticName qffp: (try to) solve goal using the tactic for QF_FP.
+                    tacticName qffpbv: (try to) solve goal using the tactic for QF_FPBV (floats+bit-vectors).
+                    tacticName nl-purify: Decompose goal into pure NL-sat formula and formula over other theories.
+                    tacticName default: default strategy used when no logic is specified.
+                    tacticName qfbv-sls: (try to) solve using stochastic local search for QF_BV.
+                    tacticName nra: builtin strategy for solving NRA problems.
+                    tacticName qfaufbv: builtin strategy for solving QF_AUFBV problems.
+                    tacticName qfauflia: builtin strategy for solving QF_AUFLIA problems.
+                    tacticName qfbv: builtin strategy for solving QF_BV problems.
+                    tacticName qfidl: builtin strategy for solving QF_IDL problems.
+                    tacticName qflia: builtin strategy for solving QF_LIA problems.
+                    tacticName qflra: builtin strategy for solving QF_LRA problems.
+                    tacticName qfnia: builtin strategy for solving QF_NIA problems.
+                    tacticName qfnra: builtin strategy for solving QF_NRA problems.
+                    tacticName qfuf: builtin strategy for solving QF_UF problems.
+                    tacticName qfufbv: builtin strategy for solving QF_UFBV problems.
+                    tacticName qfufbv_ackr: A tactic for solving QF_UFBV based on Ackermannization.
+                    tacticName qfufnra: builtin strategy for solving QF_UNFRA problems.
+                    tacticName ufnia: builtin strategy for solving UFNIA problems.
+                    tacticName uflra: builtin strategy for solving UFLRA problems.
+                    tacticName auflia: builtin strategy for solving AUFLIA problems.
+                    tacticName auflira: builtin strategy for solving AUFLIRA problems.
+                    tacticName aufnira: builtin strategy for solving AUFNIRA problems.
+                    tacticName lra: builtin strategy for solving LRA problems.
+                    tacticName lia: builtin strategy for solving LIA problems.
+                    tacticName lira: builtin strategy for solving LIRA problems.
+                    tacticName skip: do nothing tactic.
+                    tacticName fail: always fail tactic.
+                    tacticName fail-if-undecided: fail if goal is undecided.
+                    tacticName macro-finder: Identifies and applies macros.
+                    tacticName quasi-macros: Identifies and applies quasi-macros.
+                    tacticName ufbv-rewriter: Applies UFBV-specific rewriting rules, mainly demodulation.
+                    tacticName bv: builtin strategy for solving BV problems (with quantifiers).
+                    tacticName ufbv: builtin strategy for solving UFBV problems (with quantifiers).
+                */
+                #endregion
+                foreach (string tacticName in ctx.TacticNames)
                 {
-                    #region Doc
-                    /*
-                        tacticName ackermannize_bv: A tactic for performing full Ackermannization on bv instances.
-                        tacticName subpaving: tactic for testing subpaving module.
-                        tacticName horn: apply tactic for horn clauses.
-                        tacticName horn-simplify: simplify horn clauses.
-                        tacticName nlsat: (try to) solve goal using a nonlinear arithmetic solver.
-                        tacticName qfnra-nlsat: builtin strategy for solving QF_NRA problems using only nlsat.
-                        tacticName nlqsat: apply a NL-QSAT solver.
-                        tacticName qe-light: apply light-weight quantifier elimination.
-                        tacticName qe-sat: check satisfiability of quantified formulas using quantifier elimination.
-                        tacticName qe: apply quantifier elimination.
-                        tacticName qsat: apply a QSAT solver.
-                        tacticName qe2: apply a QSAT based quantifier elimination.
-                        tacticName qe_rec: apply a QSAT based quantifier elimination recursively.
-                        tacticName vsubst: checks satsifiability of quantifier-free non-linear constraints using virtual substitution.
-                        tacticName sat: (try to) solve goal using a SAT solver.
-                        tacticName sat-preprocess: Apply SAT solver preprocessing procedures (bounded resolution, Boolean constant propagation, 2-SAT, subsumption, subsumption resolution).
-                        tacticName ctx-solver-simplify: apply solver-based contextual simplification rules.
-                        tacticName smt: apply a SAT based SMT solver.
-                        tacticName unit-subsume-simplify: unit subsumption simplification.
-                        tacticName aig: simplify Boolean structure using AIGs.
-                        tacticName add-bounds: add bounds to unbounded variables (under approximation).
-                        tacticName card2bv: convert pseudo-boolean constraints to bit-vectors.
-                        tacticName degree-shift: try to reduce degree of polynomials (remark: :mul2power simplification is automatically applied).
-                        tacticName diff-neq: specialized solver for integer arithmetic problems that contain only atoms of the form (<= k x) (<= x k) and (not (= (- x y) k)), where x and y are constants and k is a numeral, and all constants are bounded.
-                        tacticName elim01: eliminate 0-1 integer variables, replace them by Booleans.
-                        tacticName eq2bv: convert integer variables used as finite domain elements to bit-vectors.
-                        tacticName factor: polynomial factorization.
-                        tacticName fix-dl-var: if goal is in the difference logic fragment, then fix the variable with the most number of occurrences at 0.
-                        tacticName fm: eliminate variables using fourier-motzkin elimination.
-                        tacticName lia2card: introduce cardinality constraints from 0-1 integer.
-                        tacticName lia2pb: convert bounded integer variables into a sequence of 0-1 variables.
-                        tacticName nla2bv: convert a nonlinear arithmetic problem into a bit-vector problem, in most cases the resultant goal is an under approximation and is useul for finding models.
-                        tacticName normalize-bounds: replace a variable x with lower bound k <= x with x' = x - k.
-                        tacticName pb2bv: convert pseudo-boolean constraints to bit-vectors.
-                        tacticName propagate-ineqs: propagate ineqs/bounds, remove subsumed inequalities.
-                        tacticName purify-arith: eliminate unnecessary operators: -, /, div, mod, rem, is-int, to-int, ^, root-objects.
-                        tacticName recover-01: recover 0-1 variables hidden as Boolean variables.
-                        tacticName bit-blast: reduce bit-vector expressions into SAT.
-                        tacticName bv1-blast: reduce bit-vector expressions into bit-vectors of size 1 (notes: only equality, extract and concat are supported).
-                        tacticName bv_bound_chk: attempts to detect inconsistencies of bounds on bv expressions.
-                        tacticName propagate-bv-bounds: propagate bit-vector bounds by simplifying implied or contradictory bounds.
-                        tacticName reduce-bv-size: try to reduce bit-vector sizes using inequalities.
-                        tacticName bvarray2uf: Rewrite bit-vector arrays into bit-vector (uninterpreted) functions.
-                        tacticName dt2bv: eliminate finite domain data-types. Replace by bit-vectors.
-                        tacticName elim-small-bv: eliminate small, quantified bit-vectors by expansion.
-                        tacticName max-bv-sharing: use heuristics to maximize the sharing of bit-vector expressions such as adders and multipliers.
-                        tacticName blast-term-ite: blast term if-then-else by hoisting them.
-                        tacticName cofactor-term-ite: eliminate term if-the-else using cofactors.
-                        tacticName collect-statistics: Collects various statistics.
-                        tacticName ctx-simplify: apply contextual simplification rules.
-                        tacticName der: destructive equality resolution.
-                        tacticName distribute-forall: distribute forall over conjunctions.
-                        tacticName elim-term-ite: eliminate term if-then-else by adding fresh auxiliary declarations.
-                        tacticName elim-uncnstr: eliminate application containing unconstrained variables.
-                        tacticName snf: put goal in skolem normal form.
-                        tacticName nnf: put goal in negation normal form.
-                        tacticName occf: put goal in one constraint per clause normal form (notes: fails if proof generation is enabled; only clauses are considered).
-                        tacticName pb-preprocess: pre-process pseudo-Boolean constraints a la Davis Putnam.
-                        tacticName propagate-values: propagate constants.
-                        tacticName reduce-args: reduce the number of arguments of function applications, when for all occurrences of a function f the i-th is a value.
-                        tacticName simplify: apply simplification rules.
-                        tacticName elim-and: convert (and a b) into (not (or (not a) (not b))).
-                        tacticName solve-eqs: eliminate variables by solving equations.
-                        tacticName split-clause: split a clause in many subgoals.
-                        tacticName symmetry-reduce: apply symmetry reduction.
-                        tacticName tseitin-cnf: convert goal into CNF using tseitin-like encoding (note: quantifiers are ignored).
-                        tacticName tseitin-cnf-core: convert goal into CNF using tseitin-like encoding (note: quantifiers are ignored). This tactic does not apply required simplifications to the input goal like the tseitin-cnf tactic.
-                        tacticName fpa2bv: convert floating point numbers to bit-vectors.
-                        tacticName qffp: (try to) solve goal using the tactic for QF_FP.
-                        tacticName qffpbv: (try to) solve goal using the tactic for QF_FPBV (floats+bit-vectors).
-                        tacticName nl-purify: Decompose goal into pure NL-sat formula and formula over other theories.
-                        tacticName default: default strategy used when no logic is specified.
-                        tacticName qfbv-sls: (try to) solve using stochastic local search for QF_BV.
-                        tacticName nra: builtin strategy for solving NRA problems.
-                        tacticName qfaufbv: builtin strategy for solving QF_AUFBV problems.
-                        tacticName qfauflia: builtin strategy for solving QF_AUFLIA problems.
-                        tacticName qfbv: builtin strategy for solving QF_BV problems.
-                        tacticName qfidl: builtin strategy for solving QF_IDL problems.
-                        tacticName qflia: builtin strategy for solving QF_LIA problems.
-                        tacticName qflra: builtin strategy for solving QF_LRA problems.
-                        tacticName qfnia: builtin strategy for solving QF_NIA problems.
-                        tacticName qfnra: builtin strategy for solving QF_NRA problems.
-                        tacticName qfuf: builtin strategy for solving QF_UF problems.
-                        tacticName qfufbv: builtin strategy for solving QF_UFBV problems.
-                        tacticName qfufbv_ackr: A tactic for solving QF_UFBV based on Ackermannization.
-                        tacticName qfufnra: builtin strategy for solving QF_UNFRA problems.
-                        tacticName ufnia: builtin strategy for solving UFNIA problems.
-                        tacticName uflra: builtin strategy for solving UFLRA problems.
-                        tacticName auflia: builtin strategy for solving AUFLIA problems.
-                        tacticName auflira: builtin strategy for solving AUFLIRA problems.
-                        tacticName aufnira: builtin strategy for solving AUFNIRA problems.
-                        tacticName lra: builtin strategy for solving LRA problems.
-                        tacticName lia: builtin strategy for solving LIA problems.
-                        tacticName lira: builtin strategy for solving LIRA problems.
-                        tacticName skip: do nothing tactic.
-                        tacticName fail: always fail tactic.
-                        tacticName fail-if-undecided: fail if goal is undecided.
-                        tacticName macro-finder: Identifies and applies macros.
-                        tacticName quasi-macros: Identifies and applies quasi-macros.
-                        tacticName ufbv-rewriter: Applies UFBV-specific rewriting rules, mainly demodulation.
-                        tacticName bv: builtin strategy for solving BV problems (with quantifiers).
-                        tacticName ufbv: builtin strategy for solving UFBV problems (with quantifiers).
-                    */
-                    #endregion
-                    foreach (string tacticName in ctx.TacticNames)
-                    {
-                        Console.WriteLine("tacticName " + tacticName + ": " + ctx.TacticDescription(tacticName));
-                    }
+                    Console.WriteLine("tacticName " + tacticName + ": " + ctx.TacticDescription(tacticName));
                 }
-
-                Tactic tactic3 = ctx.MkTactic("propagate-values");
-                Solver solver = ctx.MkSolver(tactic3);
-
-                BitVecExpr rax = ctx.MkBVConst("RAX", 64);
-                BitVecExpr rbx = ctx.MkBVConst("RBX", 64);
-                BitVecExpr rcx = ctx.MkBVConst("RCX", 64);
-                BitVecExpr rdx = ctx.MkBVConst("RDX", 64);
-
-                BitVecExpr zero_64 = ctx.MkBV(0, 64);
-
-                BoolExpr fact1 = ctx.MkEq(rax, zero_64);
-                BoolExpr fact2 = ctx.MkEq(rbx, ctx.MkITE(ctx.MkEq(rax, zero_64), rcx, rdx));
-
-                if (false)
-                {
-                    solver.Assert(fact1, fact2);
-                }
-                else
-                {
-                    Goal goal1 = ctx.MkGoal();
-                    goal1.Assert(fact1, fact2);
-                    ApplyResult ar = tactic3.Apply(goal1);
-                    solver.Assert(ar.Subgoals[0].Formulas);
-                }
-                Console.WriteLine(solver.ToString());
             }
+
+            Tactic tactic3 = ctx.MkTactic("propagate-values");
+            Solver solver = ctx.MkSolver(tactic3);
+
+            BitVecExpr rax = ctx.MkBVConst("RAX", 64);
+            BitVecExpr rbx = ctx.MkBVConst("RBX", 64);
+            BitVecExpr rcx = ctx.MkBVConst("RCX", 64);
+            BitVecExpr rdx = ctx.MkBVConst("RDX", 64);
+
+            BitVecExpr zero_64 = ctx.MkBV(0, 64);
+
+            BoolExpr fact1 = ctx.MkEq(rax, zero_64);
+            BoolExpr fact2 = ctx.MkEq(rbx, ctx.MkITE(ctx.MkEq(rax, zero_64), rcx, rdx));
+
+            if (false)
+            {
+                solver.Assert(fact1, fact2);
+            }
+            else
+            {
+                Goal goal1 = ctx.MkGoal();
+                goal1.Assert(fact1, fact2);
+                ApplyResult ar = tactic3.Apply(goal1);
+                solver.Assert(ar.Subgoals[0].Formulas);
+            }
+            Console.WriteLine(solver.ToString());
         }
 
         private static void TestMemoryLeak()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -1901,30 +1878,26 @@ namespace AsmSim
 
             for (int i = 0; i < nContexts; ++i)
             {
-                using (Context ctx = new Context(settings))
-                using (Solver s = ctx.MkSolver())
+                using Context ctx = new(settings);
+                using Solver s = ctx.MkSolver();
+                // ctxArray[i] = ctx;
+
+                using BitVecExpr rax = ctx.MkBVConst("RAX!0", 64);
+                using BitVecExpr rbx = ctx.MkBVConst("RBX!0", 64);
+                using BitVecExpr rcx = ctx.MkBVConst("RCX!0", 64);
+                using (BoolExpr t = ctx.MkEq(rax, rbx))
                 {
-                    // ctxArray[i] = ctx;
+                    s.Assert(t);
+                }
 
-                    using (BitVecExpr rax = ctx.MkBVConst("RAX!0", 64))
-                    using (BitVecExpr rbx = ctx.MkBVConst("RBX!0", 64))
-                    using (BitVecExpr rcx = ctx.MkBVConst("RCX!0", 64))
-                    {
-                        using (BoolExpr t = ctx.MkEq(rax, rbx))
-                        {
-                            s.Assert(t);
-                        }
+                using (BoolExpr t = ctx.MkEq(rbx, rcx))
+                {
+                    s.Assert(t);
+                }
 
-                        using (BoolExpr t = ctx.MkEq(rbx, rcx))
-                        {
-                            s.Assert(t);
-                        }
-
-                        using (BoolExpr t = ctx.MkEq(rax, rcx))
-                        {
-                            Console.WriteLine("i=" + i + ":" + ToolsZ3.GetTv(t, s, ctx));
-                        }
-                    }
+                using (BoolExpr t = ctx.MkEq(rax, rcx))
+                {
+                    Console.WriteLine("i=" + i + ":" + ToolsZ3.GetTv(t, s, ctx));
                 }
                 // System.GC.Collect();
             }

@@ -36,7 +36,7 @@ namespace AsmSim
             Contract.Requires(sFlow != null);
             Contract.Requires(dFlow != null);
 
-            AdjacencyGraph<string, TaggedEdge<string, string>> displayGraph = new AdjacencyGraph<string, TaggedEdge<string, string>>();
+            AdjacencyGraph<string, TaggedEdge<string, string>> displayGraph = new();
 
             foreach (string vertex in dFlow.Graph.Vertices)
             {
@@ -57,7 +57,7 @@ namespace AsmSim
             string dir = @"C:\Temp\AsmSim")
         {
             string fullFileName = Path.Combine(dir, fileName);
-            GraphvizAlgorithm<string, TaggedEdge<string, string>> viz = new GraphvizAlgorithm<string, TaggedEdge<string, string>>(graph);
+            GraphvizAlgorithm<string, TaggedEdge<string, string>> viz = new(graph);
 
             viz.FormatVertex += VizFormatVertex;
             viz.FormatEdge += MyEdgeFormatter;
@@ -66,7 +66,7 @@ namespace AsmSim
 
         private static void MyEdgeFormatter(object sender, FormatEdgeEventArgs<string, TaggedEdge<string, string>> e)
         {
-            GraphvizEdgeLabel label = new GraphvizEdgeLabel
+            GraphvizEdgeLabel label = new()
             {
                 Value = e.Edge.Tag,
             };

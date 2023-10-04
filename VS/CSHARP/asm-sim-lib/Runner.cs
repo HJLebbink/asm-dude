@@ -37,7 +37,7 @@ namespace AsmSim
 
         public static DynamicFlow Construct_DynamicFlow_Backward(StaticFlow sFlow, int startLine, int nSteps, Tools tools)
         {
-            DynamicFlow dFlow = new DynamicFlow(tools);
+            DynamicFlow dFlow = new(tools);
             dFlow.Reset(sFlow, false);
             return dFlow;
         }
@@ -50,7 +50,7 @@ namespace AsmSim
 
         public static DynamicFlow Construct_DynamicFlow_Forward(StaticFlow sFlow, int startLine, int nSteps, Tools tools)
         {
-            DynamicFlow dFlow = new DynamicFlow(tools);
+            DynamicFlow dFlow = new(tools);
             dFlow.Reset(sFlow, true);
             return dFlow;
         }
@@ -81,7 +81,7 @@ namespace AsmSim
                     return null;
                 }
                 opcodeBase.Execute();
-                State stateOut = new State(state);
+                State stateOut = new(state);
                 stateOut.Update_Forward(opcodeBase.Updates.regular);
                 stateOut.Frozen = true;
 
@@ -128,7 +128,7 @@ namespace AsmSim
                 }
 
                 opcodeBase.Execute();
-                State stateOut = new State(state);
+                State stateOut = new(state);
                 stateOut.Update_Backward(opcodeBase.Updates.regular, prevKey);
 
                 opcodeBase.Updates.regular?.Dispose();
@@ -198,21 +198,22 @@ namespace AsmSim
             }
         }
 
-        public static (StateUpdate regular, StateUpdate branch) Execute(
+        public static (StateUpdate? regular, StateUpdate? branch) Execute(
             StaticFlow sFlow,
             int lineNumber,
             (string prevKey, string nextKey, string nextKeyBranch) keys,
             Tools tools)
         {
             Contract.Requires(sFlow != null);
+            Contract.Assume(sFlow != null);
 
             try
             {
-                (Mnemonic mnemonic, string[] args) content = sFlow.Get_Line(lineNumber);
-                using OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, keys, tools);
+                (Mnemonic mnemonic, string[] args) = sFlow.Get_Line(lineNumber);
+                using OpcodeBase opcodeBase = InstantiateOpcode(mnemonic, args, keys, tools);
                 if ((opcodeBase == null) || opcodeBase.IsHalted)
                 {
-                    StateUpdate resetState = new StateUpdate(keys.prevKey, keys.nextKey, tools)
+                    StateUpdate resetState = new(keys.prevKey, keys.nextKey, tools)
                     {
                         Reset = true,
                     };
@@ -228,7 +229,7 @@ namespace AsmSim
             }
         }
 
-        public static OpcodeBase InstantiateOpcode(
+        public static OpcodeBase? InstantiateOpcode(
             Mnemonic mnemonic,
             string[] args,
             (string prevKey, string nextKey, string nextKeyBranch) keys,

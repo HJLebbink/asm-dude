@@ -57,29 +57,19 @@ namespace AsmSim
 
             protected void Create_RegularUpdate()
             {
-                if (this.regularUpdate_ == null)
-                {
-                    this.regularUpdate_ = new StateUpdate(this.keys_.prevKey, this.keys_.nextKey, this.tools_);
-                }
+                this.regularUpdate_ ??= new StateUpdate(this.keys_.prevKey, this.keys_.nextKey, this.tools_);
             }
 
             protected void Create_BranchUpdate()
             {
-                if (this.branchUpdate_ == null)
-                {
-                    this.branchUpdate_ = new StateUpdate(this.keys_.prevKey, this.keys_.nextKeyBranch, this.tools_);
-                }
+                this.branchUpdate_ ??= new StateUpdate(this.keys_.prevKey, this.keys_.nextKeyBranch, this.tools_);
             }
 
             protected StateUpdate RegularUpdate
             {
                 get
                 {
-                    if (this.regularUpdate_ == null)
-                    {
-                        this.regularUpdate_ = new StateUpdate(this.keys_.prevKey, this.keys_.nextKey, this.tools_);
-                    }
-
+                    this.regularUpdate_ ??= new StateUpdate(this.keys_.prevKey, this.keys_.nextKey, this.tools_);
                     return this.regularUpdate_;
                 }
             }
@@ -88,11 +78,7 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.branchUpdate_ == null)
-                    {
-                        this.branchUpdate_ = new StateUpdate(this.keys_.prevKey, this.keys_.nextKeyBranch, this.tools_);
-                    }
-
+                    this.branchUpdate_ ??= new StateUpdate(this.keys_.prevKey, this.keys_.nextKeyBranch, this.tools_);
                     return this.branchUpdate_;
                 }
             }
@@ -101,6 +87,8 @@ namespace AsmSim
             {
                 Contract.Requires(t != null);
                 Contract.Requires(args != null);
+                Contract.Assume(t != null);
+                Contract.Assume(args != null);
 
                 this.mnemonic_ = m;
                 this.args_ = args;
@@ -215,7 +203,7 @@ namespace AsmSim
 
             public bool IsHalted { get { return this.halted_; } }
 
-            public string SyntaxError
+            public string? SyntaxError
             {
                 get
                 {
@@ -224,7 +212,7 @@ namespace AsmSim
 
                 protected set
                 {
-                    if (this.haltMessage_ == null)
+                    if (string.IsNullOrEmpty(this.haltMessage_))
                     {
                         this.haltMessage_ = value;
                     }
@@ -246,7 +234,7 @@ namespace AsmSim
             /// <summary>Gets number of operand of the arguments of this instruction</summary>
             protected int NOperands { get { return this.args_.Length; } }
 
-            public static BitVecExpr OpValue(
+            public static BitVecExpr? OpValue(
                 Operand operand,
                 string key,
                 Context ctx,
@@ -254,6 +242,9 @@ namespace AsmSim
             {
                 Contract.Requires(operand != null);
                 Contract.Requires(ctx != null);
+                Contract.Assume(operand != null);
+                Contract.Assume(ctx != null);
+
 
                 try
                 {
@@ -296,17 +287,17 @@ namespace AsmSim
                 }
             }
 
-            protected bool ToMemReadWrite(Operand op1)
+            protected static bool ToMemReadWrite(Operand op1)
             {
                 return (op1 == null) ? false : op1.IsMem;
             }
 
-            protected bool ToMemReadWrite(Operand op1, Operand op2)
+            protected static bool ToMemReadWrite(Operand op1, Operand op2)
             {
                 return ((op1 == null) ? false : op1.IsMem) || ((op2 == null) ? false : op2.IsMem);
             }
 
-            protected bool ToMemReadWrite(Operand op1, Operand op2, Operand op3)
+            protected static bool ToMemReadWrite(Operand op1, Operand op2, Operand op3)
             {
                 return ((op1 == null) ? false : op1.IsMem) || ((op2 == null) ? false : op2.IsMem) || ((op3 == null) ? false : op3.IsMem);
             }
@@ -410,6 +401,8 @@ namespace AsmSim
             {
                 Contract.Requires(op1 != null);
                 Contract.Requires(op2 != null);
+                Contract.Assume(op1 != null);
+                Contract.Assume(op2 != null);
                 this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 and 2 should have same number of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), op1, op1.Type, op1.NBits, op2, op2.Type, op2.NBits);
             }
 
@@ -457,6 +450,7 @@ namespace AsmSim
                 : base(mnemonic, args, keys, t)
             {
                 Contract.Requires(args != null);
+                Contract.Assume(args != null);
 
                 if (this.NOperands != 0)
                 {
@@ -469,7 +463,7 @@ namespace AsmSim
 
         public abstract class Opcode1Base : OpcodeBase
         {
-            protected readonly Operand op1_;
+            protected readonly Operand? op1_;
 
             public Opcode1Base(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
@@ -513,9 +507,9 @@ namespace AsmSim
 
             public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
 
-            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1_); } }
+            public override bool MemReadStatic { get { return ToMemReadWrite(this.op1_); } }
 
-            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1_); } }
+            public override bool MemWriteStatic { get { return ToMemReadWrite(this.op1_); } }
         }
 
         public abstract class Opcode2Base : OpcodeBase
@@ -575,9 +569,9 @@ namespace AsmSim
 
             public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_); } }
 
-            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_); } }
+            public override bool MemReadStatic { get { return ToMemReadWrite(this.op1_, this.op2_); } }
 
-            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_); } }
+            public override bool MemWriteStatic { get { return ToMemReadWrite(this.op1_, this.op2_); } }
         }
 
         public abstract class Opcode3Base : OpcodeBase
@@ -645,9 +639,9 @@ namespace AsmSim
 
             public BitVecExpr Op3Value { get { return OpValue(this.op3_, this.keys_.prevKey, this.ctx_); } }
 
-            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
+            public override bool MemReadStatic { get { return ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
 
-            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
+            public override bool MemWriteStatic { get { return ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
         }
 
         public abstract class OpcodeNBase : OpcodeBase
@@ -697,9 +691,9 @@ namespace AsmSim
 
             public BitVecExpr Op3Value { get { return OpValue(this.op3_, this.keys_.prevKey, this.ctx_); } }
 
-            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
+            public override bool MemReadStatic { get { return ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
 
-            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
+            public override bool MemWriteStatic { get { return ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
         }
 
         public abstract class Opcode2Type1 : Opcode2Base
@@ -1025,7 +1019,7 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1_, this.ctx_.MkITE(zf, this.Op2Value, op1) as BitVecExpr);
                 this.RegularUpdate.Set(regA, this.ctx_.MkITE(zf, regA_Expr_Curr, op1) as BitVecExpr);
 
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.ctx_);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.Op2Value, this.ctx_);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -1801,7 +1795,7 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.ctx_);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.Op2Value, this.ctx_);
                 this.RegularUpdate.Set(this.op1_, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -1824,7 +1818,7 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.ctx_);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.ctx_);
                 this.RegularUpdate.Set(this.op1_, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -2564,7 +2558,7 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
                 this.RegularUpdate.Set(this.op1_, result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -2610,7 +2604,7 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.ctx_);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.Op2Value, this.ctx_);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -3051,7 +3045,7 @@ namespace AsmSim
                 BitVecNum shiftMask = ctx.MkBV((nBits == 64) ? 0x3F : 0x1F, 8);
                 BoolExpr tooLarge = ctx.MkBVSGE(value, ctx.MkBV((nBits == 64) ? 64 : 32, 8));
                 BitVecExpr shiftCount = ctx.MkBVAND(value, shiftMask);
-                return (shiftCount: shiftCount, tooLarge: tooLarge);
+                return (shiftCount, tooLarge);
             }
 
             public void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left)
@@ -4371,7 +4365,7 @@ namespace AsmSim
 
                 if (this.prefix_ == Mnemonic.NONE)
                 {
-                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.GetMem(src, this.nBytes_), this.GetMem(dst, this.nBytes_), this.ctx_);
+                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.GetMem(src, this.nBytes_), this.GetMem(dst, this.nBytes_), this.ctx_);
 
                     this.RegularUpdate.Set(Flags.CF, cf);
                     this.RegularUpdate.Set(Flags.OF, of);
@@ -4557,7 +4551,7 @@ namespace AsmSim
 
                 if (this.prefix_ == Mnemonic.NONE)
                 {
-                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(accumulator, this.GetMem(dst, this.nBytes_), this.ctx_);
+                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(accumulator, this.GetMem(dst, this.nBytes_), this.ctx_);
 
                     this.RegularUpdate.Set(Flags.CF, cf);
                     this.RegularUpdate.Set(Flags.OF, of);

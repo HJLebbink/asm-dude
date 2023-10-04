@@ -45,18 +45,18 @@ namespace AsmSim
 
         public string RandomProgram(int nInstructions)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             for (int i = 0; i < nInstructions; ++i)
             {
                 Mnemonic m = this._eligibleMnemonics[this._rand.Next(this._eligibleMnemonics.Count)];
                 Rn reg1 = this.RandomReg();
                 Rn reg2 = this.RandomReg();
-                sb.AppendLine(this.MakeCodeLine(m, reg1, reg2));
+                sb.AppendLine(MakeCodeLine(m, reg1, reg2));
             }
             return sb.ToString().TrimEnd();
         }
 
-        public string ShuffleProgram(string program) {
+        public static string ShuffleProgram(string program) {
             return program;
         }
 
@@ -74,12 +74,12 @@ namespace AsmSim
             }
         }
 
-        private string ToString(Flags flag, State state)
+        private static string ToString(Flags flag, State state)
         {
             char c = ToolsZ3.ToStringBin(state.GetTv(flag));
             return c+"";
         }
-        private string ToString(Rn name, State state)
+        private static string ToString(Rn name, State state)
         {
             Tv[] array = state.GetTvArray(name);
             var tup = ToolsZ3.HasOneValue(array);
@@ -91,7 +91,7 @@ namespace AsmSim
             }
         }
 
-        private string MakeCodeLine(Mnemonic mnemonic, Rn reg1, Rn reg2)
+        private static string MakeCodeLine(Mnemonic mnemonic, Rn reg1, Rn reg2)
         {
             switch (mnemonic)
             {

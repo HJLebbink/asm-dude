@@ -616,7 +616,7 @@ namespace AsmSim
             }
         }
 
-        public string ToStringOverview(StaticFlow flow, bool showRegisterValues = false)
+        public static string ToStringOverview(StaticFlow flow, bool showRegisterValues = false)
         {
             return "TODO";
         }
@@ -680,8 +680,8 @@ namespace AsmSim
                         }
                     default:
                         {
-                            (string source, StateUpdate stateUpdate) incoming_Regular = this.Get_Regular(this.graph_.InEdges(key_LOCAL));
-                            IEnumerable<(string source, StateUpdate stateUpdate)> incoming_Branches = this.Get_Branches(this.graph_.InEdges(key_LOCAL));
+                            (string source, StateUpdate stateUpdate) incoming_Regular = Get_Regular(this.graph_.InEdges(key_LOCAL));
+                            IEnumerable<(string source, StateUpdate stateUpdate)> incoming_Branches = Get_Branches(this.graph_.InEdges(key_LOCAL));
                             result = Merge_State_Update_LOCAL(key_LOCAL, incoming_Regular, incoming_Branches, visited_LOCAL);
                             if (result == null)
                             {
@@ -738,128 +738,123 @@ namespace AsmSim
                 ICollection<string> visited2)
             {
                 string source1 = incoming_Regular.source;
-                using (State state1 = Construct_State_Private_LOCAL(source1, false, new List<string>(visited2)))
+                using State state1 = Construct_State_Private_LOCAL(source1, false, new List<string>(visited2));
+                if (state1 == null)
                 {
-                    if (state1 == null)
+                    return null;
+                }
+
+                string nextKey1 = target + "A0";
+                {
+                    StateUpdate update1 = incoming_Regular.stateUpdate;
+                    update1.NextKey = nextKey1;
+                    state1.Update_Forward(update1);
+                }
+                State result_State = new(this.tools_, state1.TailKey, state1.HeadKey);
+
+                IList<StateUpdate> mergeStateUpdates = new List<StateUpdate>();
+                HashSet<BoolExpr> tempSet1 = new();
+                HashSet<BoolExpr> tempSet2 = new();
+                HashSet<string> sharedBranchConditions = new();
+                List<BranchInfo> allBranchConditions = new();
+
+                foreach (BoolExpr v1 in state1.Solver.Assertions)
+                {
+                    tempSet1.Add(v1);
+                }
+
+                foreach (BoolExpr v1 in state1.Solver_U.Assertions)
+                {
+                    tempSet2.Add(v1);
+                }
+
+                foreach (BranchInfo v1 in state1.BranchInfoStore.Values)
+                {
+                    allBranchConditions.Add(v1);
+                }
+
+                int counter = 0;
+                List<(string source, StateUpdate stateUpdate)> incoming_Branches_list = new(incoming_Branches);
+                incoming_Branches_list.Reverse(); //TODO does this always works??
+                int nBranches = incoming_Branches_list.Count;
+                foreach ((string source, StateUpdate stateUpdate) incoming_Branch in incoming_Branches_list)
+                {
+                    string source2 = incoming_Branch.source;
+                    using State state2 = Construct_State_Private_LOCAL(source2, false, new List<string>(visited2));
+                    // recursive call
+                    if (state2 == null)
                     {
                         return null;
                     }
 
-                    string nextKey1 = target + "A0";
+                    string nextKey2 = target + "B" + counter;
+                    counter++;
                     {
-                        StateUpdate update1 = incoming_Regular.stateUpdate;
-                        update1.NextKey = nextKey1;
-                        state1.Update_Forward(update1);
-                    }
-                    State result_State = new(this.tools_, state1.TailKey, state1.HeadKey);
-
-                    IList<StateUpdate> mergeStateUpdates = new List<StateUpdate>();
-                    HashSet<BoolExpr> tempSet1 = new();
-                    HashSet<BoolExpr> tempSet2 = new();
-                    HashSet<string> sharedBranchConditions = new();
-                    List<BranchInfo> allBranchConditions = new();
-
-                    foreach (BoolExpr v1 in state1.Solver.Assertions)
-                    {
-                        tempSet1.Add(v1);
+                        StateUpdate update2 = incoming_Branch.stateUpdate;
+                        update2.NextKey = nextKey2; //TODO BUG here, is the reference updated???
+                        state2.Update_Forward(update2);
                     }
 
-                    foreach (BoolExpr v1 in state1.Solver_U.Assertions)
+                    BoolExpr bc = null;
                     {
-                        tempSet2.Add(v1);
-                    }
-
-                    foreach (BranchInfo v1 in state1.BranchInfoStore.Values)
-                    {
-                        allBranchConditions.Add(v1);
-                    }
-
-                    int counter = 0;
-                    List<(string source, StateUpdate stateUpdate)> incoming_Branches_list = new(incoming_Branches);
-                    incoming_Branches_list.Reverse(); //TODO does this always works??
-                    int nBranches = incoming_Branches_list.Count;
-                    foreach ((string source, StateUpdate stateUpdate) incoming_Branch in incoming_Branches_list)
-                    {
-                        string source2 = incoming_Branch.source;
-                        using (State state2 = Construct_State_Private_LOCAL(source2, false, new List<string>(visited2)))
-                        { // recursive call
-                            if (state2 == null)
-                            {
-                                return null;
-                            }
-
-                            string nextKey2 = target + "B" + counter;
-                            counter++;
-                            {
-                                StateUpdate update2 = incoming_Branch.stateUpdate;
-                                update2.NextKey = nextKey2; //TODO BUG here, is the reference updated???
-                                state2.Update_Forward(update2);
-                            }
-
-                            BoolExpr bc = null;
-                            {
-                                using (Context ctx = new(this.tools_.ContextSettings))
-                                {
-                                    string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this.graph_);
-                                    BranchInfo branchInfo = Get_Branch_Condition_LOCAL(branchKey);
-                                    if (branchInfo == null)
-                                    {
-                                        Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo is null. source1=" + source1 + "; source2=" + source2);
-                                        bc = ctx.MkBoolConst("BC" + target);
-                                    }
-                                    else
-                                    {
-                                        bc = branchInfo.BranchCondition;
-                                        sharedBranchConditions.Add(bc.ToString());
-                                    }
-                                }
-                                string nextKey3 = (counter == nBranches) ? target : target + "A" + counter;
-
-                                using (StateUpdate stateUpdate = new(bc, nextKey2, nextKey1, nextKey3, this.tools_))
-                                {
-                                    nextKey1 = nextKey3;
-                                    mergeStateUpdates.Add(stateUpdate);
-                                }
-                            }
-                            if (state1.TailKey != state2.TailKey)
-                            {
-                                Console.WriteLine("WARNING: DynamicFlow: Merge_State_Update_LOCAL: tails are unequal: tail1=" + state1.TailKey + "; tail2=" + state2.TailKey);
-                            }
-                            { // merge the states state1 and state2 into state3
-                                foreach (BoolExpr v1 in state2.Solver.Assertions)
-                                {
-                                    tempSet1.Add(v1);
-                                }
-
-                                foreach (BoolExpr v1 in state2.Solver_U.Assertions)
-                                {
-                                    tempSet2.Add(v1);
-                                }
-
-                                foreach (BranchInfo v1 in state2.BranchInfoStore.Values)
-                                {
-                                    allBranchConditions.Add(v1);
-                                }
-                            }
-                        }
-                    }
-                    result_State.Assert(tempSet1, false, true);
-                    result_State.Assert(tempSet2, true, true);
-
-                    foreach (BranchInfo v1 in allBranchConditions)
-                    {
-                        if (!sharedBranchConditions.Contains(v1.BranchCondition.ToString()))
+                        using (Context ctx = new(this.tools_.ContextSettings))
                         {
-                            result_State.Add(v1);
+                            string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this.graph_);
+                            BranchInfo branchInfo = Get_Branch_Condition_LOCAL(branchKey);
+                            if (branchInfo == null)
+                            {
+                                Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo is null. source1=" + source1 + "; source2=" + source2);
+                                bc = ctx.MkBoolConst("BC" + target);
+                            }
+                            else
+                            {
+                                bc = branchInfo.BranchCondition;
+                                sharedBranchConditions.Add(bc.ToString());
+                            }
+                        }
+                        string nextKey3 = (counter == nBranches) ? target : target + "A" + counter;
+
+                        using StateUpdate stateUpdate = new(bc, nextKey2, nextKey1, nextKey3, this.tools_);
+                        nextKey1 = nextKey3;
+                        mergeStateUpdates.Add(stateUpdate);
+                    }
+                    if (state1.TailKey != state2.TailKey)
+                    {
+                        Console.WriteLine("WARNING: DynamicFlow: Merge_State_Update_LOCAL: tails are unequal: tail1=" + state1.TailKey + "; tail2=" + state2.TailKey);
+                    }
+                    { // merge the states state1 and state2 into state3
+                        foreach (BoolExpr v1 in state2.Solver.Assertions)
+                        {
+                            tempSet1.Add(v1);
+                        }
+
+                        foreach (BoolExpr v1 in state2.Solver_U.Assertions)
+                        {
+                            tempSet2.Add(v1);
+                        }
+
+                        foreach (BranchInfo v1 in state2.BranchInfoStore.Values)
+                        {
+                            allBranchConditions.Add(v1);
                         }
                     }
-                    foreach (StateUpdate v1 in mergeStateUpdates)
-                    {
-                        result_State.Update_Forward(v1);
-                        v1.Dispose();
-                    }
-                    return result_State;
                 }
+                result_State.Assert(tempSet1, false, true);
+                result_State.Assert(tempSet2, true, true);
+
+                foreach (BranchInfo v1 in allBranchConditions)
+                {
+                    if (!sharedBranchConditions.Contains(v1.BranchCondition.ToString()))
+                    {
+                        result_State.Add(v1);
+                    }
+                }
+                foreach (StateUpdate v1 in mergeStateUpdates)
+                {
+                    result_State.Update_Forward(v1);
+                    v1.Dispose();
+                }
+                return result_State;
             }
 
             BranchInfo? Get_Branch_Condition_LOCAL(string branchKey)
@@ -892,7 +887,7 @@ namespace AsmSim
             #endregion
         }
 
-        private (string source, StateUpdate stateUpdate) Get_Regular(IEnumerable<TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> inEdges)
+        private static (string source, StateUpdate stateUpdate) Get_Regular(IEnumerable<TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> inEdges)
         {
             foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> v in inEdges)
             {
@@ -905,13 +900,13 @@ namespace AsmSim
             return (source: "NOKEY", stateUpdate: null);
         }
 
-        private IEnumerable<(string source, StateUpdate stateUpdate)> Get_Branches(IEnumerable<TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> inEdges)
+        private static IEnumerable<(string source, StateUpdate stateUpdate)> Get_Branches(IEnumerable<TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> inEdges)
         {
             foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> v in inEdges)
             {
                 if (v.Tag.branch)
                 {
-                    yield return (source: v.Source, stateUpdate: v.Tag.stateUpdate);
+                    yield return (source: v.Source, v.Tag.stateUpdate);
                 }
             }
         }

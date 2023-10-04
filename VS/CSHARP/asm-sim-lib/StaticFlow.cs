@@ -73,27 +73,25 @@ namespace AsmSim
             for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
             {
                 (Mnemonic mnemonic, string[] args) content = this.Get_Line(lineNumber);
-                using (Mnemonics.OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, this.tools_))
+                using Mnemonics.OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, this.tools_);
+                if (opcodeBase != null)
                 {
-                    if (opcodeBase != null)
+                    flags |= opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic;
+                    foreach (Rn r in opcodeBase.RegsReadStatic)
                     {
-                        flags |= opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic;
-                        foreach (Rn r in opcodeBase.RegsReadStatic)
-                        {
-                            regs.Add(RegisterTools.Get64BitsRegister(r));
-                        }
-
-                        foreach (Rn r in opcodeBase.RegsWriteStatic)
-                        {
-                            regs.Add(RegisterTools.Get64BitsRegister(r));
-                        }
-
-                        mem |= opcodeBase.MemWriteStatic || opcodeBase.MemReadStatic;
+                        regs.Add(RegisterTools.Get64BitsRegister(r));
                     }
+
+                    foreach (Rn r in opcodeBase.RegsWriteStatic)
+                    {
+                        regs.Add(RegisterTools.Get64BitsRegister(r));
+                    }
+
+                    mem |= opcodeBase.MemWriteStatic || opcodeBase.MemReadStatic;
                 }
             }
 
-            StateConfig config = new StateConfig();
+            StateConfig config = new();
             config.Set_All_Off();
             config.Set_Flags_On(flags);
             foreach (Rn reg in regs)
@@ -123,13 +121,13 @@ namespace AsmSim
             {
                 string key1 = this.Get_Key(lineNumber.lineNumber1);
                 string key2 = this.Get_Key(lineNumber.lineNumber2);
-                return (key1: key1, key2: key2);
+                return (key1, key2);
             }
             else
             {
                 string key1 = Tools.CreateKey(this.tools_.Rand);
                 string key2 = key1 + "B";
-                return (key1: key1, key2: key2);
+                return (key1, key2);
             }
         }
 
@@ -162,11 +160,11 @@ namespace AsmSim
             if (lineNumber >= this.Current.Count)
             {
                 Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
-                return (Mnemonic.NONE, null);
+                return (Mnemonic.NONE, Array.Empty<string>());
             }
-            (string label, Mnemonic mnemonic, string[] args) v = this.Current[lineNumber];
+            (string label, Mnemonic mnemonic, string[] args) = this.Current[lineNumber];
 
-            return (v.mnemonic, v.args);
+            return (mnemonic, args);
         }
 
         public string Get_Line_Str(int lineNumber)
@@ -221,7 +219,7 @@ namespace AsmSim
                     regular = v.Target;
                 }
             }
-            return (regular: regular, branch: branch);
+            return (regular, branch);
         }
 
         /// <summary>A LoopBranchPoint is a BranchPoint that choices between leaving the loop or staying in the loop.
@@ -325,7 +323,7 @@ namespace AsmSim
             this.use_Parsed_Code_A_ = !this.use_Parsed_Code_A_;
 
             #region Parse to find all labels
-            IDictionary<string, int> labels = this.GetLabels(programStr);
+            IDictionary<string, int> labels = GetLabels(programStr);
             // replace all labels by annotated label
 
             foreach (KeyValuePair<string, int> entry in labels)
@@ -354,10 +352,10 @@ namespace AsmSim
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
                     (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) line = AsmSourceTools.ParseLine(lines[lineNumber], -1, -1);
-                    this.EvalArgs(ref line.args);
+                    EvalArgs(ref line.args);
                     current.Add((line.label, line.mnemonic, line.args));
 
-                    (int jumpTo1, int jumpTo2) = this.Static_Jump(line.mnemonic, line.args, lineNumber);
+                    (int jumpTo1, int jumpTo2) = Static_Jump(line.mnemonic, line.args, lineNumber);
                     if (jumpTo1 != -1)
                     {
                         this.Add_Edge(lineNumber, jumpTo1, false);
@@ -409,7 +407,7 @@ namespace AsmSim
             #endregion
         }
 
-        private void EvalArgs(ref string[] args)
+        private static void EvalArgs(ref string[] args)
         {
             for (int i = 0; i < args.Length; ++i)
             {
@@ -443,7 +441,7 @@ namespace AsmSim
                         int next = outEdge.Target;
 
                         //Remove this empty line
-                        List<TaggedEdge<int, bool>> inEdges = new List<TaggedEdge<int, bool>>(this.graph_.InEdges(lineNumber));
+                        List<TaggedEdge<int, bool>> inEdges = new(this.graph_.InEdges(lineNumber));
                         foreach (TaggedEdge<int, bool> e in inEdges)
                         {
                             this.graph_.AddEdge(new TaggedEdge<int, bool>(e.Source, next, e.Tag));
@@ -487,7 +485,7 @@ namespace AsmSim
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
             for (int i = 0; i < this.Current.Count; ++i)
             {
@@ -549,7 +547,7 @@ namespace AsmSim
             this.graph_.AddEdge(new TaggedEdge<int, bool>(jumpFrom, jumpTo, isBranch));
         }
 
-        private (int regularLineNumber, int branchLineNumber) Static_Jump(Mnemonic mnemonic, string[] args, int lineNumber)
+        private static (int regularLineNumber, int branchLineNumber) Static_Jump(Mnemonic mnemonic, string[] args, int lineNumber)
         {
             int jumpTo1 = -1;
             int jumpTo2 = -1;
@@ -625,7 +623,7 @@ namespace AsmSim
         }
 
         /// <summary>Get all labels with the line number on which it is defined</summary>
-        private IDictionary<string, int> GetLabels(string text)
+        private static IDictionary<string, int> GetLabels(string text)
         {
             Contract.Requires(text != null);
 

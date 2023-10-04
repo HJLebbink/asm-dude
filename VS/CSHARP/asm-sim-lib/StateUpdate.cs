@@ -9,24 +9,27 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 namespace AsmSim
 {
-    // The above copyright notice and this permission notice shall be included in all
-    // copies or substantial portions of the Software.
-
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    // SOFTWARE.
-
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
+
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.Z3;
 
     public class StateUpdate : IDisposable
@@ -36,8 +39,8 @@ namespace AsmSim
         private readonly Context ctx_;
         private string nextKey_;
         private readonly string prevKey_Regular_;
-        private readonly string prevKey_Branch_;
-        private readonly BoolExpr branch_Condition_;
+        private readonly string? prevKey_Branch_;
+        private readonly BoolExpr? branch_Condition_;
 
         public bool Empty { get; private set; }
 
@@ -46,7 +49,7 @@ namespace AsmSim
 
         private BranchInfo branchInfo_;
 
-        private readonly object ctxLock_ = new object();
+        private readonly object ctxLock_ = new();
 
         #endregion
 
@@ -126,6 +129,7 @@ namespace AsmSim
         public StateUpdate(string prevKey, string nextKey, Tools tools)
         {
             Contract.Requires(tools != null);
+            Contract.Assume(tools != null);
 
             this.branch_Condition_ = null;
             this.prevKey_Regular_ = prevKey;
@@ -143,6 +147,8 @@ namespace AsmSim
         {
             Contract.Requires(tools != null);
             Contract.Requires(branchCondition != null);
+            Contract.Assume(tools != null);
+            Contract.Assume(branchCondition != null);
 
             this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
             this.branch_Condition_ = branchCondition.Translate(this.ctx_) as BoolExpr;
@@ -158,6 +164,7 @@ namespace AsmSim
         public void Update(State state)
         {
             Contract.Requires(state != null);
+            Contract.Assume(state != null);
 
             lock (this.ctxLock_)
             {
@@ -358,10 +365,17 @@ namespace AsmSim
 
             set
             {
+                if (value == null)
+                {
+                    return;
+                }
+
                 if (this.nextKey_ == null)
                 {
                     this.nextKey_ = value;
                 }
+               
+
                 else if (this.nextKey_ != value)
                 {
                     Context ctx = this.ctx_;
@@ -625,7 +639,6 @@ namespace AsmSim
                 case Tv.UNDEFINED:
                 case Tv.ONE:
                     throw new Exception("Not implemented yet");
-                    break;
                 default: break;
             }
         }
@@ -639,12 +652,16 @@ namespace AsmSim
         {
             Contract.Requires(value != null);
             Contract.Requires(undef != null);
+            Contract.Assume(value != null);
+
 
             this.Empty = false;
 
             lock (this.ctxLock_)
             {
                 Context ctx = this.ctx_;
+                Contract.Assume(ctx != null);
+
 
                 value = value.Translate(ctx) as BitVecExpr;
                 undef = undef.Translate(ctx) as BitVecExpr;
@@ -715,8 +732,8 @@ namespace AsmSim
                     BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this.prevKey_Regular_), max);
                     (uint high, uint low) = Tools.SIMD_Extract_Range(reg);
 
-                    BitVecExpr top = null;
-                    BitVecExpr bottom = null;
+                    BitVecExpr? top = null;
+                    BitVecExpr? bottom = null;
                     if (high < (max - 1))
                     {
                         top = ctx.MkExtract(max - 1, high + 1, prevKey);
@@ -727,11 +744,11 @@ namespace AsmSim
                         bottom = ctx.MkExtract(low - 1, 0, prevKey);
                     }
 
-                    Console.WriteLine(top.SortSize + "+" + value.SortSize + "+" + bottom.SortSize + "=" + prevKey.SortSize);
+                    Console.WriteLine(top!.SortSize + "+" + value!.SortSize + "+" + bottom!.SortSize + "=" + prevKey.SortSize);
 
-                    BitVecExpr newValue = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
+                    BitVecExpr newValue = (top == null) ? value : ctx.MkConcat(top, value);
                     newValue = (bottom == null) ? newValue : ctx.MkConcat(newValue, bottom);
-                    BitVecExpr newUndef = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
+                    BitVecExpr newUndef = (top == null) ? value : ctx.MkConcat(top, value);
                     newUndef = (bottom == null) ? newUndef : ctx.MkConcat(newUndef, bottom);
 
                     BitVecExpr nextKey = ctx.MkBVConst(Tools.Reg_Name(reg, this.NextKey), 512 * 32);
@@ -976,12 +993,12 @@ namespace AsmSim
             }
         }
 
-        public void Set_Mem(ArrayExpr memContent)
+        public void Set_Mem([DisallowNull] ArrayExpr memContent)
         {
-            Contract.Requires(memContent != null);
+            
+
 
             this.Empty = false;
-
             if (this.mem_Full_ != null)
             {
                 Console.WriteLine("WARNING: StateUpdate:SetMem: multiple memory updates are not allowed");
@@ -1006,6 +1023,7 @@ namespace AsmSim
         public void Set(Operand operand, BitVecExpr value, BitVecExpr undef)
         {
             Contract.Requires(operand != null);
+            Contract.Assume(operand != null);
 
             if (operand.IsReg)
             {
@@ -1029,7 +1047,7 @@ namespace AsmSim
 
         public string ToString2()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (Flags flag in this.tools_.StateConfig.GetFlagOn())
             {
                 BoolExpr b = this.Get_Raw_Private(flag, true);
@@ -1055,7 +1073,7 @@ namespace AsmSim
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("StateUpdate: PrevKey=" + this.prevKey_Regular_ + "; NextKey=" + this.NextKey + " ");
+            StringBuilder sb = new("StateUpdate: PrevKey=" + this.prevKey_Regular_ + "; NextKey=" + this.NextKey + " ");
             if (this.Empty)
             {
                 sb.AppendLine("Empty UpdateState");

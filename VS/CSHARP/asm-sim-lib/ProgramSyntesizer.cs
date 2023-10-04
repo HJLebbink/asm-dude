@@ -47,7 +47,7 @@ namespace AsmSim
             this._registers = registers;
 
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "true" },    // enable generation of unsat cores
                 { "model", "true" },         // enable model generation
@@ -144,7 +144,7 @@ namespace AsmSim
 
             #endregion
 
-            Console.WriteLine(this.ToString(this._solver));
+            Console.WriteLine(ToString(this._solver));
             if (this._solver.Check() == Status.SATISFIABLE)
             {
                 this.GetAllModels(this._solver, ctx);
@@ -246,12 +246,12 @@ namespace AsmSim
             return ctx.MkEq(GetFlag(Flags.ZF, ln1, ctx), ctx.MkEq(GetReg(reg, ln1, ctx), ZERO));
         }
 
-        private BoolExpr OverFlowFlag(Rn reg, int lineNumber, Context ctx)
+        private static BoolExpr OverFlowFlag(Rn reg, int lineNumber, Context ctx)
         {
             return SetFlag(Flags.OF, Tv.UNKNOWN, lineNumber, ctx);
         }
 
-        private BoolExpr SignFlag(Rn reg, int lineNumber, Context ctx)
+        private static BoolExpr SignFlag(Rn reg, int lineNumber, Context ctx)
         {
             return SetFlag(Flags.OF, Tv.UNKNOWN, lineNumber, ctx);
         }
@@ -498,7 +498,7 @@ namespace AsmSim
                 BoolExpr newRegState = MakeRuleRegResult(reg1, this._registers, x, lineNumber, ctx);
                 BoolExpr newFlagState = ctx.MkAnd(
                     ZeroFlag(reg1, lineNumber, ctx),
-                    this.OverFlowFlag(reg1, lineNumber, ctx)
+                    OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
@@ -510,7 +510,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RCX, ln1, ctx), (reg1 == Rn.RCX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RCX, ln0, ctx)),
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), (reg1 == Rn.RDX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RDX, ln0, ctx)),
                     ZeroFlag(reg1, lineNumber, ctx),
-                    this.OverFlowFlag(reg1, lineNumber, ctx)
+                    OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                // this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg1, ln0, ctx)));
@@ -533,7 +533,7 @@ namespace AsmSim
                 BoolExpr newRegState = MakeRuleRegResult(reg1, this._registers, x, lineNumber, ctx);
                 BoolExpr newFlagState = ctx.MkAnd(
                     ZeroFlag(reg1, lineNumber, ctx),
-                    this.OverFlowFlag(reg1, lineNumber, ctx)
+                    OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
@@ -545,7 +545,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RCX, ln1, ctx), (reg1 == Rn.RCX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RCX, ln0, ctx)),
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), (reg1 == Rn.RDX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RDX, ln0, ctx)),
                     ZeroFlag(reg1, lineNumber, ctx),
-                    this.OverFlowFlag(reg1, lineNumber, ctx)
+                    OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg1, ln0, ctx)));
@@ -599,8 +599,8 @@ namespace AsmSim
                     SetFlag(Flags.AF, Tv.UNDEFINED, lineNumber, ctx),
 
                     ZeroFlag(reg1, lineNumber, ctx),
-                    this.SignFlag(reg1, lineNumber, ctx),
-                    this.OverFlowFlag(reg1, lineNumber, ctx)
+                    SignFlag(reg1, lineNumber, ctx),
+                    OverFlowFlag(reg1, lineNumber, ctx)
                 );
                // this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
@@ -612,7 +612,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RCX, ln1, ctx), (reg1 == Rn.RCX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RCX, ln0, ctx)),
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), (reg1 == Rn.RDX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RDX, ln0, ctx)),
                     ZeroFlag(reg1, lineNumber, ctx),
-                    this.OverFlowFlag(reg1, lineNumber, ctx)
+                    OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg1, ln0, ctx)));
@@ -656,7 +656,7 @@ namespace AsmSim
                 BoolExpr newRegState = MakeRuleRegResult(reg, this._registers, x, lineNumber, ctx);
                 BoolExpr newFlagState = ctx.MkAnd(
                     ZeroFlag(reg, lineNumber, ctx),
-                    this.OverFlowFlag(reg, lineNumber, ctx)
+                    OverFlowFlag(reg, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
@@ -669,7 +669,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), GetRegKnown(Rn.RDX, ln0, ctx)),
 
                     ZeroFlag(reg, lineNumber, ctx),
-                    this.OverFlowFlag(reg, lineNumber, ctx)
+                    OverFlowFlag(reg, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg, ln1, ctx)));
@@ -695,7 +695,7 @@ namespace AsmSim
 
                 BoolExpr newFlagState = ctx.MkAnd(
                     ZeroFlag(reg, lineNumber, ctx),
-                    this.OverFlowFlag(reg, lineNumber, ctx)
+                    OverFlowFlag(reg, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
@@ -708,7 +708,7 @@ namespace AsmSim
                     ctx.MkEq(GetRegKnown(Rn.RDX, ln1, ctx), GetRegKnown(Rn.RDX, ln0, ctx)),
 
                     ZeroFlag(reg, lineNumber, ctx),
-                    this.OverFlowFlag(reg, lineNumber, ctx)
+                    OverFlowFlag(reg, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg, ln1, ctx)));
@@ -750,7 +750,7 @@ namespace AsmSim
             throw new NotImplementedException();
         }
 
-        private bool Contains(FuncDecl f, IEnumerable<FuncDecl> e)
+        private static bool Contains(FuncDecl f, IEnumerable<FuncDecl> e)
         {
             foreach (FuncDecl f2 in e)
             {
@@ -804,7 +804,7 @@ namespace AsmSim
                         {
                             FuncDecl constantFuncDecl = this._constants[constant].FuncDecl;
                             string constantValue;
-                            if (this.Contains(constantFuncDecl, model.ConstDecls))
+                            if (Contains(constantFuncDecl, model.ConstDecls))
                             {
                                 constantValue = model.ConstInterp(this._constants[constant].FuncDecl).ToString();
                             }
@@ -823,8 +823,8 @@ namespace AsmSim
                 }
             }
 
-            StringBuilder sb = new StringBuilder();
-            StringBuilder sb2 = new StringBuilder();
+            StringBuilder sb = new();
+            StringBuilder sb2 = new();
             foreach (string s in program) sb.AppendLine(s);
             foreach (string s in program2) sb2.AppendLine(s);
             return (sb.ToString(), sb2.ToString());
@@ -838,22 +838,22 @@ namespace AsmSim
 
                 if (true)
                 {
-                    program.Add(funcDecl.Name + " = " + this.ToString(value));
+                    program.Add(funcDecl.Name + " = " + ToString(value));
                 }
                 else
                 {
                     if (value.IsBool && value.IsTrue)
                     {
-                        program.Add(funcDecl.Name + " = " + this.ToString(value));
+                        program.Add(funcDecl.Name + " = " + ToString(value));
                     }
                     else
                     {
-                        program.Add(funcDecl.Name + " = " + this.ToString(value));
+                        program.Add(funcDecl.Name + " = " + ToString(value));
                     }
                 }
             }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine("\nModel:");
             foreach (string s in program)
             {
@@ -878,7 +878,7 @@ namespace AsmSim
                     program.Add(regValue.FuncDecl.Name + " = " + ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(regValue, 64, this._solver, this._ctx)));
                 }
             }
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine("Constants:");
             foreach (string s in program)
             {
@@ -887,7 +887,7 @@ namespace AsmSim
             return sb.ToString();
         }
 
-        private string ToString(Expr expr)
+        private static string ToString(Expr expr)
         {
             try
             {
@@ -908,9 +908,9 @@ namespace AsmSim
         }
 
 
-        private string ToString(Solver solver)
+        private static string ToString(Solver solver)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine("solver:");
             foreach (BoolExpr e in solver.Assertions)
             {
@@ -920,7 +920,7 @@ namespace AsmSim
         }
         private string Solver2Asm(Solver solver, Context ctx)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.AppendLine("\nAsm:");
             for (int lineNumber = 1; lineNumber <= this._nLines; ++lineNumber)
             {

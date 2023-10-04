@@ -32,7 +32,7 @@ namespace AsmSim
 
     public static class ToolsZ3
     {
-        private static readonly object Object_ = new object();
+        private static readonly object Object_ = new();
 
         #region Public Methods
 
@@ -121,7 +121,7 @@ namespace AsmSim
             Contract.Requires(tv5 != null);
             Contract.Requires(tv5.Length > 0);
 
-            Random random = new Random();
+            Random random = new();
 
             BitVecExpr value = null;
             BitVecExpr undef = null;
@@ -154,7 +154,7 @@ namespace AsmSim
                 value = (value == null) ? next_value : ctx.MkConcat(next_value, value);
                 undef = (undef == null) ? next_undef : ctx.MkConcat(next_undef, undef);
             }
-            return (value: value, undef: undef);
+            return (value, undef);
         }
 
         private static (bool valid, ulong value) IsSimpleAssignment_UNUSED(string name, BoolExpr e)
@@ -314,33 +314,23 @@ namespace AsmSim
                     //Tactic ta6b = ctx.MkTactic("sat-preprocess"); // does not work: some constrains are lost
                     //Tactic ta7 = ctx.MkTactic("smt"); // does not work: all constraitns are lost
 
-                    using (Tactic tactic = ctx.AndThen(ta2, ctx.AndThen(ta1, ta5)))
+                    using Tactic tactic = ctx.AndThen(ta2, ctx.AndThen(ta1, ta5));
                     //                    using (Tactic tactic = ctx.AndThen(ta2, ta1))
+                    if (!undef)
                     {
-                        if (!undef)
-                        {
-                            using (Goal goal1 = ctx.MkGoal())
-                            {
-                                goal1.Assert(solver.Assertions);
-                                using (ApplyResult ar = tactic.Apply(goal1))
-                                {
-                                    solver.Reset();
-                                    solver.Assert(ar.Subgoals[0].Formulas);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            using (Goal goal1 = ctx.MkGoal())
-                            {
-                                goal1.Assert(solver_U.Assertions);
-                                using (ApplyResult ar = tactic.Apply(goal1))
-                                {
-                                    solver_U.Reset();
-                                    solver_U.Assert(ar.Subgoals[0].Formulas);
-                                }
-                            }
-                        }
+                        using Goal goal1 = ctx.MkGoal();
+                        goal1.Assert(solver.Assertions);
+                        using ApplyResult ar = tactic.Apply(goal1);
+                        solver.Reset();
+                        solver.Assert(ar.Subgoals[0].Formulas);
+                    }
+                    else
+                    {
+                        using Goal goal1 = ctx.MkGoal();
+                        goal1.Assert(solver_U.Assertions);
+                        using ApplyResult ar = tactic.Apply(goal1);
+                        solver_U.Reset();
+                        solver_U.Assert(ar.Subgoals[0].Formulas);
                     }
                 }
             }
@@ -352,20 +342,16 @@ namespace AsmSim
             Contract.Requires(ctx != null);
             Contract.Requires(valueTv != null);
 
-            using (BitVecNum bv1_1bit = ctx.MkBV(1, 1))
+            using BitVecNum bv1_1bit = ctx.MkBV(1, 1);
+            for (uint bit = 0; bit < nBits; ++bit)
             {
-                for (uint bit = 0; bit < nBits; ++bit)
+                using BoolExpr b = GetBit(valueExpr, bit, bv1_1bit, ctx);
+                using BoolExpr b_undef = GetBit(undef, bit, bv1_1bit, ctx);
+                // this can be done faster
+                Tv tv = GetTv(b, b_undef, solver, solver_U, ctx);
+                if (tv != valueTv[bit])
                 {
-                    using (BoolExpr b = GetBit(valueExpr, bit, bv1_1bit, ctx))
-                    using (BoolExpr b_undef = GetBit(undef, bit, bv1_1bit, ctx))
-                    {
-                        // this can be done faster
-                        Tv tv = GetTv(b, b_undef, solver, solver_U, ctx);
-                        if (tv != valueTv[bit])
-                        {
-                            return false;
-                        }
-                    }
+                    return false;
                 }
             }
             return true;
@@ -400,7 +386,7 @@ namespace AsmSim
             }
         }
 
-        /// <summary>add the contants from Expression e to the provided set</summary>
+        /// <summary>add the constants from Expression e to the provided set</summary>
         private static void CollectConstants_UNUSED(Expr e, ref ISet<Expr> set)
         {
             if (e.IsConst)
@@ -433,7 +419,7 @@ namespace AsmSim
         {
             Contract.Requires(solver != null);
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             for (int i = 0; i < (int)solver.NumAssertions; ++i)
             {
                 BoolExpr e = solver.Assertions[i];
@@ -446,7 +432,7 @@ namespace AsmSim
 
         public static string ToStringBin(Tv[] a)
         {
-            StringBuilder sb = new StringBuilder("0b");
+            StringBuilder sb = new("0b");
             if (a == null)
             {
                 sb.Append("null");
@@ -753,19 +739,17 @@ namespace AsmSim
             {
                 for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    using (BoolExpr b = GetBit(value, bit, oNE, ctx))
+                    using BoolExpr b = GetBit(value, bit, oNE, ctx);
+                    switch (GetTv(b, solver, ctx))
                     {
-                        switch (GetTv(b, solver, ctx))
-                        {
-                            case Tv.ONE:
-                                results[bit] = Tv.ONE;
-                                break;
-                            case Tv.ZERO:
-                                results[bit] = Tv.ZERO;
-                                break;
-                            default:
-                                return null;
-                        }
+                        case Tv.ONE:
+                            results[bit] = Tv.ONE;
+                            break;
+                        case Tv.ZERO:
+                            results[bit] = Tv.ZERO;
+                            break;
+                        default:
+                            return null;
                     }
                 }
             }
@@ -858,11 +842,9 @@ namespace AsmSim
             {
                 for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    using (BoolExpr b = GetBit(value, bit, bv1_1bit, ctx))
-                    using (BoolExpr b_undef = GetBit(undef, bit, bv1_1bit, ctx))
-                    {
-                        results[bit] = GetTv(b, b_undef, solver, solver_U, ctx);
-                    }
+                    using BoolExpr b = GetBit(value, bit, bv1_1bit, ctx);
+                    using BoolExpr b_undef = GetBit(undef, bit, bv1_1bit, ctx);
+                    results[bit] = GetTv(b, b_undef, solver, solver_U, ctx);
                 }
             }
             return results;
@@ -882,10 +864,8 @@ namespace AsmSim
             {
                 for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    using (BoolExpr b = GetBit(value, bit, bv1_1bit, ctx))
-                    {
-                        results[bit] = GetTv(b, solver, ctx);
-                    }
+                    using BoolExpr b = GetBit(value, bit, bv1_1bit, ctx);
+                    results[bit] = GetTv(b, solver, ctx);
                 }
             }
             return results;
@@ -930,16 +910,14 @@ namespace AsmSim
 
             bool tvFalse;
             {
-                using (BoolExpr t = ctx.MkNot(value))
+                using BoolExpr t = ctx.MkNot(value);
+                Status status = solver.Check(t);
+                if (status == Status.UNKNOWN)
                 {
-                    Status status = solver.Check(t);
-                    if (status == Status.UNKNOWN)
-                    {
-                        //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                        return Tv.UNDETERMINED;
-                    }
-                    tvFalse = status == Status.SATISFIABLE;
+                    //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                    return Tv.UNDETERMINED;
                 }
+                tvFalse = status == Status.SATISFIABLE;
             }
             // if it consistent to assert that the provided bit is true,
             // and seperately that it is consistent to be false, the model in the solver
@@ -969,16 +947,14 @@ namespace AsmSim
 
                 bool tvFalseU;
                 {
-                    using (BoolExpr t = ctx.MkNot(undef))
+                    using BoolExpr t = ctx.MkNot(undef);
+                    Status status = solver_U.Check(t);
+                    if (status == Status.UNKNOWN)
                     {
-                        Status status = solver_U.Check(t);
-                        if (status == Status.UNKNOWN)
-                        {
-                            //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                            return Tv.UNDETERMINED;
-                        }
-                        tvFalseU = status == Status.SATISFIABLE;
+                        //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                        return Tv.UNDETERMINED;
                     }
+                    tvFalseU = status == Status.SATISFIABLE;
                 }
                 // if (!tvFalseU) return Tv5.UNKNOWN;
 
@@ -1002,40 +978,36 @@ namespace AsmSim
         {
             bool tvTrue;
             {
-                using (Solver s = State.MakeSolver(ctx))
+                using Solver s = State.MakeSolver(ctx);
+                s.Assert(solver.Assertions);
+                s.Assert(value);
+                Status status = s.Check();
+                if (status == Status.UNKNOWN)
                 {
-                    s.Assert(solver.Assertions);
-                    s.Assert(value);
-                    Status status = s.Check();
-                    if (status == Status.UNKNOWN)
-                    {
-                        //Console.WriteLine("ToolsZ3:getTv5: A: value=" + value + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                        return Tv.UNDETERMINED;
-                    }
-                    tvTrue = status == Status.SATISFIABLE;
+                    //Console.WriteLine("ToolsZ3:getTv5: A: value=" + value + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                    return Tv.UNDETERMINED;
                 }
+                tvTrue = status == Status.SATISFIABLE;
             }
 
             //if (!tvTrue) return Tv5.ZERO;
 
             bool tvFalse;
             {
-                using (Solver s = State.MakeSolver(ctx))
+                using Solver s = State.MakeSolver(ctx);
+                s.Assert(solver.Assertions);
+                using (BoolExpr t = ctx.MkNot(value))
                 {
-                    s.Assert(solver.Assertions);
-                    using (BoolExpr t = ctx.MkNot(value))
-                    {
-                        s.Assert(t);
-                    }
-
-                    Status status = s.Check();
-                    if (status == Status.UNKNOWN)
-                    {
-                        //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                        return Tv.UNDETERMINED;
-                    }
-                    tvFalse = status == Status.SATISFIABLE;
+                    s.Assert(t);
                 }
+
+                Status status = s.Check();
+                if (status == Status.UNKNOWN)
+                {
+                    //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                    return Tv.UNDETERMINED;
+                }
+                tvFalse = status == Status.SATISFIABLE;
             }
             // if it consistent to assert that the provided bit is true,
             // and seperately that it is consistent to be false, the model in the solver
@@ -1065,39 +1037,35 @@ namespace AsmSim
 
                 bool tvFalseU;
                 {
-                    using (Solver s = State.MakeSolver(ctx))
+                    using Solver s = State.MakeSolver(ctx);
+                    s.Assert(solver_U.Assertions);
+                    using (BoolExpr t = ctx.MkNot(undef))
                     {
-                        s.Assert(solver_U.Assertions);
-                        using (BoolExpr t = ctx.MkNot(undef))
-                        {
-                            s.Assert(t);
-                        }
-
-                        Status status = s.Check();
-                        if (status == Status.UNKNOWN)
-                        {
-                            //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                            return Tv.UNDETERMINED;
-                        }
-                        tvFalseU = status == Status.SATISFIABLE;
+                        s.Assert(t);
                     }
+
+                    Status status = s.Check();
+                    if (status == Status.UNKNOWN)
+                    {
+                        //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                        return Tv.UNDETERMINED;
+                    }
+                    tvFalseU = status == Status.SATISFIABLE;
                 }
                 // if (!tvFalseU) return Tv5.UNKNOWN;
 
                 bool tvTrueU;
                 {
-                    using (Solver s = State.MakeSolver(ctx))
+                    using Solver s = State.MakeSolver(ctx);
+                    s.Assert(solver_U.Assertions);
+                    s.Assert(value);
+                    Status status = s.Check();
+                    if (status == Status.UNKNOWN)
                     {
-                        s.Assert(solver_U.Assertions);
-                        s.Assert(value);
-                        Status status = s.Check();
-                        if (status == Status.UNKNOWN)
-                        {
-                            //Console.WriteLine("ToolsZ3:getTv5: D: undef=" + undef + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                            return Tv.UNDETERMINED;
-                        }
-                        tvTrueU = status == Status.SATISFIABLE;
+                        //Console.WriteLine("ToolsZ3:getTv5: D: undef=" + undef + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                        return Tv.UNDETERMINED;
                     }
+                    tvTrueU = status == Status.SATISFIABLE;
                 }
                 return (tvTrueU && tvFalseU) ? Tv.UNDEFINED : Tv.UNKNOWN;
             }
@@ -1293,6 +1261,7 @@ namespace AsmSim
         public static IEnumerable<string> Get_Constants(Expr expr)
         {
             Contract.Requires(expr != null);
+            Contract.Assume(expr != null);
 
             if (expr.IsConst)
             {

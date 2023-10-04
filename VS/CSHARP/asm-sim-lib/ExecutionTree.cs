@@ -41,7 +41,7 @@ namespace AsmSim
             this.states_ = new Dictionary<string, State>();
         }
 
-        public void Init(DynamicFlow dFlow, int startLineNumber)
+        public static void Init(DynamicFlow dFlow, int startLineNumber)
         {
             // Unroll the provided dFlow in depth first until either the maximum depth is reached or the state is inconsistent.
             /*

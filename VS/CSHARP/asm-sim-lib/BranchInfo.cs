@@ -34,7 +34,7 @@ namespace AsmSim
         public BranchInfo(BoolExpr condition, bool taken)
         {
             Contract.Requires(condition != null);
-
+            Contract.Assert(condition != null);
             this.BranchCondition = condition;
             this.Key = condition.ToString();
             this.BranchTaken = taken;
@@ -48,6 +48,8 @@ namespace AsmSim
         public BoolExpr GetData(Context ctx)
         {
             Contract.Requires(ctx != null);
+            Contract.Assert(ctx != null);
+
             if (false)
             {
                 BoolExpr bc = this.BranchCondition.Translate(ctx) as BoolExpr;

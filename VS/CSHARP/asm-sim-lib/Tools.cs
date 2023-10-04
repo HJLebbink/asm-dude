@@ -393,18 +393,16 @@ namespace AsmSim
             Contract.Requires(ctx != null);
             Contract.Requires(nBytes > 0, "Number of bytes has to larger than zero. nBytes=" + nBytes);
 
-            using (ArrayExpr mem = Create_Mem_Key(key, ctx))
-            {
-                BitVecExpr result = ctx.MkSelect(mem, address) as BitVecExpr;
+            using ArrayExpr mem = Create_Mem_Key(key, ctx);
+            BitVecExpr result = ctx.MkSelect(mem, address) as BitVecExpr;
 
-                for (uint i = 1; i < nBytes; ++i)
-                {
-                    BitVecExpr result2 = ctx.MkSelect(mem, ctx.MkBVAdd(address, ctx.MkBV(i, 64))) as BitVecExpr;
-                    result = ctx.MkConcat(result2, result);
-                }
-                Debug.Assert(result.SortSize == (nBytes * 8));
-                return result;
+            for (uint i = 1; i < nBytes; ++i)
+            {
+                BitVecExpr result2 = ctx.MkSelect(mem, ctx.MkBVAdd(address, ctx.MkBV(i, 64))) as BitVecExpr;
+                result = ctx.MkConcat(result2, result);
             }
+            Debug.Assert(result.SortSize == (nBytes * 8));
+            return result;
         }
 
         public static ArrayExpr Set_Value_To_Mem(BitVecExpr value, BitVecExpr address, string key, Context ctx)
@@ -444,7 +442,7 @@ namespace AsmSim
                 {
                     Console.WriteLine("INFO: Tools:Collapse: state1:\n" + result);
                     Console.WriteLine("INFO: Tools:Collapse: state2:\n" + prev);
-                    State result2 = new State(result, prev, true);
+                    State result2 = new(result, prev, true);
                     if (counter > 2)
                     {
                         //TODO HJ 26 okt 2019 investigate dispose

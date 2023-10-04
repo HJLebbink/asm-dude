@@ -109,13 +109,11 @@ namespace AsmSim
             Contract.Requires(a.SortSize == result.SortSize, "number of bits of a and result should be equal");
             Contract.Requires(nBits <= a.SortSize);
 
-            using (BitVecExpr signA = Create_SF_BV(a, nBits, ctx))
-            using (BitVecExpr signB = Create_SF_BV(b, nBits, ctx))
-            using (BitVecExpr signC = Create_SF_BV(result, nBits, ctx))
-            using (BitVecExpr oNE = ctx.MkBV(1, 1))
-            {
-                return ctx.MkAnd(ctx.MkEq(signA, signB), ctx.MkEq(ctx.MkBVXOR(signA, signC), oNE));
-            }
+            using BitVecExpr signA = Create_SF_BV(a, nBits, ctx);
+            using BitVecExpr signB = Create_SF_BV(b, nBits, ctx);
+            using BitVecExpr signC = Create_SF_BV(result, nBits, ctx);
+            using BitVecExpr oNE = ctx.MkBV(1, 1);
+            return ctx.MkAnd(ctx.MkEq(signA, signB), ctx.MkEq(ctx.MkBVXOR(signA, signC), oNE));
         }
         #endregion
 
