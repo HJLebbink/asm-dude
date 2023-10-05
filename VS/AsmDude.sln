@@ -40,6 +40,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asm-tools-tests", "CSHARP\a
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asm-sim-tests", "CSHARP\asm-sim-tests\asm-sim-tests.csproj", "{FC2D7630-7474-4D9C-AE57-EE141AA4712B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "intel-doc-2-md", "CSHARP\intel-doc-2-md\intel-doc-2-md.csproj", "{08A47C44-9193-4038-A01D-27FD828D2043}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -158,13 +160,20 @@ Global
 		{FC2D7630-7474-4D9C-AE57-EE141AA4712B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC2D7630-7474-4D9C-AE57-EE141AA4712B}.Release|x64.ActiveCfg = Release|Any CPU
 		{FC2D7630-7474-4D9C-AE57-EE141AA4712B}.Release|x64.Build.0 = Release|Any CPU
+		{08A47C44-9193-4038-A01D-27FD828D2043}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08A47C44-9193-4038-A01D-27FD828D2043}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08A47C44-9193-4038-A01D-27FD828D2043}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{08A47C44-9193-4038-A01D-27FD828D2043}.Debug|x64.Build.0 = Debug|Any CPU
+		{08A47C44-9193-4038-A01D-27FD828D2043}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08A47C44-9193-4038-A01D-27FD828D2043}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08A47C44-9193-4038-A01D-27FD828D2043}.Release|x64.ActiveCfg = Release|Any CPU
+		{08A47C44-9193-4038-A01D-27FD828D2043}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BF80AE23-E323-48FB-8B44-156B2524EFFF} = {8539E7E0-634A-459F-A5AF-25ECBD16DE13}
-		{16019732-E6FC-4299-B075-4B5537A7FDB5} = {8539E7E0-634A-459F-A5AF-25ECBD16DE13}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89D318BB-C529-4DDE-8EAF-DAEA3986256B}

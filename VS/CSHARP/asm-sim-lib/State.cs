@@ -221,7 +221,7 @@ namespace AsmSim
 
                 // merge the contents of both solvers
                 {
-                    ISet<BoolExpr> mergedContent = new HashSet<BoolExpr>();
+                    HashSet<BoolExpr> mergedContent = new();
                     foreach (BoolExpr b in state1.Solver.Assertions)
                     {
                         mergedContent.Add(b.Translate(ctx) as BoolExpr);
@@ -237,7 +237,7 @@ namespace AsmSim
                         this.Solver.Assert(b);
                     }
 
-                    ISet<BoolExpr> mergedContent_U = new HashSet<BoolExpr>();
+                    HashSet<BoolExpr> mergedContent_U = new();
                     foreach (BoolExpr b in state1.Solver_U.Assertions)
                     {
                         mergedContent_U.Add(b.Translate(ctx) as BoolExpr);
@@ -267,16 +267,16 @@ namespace AsmSim
                         string head2 = state2.HeadKey;
 
                         using StateUpdate stateUpdateForward = new("!ERROR_1", this.HeadKey, this.Tools);
-                        BoolExpr dummyBranchCondttion = ctx.MkBoolConst("DymmyBC" + this.HeadKey);
+                        BoolExpr dummyBranchCondition = ctx.MkBoolConst("DymmyBC" + this.HeadKey);
                         foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
                         {
-                            stateUpdateForward.Set(reg, ctx.MkITE(dummyBranchCondttion, Tools.Create_Key(reg, head1, ctx), Tools.Create_Key(reg, head2, ctx)) as BitVecExpr);
+                            stateUpdateForward.Set(reg, ctx.MkITE(dummyBranchCondition, Tools.Create_Key(reg, head1, ctx), Tools.Create_Key(reg, head2, ctx)) as BitVecExpr);
                         }
                         foreach (Flags flag in this.Tools.StateConfig.GetFlagOn())
                         {
-                            stateUpdateForward.Set(flag, ctx.MkITE(dummyBranchCondttion, Tools.Create_Key(flag, head1, ctx), Tools.Create_Key(flag, head2, ctx)) as BoolExpr);
+                            stateUpdateForward.Set(flag, ctx.MkITE(dummyBranchCondition, Tools.Create_Key(flag, head1, ctx), Tools.Create_Key(flag, head2, ctx)) as BoolExpr);
                         }
-                        stateUpdateForward.Set_Mem(ctx.MkITE(dummyBranchCondttion, Tools.Create_Mem_Key(head1, ctx), Tools.Create_Mem_Key(head2, ctx)) as ArrayExpr);
+                        stateUpdateForward.Set_Mem(ctx.MkITE(dummyBranchCondition, Tools.Create_Mem_Key(head1, ctx), Tools.Create_Mem_Key(head2, ctx)) as ArrayExpr);
 
                         this.Update_Forward(stateUpdateForward);
                     }
