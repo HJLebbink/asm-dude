@@ -61,7 +61,7 @@ namespace AsmDude2LS
         private readonly Dictionary<Uri, string[]> textDocumentLines;
         private readonly Dictionary<Uri, KeywordID[][]> parsedDocuments;
 
-        private readonly Dictionary<Uri, IEnumerable<AsmFoldingRange>> foldingRanges;
+        private readonly Dictionary<Uri, IEnumerable<FoldingRange>> foldingRanges;
         private readonly Dictionary<Uri, LabelGraph> labelGraphs;
 
         private readonly int referencesChunkSize = 10;
@@ -102,7 +102,7 @@ namespace AsmDude2LS
             this.parsedDocuments = new Dictionary<Uri, KeywordID[][]>();
 
             this.labelGraphs = new Dictionary<Uri, LabelGraph>();
-            this.foldingRanges = new Dictionary<Uri, IEnumerable<AsmFoldingRange>>();
+            this.foldingRanges = new Dictionary<Uri, IEnumerable<FoldingRange>>();
             this.diagnostics = new List<Diagnostic>();
             this.Symbols = Array.Empty<VSSymbolInformation>();
 
@@ -401,7 +401,7 @@ namespace AsmDude2LS
             int startKeywordLength = StartKeyword.Length;
             int endKeywordLength = EndKeyword.Length;
 
-            List<AsmFoldingRange> foldingRanges = new();
+            List<FoldingRange> foldingRanges = new();
             Stack<int> startLineNumbers = new();
             Stack<int> startCharacters = new();
 
@@ -437,7 +437,7 @@ namespace AsmDude2LS
                         {
                             int startLine = startLineNumbers.Pop();
                             int startCharacter = startCharacters.Pop();
-                            foldingRanges.Add(new AsmFoldingRange
+                            foldingRanges.Add(new FoldingRange
                             {
                                 StartLine = startLine,
                                 StartCharacter = startCharacter,
@@ -951,23 +951,23 @@ namespace AsmDude2LS
             }
         }
 
-        public void SetFoldingRanges(IEnumerable<AsmFoldingRange> foldingRanges, Uri uri)
+        public void SetFoldingRanges(IEnumerable<FoldingRange> foldingRanges, Uri uri)
         {
             this.foldingRanges.Remove(uri);
             this.foldingRanges.Add(uri, foldingRanges);
         }
 
-        public AsmFoldingRange[] GetFoldingRanges(FoldingRangeParams parameter)
+        public FoldingRange[] GetFoldingRanges(FoldingRangeParams parameter)
         {
             if (!this.options.CodeFolding_On)
             {
-                return Array.Empty<AsmFoldingRange>();
+                return Array.Empty<FoldingRange>();
             }
-            if (this.foldingRanges.TryGetValue(parameter.TextDocument.Uri, out IEnumerable<AsmFoldingRange> value))
+            if (this.foldingRanges.TryGetValue(parameter.TextDocument.Uri, out IEnumerable<FoldingRange> value))
             {
                 return value.ToArray();
             }
-            return Array.Empty<AsmFoldingRange>();
+            return Array.Empty<FoldingRange>();
         }
 
         private HashSet<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, HashSet<AsmSignatureEnum> allowedOperands, int lineNumber)
@@ -1557,7 +1557,7 @@ namespace AsmDude2LS
                                 Language = MarkupKind.PlainText.ToString(),
                                 Value = full_Descr + "\n",
                             }),
-                            new SumType<string, MarkedString>(new MarkedString
+                            new(new MarkedString
                             {
                                 Language = MarkupKind.Markdown.ToString(),
                                 Value = ((performanceInfoAvailable) ? "**Performance:**\n```text\n" + performanceStr + "\n```" : "No performance info"),
@@ -1613,7 +1613,7 @@ namespace AsmDude2LS
                             }
                             descr = AsmTools.AsmSourceTools.Linewrap(descr, MaxNumberOfCharsInToolTips);
                             hoverContent = new SumType<string, MarkedString>[]{
-                                new SumType<string, MarkedString>(new MarkedString
+                                new(new MarkedString
                                 {
                                     Language = MarkupKind.PlainText.ToString(),
                                     Value = $"Keyword {keyword}: {descr}",
@@ -1795,8 +1795,24 @@ namespace AsmDude2LS
             }
             */
 
+
             if (hoverContent != null)
             {
+                //return new Microsoft.VisualStudio.LanguageServer.Protocol.VSInternalHover
+                //{
+                //    Range = new Range()
+                //    {
+                //        Start = new Position(parameter.Position.Line, startPos),
+                //        End = new Position(parameter.Position.Line, endPos),
+                //    },
+                //    Contents = new MarkupContent
+                //    {
+                //        Kind = MarkupKind.Markdown,
+                //        Value = "TODO **bold**"
+                //    },
+                //    //RawContent = new ClassifiedTextElement(descriptionBuilder.Select(tp => new ClassifiedTextRun(tp.Tag.ToClassificationTypeName(), tp.Text)))
+                //};
+
                 return new Hover()
                 {
                     Contents = hoverContent,

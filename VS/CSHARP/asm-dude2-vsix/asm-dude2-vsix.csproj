@@ -111,7 +111,8 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
-		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.2.8" />
+		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.8.9-preview" />
+		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Internal" Version="17.8.9-preview" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.7.37357" />
 		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
 		  <PrivateAssets>all</PrivateAssets>
