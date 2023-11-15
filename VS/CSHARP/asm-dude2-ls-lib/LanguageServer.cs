@@ -23,6 +23,10 @@
 using AsmSourceTools;
 using AsmTools;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+using Microsoft.VisualStudio.Text.Adornments;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Classification;
+
 using Newtonsoft.Json.Linq;
 using StreamJsonRpc;
 using System;
@@ -36,8 +40,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
+using System.Reflection.Metadata;
 
 namespace AsmDude2LS
 {
@@ -55,7 +58,7 @@ namespace AsmDude2LS
         private readonly HeaderDelimitedMessageHandler messageHandler;
         private readonly LanguageServerTarget target;
         private readonly ManualResetEvent disconnectEvent = new(false);
-        private readonly List<Diagnostic> diagnostics;
+        private readonly List<Microsoft.VisualStudio.LanguageServer.Protocol.Diagnostic> diagnostics;
 
         private readonly Dictionary<Uri, TextDocumentItem> textDocuments;
         private readonly Dictionary<Uri, string[]> textDocumentLines;
@@ -103,7 +106,7 @@ namespace AsmDude2LS
 
             this.labelGraphs = new Dictionary<Uri, LabelGraph>();
             this.foldingRanges = new Dictionary<Uri, IEnumerable<FoldingRange>>();
-            this.diagnostics = new List<Diagnostic>();
+            this.diagnostics = new List<Microsoft.VisualStudio.LanguageServer.Protocol.Diagnostic>();
             this.Symbols = Array.Empty<VSSymbolInformation>();
 
             this.messageHandler = new HeaderDelimitedMessageHandler(sender, reader);
@@ -233,8 +236,8 @@ namespace AsmDude2LS
 
         private void ScheduleDiagnosticMessage(
             string message,
-            DiagnosticSeverity severity,
-            Range range,
+            Microsoft.VisualStudio.LanguageServer.Protocol.DiagnosticSeverity severity,
+            Microsoft.VisualStudio.LanguageServer.Protocol.Range range,
             VSTextDocumentIdentifier vsTextDocumentIdentifier)
         {
             //LogInfo($"ScheduleDiagnosticMessage {message}");
@@ -422,11 +425,11 @@ namespace AsmDude2LS
                     {
                         if (startLineNumbers.Count == 0)
                         {
-                            var severity = DiagnosticSeverity.Warning;
+                            var severity = Microsoft.VisualStudio.LanguageServer.Protocol.DiagnosticSeverity.Warning;
                             VSTextDocumentIdentifier textDocumentIdentifier = null;//TODO
 
                             string message = $"keyword {EndKeyword} has no matching {StartKeyword} keyword";
-                            Range range = new()
+                            Microsoft.VisualStudio.LanguageServer.Protocol.Range range = new()
                             {
                                 Start = new Position(lineNumber, offsetEndRegion),
                                 End = new Position(lineNumber, offsetEndRegion + endKeywordLength),
@@ -556,7 +559,7 @@ namespace AsmDude2LS
             {
                 new TextEdit
                 {
-                    Range = new Range
+                    Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range
                     {
                         Start = new Position
                         {
@@ -623,7 +626,7 @@ namespace AsmDude2LS
                                     {
                                         new TextEdit
                                         {
-                                            Range = new Range
+                                            Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range
                                             {
                                                 Start = new Position
                                                 {
@@ -652,11 +655,11 @@ namespace AsmDude2LS
                 {
                     Changes = changes,
                 },
-                Diagnostics = new Diagnostic[]
+                Diagnostics = new Microsoft.VisualStudio.LanguageServer.Protocol.Diagnostic[]
                 {
-                    new Diagnostic()
+                    new Microsoft.VisualStudio.LanguageServer.Protocol.Diagnostic()
                     {
-                        Range = new Range
+                        Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range
                         {
                             Start = new Position
                             {
@@ -670,7 +673,7 @@ namespace AsmDude2LS
                             }
                         },
                         Message = "Test Error",
-                        Severity = DiagnosticSeverity.Error,
+                        Severity = Microsoft.VisualStudio.LanguageServer.Protocol.DiagnosticSeverity.Error,
                     }
                 },
                 Kind = CodeActionKind.QuickFix,
@@ -739,8 +742,8 @@ namespace AsmDude2LS
             }
 
             //TODO why not use VSLocation??
-            List<Location> locations = new();
-            List<Location> locationsChunk = new();
+            List<Microsoft.VisualStudio.LanguageServer.Protocol.Location> locations = new();
+            List<Microsoft.VisualStudio.LanguageServer.Protocol.Location> locationsChunk = new();
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -748,7 +751,7 @@ namespace AsmDude2LS
 
                 for (int j = 0; j < lineStr.Length; j++)
                 {
-                    Location location = this.GetLocation(lineStr, i, ref j, referenceWord, uri);
+                    Microsoft.VisualStudio.LanguageServer.Protocol.Location location = this.GetLocation(lineStr, i, ref j, referenceWord, uri);
 
                     if (location != null)
                     {
@@ -1425,7 +1428,7 @@ namespace AsmDude2LS
 
                 for (int j = 0; j < lineStr.Length; j++)
                 {
-                    Range range = this.GetHighlightRangeMultiple(lineStr, i, ref j, currentHighlightedWords);
+                    Microsoft.VisualStudio.LanguageServer.Protocol.Range range = this.GetHighlightRangeMultiple(lineStr, i, ref j, currentHighlightedWords);
                     if (range != null)
                     {
                         j++;
@@ -1478,7 +1481,7 @@ namespace AsmDude2LS
             return AsmTokenType.UNKNOWN;
         }
 
-        public Hover GetHover(TextDocumentPositionParams parameter)
+        public VSInternalHover GetHover(TextDocumentPositionParams parameter)
         {
             if (!this.options.AsmDoc_On)
             {
@@ -1493,7 +1496,7 @@ namespace AsmDude2LS
             }
             string keyword_uppercase = keyword.ToUpperInvariant();
 
-            SumType<string, MarkedString>[] hoverContent = null;
+            List<ClassifiedTextRun> hoverContent = new();
 
             switch (this.GetAsmTokenType(keyword_uppercase))
             {
@@ -1501,10 +1504,7 @@ namespace AsmDude2LS
                 case AsmTokenType.Jump:
                     {
                         Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword_uppercase, true);
-                        string mnemonicStr = mnemonic.ToString();
-                        string archStr = ":" + ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
                         string descr = this.mnemonicStore.GetDescription(mnemonic);
-                        string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonicStr} {archStr} {descr}", MaxNumberOfCharsInToolTips);
                         string performanceStr = "";
 
                         bool performanceInfoAvailable = false;
@@ -1551,18 +1551,15 @@ namespace AsmDude2LS
                             }
                         }
 
-                        hoverContent = new SumType<string, MarkedString>[]{
-                            new(new MarkedString
-                            {
-                                Language = MarkupKind.PlainText.ToString(),
-                                Value = full_Descr + "\n",
-                            }),
-                            new(new MarkedString
-                            {
-                                Language = MarkupKind.Markdown.ToString(),
-                                Value = ((performanceInfoAvailable) ? "**Performance:**\n```text\n" + performanceStr + "\n```" : "No performance info"),
-                            })
-                        };
+                        //const string TestCodeMarkdown = "roslyn test code markdown";
+                        const string TestCodeMarkdown = ClassificationTypeNames.VerbatimStringLiteral;
+
+                        hoverContent.Add(new ClassifiedTextRun(ClassificationTypeNames.FieldName, mnemonic.ToString(), ClassifiedTextRunStyle.Bold));
+                        hoverContent.Add(new(ClassificationTypeNames.Punctuation, ":"));
+                        hoverContent.Add(new(ClassificationTypeNames.MethodName, ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic))));
+                        hoverContent.Add(new(ClassificationTypeNames.WhiteSpace, " "));
+                        hoverContent.Add(new(ClassificationTypeNames.Text, AsmTools.AsmSourceTools.Linewrap(descr, MaxNumberOfCharsInToolTips) + "\n"));
+                        hoverContent.Add(new(TestCodeMarkdown, ((performanceInfoAvailable) ? "\nPerformance:\n```" + performanceStr + "\n```" : "No performance info")));
                         break;
                     }
                 case AsmTokenType.Register:
@@ -1586,13 +1583,7 @@ namespace AsmDude2LS
                                 descr = "\n" + descr;
                             }
                             string full_Descr = AsmTools.AsmSourceTools.Linewrap(archStr + descr, MaxNumberOfCharsInToolTips);
-                            hoverContent = new SumType<string, MarkedString>[]{
-                                new(new MarkedString
-                                {
-                                    Language = MarkupKind.PlainText.ToString(),
-                                    Value = $"Register {regStr}: {full_Descr}",
-                                }),
-                            };
+                            hoverContent.Add(new(ClassificationTypeNames.Text, $"Register {regStr}: {full_Descr}"));
                         }
                         break;
                     }
@@ -1612,13 +1603,7 @@ namespace AsmDude2LS
                                 descr = "\n" + descr;
                             }
                             descr = AsmTools.AsmSourceTools.Linewrap(descr, MaxNumberOfCharsInToolTips);
-                            hoverContent = new SumType<string, MarkedString>[]{
-                                new(new MarkedString
-                                {
-                                    Language = MarkupKind.PlainText.ToString(),
-                                    Value = $"Keyword {keyword}: {descr}",
-                                }),
-                            };
+                            hoverContent.Add(new(ClassificationTypeNames.Identifier, $"Keyword {keyword}: {descr}"));
                         }
                         break;
                     }
@@ -1795,32 +1780,22 @@ namespace AsmDude2LS
             }
             */
 
-
-            if (hoverContent != null)
+            if (hoverContent.Count() > 0)
             {
-                //return new Microsoft.VisualStudio.LanguageServer.Protocol.VSInternalHover
-                //{
-                //    Range = new Range()
-                //    {
-                //        Start = new Position(parameter.Position.Line, startPos),
-                //        End = new Position(parameter.Position.Line, endPos),
-                //    },
-                //    Contents = new MarkupContent
-                //    {
-                //        Kind = MarkupKind.Markdown,
-                //        Value = "TODO **bold**"
-                //    },
-                //    //RawContent = new ClassifiedTextElement(descriptionBuilder.Select(tp => new ClassifiedTextRun(tp.Tag.ToClassificationTypeName(), tp.Text)))
-                //};
-
-                return new Hover()
+                return new VSInternalHover
                 {
-                    Contents = hoverContent,
-                    Range = new Range()
+                    Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range()
                     {
                         Start = new Position(parameter.Position.Line, startPos),
                         End = new Position(parameter.Position.Line, endPos),
                     },
+                    //Contents = Array.Empty<SumType<string, MarkedString>>(),
+                    Contents = new MarkupContent
+                    {
+                        Kind = MarkupKind.Markdown,
+                        Value = "BLA"
+                    },
+                    RawContent = new ClassifiedTextElement(hoverContent.ToArray())
                 };
             }
             return null;
@@ -1853,11 +1828,11 @@ namespace AsmDude2LS
                     symbolInfo.Add(new VSSymbolInformation
                     {
                         Name = label,
-                        Kind = SymbolKind.Key,
-                        Location = new Location
+                        Kind = Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Key,
+                        Location = new Microsoft.VisualStudio.LanguageServer.Protocol.Location
                         {
                             Uri = uri,
-                            Range = new Range
+                            Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range
                             {
                                 Start = new Position
                                 {
@@ -1885,13 +1860,13 @@ namespace AsmDude2LS
                     symbolInfo.Add(new VSSymbolInformation
                     {
                         Name = mnemonicStr,
-                        Kind = SymbolKind.Function,
+                        Kind = Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Function,
                         HintText = "some hint text here?",
                         Description = "some description here?",
-                        Location = new Location
+                        Location = new Microsoft.VisualStudio.LanguageServer.Protocol.Location
                         {
                             Uri = uri,
-                            Range = new Range
+                            Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range
                             {
                                 Start = new Position
                                 {
@@ -1914,7 +1889,7 @@ namespace AsmDude2LS
                             symbolInfo.Add(new VSSymbolInformation
                             {
                                 Name = mnemonic.ToString(),
-                                Kind = SymbolKind.Function,
+                                Kind = Microsoft.VisualStudio.LanguageServer.Protocol.SymbolKind.Function,
                                 HintText = "some hint text here?",
                                 Description = "some description here?",
                             });
@@ -2094,17 +2069,17 @@ namespace AsmDude2LS
         //    });
         //}
 
-        private Location GetLocation(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch, Uri uri)
+        private Microsoft.VisualStudio.LanguageServer.Protocol.Location GetLocation(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch, Uri uri)
         {
             if ((characterOffset + wordToMatch.Length) <= lineStr.Length)
             {
                 string subString = lineStr.Substring(characterOffset, wordToMatch.Length);
                 if (subString.Equals(wordToMatch, StringComparison.OrdinalIgnoreCase))
                 {
-                    return new Location
+                    return new Microsoft.VisualStudio.LanguageServer.Protocol.Location
                     {
                         Uri = uri,
-                        Range = new Range
+                        Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range
                         {
                             Start = new Position(lineOffset, characterOffset),
                             End = new Position(lineOffset, characterOffset + wordToMatch.Length)
@@ -2115,7 +2090,7 @@ namespace AsmDude2LS
             return null;
         }
 
-        private Range GetHighlightRange(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch)
+        private Microsoft.VisualStudio.LanguageServer.Protocol.Range GetHighlightRange(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch)
         {
             int wordLength = wordToMatch.Length;
 
@@ -2132,7 +2107,7 @@ namespace AsmDude2LS
                 string subString = lineStr.Substring(characterOffset, wordLength);
                 if (subString.Equals(wordToMatch, StringComparison.OrdinalIgnoreCase))
                 {
-                    return new Range
+                    return new Microsoft.VisualStudio.LanguageServer.Protocol.Range
                     {
                         Start = new Position(lineOffset, characterOffset),
                         End = new Position(lineOffset, characterOffset + wordLength)
@@ -2142,7 +2117,7 @@ namespace AsmDude2LS
             return null;
         }
 
-        private Range GetHighlightRangeMultiple(string line, int lineOffset, ref int characterOffset, IEnumerable<string> wordsToMatch)
+        private Microsoft.VisualStudio.LanguageServer.Protocol.Range GetHighlightRangeMultiple(string line, int lineOffset, ref int characterOffset, IEnumerable<string> wordsToMatch)
         {
             foreach (string wordToMatch in wordsToMatch)
             {

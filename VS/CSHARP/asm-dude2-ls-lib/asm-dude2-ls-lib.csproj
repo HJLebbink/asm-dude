@@ -72,12 +72,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-rc.1.23419.4" />
     <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="17.7.188" />
 	<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.8.9-preview" />
 	<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Internal" Version="17.8.9-preview" />
 	<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.8.9-preview" />
-	<PackageReference Include="StreamJsonRpc" Version="2.16.36" />
+	<PackageReference Include="StreamJsonRpc" Version="2.17.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>

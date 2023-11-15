@@ -406,7 +406,7 @@ namespace AsmDude2LS
         }
 
         [JsonRpcMethod(Methods.TextDocumentHoverName)]
-        public Hover OnHover(JToken arg)
+        public VSInternalHover OnHover(JToken arg)
         {
             LanguageServer.LogInfo($"OnHover: Received: {arg}");
             var parameter = arg.ToObject<TextDocumentPositionParams>();
