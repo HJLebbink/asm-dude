@@ -1,5 +1,6 @@
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace AsmDude2LS;
 
@@ -34,7 +35,8 @@ public partial class Worker : BackgroundService
         const string stdInPipeName = @"input";
         const string stdOutPipeName = @"output";
 
-        PipeAccessRule pipeAccessRule = new("Everyone", PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
+        SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
+        PipeAccessRule pipeAccessRule = new(everyone, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
         PipeSecurity pipeSecurity = new();
         pipeSecurity.AddAccessRule(pipeAccessRule);
 
