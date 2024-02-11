@@ -36,6 +36,7 @@ using System.ComponentModel.Composition;
 using AsmDude2.Tools;
 using AsmTools;
 using System.Windows.Forms;
+using System.Security.Principal;
 
 namespace AsmDude2
 {
@@ -261,8 +262,9 @@ namespace AsmDude2
             const string stdInPipeName = @"output";
             const string stdOutPipeName = @"input";
 
-            var pipeAccessRule = new PipeAccessRule("Everyone", PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
-            var pipeSecurity = new PipeSecurity();
+            SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null); 
+            PipeAccessRule pipeAccessRule = new PipeAccessRule(everyone, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
+            PipeSecurity pipeSecurity = new PipeSecurity();
             pipeSecurity.AddAccessRule(pipeAccessRule);
 
             var bufferSize = 256;
