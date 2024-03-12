@@ -19,7 +19,7 @@
 		<IsPublishable>False</IsPublishable>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<PackageId>AsmDude2</PackageId>
-		<Company>SnellerInc</Company>
+		<Company>Henk-Jan Lebbink</Company>
 		<RepositoryType>git</RepositoryType>
 		<PackageOutputPath>vsix\</PackageOutputPath>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>

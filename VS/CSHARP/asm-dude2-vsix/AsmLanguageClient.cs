@@ -256,36 +256,46 @@ namespace AsmDude2
             ProcessStartInfo info = new ProcessStartInfo
             {
                 FileName = lspPath,
-                WorkingDirectory = Path.GetDirectoryName(lspPath)
+                WorkingDirectory = Path.GetDirectoryName(lspPath),
             };
 
-            const string stdInPipeName = @"output";
-            const string stdOutPipeName = @"input";
-
-            SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null); 
-            PipeAccessRule pipeAccessRule = new PipeAccessRule(everyone, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
-            PipeSecurity pipeSecurity = new PipeSecurity();
-            pipeSecurity.AddAccessRule(pipeAccessRule);
-
-            var bufferSize = 256;
-            var readerPipe = new NamedPipeServerStream(stdInPipeName, PipeDirection.InOut, 4, PipeTransmissionMode.Message, PipeOptions.Asynchronous, bufferSize, bufferSize, pipeSecurity);
-            var writerPipe = new NamedPipeServerStream(stdOutPipeName, PipeDirection.InOut, 4, PipeTransmissionMode.Message, PipeOptions.Asynchronous, bufferSize, bufferSize, pipeSecurity);
-
-            Process process = new Process
+            try
             {
-                StartInfo = info
-            };
+                const string stdInPipeName = @"output";
+                const string stdOutPipeName = @"input";
 
-            if (process.Start())
-            {
-                await readerPipe.WaitForConnectionAsync(token);
-                await writerPipe.WaitForConnectionAsync(token);
-                return new Connection(readerPipe, writerPipe);
+                //SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.SelfSid, null);
+                SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+                PipeAccessRule pipeAccessRule = new PipeAccessRule(everyone, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
+                PipeSecurity pipeSecurity = new PipeSecurity();
+                pipeSecurity.AddAccessRule(pipeAccessRule);
+
+                const int bufferSize = 256;
+                var readerPipe = new NamedPipeServerStream(stdInPipeName, PipeDirection.InOut, 4, PipeTransmissionMode.Message, PipeOptions.Asynchronous, bufferSize, bufferSize, pipeSecurity);
+                var writerPipe = new NamedPipeServerStream(stdOutPipeName, PipeDirection.InOut, 4, PipeTransmissionMode.Message, PipeOptions.Asynchronous, bufferSize, bufferSize, pipeSecurity);
+
+                Process process = new Process
+                {
+                    StartInfo = info
+                };
+
+                if (process.Start())
+                {
+                    await readerPipe.WaitForConnectionAsync(token);
+                    await writerPipe.WaitForConnectionAsync(token);
+                    return new Connection(readerPipe, writerPipe);
+                }
+                {
+                    string title = "Microsoft Visual Studio";
+                    string text = $"AsmDude2 could not start the Language Server Protocol (LSP)\nfound at \"{lspPath}\"";
+                    MessageBox.Show(text, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
             }
-
+            catch (Exception e)
             {
                 string title = "Microsoft Visual Studio";
-                string text = $"AsmDude2 could not start the Language Server Protocol (LSP)\nfound at \"{lspPath}\"";
+                string text = $"AsmDude2 could not start the Language Server Protocol (LSP)\nfound at \"{lspPath}\"\n\nError: {e}";
                 MessageBox.Show(text, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
