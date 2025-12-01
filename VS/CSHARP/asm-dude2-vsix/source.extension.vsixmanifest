@@ -6,7 +6,7 @@
 		<Description xml:space="preserve">Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window.</Description>
     </Metadata>
     <Installation>
-		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,19.0)">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
     </Installation>

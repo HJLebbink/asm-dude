@@ -110,15 +110,15 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
-		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.8.9-preview" />
-		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Internal" Version="17.8.9-preview" />
-		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.7.37357" />
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
+		<!-- Latest stable packages for VS 2022/2026 compatibility -->
+		<PackageReference Include="StreamJsonRpc" Version="2.23.32-alpha" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" />
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.7.2196">
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.14.2120">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -126,7 +126,6 @@
 		  <Generator>XamlIntelliSenseFileGenerator</Generator>
 		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Page>
-		<ProjectReference Include="..\asm-tools-lib-net48\asm-tools-lib-net48.csproj" />
 		<Reference Include="PresentationFramework" />
 	</ItemGroup>
 	<ItemGroup>
@@ -190,6 +189,9 @@
 	<Import Project="$(VSToolsPath)\vssdk\Microsoft.VSSDK.targets" Condition="'$(VSToolsPath)' != ''" />
 	<ItemGroup>
 	  <AdditionalFiles Remove="C:\Users\henkj\.nuget\packages\microsoft.visualstudio.sdk.analyzers\16.10.10\build\AdditionalFiles\BannedSymbols.txt" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
 	</ItemGroup>
 
 </Project>

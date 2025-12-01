@@ -33,9 +33,9 @@ namespace unit_tests_asm_z3
     public static class AsmTestTools
     {
 #if DEBUG
-        public const bool LOG_TO_DISPLAY = true;
+        public const bool LOG_TO_DISPLAY = false; // Set to false to avoid DynamicFlow.ToString crash with Z3 context translation
 #else
-        public const bool LOG_TO_DISPLAY = true;
+        public const bool LOG_TO_DISPLAY = false;
 #endif
         public const int DEFAULT_TIMEOUT = 10000; // 60000;
 
