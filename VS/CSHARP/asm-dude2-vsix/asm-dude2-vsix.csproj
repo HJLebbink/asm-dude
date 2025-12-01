@@ -110,18 +110,8 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
-		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.8.9-preview" />
-		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Internal" Version="17.8.9-preview" />
-		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.7.37357" />
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.7.2196">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.*" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.9.*" />
 		<Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
 		  <Generator>XamlIntelliSenseFileGenerator</Generator>
 		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -158,38 +148,7 @@
 	  </None>
 	</ItemGroup>
 
-	<Target Name="IncludeLanguageServers" BeforeTargets="GetVsixSourceItems">
-		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net7.0-windows\*.*" Visible="false">
-				<IncludeInVSIX>true</IncludeInVSIX>
-				<VsixSubPath>Server</VsixSubPath>
-			</Content>
-		</ItemGroup>
-		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls-lib\Resources\*.*" Visible="false">
-				<IncludeInVSIX>true</IncludeInVSIX>
-				<VsixSubPath>Server\Resources</VsixSubPath>
-			</Content>
-		</ItemGroup>
-		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls-lib\Resources\Performance\*.*" Visible="false">
-				<IncludeInVSIX>true</IncludeInVSIX>
-				<VsixSubPath>Server\Resources\Performance</VsixSubPath>
-			</Content>
-		</ItemGroup>
-	</Target>
-
-	<!-- We shouldn't package the client definition dll with the extension -->
-	<Target Name="RemoveClientDefinition" AfterTargets="GetVsixSourceItems">
-		<ItemGroup>
-			<VsixSourceItem Remove="@(VsixSourceItem)" Condition=" '%(FileName)%(Extension)' == 'Microsoft.VisualStudio.LanguageServer.Client.dll' " />
-		</ItemGroup>
-	</Target>
-
 	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
 	<Import Project="$(VSToolsPath)\vssdk\Microsoft.VSSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-	<ItemGroup>
-	  <AdditionalFiles Remove="C:\Users\henkj\.nuget\packages\microsoft.visualstudio.sdk.analyzers\16.10.10\build\AdditionalFiles\BannedSymbols.txt" />
-	</ItemGroup>
 
 </Project>

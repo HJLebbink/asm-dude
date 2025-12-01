@@ -381,16 +381,6 @@ namespace AsmDude2LS
 
         private void UpdateFoldingRanges(Uri uri)
         {
-            static string GetCollapsedText(int startPos, string line)
-            {
-                int length = line.Length - startPos;
-                if (length <= 0)
-                {
-                    return "...";
-                }
-                return line.Substring(startPos, length).Trim();
-            }
-
             if (!this.options.CodeFolding_On)
             {
                 return;
@@ -443,8 +433,7 @@ namespace AsmDude2LS
                                 StartCharacter = startCharacter,
                                 EndLine = lineNumber,
                                 EndCharacter = offsetEndRegion + endKeywordLength,
-                                Kind = FoldingRangeKind.Region,
-                                CollapsedText = GetCollapsedText(startCharacter + startKeywordLength + 1, lines[startLine]),
+                                Kind = FoldingRangeKind.Region
                             });
                         }
                     }

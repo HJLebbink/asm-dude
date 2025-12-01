@@ -2,7 +2,7 @@
 <Project>
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <SignAssembly>false</SignAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>CA1001,CA1305,CA1307,CA1721,CA1724,CA1801,CA1822,CA2007,CA2213,CS1591,CS1668</NoWarn>
@@ -72,13 +72,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-rc.1.23419.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="17.7.188" />
-	<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="17.8.9-preview" />
-	<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Internal" Version="17.8.9-preview" />
-	<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.8.9-preview" />
-	<PackageReference Include="StreamJsonRpc" Version="2.16.36" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="17.2.*" />
+    <PackageReference Include="StreamJsonRpc" Version="2.17.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />

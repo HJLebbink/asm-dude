@@ -7,7 +7,7 @@
 	<Description>AsmDude2 Language Server Protocol (LSP) for assembly language</Description>
 	<AssemblyName>AsmDude2.LSP</AssemblyName>
 	<Company></Company>
-	<TargetFramework>net7.0-windows</TargetFramework>
+	<TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-WindowsService-7b46c878-2e29-4de0-b355-fe97116ed91a</UserSecretsId>
@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.*" />
   </ItemGroup>
 
   <ItemGroup>
