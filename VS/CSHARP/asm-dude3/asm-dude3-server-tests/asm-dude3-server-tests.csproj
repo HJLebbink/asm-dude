@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<RootNamespace>AsmDude3.Server.Tests</RootNamespace>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>14</LangVersion>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
+
+	<!-- Latest testing packages for .NET 10 -->
+	<ItemGroup>
+		<!-- xUnit testing framework -->
+		<PackageReference Include="xunit" Version="2.9.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="3.0.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+
+		<!-- Test SDK -->
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+
+		<!-- Code coverage -->
+		<PackageReference Include="coverlet.collector" Version="6.0.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+
+		<!-- Mocking framework -->
+		<PackageReference Include="Moq" Version="4.20.72" />
+
+		<!-- Fluent assertions for readable tests -->
+		<PackageReference Include="FluentAssertions" Version="7.0.0" />
+	</ItemGroup>
+
+	<!-- Reference to the server project -->
+	<ItemGroup>
+		<ProjectReference Include="..\asm-dude3-server\asm-dude3-server.csproj" />
+	</ItemGroup>
+
+</Project>

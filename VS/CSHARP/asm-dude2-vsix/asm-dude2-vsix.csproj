@@ -159,7 +159,7 @@
 
 	<Target Name="IncludeLanguageServers" BeforeTargets="GetVsixSourceItems">
 		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net7.0-windows\*.*" Visible="false">
+			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net10.0-windows\*.*" Visible="false">
 				<IncludeInVSIX>true</IncludeInVSIX>
 				<VsixSubPath>Server</VsixSubPath>
 			</Content>
@@ -191,7 +191,7 @@
 	  <AdditionalFiles Remove="C:\Users\henkj\.nuget\packages\microsoft.visualstudio.sdk.analyzers\16.10.10\build\AdditionalFiles\BannedSymbols.txt" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
+	  <ProjectReference Include="..\asm-tools-lib-net48\asm-tools-lib-net48.csproj" />
 	</ItemGroup>
 
 </Project>

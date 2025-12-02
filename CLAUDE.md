@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important Guidelines
+
+**MINIMIZE USER INTERRUPTIONS**: Only ask the user for help as a LAST RESORT. Before asking:
+1. Try to test and verify changes yourself using command-line tools
+2. Use `dotnet build` to check if code compiles
+3. Run the LSP server directly with test inputs to verify behavior
+4. Check log files and debug output
+5. Search documentation and code for answers
+6. Only ask the user when you have exhausted all self-service options and are completely blocked
+
 ## Project Overview
 
 AsmDude2 is a Visual Studio 2022/2026 extension that provides assembly language support (x86/x64, SSE, AVX, AVX2, AVX-512) through a Language Server Protocol (LSP) implementation. The project evolved from the original AsmDude VS2015/17/19 plugin into a modern LSP-based architecture.
@@ -24,7 +34,15 @@ AsmDude2 is a Visual Studio 2022/2026 extension that provides assembly language 
 
 ### Core Components
 
-1. **Language Server (asm-dude2-ls)**: Standalone LSP server (.NET 10.0 LTS) that provides all language features
+1. **Language Server (asm-dude3-server)**: Modern LSP server (.NET 10.0 LTS) with enhanced features
+   - Location: `VS\CSHARP\asm-dude3\asm-dude3-server\`
+   - Main class: `LanguageServer.cs` manages LSP communication via StreamJsonRpc
+   - **NEW: Clickable Hyperlinks** - Hover over mnemonics shows clickable links to documentation
+   - Features: syntax highlighting, code completion, signature help, hover info, folding ranges, performance data
+   - Uses custom LSP types in `Protocol\LspTypes.cs` for LSP communication
+   - Uses `VSInternalHover` with `ClassifiedTextElement` for clickable hyperlinks in Visual Studio
+
+2. **Language Server (asm-dude2-ls)**: Original LSP server (.NET 10.0 LTS) [Legacy]
    - Entry point: `VS\CSHARP\asm-dude2-ls\` (executable)
    - Core implementation: `VS\CSHARP\asm-dude2-ls-lib\` (library)
    - Main class: `LanguageServer.cs` manages LSP communication via StreamJsonRpc

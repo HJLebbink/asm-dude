@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+	<Metadata>
+		<Identity Id="AsmDude3.e30816d4-86c9-4f3e-a3e5-c3e5a5a2e9f9" Version="3.0.0.0" Language="en-US" Publisher="Henk-Jan Lebbink" />
+		<DisplayName>AsmDude3</DisplayName>
+		<Description xml:space="preserve">Modern assembly language extension - Syntax highlighting and code assistance for x86/x64 assembly (.asm, .cod, .inc, .s files)</Description>
+		<MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>
+		<License>LICENSE.txt</License>
+		<Icon>AsmDude3.png</Icon>
+		<PreviewImage>AsmDude3.png</PreviewImage>
+		<Tags>assembly, asm, x86, x64, AVX, AVX2, AVX-512, SSE, syntax highlighting, code completion</Tags>
+	</Metadata>
+	<Installation>
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,19.0)">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
+		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0,19.0)">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
+		<InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0,19.0)">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
+	</Installation>
+	<Dependencies>
+		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.8,)" />
+	</Dependencies>
+	<Prerequisites>
+		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,19.0)" DisplayName="Visual Studio core editor" />
+	</Prerequisites>
+	<Assets>
+		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+	</Assets>
+</PackageManifest>

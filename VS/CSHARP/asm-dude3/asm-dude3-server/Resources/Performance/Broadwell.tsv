@@ -1,0 +1,692 @@
+;Intel Broadwell							
+;List of instruction timings and ?op breakdown							
+							
+;Explanation of column headings:							
+;Instruction:	Name of instruction. Multiple names mean that these instructions have the same data. Instructions with or without V name prefix behave the same unless otherwise noted.						
+;Operands:	i = immediate data, r = register, mm = 64 bit mmx register, x = 128 bit xmm register, (x)mm = mmx or xmm register, y = 256 bit ymm register, v = any vector register (mmx, xmm, ymm). same = same register for both operands. m = memory operand, m32 = 32-bit memory operand, etc. 						
+;?ops fused domain:	The number of ?ops at the decode, rename and allocate stages in the pipeline. Fused ?ops count as one.						
+;?ops unfused domain:	The total number of ?ops for all execution port. Fused ?ops count as two. Fused macro-ops count as one. The instruction has ?op fusion if this number is higher than the number under fused domain. Some operations are not counted here if they do not go to any execution port or if the counters are inaccurate.						
+;發ps each port:	The number of ?ops for each execution port. p0 means a 發p to execution port 0. p01means a 發p that can go to either port 0 or port 1. p0 p1 means two 發ps going to port 0 and 1, respectively.
+;Port 0: Integer, f.p. and vector ALU, mul, div, branch
+;Port 1: Integer, f.p. and vector ALU
+;Port 2: Load
+;Port 3: Load
+;Port 4: Store
+;Port 5: Integer and vector ALU
+;Port 6: Integer ALU, branch
+;Port 7: Store address						
+;Latency:	This is the delay that the instruction generates in a dependency chain. The numbers are minimum values. Cache misses, misalignment, and exceptions may increase the clock counts considerably. Where hyperthreading is enabled, the use of the same execution units in the other thread leads to inferior performance. Denormal numbers, NAN's and infinity do not increase the latency. The time unit used is core clock cycles, not the reference clock cycles given by the time stamp counter.						
+;Reciprocal throughput:	The average number of core clock cycles per instruction for a series of independent instructions of the same kind in the same thread.						
+							
+							
+;Integer instructions							
+;Instruction	Operands	發ps fused domain	發ps unfused domain	發ps each port	Latency	Reciprocal throughput	Comments
+;Move instructions							
+MOV	r,i	1	1	p0156		0.25	
+MOV	r8/16,r8/16	1	1	p0156	1	0.25	
+MOV	r32/64,r32/64	1	1	p0156	0-1	0.25	may be elim.
+MOV	r8l,m	1	2	p23 p0156		0.5	
+MOV	r8h,m	1	1	p23		0.5	
+MOV	r16,m	1	2	p23 p0156		0.5	
+MOV	r32/64,m	1	1	p23	2	0.5	all addressing modes
+MOV	m,r	1	2	p237 p4	3	1	
+MOV	m,i	1	2	p237 p4		1	
+MOVNTI	m,r	2	2	p23 p4	~400	1	
+MOVSX MOVZX MOVSXD	r,r	1	1	p0156	1	0.25	
+MOVSX MOVZX	r16,m8	1	2	p23 p0156		0.5	
+MOVSX MOVZX MOVSXD	r,m	1	1	p23		0.5	all other combinations
+CMOVcc	r,r	1	1	p06	1	0.5	
+CMOVcc	r,m	2	2	p06 p23		0.5	
+XCHG	r,r	3	3	3p0156	2	1	
+XCHG	r,m	8	8		21		implicit lock
+XLAT		3	3	p23 2p0156	7	2	
+PUSH	r	1	2	p237 p4	3	1	
+PUSH	i	1	2	p237 p4		1	
+PUSH	m	2	3	p4 2p237		1	
+PUSH	stack pointer	2	3	p0156 p237 p4		1	
+PUSHF(D/Q)		3	4	p1 p4 p237 p06		1	
+PUSHA(D)		11	19			8	not 64 bit
+POP	r	1	1	p23	2	0.5	
+POP	stack pointer	3	3	p23 2p0156		4	
+POP	m	2	3	2p237 p4		1	
+POPF(D/Q)		9	9			18	
+POPA(D)		18	18			8	not 64 bit
+LAHF SAHF		1	1	p06	1	1	
+SALC		3	3	3p0156	1	1	not 64 bit
+LEA	r16,m	2	2	p1 p05	2-4	1	16 or 32 bit address size
+LEA	r32/64,m	1	1	p15	1	0.5	1 or 2 components in address
+LEA	r32/64,m	1	1	p1	3	1	3 components in address
+LEA	r32/64,m	1	1	p1		1	rip relative address
+BSWAP	r32	1	1	p15	1	0.5	
+BSWAP	r64	2	2	p06 p15	2	1	
+MOVBE	r16,m16	3	3	2p0156 p23		0.5-1	MOVBE
+MOVBE	r32,m32	2	2	p15 p23		0.5	MOVBE
+MOVBE	r64,m64	3	3	2p0156 p23		0.5	MOVBE
+MOVBE	m16,r16	2	3	p06 p237 p4		1	MOVBE
+MOVBE	m32,r32	2	3	p15 p237 p4		1	MOVBE
+MOVBE	m64,r64	3	4	p06 p15 p237 p4		1	MOVBE
+							
+PREFETCHNTA/0/1/2	m	1	1	p23		0.5	
+PREFETCHW	m	1	1	p23		1	PREFETCHW
+LFENCE		2		none counted		4	
+MFENCE		3	3	p23 p4		33	
+SFENCE		2	2	p23 p4		6	
+							
+;Arithmetic instructions							
+ADD SUB	r,r/i	1	1	p0156	1	0.25	
+ADD SUB	r,m	1	2	p0156 p23		0.5	
+ADD SUB	m,r/i	2	4	2p0156 2p237 p4	6	1	
+ADC SBB	r,r/i	1	1	p06	1	1	
+ADC SBB	r,m	2	2	p06 p23		1	
+ADC SBB	m,r/i	4	6	3p0156 2p237 p4	7	2	
+CMP 	r,r/i	1	1	p0156	1	0.25	
+CMP 	m,r/i	1	2	p0156 p23	1	0.5	
+INC DEC NEG NOT	r	1	1	p0156	1	0.25	
+INC DEC NOT	m	3	4	p0156 2p237 p4	6	1	
+NEG	m	2	4	p0156 2p237 p4	6	1	
+AAA		2	2	p1 p56	4		not 64 bit
+AAS		2	2	p1 p056	6		not 64 bit
+DAA DAS		3	3	p1 2p056	4		not 64 bit
+AAD		3	3	p1 2p056	6		not 64 bit
+AAM		8	8	p0 p1 p5 p6	21	7	not 64 bit
+MUL IMUL	r8	1	1	p1	3	1	
+MUL IMUL	r16	4	4	p1 p0156	4	2	
+MUL IMUL	r32	3	3	p1 p0156	4	2	
+MUL IMUL	r64	2	2	p1 p6	3	1	
+MUL IMUL	m8	1	2	p1 p23		1	
+MUL IMUL	m16	4	5	p1 3p0156 p23		2	
+MUL IMUL	m32	3	4	p1 2p0156 p23		2	
+MUL IMUL	m64	2	3	p1 p6 p23		1	
+IMUL	r,r	1	1	p1	3	1	
+IMUL	r,m	1	2	p1 p23		1	
+IMUL	r16,r16,i	2	2	p1 p0156	4	1	
+IMUL	r32,r32,i	1	1	p1	3	1	
+IMUL	r64,r64,i	1	1	p1	3	1	
+IMUL	r16,m16,i	2	3	p1 p0156 p23		1	
+IMUL	r32,m32,i	1	2	p1 p23		1	
+IMUL	r64,m64,i	1	2	p1 p23		1	
+MULX	r32,r32,r32	3	3	p1 2p056	4	1	BMI2
+MULX	r32,r32,m32	3	4	p1 2p056 p23		1	BMI2
+MULX	r64,r64,r64	2	2	p1 p5	4	1	BMI2
+MULX	r64,r64,m64	2	3	p1 p6 p23		1	BMI2
+DIV	r8	9	9	p0 p1 p5 p6	22-25	9	
+DIV	r16	11	11	p0 p1 p5 p6	23-26	9	
+DIV	r32	10	10	p0 p1 p5 p6	22-29	9	
+DIV	r64	36	36	p0 p1 p5 p6	32-95	21-73	
+IDIV	r8	9	9	p0 p1 p5 p6	23-26	6	
+IDIV	r16	10	10	p0 p1 p5 p6	23-26	6	
+IDIV	r32	9	9	p0 p1 p5 p6	22-29	6	
+IDIV	r64	59	59	p0 p1 p5 p6	39-103	24-81	
+CBW		1	1	p0156	1		
+CWDE		1	1	p0156	1		
+CDQE		1	1	p0156	1		
+CWD		2	2	p0156	1		
+CDQ		1	1	p06	1		
+CQO		1	1	p06	1		
+POPCNT	r,r	1	1	p1	3	1	SSE4.2
+POPCNT	r,m	1	2	p1 p23		1	SSE4.2
+CRC32	r,r	1	1	p1	3	1	SSE4.2
+CRC32	r,m	1	2	p1 p23		1	SSE4.2
+							
+;Logic instructions							
+AND OR XOR	r,r/i	1	1	p0156	1	0.25	
+AND OR XOR	r,m	1	2	p0156 p23		0.5	
+AND OR XOR	m,r/i	2	4	2p0156 2p237 p4	6	1	
+TEST	r,r/i	1	1	p0156	1	0.25	
+TEST	m,r/i	1	2	p0156 p23	1	0.5	
+SHR SHL SAR	r,i	1	1	p06	1	0.5	
+SHR SHL SAR	m,i	3	4	2p06 p237 p4		2	
+SHR SHL SAR	r,cl	3	3	3p06	2	2	
+SHR SHL SAR	m,cl	5	6	3p06 2p23 p4		4	
+ROR ROL	r,1	2	2	2p06	1	1	short form
+ROR ROL	r,i	1	1	p06	1	0.5	
+ROR ROL	m,i	4	5	2p06 2p237 p4		2	
+ROR ROL	r,cl	3	3	3p06	2	2	
+ROR ROL	m,cl	5	6	3p06 p23 p4		4	
+RCR RCL	r,1	3	3	2p06 p0156	2	2	
+RCR RCL	m,1	4	6			3	
+RCR RCL	r,i	8	8	p0156	6	6	
+RCR RCL	m,i	11	11			6	
+RCR RCL	r,cl	8	8	p0156	6	6	
+RCR RCL	m,cl	11	11			6	
+SHRD SHLD	r,r,i	1	1	p1	3	1	
+SHRD SHLD	m,r,i	3	5			2	
+SHLD	r,r,cl	4	4	p0156	3	2	
+SHRD	r,r,cl	4	4	p0156	4	2	
+SHRD SHLD	m,r,cl	5	7			4	
+SHLX SHRX SARX	r,r,r	1	1	p06	1	0.5	BMI2
+SHLX SHRX SARX	r,m,r	2	2	p06 p23		0.5	BMI2
+RORX	r,r,i	1	1	p06	1	0.5	BMI2
+RORX	r,m,i	2	2	p06 p23		0.5	BMI2
+BT	r,r/i	1	1	p06	1	0.5	
+BT	m,r	10	10			5	
+BT	m,i	2	2	p06 p23		0.5	
+BTR BTS BTC	r,r/i	1	1	p06	1	0.5	
+BTR BTS BTC	m,r	10	10			5	
+BTR BTS BTC	m,i	2	2	p06 p23		0.5	
+BSF BSR	r,r	1	1	p1	3	1	
+BSF BSR	r,m	1	2	p1 p23		1	
+SETcc	r	1	1	p06	1	0.5	
+SETcc	m	2	3	p06 p237 p4		1	
+CLC		1	0	none		0.25	
+STC		1	1	p0156		0.25	
+CMC		1	1	p0156	1	1	
+CLD STD		3	3	p15 p6		4	
+LZCNT	r,r	1	1	p1	3	1	LZCNT
+LZCNT	r,m	1	2	p1 p23		1	LZCNT
+TZCNT	r,r	1	1	p1	3	1	BMI1
+TZCNT	r,m	1	2	p1 p23		1	BMI1
+ANDN	r,r,r	1	1	p15	1	0.5	BMI1
+ANDN	r,r,m	1	2	p15 p23	1	0.5	BMI1
+BLSI BLSMSK BLSR	r,r	1	1	p15	1	0.5	BMI1
+BLSI BLSMSK BLSR	r,m	1	2	p15 p23		0.5	BMI1
+BEXTR	r,r,r	2	2	2p0156	2	0.5	BMI1
+BEXTR	r,m,r	3	3	2p0156 p23		1	BMI1
+BZHI	r,r,r	1	1	p15	1	0.5	BMI2
+BZHI	r,m,r	1	2	p15 p23		0.5	BMI2
+PDEP	r,r,r	1	1	p1	3	1	BMI2
+PDEP	r,r,m	1	2	p1 p23		1	BMI2
+PEXT	r,r,r	1	1	p1	3	1	BMI2
+PEXT	r,r,m	1	2	p1 p23		1	BMI2
+							
+;Control transfer instructions							
+JMP	short/near	1	1	p6		1-2	
+JMP	r	1	1	p6		2	
+JMP	m	1	2	p23 p6		2	
+Conditional jump	short/near	1	1	p6		1-2	predicted taken
+Conditional jump	short/near	1	1	p06		0.5-1	predicted not taken
+;Fused arithmetic and branch		1	1	p6		1-2	predicted taken
+;Fused arithmetic and branch		1	1	p06		0.5-1	predicted not taken
+J(E/R)CXZ	short	2	2	p0156 p6		0.5-2	
+LOOP	short	7	7			5	
+LOOP(N)E	short	11	11			6	
+CALL	near	2	3	p237 p4 p6		2	
+CALL	r	2	3	p237 p4 p6		2	
+CALL	m	3	4	2p237 p4 p6		3	
+RET		1	2	p237 p6		1	
+RET	i	3	4	p23 2p6 p015		2	
+BOUND	r,m	15	15			8	not 64 bit
+INTO		4	4			5	not 64 bit
+							
+;String instructions							
+LODSB/W		3	3	2p0156 p23		1	
+LODSD/Q		2	2	p0156 p23		1	
+;REP LODS		5n+12				~2n	
+STOS		3	3	p23 p0156 p4		1	
+;REP STOS		<2n				~0.5n	worst case
+;REP STOS		2.6/32B				1/32B	best case aligned by 32
+MOVS		5	5	2p23 p4 2p0156		4	
+;REP MOVS		~2n				< 1n	worst case
+;REP MOVS		4/32B				1/32B	best case aligned by 32
+SCAS		3	3	p23 2p0156		1	
+;REP SCAS		?6n				?2n	
+CMPS		5	5	2p23 3p0156		4	
+;REP CMPS		?8n				?2n	
+							
+;Synchronization instructions							
+XADD	m,r	4	5			6	
+;LOCK XADD	m,r	9	9			21	
+;LOCK ADD	m,r	8	8			21	
+CMPXCHG	m,r	5	6			7	
+;LOCK CMPXCHG	m,r	10	10			21	
+CMPXCHG8B	m,r	15	15			8	
+;LOCK CMPXCHG8B	m,r	19	19			21	
+CMPXCHG16B	m,r	22	22			15	
+;LOCK CMPXCHG16B	m,r	24	24			27	
+							
+;Other							
+;NOP		1	0	none		0.25	
+;Long NOP (0F 1F)		1	0	none		0.25	
+PAUSE		5	5	p05 3p6		9	
+ENTER	a,0	12	12			8	
+ENTER	a,b	~14+7b	~45+7b		~87+2b		
+LEAVE		3	3	2p0156 p23		5	
+XGETBV		8	8			5	XGETBV
+RDTSC		15	15			24	
+RDTSCP		21	21			30	RDTSCP
+RDPMC		34	34			37	
+RDRAND	r	16	16	p23 15p0156		~230	RDRAND
+RDSEED	r	16	16	p23 15p0156		~230	RDSEED
+							
+;Floating point x87 instructions							
+;Instruction	Operands	發ps fused domain	發ps unfused domain	發ps each port	Latency	Reciprocal throughput	Comments
+;Move instructions							
+FLD	r	1	1	p01	1	0.5	
+FLD	m32/64	1	1	p23	3	0.5	
+FLD	m80	4	4	2p01 2p23	4	2	
+FBLD	m80	43	43		47	22	
+FST(P)	r	1	1	p01	1	0.5	
+FST(P)	m32/m64	1	2	p4 p237	4	1	
+FSTP	m80	7	7	3p0156 2p23 2p4	5	5	
+FBSTP	m80	238	226		269	267	
+FXCH	r	2	0	none	0	0.5	
+FILD	m	1	2	p01 p23	6	1	
+FIST(P)	m	3	3	p1 p23 p4	7	1	
+FISTTP	m	3	3	p1 p23 p4	7	2	SSE3
+FLDZ		1	1	p01		1	
+FLD1		2	2	2p01		2	
+FLDPI FLDL2E etc.		2	2	2p01		2	
+FCMOVcc	r	3	3	2p0 p5	2	2	
+FNSTSW	AX	2	2	p0 p0156	6	1	
+FNSTSW	m16	2	3	p0 p4 p237	6	1	
+FLDCW	m16	3	3	p01 p23 p6	7	2	
+FNSTCW	m16	2	3	p237 p4 p6	6	1	
+FINCSTP FDECSTP		1	1	p01	0	0.5	
+FFREE(P)	r	1	1	p01		0.5	
+FNSAVE	m	152	152		173	173	
+FRSTOR	m	95	95		175	175	
+							
+;Arithmetic instructions							
+FADD(P) FSUB(R)(P)	r	1	1	p1	3	1	
+FADD(P) FSUB(R)(P)	m	1	2	p1 p23		1	
+FMUL(P)	r	1	1	p0	5	1	
+FMUL(P)	m	1	2	p0 p23		1	
+FDIV(R)(P)	r	1	1	p0	10-15	4-5	
+FDIV(R)(P)	m	1	2	p0 p23		4-5	
+FABS		1	1	p0	1	1	
+FCHS		1	1	p0	1	1	
+FCOM(P) FUCOM	r	1	1	p1	3	1	
+FCOM(P) FUCOM	m	1	2	p1 p23		1	
+FCOMPP FUCOMPP		2	2	2p01		1	
+FCOMI(P) FUCOMI(P)	r	3	3	3p01	7	1.5	
+FIADD FISUB(R)	m	2	3	2p1 p23		2	
+FIMUL	m	2	3	p0 p1 p23		2	
+FIDIV(R)	m	2	3	p0 p1 p23			
+FICOM(P)	m	2	3	2p1 p23		2	
+FTST		1	1	p1	3	1	
+FXAM		2	2	2p1	6	2	
+FPREM		28	28		20-24	13	
+FPREM1		28	28		23-48	13	
+FRNDINT		17	17		11	23	
+							
+;Math							
+FSCALE		27	27		125	130	
+FXTRACT		17	17		12	11	
+FSQRT		1	1	p0	10-23	4-9	
+FSIN		75-100			48-106		
+FCOS		70-100			49-112		
+FSINCOS		70-110			52-124		
+F2XM1		16-86			63-68		
+FYL2X 		55-96			92		
+FYL2XP1		56			74		
+FPTAN		71-102			132		
+FPATAN		27-71			97-147		
+							
+;Other							
+FNOP		1	1	p01		0.5	
+WAIT		2	2	p01		1	
+FNCLEX		5	5	p0156		22	
+FNINIT		26	26			84	
+							
+;Integer vector instructions							
+;Instruction	Operands	發ps fused domain	發ps unfused domain	發ps each port	Latency	Reciprocal throughput	Comments
+;Move instructions							
+MOVD	r32/64,(x)mm	1	1	p0	1	1	
+MOVD	m32/64,(x)mm	1	2	p237 p4	3	1	
+MOVD	(x)mm,r32/64	1	1	p5	1	1	
+MOVD	(x)mm,m32/64	1	1	p23	3	0.5	
+MOVQ	r64,(x)mm	1	1	p0	1	1	
+MOVQ	(x)mm,r64	1	1	p5	1	1	
+MOVQ	(x)mm,(x)mm	1		p015	1	0.33	
+MOVQ	(x)mm,m64	1	1	p23	3	0.5	
+MOVQ	m64, (x)mm	1	2	p237 p4	3	1	
+MOVDQA/U	x,x	1	1	p015	0-1	0.25	may be elim.
+MOVDQA/U	x, m128	1	1	p23	3	0.5	
+MOVDQA/U	m128, x	1	2	p237 p4	3	1	
+VMOVDQA/U	y,y	1	1	p015	0-1	0.25	AVX may be elim.
+VMOVDQA/U	y,m256	1	1	p23	3	0.5	AVX
+VMOVDQA/U	m256,y	1	2	p237 p4	4	1	AVX
+LDDQU	x, m128	1	1	p23	3	0.5	SSE3
+MOVDQ2Q	mm, x	2	2	p01 p5	1	1	
+MOVQ2DQ	x,mm	1	1	p015	1	0.33	
+MOVNTQ	m64,mm	1	2	p237 p4	~400	1	
+MOVNTDQ	m128,x	1	2	p237 p4	~400	1	
+VMOVNTDQ	m256,y	1	2	p237 p4	~400	1	AVX2
+MOVNTDQA	x, m128	1	1	p23	3	0.5	SSE4.1
+VMOVNTDQA	y,m256	1	1	p23	3	0.5	AVX2
+PACKSSWB/DW PACKUSWB	mm,mm	3	3	p5	2	2	
+PACKSSWB/DW PACKUSWB	mm,m64	3	3	p23 2p5		2	
+PACKSSWB/DW PACKUSWB	x,x / y,y,y	1	1	p5	1	1	
+PACKSSWB/DW PACKUSWB	x,m / y,y,m	1	2	p23 p5		1	
+PACKUSDW	x,x / y,y,y	1	1	p5	1	1	SSE4.1
+PACKUSDW	x,m / y,y,m	1	2	p23 p5		1	SSE4.1
+PUNPCKH/LBW/WD/DQ	v,v / v,v,v	1	1	p5	1	1	
+PUNPCKH/LBW/WD/DQ	v,m / v,v,m	1	2	p23 p5		1	
+PUNPCKH/LQDQ	x,x / y,y,y	1	1	p5	1	1	
+PUNPCKH/LQDQ	x,m / y,y,m	2	2	p23 p5		1	
+PMOVSX/ZX BW BD BQ DW DQ	x,x	1	1	p5	1	1	SSE4.1
+PMOVSX/ZX BW BD BQ DW DQ	x,m	1	2	p23 p5		1	SSE4.1
+VPMOVSX/ZX BW BD BQ DW DQ	y,x	1	1	p5	3	1	AVX2
+VPMOVSX/ZX BW BD BQ DW DQ	y,m	2	2	p5 p23		1	AVX2
+PSHUFB	v,v / v,v,v	1	1	p5	1	1	SSSE3
+PSHUFB	v,m / v,v,m	2	2	p23 p5		1	SSSE3
+PSHUFW 	mm,mm,i	1	1	p5	1	1	
+PSHUFW 	mm,m64,i	2	2	p23 p5		1	
+PSHUFD	v,v,i	1	1	p5	1	1	
+PSHUFD	v,m,i	2	2	p23 p5		1	
+PSHUFL/HW	v,v,i	1	1	p5	1	1	
+PSHUFL/HW	v,m,i	2	2	p23 p5		1	
+PALIGNR 	v,v,i / v,v,v,i	1	1	p5	1	1	SSSE3
+PALIGNR	v,m,i / v,v,m,i	2	2	p23 p5		1	SSSE3
+PBLENDVB	x,x,xmm0	2	2	2p5	2	2	SSE4.1
+PBLENDVB	x,m,xmm0	3	3	2p5 p23		2	SSE4.1
+VPBLENDVB	v,v,v,v	2	2	2p5	2	2	AVX2
+VPBLENDVB	v,v,m,v	3	3	2p5 p23		2	AVX2
+PBLENDW	x,x,i / v,v,v,i	1	1	p5	1	1	SSE4.1
+PBLENDW	x,m,i / v,v,m,i	2	2	p23 p5		1	SSE4.1
+VPBLENDD	v,v,v,i	1	1	p015	1	0.33	AVX2
+VPBLENDD	v,v,m,i	2	2	p015 p23		0.5	AVX2
+VPERMD	y,y,y	1	1	p5	3	1	AVX2
+VPERMD	y,y,m	1	2	p5 p23		1	AVX2
+VPERMQ	y,y,i	1	1	p5	3	1	AVX2
+VPERMQ	y,m,i	2	2	p5 p23		1	AVX2
+VPERM2I128	y,y,y,i	1	1	p5	3	1	AVX2
+VPERM2I128	y,y,m,i	2	2	p5 p23		1	AVX2
+MASKMOVQ	mm,mm	4	4	p0 p4 2p23	18-500	1	
+MASKMOVDQU	x,x	10	10	4p04 2p56 4p23	18-500	6	
+VPMASKMOVD/Q	v,v,m	3	3	p23 2p5	4	2	AVX2
+VPMASKMOVD/Q	m,v,v	4	4	p0 p1 p4 p23	15	1	AVX2
+PMOVMSKB	r,v	1	1	p0	3	1	
+PEXTRB/W/D/Q	r32,x,i	2	2	p0 p5	2	1	SSE4.1
+PEXTRB/W/D/Q	m8,x,i	2	3	p23 p4 p5		1	SSE4.1
+VEXTRACTI128	x,y,i	1	1	p5	3	1	AVX2
+VEXTRACTI128	m,y,i	2	2	p23 p4	4	1	AVX2
+PINSRB	x,r32,i	2	2	p5	2	2	SSE4.1
+PINSRB	x,m8,i	2	2	p23 p5		1	SSE4.1
+PINSRW 	(x)mm,r32,i	2	2	p5	2	2	
+PINSRW 	(x)mm,m16,i	2	2	p23 p5		1	
+PINSRD/Q	x,r32,i	2	2	p5	2	2	SSE4.1
+PINSRD/Q	x,m32,i	2	2	p23 p5		1	SSE4.1
+VINSERTI128	y,y,x,i	1	1	p5	3	1	AVX2
+VINSERTI128	y,y,m,i	2	2	p015 p23	4	0.5	AVX2
+VPBROADCASTB/W/D/Q	x,x	1	1	p5	1	1	AVX2
+VPBROADCASTB/W	x,m8/16	3	3	p01 p23 p5	5	1	AVX2
+VPBROADCASTD/Q	x,m32/64	1	1	p23	4	0.5	AVX2
+VPBROADCASTB/W/D/Q	y,x	1	1	p5	3	1	AVX2
+VPBROADCASTB/W	y,m8/16	3	3	p01 p23 p5	7	1	AVX2
+VPBROADCASTD/Q	y,m32/64	1	1	p23	5	0.5	AVX2
+VBROADCASTI128	y,m128	1	1	p23	3	0.5	AVX2
+VPGATHERDD	x,[r+s*x],x	10	10			6	AVX2
+VPGATHERDD	y,[r+s*y],y	14	14			7	AVX2
+VPGATHERQD	x,[r+s*x],x	9	9			6	AVX2
+VPGATHERQD	x,[r+s*y],x	10	10			6	AVX2
+VPGATHERDQ	x,[r+s*x],x	7	7			5	AVX2
+VPGATHERDQ	y,[r+s*x],y	9	9			6	AVX2
+VPGATHERQQ	x,[r+s*x],x	7	7			5	AVX2
+VPGATHERQQ	y,[r+s*y],y	9	9			6	AVX2
+							
+;Arithmetic instructions							
+PADD/SUB(S,US)B/W/D/Q	v,v / v,v,v	1	1	p15	1	0.5	
+PADD/SUB(S,US)B/W/D/Q	v,m / v,v,m	1	2	p15 p23		0.5	
+PHADD(S)W/D PHSUB(S)W/D	v,v / v,v,v	3	3	p1 2p5	3	2	SSSE3
+PHADD(S)W/D PHSUB(S)W/D	v,m / v,v,m	4	4	p1 2p5 p23		2	SSSE3
+PCMPEQB/W/D PCMPGTB/W/D	v,v / v,v,v	1	1	p15	1	0.5	
+PCMPEQB/W/D PCMPGTB/W/D	v,m / v,v,m	1	2	p15 p23		0.5	
+PCMPEQQ	v,v / v,v,v	1	1	p15	1	0.5	SSE4.1
+PCMPEQQ	v,m / v,v,m	1	2	p15 p23		0.5	SSE4.1
+PCMPGTQ	v,v / v,v,v	1	1	p0	5	1	SSE4.2
+PCMPGTQ	v,m / v,v,m	1	2	p0 p23		1	SSE4.2
+PMULL/HW PMULHUW	v,v / v,v,v	1	1	p0	5	1	
+PMULL/HW PMULHUW	v,m / v,v,m	1	2	p0 p23		1	
+PMULHRSW	v,v / v,v,v	1	1	p0	5	1	SSSE3
+PMULHRSW	v,m / v,v,m	1	2	p0 p23		1	SSSE3
+PMULLD	x,x / y,y,y	2	2	2p0	10	2	SSE4.1
+PMULLD	x,m / y,y,m	3	3	2p0 p23		2	SSE4.1
+PMULDQ	x,x / y,y,y	1	1	p0	5	1	SSE4.1
+PMULDQ	x,m / y,y,m	1	2	p0 p23		1	SSE4.1
+PMULUDQ	v,v / v,v,v	1	1	p0	5	1	
+PMULUDQ	v,m / v,v,m	1	2	p0 p23		1	
+PMADDWD	v,v / v,v,v	1	1	p0	5	1	
+PMADDWD	v,m / v,v,m	1	2	p0 p23		1	
+PMADDUBSW	v,v / v,v,v	1	1	p0	5	1	SSSE3
+PMADDUBSW	v,m / v,v,m	1	2	p0 p23		1	SSSE3
+PAVGB/W	v,v / v,v,v	1	1	p15	1	0.5	
+PAVGB/W	v,m / v,v,m	1	2	p15 p23		0.5	
+PMIN/PMAX SB/SW/SD UB/UW/UD	x,x / y,y,y	1	1	p15	1	0.5	SSE4.1
+PMIN/PMAX SB/SW/SD UB/UW/UD	x,m / y,y,m	1	2	p15 p23		0.5	SSE4.1
+PHMINPOSUW	x,x	1	1	p0	5	1	SSE4.1
+PHMINPOSUW	x,m128	1	2	p0 p23		1	SSE4.1
+PABSB/W/D	v,v	1	1	p15	1	0.5	SSSE3
+PABSB/W/D	v,m	1	2	p15 p23		0.5	SSSE3
+PSIGNB/W/D	v,v / v,v,v	1	1	p15	1	0.5	SSSE3
+PSIGNB/W/D	v,m / v,v,m	1	2	p15 p23		0.5	SSSE3
+PSADBW	v,v / v,v,v	1	1	p0	5	1	
+PSADBW	v,m / v,v,m	1	2	p0 p23		1	
+MPSADBW	x,x,i / v,v,v,i	3	3	p0 2p5	6	2	SSE4.1
+MPSADBW	x,m,i / v,v,m,i	4	4	p0 2p5 p23		2	SSE4.1
+							
+;Logic instructions							
+PAND PANDN POR PXOR	v,v / v,v,v	1	1	p015	1	0.33	
+PAND PANDN POR PXOR	v,m / v,v,m	1	2	p015 p23		0.5	
+PTEST	v,v	2	2	p0 p5	2	1	SSE4.1
+PTEST	v,m	2	3	p0 p5 p23		1	SSE4.1
+PSLLW/D/Q PSRLW/D/Q PSRAW/D/Q	mm,mm	1	1	p0	1	1	
+PSLLW/D/Q PSRLW/D/Q PSRAW/D/Q	mm,m64	1	2	p0 p23		1	
+PSLLW/D/Q PSRLW/D/Q PSRAW/D/Q	x,x / v,v,x	2	2	p0 p5	2	1	
+PSLLW/D/Q PSRLW/D/Q PSRAW/D/Q	x,m / v,v,m	2	2	p0 p23		1	
+PSLLW/D/Q PSRLW/D/Q PSRAW/D/Q	v,i / v,v,i	1	1	p0	1	1	
+VPSLLVD/Q VPSRAVD VPSRLVD/Q	v,v,v	3	3	2p0 p5	2	2	AVX2
+VPSLLVD/Q VPSRAVD VPSRLVD/Q	v,v,m	4	4	2p0 p5 p23		2	AVX2
+PSLLDQ PSRLDQ	x,i / v,v,i	1	1	p5	1	1	
+							
+;String instructions							
+PCMPESTRI	x,x,i	8	8	6p05 2p16	4	4	SSE4.2
+PCMPESTRI	x,m128,i	8	8	3p0 2p16 2p5 p23		4	SSE4.2
+PCMPESTRM	x,x,i	9	9	3p0 2p16 4p5	11	11	SSE4.2
+PCMPESTRM	x,m128,i	9	9	6p05 2p16 p23		5	SSE4.2
+PCMPISTRI	x,x,i	3	3	3p0	3	3	SSE4.2
+PCMPISTRI	x,m128,i	4	4	3p0 p23		3	SSE4.2
+PCMPISTRM	x,x,i	3	3	3p0	11	11	SSE4.2
+PCMPISTRM	x,m128,i	4	4	3p0 p23		3	SSE4.2
+							
+;Encryption instructions							
+PCLMULQDQ	x,x,i	1	1	p0	5	1	CLMUL
+PCLMULQDQ	x,m,i	2	2	p0 p23		1	CLMUL
+AESDEC, AESDECLAST, AESENC, AESENCLAST	x,x	1	1	p5	7	1	AES
+AESDEC, AESDECLAST, AESENC, AESENCLAST	x,m	2	2	p5 p23		1.5	AES
+AESIMC	x,x	2	2	2p5	14	2	AES
+AESIMC	x,m	3	3	2p5 p23		2	AES
+AESKEYGENASSIST	x,x,i	10	10	2p0 8p5	10	9	AES
+AESKEYGENASSIST	x,m,i	10	10	2p0 p23 7p5		8	AES
+							
+;Other							
+EMMS		31	31			12	
+							
+;Floating point XMM and YMM instructions							
+;Instruction	Operands	發ps fused domain	發ps unfused domain	發ps each port	Latency	Reciprocal throughput	Comments
+;Move instructions							
+MOVAPS/D	x,x	1	1	p5	0-1	1	may be elim.
+VMOVAPS/D	y,y	1	1	p5	0-1	1	may be elim.
+MOVAPS/D MOVUPS/D	x,m128	1	1	p23	3	0.5	
+VMOVAPS/D VMOVUPS/D	y,m256	1	1	p23	3	0.5	AVX
+MOVAPS/D MOVUPS/D	m128,x	1	2	p237 p4	3	1	
+VMOVAPS/D VMOVUPS/D	m256,y	1	2	p237 p4	4	1	AVX
+MOVSS/D	x,x	1	1	p5	1	1	
+MOVSS/D	x,m32/64	1	1	p23	3	0.5	
+MOVSS/D	m32/64,x	1	2	p237 p4	3	1	
+MOVHPS/D	x,m64	1	2	p23 p5	4	1	
+MOVHPS/D	m64,x	1	2	p4 p237	3	1	
+MOVLPS/D	x,m64	1	2	p23 p5	4	1	
+MOVLPS/D	m64,x	1	2	p4 p237	3	1	
+MOVHLPS	x,x	1	1	p5	1	1	
+MOVLHPS	x,x	1	1	p5	1	1	
+MOVMSKPS/D	r32,x	1	1	p0	3	1	
+VMOVMSKPS/D	r32,y	1	1	p0	3	1	
+MOVNTPS/D	m128,x	1	2	p4 p237	~400	1	
+VMOVNTPS/D	m256,y	1	2	p4 p237	~400	1	AVX
+SHUFPS/D	x,x,i / v,v,v,i	1	1	p5	1	1	
+SHUFPS/D	x,m,i / v,v,m,i	2	2	p5 p23		1	
+VPERMILPS/PD	v,v,i	1	1	p5	1	1	AVX
+VPERMILPS/PD	v,m,i	2	2	p5 p23		1	AVX
+VPERMILPS/PD	v,v,v	1	1	p5	1	1	AVX
+VPERMILPS/PD	v,v,m	2	2	p5 p23		1	AVX
+VPERM2F128	y,y,y,i	1	1	p5	3	1	AVX
+VPERM2F128	y,y,m,i	2	2	p5 p23		1	AVX
+VPERMPS	y,y,y	1	1	p5	3	1	AVX2
+VPERMPS	y,y,m	1	2	p5 p23		1	AVX2
+VPERMPD	y,y,i	1	1	p5	3	1	AVX2
+VPERMPD	y,m,i	2	2	p5 p23		1	AVX2
+BLENDPS/PD	x,x,i / v,v,v,i	1	1	p015	1	0.33	SSE4.1
+BLENDPS/PD	x,m,i / v,v,m,i	2	2	p015 p23		0.5	SSE4.1
+BLENDVPS/PD	x,x,xmm0	2	2	2p5	2	2	SSE4.1
+BLENDVPS/PD	x,m,xmm0	3	3	2p5 p23		2	SSE4.1
+VBLENDVPS/PD	v,v,v,v	2	2	2p5	2	2	AVX
+VBLENDVPS/PD	v,v,m,v	3	3	2p5 p23		2	AVX
+MOVDDUP	v,v	1	1	p5	1	1	SSE3
+MOVDDUP	v,m	1	1	p23	3	0.5	SSE3
+VBROADCASTSS	x,m32	1	1	p23	4	0.5	AVX
+VBROADCASTSS	y,m32	1	1	p23	5	0.5	AVX
+VBROADCASTSS	x,x	1	1	p5	1	1	AVX2
+VBROADCASTSS	y,x	1	1	p5	3	1	AVX2
+VBROADCASTSD	y,m64	1	1	p23	5	0.5	AVX
+VBROADCASTSD	y,x	1	1	p5	3	1	AVX2
+VBROADCASTF128	y,m128	1	1	p23	4	0.5	AVX
+MOVSH/LDUP	v,v	1	1	p5	1	1	SSE3
+MOVSH/LDUP	v,m	1	1	p23	3	0.5	SSE3
+UNPCKH/LPS/D	x,x / v,v,v	1	1	p5	1	1	SSE3
+UNPCKH/LPS/D	x,m / v,v,m	1	2	p5 p23		1	SSE3
+EXTRACTPS	r32,x,i	2	2	p0 p5		1	SSE4.1
+EXTRACTPS	m32,x,i	2	3	p0 p5 p23	4	1	SSE4.1
+VEXTRACTF128	x,y,i	1	1	p5	3	1	AVX
+VEXTRACTF128	m128,y,i	2	2	p23 p4	4	1	AVX
+INSERTPS	x,x,i	1	1	p5	1	1	SSE4.1
+INSERTPS	x,m32,i	2	2	p23 p5	4	1	SSE4.1
+VINSERTF128	y,y,x,i	1	1	p5	3	1	AVX
+VINSERTF128	y,y,m128,i	2	2	p015 p23	4	2	AVX
+VMASKMOVPS/D	v,v,m	3	3	2p5 p23	4	2	AVX
+VMASKMOVPS/D	m128,x,x	4	4	p0 p1 p4 p23	15	1	AVX
+VMASKMOVPS/D	m256,y,y	4	4	p0 p1 p4 p23	16	1	AVX
+VGATHERDPS	x,[r+s*x],x	10	10			6	AVX2
+VGATHERDPS	y,[r+s*y],y	14	14			7	AVX2
+VGATHERQPS	x,[r+s*x],x	9	9			6	AVX2
+VGATHERQPS	x,[r+s*y],x	10	10			6	AVX2
+VGATHERDPD	x,[r+s*x],x	7	7			5	AVX2
+VGATHERDPD	y,[r+s*x],y	9	9			6	AVX2
+VGATHERQPD	x,[r+s*x],x	7	7			5	AVX2
+VGATHERQPD	y,[r+s*y],y	9	9			6	AVX2
+							
+							
+;Conversion							
+CVTPD2PS	x,x	2	2	p1 p5	4	1	
+CVTPD2PS	x,m128	2	3	p1 p5 p23		1	
+VCVTPD2PS	x,y	2	2	p1 p5	5	1	AVX
+VCVTPD2PS	x,m256	2	3	p1 p5 p23		1	AVX
+CVTSD2SS	x,x	2	2	p1 p5	4	1	
+CVTSD2SS	x,m64	2	3	p1 p5 p23		1	
+CVTPS2PD	x,x	2	2	p0 p5	2	1	
+CVTPS2PD	x,m64	2	2	p0 p23		1	
+VCVTPS2PD	y,x	2	2	p0 p5	5	1	AVX
+VCVTPS2PD	y,m128	2	2	p0 p23		1	AVX
+CVTSS2SD	x,x	2	2	p0 p5	2	1	
+CVTSS2SD	x,m32	2	2	p0 p23		1	
+CVTDQ2PS	x,x	1	1	p1	3	1	
+CVTDQ2PS	x,m128	1	2	p1 p23		1	
+VCVTDQ2PS	y,y	1	1	p1	3	1	AVX
+VCVTDQ2PS	y,m256	1	2	p1 p23		1	AVX
+CVT(T)PS2DQ	x,x	1	1	p1	3	1	
+CVT(T)PS2DQ	x,m128	1	2	p1 p23		1	
+VCVT(T)PS2DQ	y,y	1	1	p1	3	1	AVX
+VCVT(T)PS2DQ	y,m256	1	2	p1 p23		1	AVX
+CVTDQ2PD	x,x	2	2	p1 p5	4	1	
+CVTDQ2PD	x,m64	2	2	p1 p23		1	
+VCVTDQ2PD	y,x	2	2	p1 p5	6	1	AVX
+VCVTDQ2PD	y,m128	2	2	p1 p23		1	AVX
+CVT(T)PD2DQ	x,x	2	2	p1 p5	4	1	
+CVT(T)PD2DQ	x,m128	2	3	p1 p5 p23		1	
+VCVT(T)PD2DQ	x,y	2	2	p1 p5	6	1	AVX
+VCVT(T)PD2DQ	x,m256	2	3	p1 p5 p23		1	AVX
+CVTPI2PS	x,mm	1	1	p1	4	4	
+CVTPI2PS	x,m64	1	2	p1 p23		3	
+CVT(T)PS2PI	mm,x	2	2	p1 p5	4	1	
+CVT(T)PS2PI	mm,m128	2	2	p1 p23		1	
+CVTPI2PD	x,mm	2	2	p1 p5	4	1	
+CVTPI2PD	x,m64	2	2	p1 p23		1	
+CVT(T)PD2PI	mm,x	2	2	p1 p5	4	1	
+CVT(T)PD2PI	mm,m128	2	3	p1 p5 p23		1	
+CVTSI2SS	x,r32	2	2	p1 p5	4	3	
+CVTSI2SS	x,r64	3	3	p1 2p5	5	4	
+CVTSI2SS	x,m32	1	2	p1 p23		3	
+CVT(T)SS2SI	r32,x	2	2	p0 p1	4	1	
+CVT(T)SS2SI	r32,m32	2	3	p0 p1 p23		1	
+CVTSI2SD	x,r32/64	2	2	p1 p5	4	3	
+CVTSI2SD	x,m32	2	2	p1 p23		3	
+CVT(T)SD2SI	r32/64,x	2	2	p0 p1	4	1	
+CVT(T)SD2SI	r32,m64	2	3	p0 p1 p23		1	
+VCVTPS2PH	x,v,i	2	2	p1 p5	4-6	1	F16C
+VCVTPS2PH	m,v,i	3	3	p1 p4 p23		1	F16C
+VCVTPH2PS	v,x	2	2	p1 p5	4-6	1	F16C
+VCVTPH2PS	v,m	2	2	p1 p23		1	F16C
+							
+;Arithmetic							
+ADDSS/D PS/D SUBSS/D PS/D	x,x / v,v,v	1	1	p1	3	1	
+ADDSS/D PS/D SUBSS/D PS/D	x,m / v,v,m	1	2	p1 p23		1	
+ADDSUBPS/D	x,x / v,v,v	1	1	p1	3	1	SSE3
+ADDSUBPS/D	x,m / v,v,m	1	2	p1 p23		1	SSE3
+HADDPS/D HSUBPS/D	x,x / v,v,v	3	3	p1 2p5	5	2	SSE3
+HADDPS/D HSUBPS/D	x,m / v,v,m	4	4	p1 2p5 p23		2	SSE3
+MULSS/D PS/D	x,x / v,v,v	1	1	p01	3	0.5	
+MULSS/D PS/D	x,m / v,v,m	1	2	p01 p23		0.5	
+DIVSS	x,x	1	1	p0	11	2.5	
+DIVPS	x,x	1	1	p0	11	5	
+DIVSS DIVPS	x,m	1	2	p0 p23		3-5	
+DIVSD	x,x	1	1	p0	10-14	4-5	
+DIVPD	x,x	1	1	p0	10-14	8	
+DIVSD DIVPD	x,m	1	2	p0 p23		4-5	
+VDIVPS	y,y,y	3	3	2p0 p15	17	10	AVX
+VDIVPS	y,y,m256	4	4	2p0 p15 p23		10	AVX
+VDIVPD	y,y,y	3	3	2p0 p15	19-23	16	AVX
+VDIVPD	y,y,m256	4	4	2p0 p15 p23		16	AVX
+RCPSS/PS	x,x	1	1	p0	5	1	
+RCPSS/PS	x,m128	1	2	p0 p23		1	
+VRCPPS	y,y	3	3	2p0 p15	7	2	AVX
+VRCPPS	y,m256	4	4	2p0 p15 p23		2	AVX
+CMPccSS/D CMPccPS/D	x,x / v,v,v	1	1	p1	3	1	
+CMPccSS/D CMPccPS/D	x,m / v,v,m	2	2	p1 p23		1	
+(U)COMISS/D	x,x	1	1	p1		1	
+(U)COMISS/D	x,m32/64	2	2	p1 p23		1	
+MAXSS/D PS/D MINSS/D PS/D	x,x / v,v,v	1	1	p1	3	1	
+MAXSS/D PS/D MINSS/D PS/D	x,m / v,v,m	1	2	p1 p23		1	
+ROUNDSS/D PS/D	v,v,i	2	2	2p1	6	2	SSE4.1
+ROUNDSS/D PS/D	v,m,i	3	3	2p1 p23		2	SSE4.1
+DPPS	x,x,i / v,v,v,i	4	4	2p0 p1 p5	12	2	SSE4.1
+DPPS	x,m,i / v,v,m,i	6	6	2p0 p1 p5 p23 p6		4	SSE4.1
+DPPD	x,x,i	3	3	p0 p1 p5	7	1	SSE4.1
+DPPD	x,m128,i	4	4	p0 p1 p5 p23		1	SSE4.1
+VFMADD... (all FMA instr.)	v,v,v	1	1	p01	5	0.5	FMA
+VFMADD... (all FMA instr.)	v,v,m	1	2	p01 p23		0.5	FMA
+							
+;Math							
+SQRTSS	x,x	1	1	p0	11	4	
+SQRTPS	x,x	1	1	p0	11	7	
+SQRTSS/PS	x,m128	1	2	p0 p23		4-7	
+VSQRTPS	y,y	3	3	2p0 p15	19	14	AVX
+VSQRTPS	y,m256	4	4	2p0 p15 p23		14	AVX
+SQRTSD	x,x	1	1	p0	15-16	4-8	
+SQRTPD	x,x	1	1	p0	15-16	8-14	
+SQRTSD/PD	x,m128	1	2	p0 p23		4-14	
+VSQRTPD	y,y	3	3	2p0 p15	27-29	16-28	AVX
+VSQRTPD	y,m256	4	4	2p0 p15 p23		16-28	AVX
+RSQRTSS/PS	x,x	1	1	p0	5	1	
+RSQRTSS/PS	x,m128	1	2	p0 p23		1	
+VRSQRTPS	y,y	3	3	2p0 p15	7	2	AVX
+VRSQRTPS	y,m256	4	4	2p0 p15 p23		2	AVX
+							
+;Logic							
+AND/ANDN/OR/XORPS/PD	x,x / v,v,v	1	1	p5	1	1	
+AND/ANDN/OR/XORPS/PD	x,m / v,v,m	1	2	p5 p23		1	
+							
+;Other							
+VZEROUPPER		4	4	none		1	AVX
+VZEROALL		12	12	none		10	AVX, 32 bit
+VZEROALL		20	20	none		8	AVX, 64 bit
+LDMXCSR	m32	3	3	p0 p6 p23	6	3	
+STMXCSR	m32	3	4	p0 p4 p6 p237	7	1	
+FXSAVE	m4096	111			66	66	32 bit mode
+FXSAVE	m4096	141			66	66	64 bit mode
+FXRSTOR	m4096	107			80	80	32 bit mode
+FXRSTOR	m4096	115			80	80	64 bit mode
+XSAVE		174			70	70	32 bit mode
+XSAVE		224			84	84	64 bit mode
+XRSTOR		172			111	111	32 bit mode
+XRSTOR		173			112	112	64 bit mode
+XSAVEOPT	m	114			51	51	
