@@ -9,7 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.0.0" />
+    <!-- Using prerelease to match Microsoft.CodeAnalysis.LanguageServer.Protocol version in asm-dude2-ls-lib -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.0.0-1.25277.114" />
   </ItemGroup>
 
 </Project>

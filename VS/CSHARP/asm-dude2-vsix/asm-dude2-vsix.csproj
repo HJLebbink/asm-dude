@@ -35,6 +35,7 @@
 	<PropertyGroup>
 		<TargetFramework>net48</TargetFramework>
 		<OutputType>Library</OutputType>
+		<UseWPF>true</UseWPF>
 		<OutputSubPath>MockLSPs\MockLanguageExtension</OutputSubPath>
 		<UseCodebase>true</UseCodebase>
 		<NoWarn>CA1001,CA1052,CA1507,CA1812,CA2007,CS1591,NU1605,NU5100,VSTHRD100</NoWarn>
@@ -76,7 +77,6 @@
 	<ItemGroup>
 	  <None Remove="asmdude2-version.txt" />
 	  <None Remove="AsmDude2.png" />
-	  <None Remove="OptionsPage\AsmDudeOptionPageUI.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -112,7 +112,7 @@
 	<ItemGroup>
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
 		<!-- Latest stable packages for VS 2022/2026 compatibility -->
-		<PackageReference Include="StreamJsonRpc" Version="2.23.32-alpha" />
+		<PackageReference Include="StreamJsonRpc" Version="2.24.84" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" />
 		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15">
 		  <PrivateAssets>all</PrivateAssets>
@@ -122,10 +122,6 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
-		  <Generator>XamlIntelliSenseFileGenerator</Generator>
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</Page>
 		<Reference Include="PresentationFramework" />
 	</ItemGroup>
 	<ItemGroup>

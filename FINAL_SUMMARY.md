@@ -1,5 +1,9 @@
 # ✅ AsmDude2 Package Fix - Complete
 
+> **⚠️ HISTORICAL**: This document describes an earlier fix (December 2024) that has since been superseded.
+> The LSP server now uses `Microsoft.CodeAnalysis.LanguageServer.Protocol` via `IgnoresAccessChecksToGenerator`.
+> See `CLAUDE.md` for current documentation.
+
 ## Problem Solved
 
 **Issue**: AsmDude2 extension couldn't be built due to unavailable NuGet package:

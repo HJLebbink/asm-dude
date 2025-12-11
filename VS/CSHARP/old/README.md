@@ -57,12 +57,12 @@ An experimental parser that was tested but never integrated into the main AsmDud
 These are the **currently active and maintained** projects:
 
 - **asm-dude2-vsix**: Main Visual Studio extension (.NET Framework 4.8, VSSDK)
-- **asm-dude2-ls**: Language Server executable (.NET 7.0)
-- **asm-dude2-ls-lib**: Language Server implementation library (.NET 7.0)
-- **asm-tools-lib**: Core assembly language tools (.NET 7.0)
+- **asm-dude2-ls**: Language Server executable (.NET 10.0)
+- **asm-dude2-ls-lib**: Language Server implementation library (.NET 10.0)
+- **asm-tools-lib**: Core assembly language tools (.NET 10.0)
 - **asm-tools-lib-net48**: .NET Framework 4.8 version of asm-tools-lib
-- **asm-sim-lib**: Assembly simulator using Z3 solver
-- **asm-annotate**: Assembly code annotation utility
+- **asm-sim-lib**: Assembly simulator using Z3 solver (.NET 10.0)
+- **asm-annotate**: Assembly code annotation utility (.NET 10.0)
 
 ## Can I Delete This Directory?
 
@@ -80,9 +80,10 @@ The code in this directory **does not affect** the working extension in any way.
 
 ## Related Documentation
 
-- `../../../SOLUTION.md` - How we fixed the package issue
-- `../../../FINAL_SUMMARY.md` - Complete summary of the solution
-- `asm-dude2-ext/MIGRATION.md` - Detailed migration documentation (if you want to understand what was attempted)
+- `../../../CLAUDE.md` - **Current project documentation** (LSP types, build instructions, known issues)
+- `../../../SOLUTION.md` - Historical: earlier package fix (superseded)
+- `../../../FINAL_SUMMARY.md` - Historical: earlier fix summary (superseded)
+- `asm-dude2-ext/MIGRATION.md` - Detailed VS Extensibility SDK migration documentation (if you want to understand what was attempted)
 
 ---
 

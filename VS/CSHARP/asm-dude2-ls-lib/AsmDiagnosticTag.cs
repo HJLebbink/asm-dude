@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.LanguageServer.Protocol;
+using Roslyn.LanguageServer.Protocol;
 
 namespace AsmDude2LS
 {

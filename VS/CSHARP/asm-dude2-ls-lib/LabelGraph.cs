@@ -31,10 +31,9 @@ namespace AsmDude2LS
 
     using AsmTools;
 
-    using Microsoft.VisualStudio.LanguageServer.Protocol;
+    using Roslyn.LanguageServer.Protocol;
 
-    using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
-
+    using Range = Roslyn.LanguageServer.Protocol.Range;
 
     public sealed class LabelGraph
     {

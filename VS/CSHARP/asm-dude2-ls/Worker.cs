@@ -20,11 +20,16 @@ public partial class Worker : BackgroundService
     private readonly LanguageServer _languageServer;
     private bool _shutdownRequested;
 
+    /// <summary>
+    /// Static flag to indicate stdio mode (set from Program.cs before Worker is created)
+    /// </summary>
+    public static bool UseStdio { get; set; } = false;
+
     public Worker(ILogger<Worker> logger)
     {
 #if DEBUG
         // in a debug run we want to see the console with the LSP
-        ShowWindow(GetConsoleWindow(), SW_SHOW);
+        if (!UseStdio) ShowWindow(GetConsoleWindow(), SW_SHOW);
 #else
         // in a release run we do not want to see the console with the LSP
         ShowWindow(GetConsoleWindow(), SW_HIDE);
@@ -32,22 +37,36 @@ public partial class Worker : BackgroundService
         logger.LogInformation("Worker created at: {time}", DateTimeOffset.Now);
 
         this._logger = logger;
-        const string stdInPipeName = @"input";
-        const string stdOutPipeName = @"output";
-
-        SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
-        PipeAccessRule pipeAccessRule = new(everyone, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
-        PipeSecurity pipeSecurity = new();
-        pipeSecurity.AddAccessRule(pipeAccessRule);
-
-        NamedPipeClientStream readerPipe = new(stdInPipeName);
-        NamedPipeClientStream writerPipe = new(stdOutPipeName);
-
-        readerPipe.Connect();
-        writerPipe.Connect();
-
         this._shutdownRequested = false;
-        this._languageServer = LanguageServer.Create(writerPipe, readerPipe);
+
+        if (UseStdio)
+        {
+            // Use stdin/stdout for communication (for testing and CLI usage)
+            logger.LogInformation("Using stdio mode for LSP communication");
+            var stdin = Console.OpenStandardInput();
+            var stdout = Console.OpenStandardOutput();
+            this._languageServer = LanguageServer.Create(stdout, stdin);
+        }
+        else
+        {
+            // Use named pipes for Visual Studio communication
+            const string stdInPipeName = @"input";
+            const string stdOutPipeName = @"output";
+
+            SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
+            PipeAccessRule pipeAccessRule = new(everyone, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
+            PipeSecurity pipeSecurity = new();
+            pipeSecurity.AddAccessRule(pipeAccessRule);
+
+            NamedPipeClientStream readerPipe = new(stdInPipeName);
+            NamedPipeClientStream writerPipe = new(stdOutPipeName);
+
+            readerPipe.Connect();
+            writerPipe.Connect();
+
+            this._languageServer = LanguageServer.Create(writerPipe, readerPipe);
+        }
+
         this._languageServer.Disconnected += this.OnDisconnected;
         this._languageServer.ShowWindow += this.OnShowWindow;
     }

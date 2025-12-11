@@ -1,5 +1,9 @@
 # Solution: Fixed Unavailable Package Dependencies
 
+> **⚠️ HISTORICAL**: This document describes an earlier fix (December 2024) that has since been superseded.
+> The LSP server now uses `Microsoft.CodeAnalysis.LanguageServer.Protocol` via `IgnoresAccessChecksToGenerator`.
+> See `CLAUDE.md` for current documentation.
+
 ## Problem
 
 The AsmDude2 extension couldn't be built because it referenced unavailable NuGet packages:

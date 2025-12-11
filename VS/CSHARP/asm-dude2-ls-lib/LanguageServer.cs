@@ -22,8 +22,7 @@
 
 using AsmSourceTools;
 using AsmTools;
-using Microsoft.VisualStudio.LanguageServer.Protocol;
-using Newtonsoft.Json.Linq;
+using Roslyn.LanguageServer.Protocol;
 using StreamJsonRpc;
 using System;
 using System.Collections.Generic;
@@ -37,94 +36,110 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
+using Range = Roslyn.LanguageServer.Protocol.Range;
 
-namespace AsmDude2LS
+namespace AsmDude2LS;
+
+public class LanguageServer : INotifyPropertyChanged
 {
-    public class LanguageServer : INotifyPropertyChanged
+    private const int MAX_LENGTH_DESCR_TEXT = 120;
+    internal const double SlowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
+    internal const double SlowShutdownThresholdSec = 4.0; // threshold to switch off components
+    internal const int MaxNumberOfCharsInToolTips = 150;
+    internal const int MsSleepBeforeAsyncExecution = 1000;
+
+    public static readonly CultureInfo CultureUI = CultureInfo.CurrentUICulture;
+
+    private readonly JsonRpc rpc;
+    private readonly HeaderDelimitedMessageHandler messageHandler;
+    private readonly LanguageServerTarget target;
+    private readonly ManualResetEvent disconnectEvent = new(false);
+    private readonly List<Diagnostic> diagnostics;
+
+    private readonly Dictionary<string, TextDocumentItem> textDocuments;
+    private readonly Dictionary<string, string[]> textDocumentLines;
+    private readonly Dictionary<string, KeywordID[][]> parsedDocuments;
+
+    private readonly Dictionary<string, IEnumerable<FoldingRange>> foldingRanges;
+    private readonly Dictionary<string, LabelGraph> labelGraphs;
+
+    private readonly int referencesChunkSize = 10;
+    private readonly int referencesDelayMs = 10;
+
+    private readonly int highlightChunkSize = 10; // number of highlights returned before going to sleep for some delay
+    private readonly int highlightsDelayMs = 10; // delay between highlight results returned
+
+    private readonly TraceSource traceSource;
+
+    private AsmDude2Tools asmDudeTools;
+    public MnemonicStore mnemonicStore;
+    public PerformanceStore performanceStore;
+    public AsmLanguageServerOptions options;
+
+    public static LanguageServer Create(Stream sender, Stream reader)
     {
-        private const int MAX_LENGTH_DESCR_TEXT = 120;
-        internal const double SlowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
-        internal const double SlowShutdownThresholdSec = 4.0; // threshold to switch off components
-        internal const int MaxNumberOfCharsInToolTips = 150;
-        internal const int MsSleepBeforeAsyncExecution = 1000;
+        Instance ??= new LanguageServer(sender, reader);
+        return Instance;
+    }
 
-        public static readonly CultureInfo CultureUI = CultureInfo.CurrentUICulture;
+    private static LanguageServer Instance { get; set; }
 
-        private readonly JsonRpc rpc;
-        private readonly HeaderDelimitedMessageHandler messageHandler;
-        private readonly LanguageServerTarget target;
-        private readonly ManualResetEvent disconnectEvent = new(false);
-        private readonly List<Diagnostic> diagnostics;
+    private LanguageServer(Stream sender, Stream reader)
+    {
+        traceSource = Tools.CreateTraceSource();
+        //LogInfo("LanguageServer: constructor"); // This lineNumber produces a crash
+        target = new LanguageServerTarget(this);
+        textDocuments = new Dictionary<string, TextDocumentItem>();
+        textDocumentLines = new Dictionary<string, string[]>();
+        parsedDocuments = new Dictionary<string, KeywordID[][]>();
 
-        private readonly Dictionary<Uri, TextDocumentItem> textDocuments;
-        private readonly Dictionary<Uri, string[]> textDocumentLines;
-        private readonly Dictionary<Uri, KeywordID[][]> parsedDocuments;
+        labelGraphs = new Dictionary<string, LabelGraph>();
+        foldingRanges = new Dictionary<string, IEnumerable<FoldingRange>>();
+        diagnostics = [];
+        Symbols = [];
 
-        private readonly Dictionary<Uri, IEnumerable<FoldingRange>> foldingRanges;
-        private readonly Dictionary<Uri, LabelGraph> labelGraphs;
+        // Use SystemTextJsonFormatter for compatibility with Roslyn's LSP types
+        // Roslyn's SumType and DocumentUri are designed for System.Text.Json
+        var formatter = new SystemTextJsonFormatter();
+        formatter.JsonSerializerOptions.Converters.Add(new SystemTextJsonSumTypeConverter());
+        formatter.JsonSerializerOptions.Converters.Add(new SystemTextJsonDocumentUriConverter());
+        // PropertyNameCaseInsensitive for flexibility with different client naming conventions
+        formatter.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        messageHandler = new HeaderDelimitedMessageHandler(sender, reader, formatter);
+        rpc = new JsonRpc(messageHandler, target);
+        rpc.Disconnected += OnRpcDisconnected;
 
-        private readonly int referencesChunkSize = 10;
-        private readonly int referencesDelayMs = 10;
-
-        private readonly int highlightChunkSize = 10; // number of highlights returned before going to sleep for some delay
-        private readonly int highlightsDelayMs = 10; // delay between highlight results returned
-
-        private readonly TraceSource traceSource;
-
-        private AsmDude2Tools asmDudeTools;
-        public MnemonicStore mnemonicStore;
-        public PerformanceStore performanceStore;
-        public AsmLanguageServerOptions options;
-
-        public static LanguageServer Create(Stream sender, Stream reader)
+        /* 30-09-23 why would we need the following code?
+        rpc.ActivityTracingStrategy = new CorrelationManagerTracingStrategy()
         {
-            if (Instance == null)
-            {
-                Instance = new LanguageServer(sender, reader);
-            }
-            return Instance;
-        }
+            TraceSource = traceSource,
+        };
+        rpc.TraceSource = traceSource;
+        */
 
-        private static LanguageServer Instance
-        {
-            get;
-            set;
-        }
+        // Note: VSExtensionConverter is not available in LspTypes package
+        // The VS-specific type conversion is handled manually where needed
 
-        private LanguageServer(Stream sender, Stream reader)
-        {
-            this.traceSource = Tools.CreateTraceSource();
-            //LogInfo("LanguageServer: constructor"); // This lineNumber produces a crash
-            this.target = new LanguageServerTarget(this);
-            this.textDocuments = new Dictionary<Uri, TextDocumentItem>();
-            this.textDocumentLines = new Dictionary<Uri, string[]>();
-            this.parsedDocuments = new Dictionary<Uri, KeywordID[][]>();
+        rpc.StartListening();
 
-            this.labelGraphs = new Dictionary<Uri, LabelGraph>();
-            this.foldingRanges = new Dictionary<Uri, IEnumerable<FoldingRange>>();
-            this.diagnostics = new List<Diagnostic>();
-            this.Symbols = Array.Empty<VSSymbolInformation>();
+        target.OnInitializeCompletion += OnTargetInitializeCompletion;
+        target.OnInitialized += OnTargetInitialized;
+    }
 
-            this.messageHandler = new HeaderDelimitedMessageHandler(sender, reader);
-            this.rpc = new JsonRpc(this.messageHandler, this.target);
-            this.rpc.Disconnected += this.OnRpcDisconnected;
-
-            /* 30-09-23 why would we need the following code?
-            this.rpc.ActivityTracingStrategy = new CorrelationManagerTracingStrategy()
-            {
-                TraceSource = this.traceSource,
-            };
-            this.rpc.TraceSource = this.traceSource;
-            */
-
-            ((JsonMessageFormatter)this.messageHandler.Formatter).JsonSerializer.Converters.Add(new VSExtensionConverter<TextDocumentIdentifier, VSTextDocumentIdentifier>());
-
-            this.rpc.StartListening();
-
-            this.target.OnInitializeCompletion += this.OnTargetInitializeCompletion;
-            this.target.OnInitialized += this.OnTargetInitialized;
-        }
+    /// <summary>
+    /// Internal constructor for unit testing - initializes basic state without streams/RPC
+    /// </summary>
+    internal LanguageServer()
+    {
+        traceSource = Tools.CreateTraceSource();
+        textDocuments = new Dictionary<string, TextDocumentItem>();
+        textDocumentLines = new Dictionary<string, string[]>();
+        parsedDocuments = new Dictionary<string, KeywordID[][]>();
+        labelGraphs = new Dictionary<string, LabelGraph>();
+        foldingRanges = new Dictionary<string, IEnumerable<FoldingRange>>();
+        diagnostics = [];
+        Symbols = [];
+    }
 
         #region Tools
 
@@ -189,7 +204,7 @@ namespace AsmDude2LS
 
         #endregion
 
-        private string[] GetLines(Uri uri)
+        private string[] GetLines(string uri)
         {
             if (this.textDocumentLines.TryGetValue(uri, out var lines))
             {
@@ -198,7 +213,7 @@ namespace AsmDude2LS
             return Array.Empty<string>();
         }
 
-        private TextDocumentItem GetTextDocument(Uri uri)
+        private TextDocumentItem GetTextDocument(string uri)
         {
             if (this.textDocuments.TryGetValue(uri, out TextDocumentItem document))
             {
@@ -207,7 +222,7 @@ namespace AsmDude2LS
             return null;
         }
 
-        private LabelGraph GetLabelGraph(Uri uri)
+        private LabelGraph GetLabelGraph(string uri)
         {
             if (this.labelGraphs.TryGetValue(uri, out var graph))
             {
@@ -315,7 +330,7 @@ namespace AsmDude2LS
             }
         }
 
-        private void UpdateInternals(Uri uri)
+        private void UpdateInternals(string uri)
         {
             TextDocumentItem document = this.GetTextDocument(uri);
             if (document != null)
@@ -348,25 +363,25 @@ namespace AsmDude2LS
 
         public void OnTextDocumentOpened(DidOpenTextDocumentParams messageParams)
         {
-            var uri = messageParams.TextDocument.Uri;
+            var uri = messageParams.TextDocument.DocumentUri.ToString();
             this.textDocuments.Add(uri, messageParams.TextDocument);
             this.UpdateInternals(uri);
         }
 
         public void OnTextDocumentClosed(DidCloseTextDocumentParams messageParams)
         {
-            var uri = messageParams.TextDocument.Uri;
+            var uri = messageParams.TextDocument.DocumentUri.ToString();
             this.textDocuments.Remove(uri);
             this.textDocumentLines.Remove(uri);
         }
 
-        private void UpdateLabelGraph(Uri uri)
+        private void UpdateLabelGraph(string uri)
         {
             LogInfo("UpdateLabelGraph");
             this.labelGraphs.Remove(uri);
 
             var textDocument = this.GetTextDocument(uri);
-            string filename = textDocument.Uri.LocalPath;
+            string filename = new Uri(textDocument.DocumentUri.ToString()).LocalPath;
             string[] lines = this.GetLines(uri);
             bool caseSensitiveLabels = true; //nasm has case sensitive labels
             LabelGraph labelGraph = new(lines, filename, caseSensitiveLabels, this.options);
@@ -379,18 +394,8 @@ namespace AsmDude2LS
             this.labelGraphs.Add(uri, labelGraph);
         }
 
-        private void UpdateFoldingRanges(Uri uri)
+        private void UpdateFoldingRanges(string uri)
         {
-            static string GetCollapsedText(int startPos, string line)
-            {
-                int length = line.Length - startPos;
-                if (length <= 0)
-                {
-                    return "...";
-                }
-                return line.Substring(startPos, length).Trim();
-            }
-
             if (!this.options.CodeFolding_On)
             {
                 return;
@@ -444,7 +449,7 @@ namespace AsmDude2LS
                                 EndLine = lineNumber,
                                 EndCharacter = offsetEndRegion + endKeywordLength,
                                 Kind = FoldingRangeKind.Region,
-                                CollapsedText = GetCollapsedText(startCharacter + startKeywordLength + 1, lines[startLine]),
+                                // CollapsedText is VS-specific extension, not in standard LSP
                             });
                         }
                     }
@@ -453,7 +458,7 @@ namespace AsmDude2LS
             this.SetFoldingRanges(foldingRanges, uri);
         }
 
-        public void UpdateServerSideTextDocument(string text, int version, Uri uri)
+        public void UpdateServerSideTextDocument(string text, int version, string uri)
         {
             TextDocumentItem document = this.GetTextDocument(uri);
             if (document != null)
@@ -465,30 +470,33 @@ namespace AsmDude2LS
             }
         }
 
-        public void SendDiagnostics(Uri uri)
+        public void SendDiagnostics(string uri)
         {
             PublishDiagnosticParams parameter = new()
             {
-                Uri = uri,
+                Uri = new DocumentUri(uri),
                 Diagnostics = this.diagnostics.ToArray(),
             };
-            _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnostics, parameter);
+            _ = this.SendMethodNotificationAsync(LspMethods.TextDocumentPublishDiagnostics, parameter);
         }
 
         public CodeAction GetResolvedCodeAction(CodeAction parameter)
         {
-            JObject token = JObject.FromObject(parameter.Data);
-            CodeAction resolvedCodeAction = token.ToObject<CodeAction>();
-
-            return resolvedCodeAction;
+            // When using System.Text.Json, Data comes as a JsonElement
+            if (parameter.Data is System.Text.Json.JsonElement jsonElement)
+            {
+                var resolvedCodeAction = System.Text.Json.JsonSerializer.Deserialize<CodeAction>(jsonElement.GetRawText());
+                return resolvedCodeAction;
+            }
+            return parameter;
         }
 
         public object[] GetCodeActions(CodeActionParams parameter)
         {
             #region File Operation actions
 
-            Uri documentUri = parameter.TextDocument.Uri;
-            string absolutePath = documentUri.LocalPath.TrimStart('/');
+            var documentUri = parameter.TextDocument.DocumentUri;
+            string absolutePath = new Uri(documentUri.ToString()).LocalPath.TrimStart('/');
             string documentFilePath = Path.GetFullPath(absolutePath);
             string documentDirectory = Path.GetDirectoryName(documentFilePath);
             string documentNameNoExtension = Path.GetFileNameWithoutExtension(documentFilePath);
@@ -510,7 +518,7 @@ namespace AsmDude2LS
                     {
                         new CreateFile()
                         {
-                            Uri = createFileUri,
+                            DocumentUri = new DocumentUri(createFileUri),
                             Options = new CreateFileOptions()
                             {
                                 Overwrite = true,
@@ -538,8 +546,8 @@ namespace AsmDude2LS
                     {
                         new RenameFile()
                         {
-                            OldUri = createFileUri,
-                            NewUri = renameNewFileUri,
+                            OldDocumentUri = new DocumentUri(createFileUri),
+                            NewDocumentUri = new DocumentUri(renameNewFileUri),
                             Options = new RenameFileOptions()
                             {
                                 Overwrite = true,
@@ -558,20 +566,15 @@ namespace AsmDude2LS
                 {
                     Range = new Range
                     {
-                        Start = new Position
-                        {
-                            Line = 0,
-                            Character = 0
-                        },
-                        End = new Position
-                        {
-                            Line = 0,
-                            Character = 0
-                        }
+                        Start = new Position(0, 0),
+                        End = new Position(0, 0)
                     },
                     NewText = "Added text!"
                 }
             };
+
+            // Convert TextEdit[] to SumType<TextEdit, AnnotatedTextEdit>[]
+            var sumTypeEdits = addTextEdit.Select(e => new SumType<TextEdit, AnnotatedTextEdit>(e)).ToArray();
 
             CodeAction addTextAction = new()
             {
@@ -584,9 +587,9 @@ namespace AsmDude2LS
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
-                                    Uri = parameter.TextDocument.Uri,
+                                    DocumentUri = parameter.TextDocument.DocumentUri,
                                 },
-                                Edits = addTextEdit,
+                                Edits = sumTypeEdits,
                             },
                         }
                 },
@@ -594,7 +597,7 @@ namespace AsmDude2LS
             };
 
             Dictionary<string, TextEdit[]> changes = new();
-            changes.Add(parameter.TextDocument.Uri.AbsoluteUri, addTextEdit);
+            changes.Add(parameter.TextDocument.DocumentUri.ToString(), addTextEdit);
 
             CodeAction addTextActionChangesProperty = new()
             {
@@ -617,24 +620,16 @@ namespace AsmDude2LS
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
-                                    Uri = parameter.TextDocument.Uri,
+                                    DocumentUri = parameter.TextDocument.DocumentUri,
                                 },
-                                Edits = new TextEdit[]
+                                Edits = new SumType<TextEdit, AnnotatedTextEdit>[]
                                     {
                                         new TextEdit
                                         {
                                             Range = new Range
                                             {
-                                                Start = new Position
-                                                {
-                                                    Line = 0,
-                                                    Character = 0
-                                                },
-                                                End = new Position
-                                                {
-                                                    Line = 0,
-                                                    Character = 0
-                                                }
+                                                Start = new Position(0, 0),
+                                                End = new Position(0, 0)
                                             },
                                             NewText = "_"
                                         }
@@ -658,16 +653,8 @@ namespace AsmDude2LS
                     {
                         Range = new Range
                         {
-                            Start = new Position
-                            {
-                                Line = 0,
-                                Character = 0
-                            },
-                            End = new Position
-                            {
-                                Line = 0,
-                                Character = 0
-                            }
+                            Start = new Position(0, 0),
+                            End = new Position(0, 0)
                         },
                         Message = "Test Error",
                         Severity = DiagnosticSeverity.Error,
@@ -688,9 +675,9 @@ namespace AsmDude2LS
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
-                                    Uri = new Uri(editFilePath),
+                                    DocumentUri = new DocumentUri(new Uri(editFilePath)),
                                 },
-                                Edits = addTextEdit,
+                                Edits = sumTypeEdits,
                             },
                         }
                 },
@@ -720,23 +707,20 @@ namespace AsmDude2LS
 
         public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token)
         {
-            LogInfo($"Received: {JToken.FromObject(args)}");
-            var uri = args.TextDocument.Uri;
+            LogInfo($"Received: {System.Text.Json.JsonSerializer.Serialize(args)}");
+            var uri = args.TextDocument.DocumentUri.ToString();
 
             var lines = this.GetLines(uri);
-            var (referenceWord, _, _) = GetWord(args.Position.Character, lines[args.Position.Line]);
+            var (referenceWord, _, _) = GetWord((int)args.Position.Character, lines[(int)args.Position.Line]);
             if (referenceWord.Length == 0)
             {
                 return Array.Empty<object>();
             }
 
-            IProgress<object[]> progress = args.PartialResultToken;
+            // PartialResultToken is a token, not an IProgress object
+            // For now, we'll use a simple progress adapter
+            IProgress<object[]> progress = new Progress<object[]>(_ => { });
             int delay = this.referencesDelayMs;
-
-            if (progress == null)
-            {
-                return Array.Empty<object>();
-            }
 
             //TODO why not use VSLocation??
             List<Location> locations = new();
@@ -748,7 +732,7 @@ namespace AsmDude2LS
 
                 for (int j = 0; j < lineStr.Length; j++)
                 {
-                    Location location = this.GetLocation(lineStr, i, ref j, referenceWord, uri);
+                    Location location = this.GetLocation(lineStr, i, ref j, referenceWord, new Uri(uri));
 
                     if (location != null)
                     {
@@ -758,7 +742,7 @@ namespace AsmDude2LS
                         if (locationsChunk.Count == this.referencesChunkSize)
                         {
                             Debug.WriteLine($"Reporting references of {referenceWord}");
-                            this.rpc.TraceSource.TraceEvent(TraceEventType.Information, 0, $"Report: {JToken.FromObject(locationsChunk)}");
+                            this.rpc.TraceSource.TraceEvent(TraceEventType.Information, 0, $"Report: {System.Text.Json.JsonSerializer.Serialize(locationsChunk)}");
                             progress.Report(locationsChunk.ToArray());
                             Thread.Sleep(delay);  // Wait between chunks
                             locationsChunk.Clear();
@@ -867,10 +851,10 @@ namespace AsmDude2LS
                     return null;
                 }
 
-                var lines = this.GetLines(parameter.TextDocument.Uri);
-                int lineNumber = parameter.Position.Line;
+                var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
+                int lineNumber = (int)parameter.Position.Line;
                 string completeLineStr = lines[lineNumber];
-                int pos = parameter.Position.Character;
+                int pos = (int)parameter.Position.Character;
                 string lineStr = completeLineStr[..pos];
 
                 //LogInfo($"GetTextDocumentSignatureHelp: lineStr = {lineStr}");
@@ -912,7 +896,7 @@ namespace AsmDude2LS
                 }
 
                 int argsOffset = mnemonicOffset + mnemonic.ToString().Length + 1;
-                int argStrLength = parameter.Position.Character - argsOffset;
+                int argStrLength = (int)parameter.Position.Character - argsOffset;
                 if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: argsOffset={argsOffset}; argStrLength={argStrLength}");
                 if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: current lineNumber: lineNumber=\"{lineStr}\"; mnemonic={mnemonic}, args={string.Join(",", args)}");
 
@@ -951,7 +935,7 @@ namespace AsmDude2LS
             }
         }
 
-        public void SetFoldingRanges(IEnumerable<FoldingRange> foldingRanges, Uri uri)
+        public void SetFoldingRanges(IEnumerable<FoldingRange> foldingRanges, string uri)
         {
             this.foldingRanges.Remove(uri);
             this.foldingRanges.Add(uri, foldingRanges);
@@ -963,11 +947,220 @@ namespace AsmDude2LS
             {
                 return Array.Empty<FoldingRange>();
             }
-            if (this.foldingRanges.TryGetValue(parameter.TextDocument.Uri, out IEnumerable<FoldingRange> value))
+            if (this.foldingRanges.TryGetValue(parameter.TextDocument.DocumentUri.ToString(), out IEnumerable<FoldingRange> value))
             {
                 return value.ToArray();
             }
             return Array.Empty<FoldingRange>();
+        }
+
+        /// <summary>
+        /// Get semantic tokens for a document. Maps AsmTokenType to LSP semantic token types.
+        /// Token types (from legend):
+        ///   0: keyword (mnemonics)
+        ///   1: variable (registers)
+        ///   2: label (labels, jumps)
+        ///   3: macro (directives)
+        ///   4: number (constants/immediates)
+        ///   5: operator (memory operands)
+        ///   6: comment (remarks)
+        ///   7: string
+        ///   8: function (CALL targets)
+        /// </summary>
+        public SemanticTokens GetSemanticTokens(SemanticTokensParams parameter)
+        {
+            string uri = parameter.TextDocument.DocumentUri.ToString();
+
+            if (!this.parsedDocuments.TryGetValue(uri, out KeywordID[][] keywords))
+            {
+                return new SemanticTokens { Data = Array.Empty<int>() };
+            }
+
+            var data = new List<int>();
+            int prevLine = 0;
+            int prevChar = 0;
+
+            // Process each line
+            for (int lineNumber = 0; lineNumber < keywords.Length; lineNumber++)
+            {
+                var lineTokens = keywords[lineNumber];
+                if (lineTokens == null) continue;
+
+                // Sort tokens by start position for correct relative encoding
+                var sortedTokens = lineTokens.OrderBy(t => t.Start_Pos).ToList();
+
+                foreach (var token in sortedTokens)
+                {
+                    if (token.Type == AsmTokenType.UNKNOWN) continue;
+
+                    // Map AsmTokenType to semantic token type index
+                    int tokenType = MapTokenType(token.Type);
+                    if (tokenType < 0) continue;
+
+                    int tokenModifiers = GetTokenModifiers(token.Type);
+                    int tokenLength = token.End_Pos - token.Start_Pos;
+                    if (tokenLength <= 0) continue;
+
+                    // Encode token as delta from previous token
+                    int deltaLine = lineNumber - prevLine;
+                    int deltaStart = (deltaLine == 0) ? (token.Start_Pos - prevChar) : token.Start_Pos;
+
+                    // LSP semantic tokens are encoded as 5 ints per token:
+                    // deltaLine, deltaStartChar, length, tokenType, tokenModifiers
+                    data.Add(deltaLine);
+                    data.Add(deltaStart);
+                    data.Add(tokenLength);
+                    data.Add(tokenType);
+                    data.Add(tokenModifiers);
+
+                    prevLine = lineNumber;
+                    prevChar = token.Start_Pos;
+                }
+            }
+
+            return new SemanticTokens { Data = data.ToArray() };
+        }
+
+        /// <summary>
+        /// Map AsmTokenType to semantic token type index (matching the legend in server capabilities)
+        /// </summary>
+        private static int MapTokenType(AsmTokenType type)
+        {
+            return type switch
+            {
+                AsmTokenType.Mnemonic => 0,    // keyword
+                AsmTokenType.MnemonicOff => 0, // keyword (deprecated - will add modifier)
+                AsmTokenType.Register => 1,    // variable
+                AsmTokenType.Label => 2,       // label
+                AsmTokenType.LabelDef => 2,    // label (definition)
+                AsmTokenType.Jump => 8,        // function (jump target)
+                AsmTokenType.Directive => 3,   // macro
+                AsmTokenType.Constant => 4,    // number
+                AsmTokenType.Remark => 6,      // comment
+                AsmTokenType.Misc => 5,        // operator (memory operands, brackets, etc.)
+                _ => -1, // Skip unknown tokens
+            };
+        }
+
+        /// <summary>
+        /// Get token modifiers based on token type
+        /// Modifier flags: 0x1 = declaration, 0x2 = definition, 0x4 = deprecated, 0x8 = readonly
+        /// </summary>
+        private static int GetTokenModifiers(AsmTokenType type)
+        {
+            return type switch
+            {
+                AsmTokenType.LabelDef => 0x3,    // declaration + definition
+                AsmTokenType.MnemonicOff => 0x4, // deprecated
+                AsmTokenType.Constant => 0x8,    // readonly
+                _ => 0,
+            };
+        }
+
+        /// <summary>
+        /// Get inlay hints for a document range (LSP 3.17).
+        /// Shows instruction latency, memory sizes, and value conversions inline.
+        /// </summary>
+        public InlayHint[] GetInlayHints(InlayHintParams parameter)
+        {
+            string uri = parameter.TextDocument.DocumentUri.ToString();
+
+            if (!this.parsedDocuments.TryGetValue(uri, out KeywordID[][] keywords))
+            {
+                return Array.Empty<InlayHint>();
+            }
+
+            if (!this.textDocumentLines.TryGetValue(uri, out string[] lines))
+            {
+                return Array.Empty<InlayHint>();
+            }
+
+            var hints = new List<InlayHint>();
+            int startLine = parameter.Range.Start.Line;
+            int endLine = Math.Min(parameter.Range.End.Line, keywords.Length - 1);
+
+            // Get selected microarchitectures for performance info
+            MicroArch selectedArch = this.options?.Get_MicroArch_Switched_On() ?? MicroArch.NONE;
+            bool showPerformance = this.options?.PerformanceInfo_On == true && selectedArch != MicroArch.NONE;
+
+            for (int lineNumber = startLine; lineNumber <= endLine; lineNumber++)
+            {
+                if (lineNumber >= keywords.Length) break;
+                var lineTokens = keywords[lineNumber];
+                if (lineTokens == null) continue;
+
+                string lineText = (lineNumber < lines.Length) ? lines[lineNumber] : string.Empty;
+
+                foreach (var token in lineTokens)
+                {
+                    switch (token.Type)
+                    {
+                        case AsmTokenType.Mnemonic:
+                        case AsmTokenType.MnemonicOff:
+                            // Show instruction latency hint
+                            if (showPerformance && this.performanceStore != null)
+                            {
+                                string mnemonicText = lineText.Substring(token.Start_Pos, token.End_Pos - token.Start_Pos);
+                                if (AsmTools.AsmSourceTools.ParseMnemonic(mnemonicText, true) is Mnemonic mnemonic && mnemonic != Mnemonic.NONE)
+                                {
+                                    var perfItems = this.performanceStore.GetPerformance(mnemonic, selectedArch);
+                                    var firstPerf = perfItems.FirstOrDefault();
+                                    if (!string.IsNullOrEmpty(firstPerf.latency_))
+                                    {
+                                        hints.Add(new InlayHint
+                                        {
+                                            Position = new Position(lineNumber, token.End_Pos),
+                                            Label = $" ⏱{firstPerf.latency_}cy",
+                                            Kind = InlayHintKind.Type,
+                                            PaddingLeft = true,
+                                            ToolTip = new MarkupContent
+                                            {
+                                                Kind = MarkupKind.Markdown,
+                                                Value = $"**Latency:** {firstPerf.latency_} cycles\n\n**Throughput:** {firstPerf.throughput_}\n\n**µops:** {firstPerf.mu_Ops_Fused_}"
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                            break;
+
+                        case AsmTokenType.Constant:
+                            // Show hex/decimal conversion hint
+                            string constText = lineText.Substring(token.Start_Pos, token.End_Pos - token.Start_Pos);
+                            var (valid, value, _) = AsmTools.AsmSourceTools.Evaluate_Constant(constText);
+                            if (valid)
+                            {
+                                string hint;
+                                // If it looks like hex, show decimal; if decimal, show hex
+                                if (constText.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ||
+                                    constText.EndsWith("h", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    hint = $" ={value}";  // Show decimal
+                                }
+                                else if (value >= 10 || value < 0)
+                                {
+                                    hint = $" =0x{value:X}";  // Show hex
+                                }
+                                else
+                                {
+                                    continue; // Skip small decimals (0-9)
+                                }
+
+                                hints.Add(new InlayHint
+                                {
+                                    Position = new Position(lineNumber, token.End_Pos),
+                                    Label = hint,
+                                    Kind = InlayHintKind.Type,
+                                    PaddingLeft = true,
+                                    ToolTip = $"Value: {value} (0x{value:X})"
+                                });
+                            }
+                            break;
+                    }
+                }
+            }
+
+            return hints.ToArray();
         }
 
         private HashSet<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, HashSet<AsmSignatureEnum> allowedOperands, int lineNumber)
@@ -1124,7 +1317,7 @@ namespace AsmDude2LS
                         string labelText = this.options.CodeFolding_BeginTag;     //the characters that start the outlining region
                         completions.Add(new CompletionItem
                         {
-                            Kind = CompletionItemKind.Macro,
+                            Kind = CompletionItemKindExtensions.Macro,
                             Label = $"{labelText} - keyword to start code folding",
                             InsertText = labelText[1..], // remove the prefix #
                             SortText = labelText,
@@ -1135,7 +1328,7 @@ namespace AsmDude2LS
                         string labelText = this.options.CodeFolding_EndTag;       //the characters that end the outlining region
                         completions.Add(new CompletionItem
                         {
-                            Kind = CompletionItemKind.Macro,
+                            Kind = CompletionItemKindExtensions.Macro,
                             Label = $"{labelText} - keyword to end code folding",
                             InsertText = labelText[1..], // remove the prefix #
                             SortText = labelText,
@@ -1241,10 +1434,10 @@ namespace AsmDude2LS
                     return new CompletionList();
                 }
 
-                var lines = this.GetLines(parameter.TextDocument.Uri);
-                int lineNumber = parameter.Position.Line;
+                var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
+                int lineNumber = (int)parameter.Position.Line;
                 string completeLineStr = lines[lineNumber];
-                int pos = parameter.Position.Character;
+                int pos = (int)parameter.Position.Character;
 
                 if (extraLogging) LogInfo($"===========================\nOnTextDocumentCompletion: completeLineStr=\"{completeLineStr}\"; pos=\'{pos}\'");
 
@@ -1311,7 +1504,7 @@ namespace AsmDude2LS
                 // if the mnemonic is a jump, we should suggest labels   
                 if (AsmTools.AsmSourceTools.IsJump(mnemonic))
                 {
-                    var labelGraph = this.GetLabelGraph(parameter.TextDocument.Uri);
+                    var labelGraph = this.GetLabelGraph(parameter.TextDocument.DocumentUri.ToString());
                     if (extraLogging) LogInfo($"OnTextDocumentCompletion: C");
                     return new CompletionList()
                     {
@@ -1358,7 +1551,7 @@ namespace AsmDude2LS
                 }
                 return new CompletionList()
                 {
-                    Items = this.Mnemonic_Operand_Completions(useCapitals, allowed, parameter.Position.Line).ToArray()
+                    Items = this.Mnemonic_Operand_Completions(useCapitals, allowed, (int)parameter.Position.Line).ToArray()
                 };
             }
             catch (Exception e)
@@ -1370,7 +1563,7 @@ namespace AsmDude2LS
             }
         }
 
-        public DocumentHighlight[] GetDocumentHighlights(IProgress<DocumentHighlight[]> progress, Position position, Uri uri, CancellationToken token)
+        public DocumentHighlight[] GetDocumentHighlights(IProgress<DocumentHighlight[]> progress, Position position, string uri, CancellationToken token)
         {
             if (progress == null)
             {
@@ -1385,8 +1578,8 @@ namespace AsmDude2LS
             }
 
             var lines = this.GetLines(uri);
-            var lineStr2 = lines[position.Line];
-            (int startPos, int endPos) = FindWordBoundary(position.Character, lineStr2);
+            var lineStr2 = lines[(int)position.Line];
+            (int startPos, int endPos) = FindWordBoundary((int)position.Character, lineStr2);
             int length = endPos - startPos;
 
             if (length <= 0)
@@ -1457,6 +1650,114 @@ namespace AsmDude2LS
             return highlights.ToArray();
         }
 
+        /// <summary>
+        /// Handle "Go To Definition (F12)" request.
+        /// Returns the location of label definitions.
+        /// </summary>
+        public Location GetDefinition(TextDocumentPositionParams parameter)
+        {
+            var uri = parameter.TextDocument.DocumentUri.ToString();
+            var lines = this.GetLines(uri);
+            if (lines == null || lines.Length == 0)
+            {
+                LogInfo($"GetDefinition: no lines found for {uri}");
+                return null;
+            }
+
+            int lineNumber = (int)parameter.Position.Line;
+            if (lineNumber >= lines.Length)
+            {
+                LogInfo($"GetDefinition: line {lineNumber} out of range");
+                return null;
+            }
+
+            var (word, startPos, endPos) = GetWord((int)parameter.Position.Character, lines[lineNumber]);
+            if (string.IsNullOrEmpty(word))
+            {
+                LogInfo($"GetDefinition: no word at position");
+                return null;
+            }
+
+            LogInfo($"GetDefinition: looking for definition of '{word}'");
+
+            // First check if we have a label graph for this document
+            if (this.labelGraphs.TryGetValue(uri, out LabelGraph labelGraph) && labelGraph.Enabled)
+            {
+                // Search for the label definition in the label graph
+                // Most assemblers are case-insensitive for labels
+                string labelKey = word.ToUpperInvariant();
+                var labelDescriptions = labelGraph.Label_Descriptions;
+
+                if (labelDescriptions.ContainsKey(labelKey))
+                {
+                    // The label exists - find its definition location
+                    // Label_Descriptions contains format: "LINE n (filename) :content"
+                    // We need to search the document for the label definition
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        string lineStr = lines[i];
+                        // Label definitions end with ':' (e.g., "my_label:")
+                        // or are at the start of a line followed by whitespace/instruction
+                        int labelDefPos = -1;
+
+                        // Check for "label:" pattern
+                        string labelWithColon = word + ":";
+                        labelDefPos = lineStr.IndexOf(labelWithColon, StringComparison.OrdinalIgnoreCase);
+
+                        if (labelDefPos >= 0)
+                        {
+                            // Verify it's at a word boundary (start of line or after whitespace)
+                            if (labelDefPos == 0 || char.IsWhiteSpace(lineStr[labelDefPos - 1]))
+                            {
+                                LogInfo($"GetDefinition: found label definition at line {i}, position {labelDefPos}");
+                                return new Location
+                                {
+                                    DocumentUri = new DocumentUri(new Uri(uri)),
+                                    Range = new Range
+                                    {
+                                        Start = new Position(i, labelDefPos),
+                                        End = new Position(i, labelDefPos + word.Length)
+                                    }
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Fallback: scan document for label definitions manually
+            // Labels in assembly end with ':' (e.g., "loop_start:")
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string lineStr = lines[i];
+                string labelWithColon = word + ":";
+
+                // Use case-insensitive search (most assemblers are case-insensitive for labels)
+                int labelDefPos = lineStr.IndexOf(labelWithColon, StringComparison.OrdinalIgnoreCase);
+
+                if (labelDefPos >= 0)
+                {
+                    // Verify it's at a word boundary
+                    if (labelDefPos == 0 || char.IsWhiteSpace(lineStr[labelDefPos - 1]))
+                    {
+                        LogInfo($"GetDefinition: found label definition at line {i}, position {labelDefPos}");
+                        return new Location
+                        {
+                            DocumentUri = new DocumentUri(new Uri(uri)),
+                            Range = new Range
+                            {
+                                Start = new Position(i, labelDefPos),
+                                End = new Position(i, labelDefPos + word.Length)
+                            }
+                        };
+                    }
+                }
+            }
+
+            LogInfo($"GetDefinition: no definition found for '{word}'");
+            return null;
+        }
+
         private AsmTokenType GetAsmTokenType(string keyword_uppercase)
         {
             Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword_uppercase, true);
@@ -1478,22 +1779,28 @@ namespace AsmDude2LS
             return AsmTokenType.UNKNOWN;
         }
 
-        public Hover GetHover(TextDocumentPositionParams parameter)
+        /// <summary>
+        /// Handle hover request.
+        /// Returns VSInternalHover with clickable links when URL is available, otherwise standard Hover.
+        /// </summary>
+        public object GetHover(TextDocumentPositionParams parameter)
         {
             if (!this.options.AsmDoc_On)
             {
                 LogInfo($"OnHover: switched off");
                 return null;
             }
-            var lines = this.GetLines(parameter.TextDocument.Uri);
-            var (keyword, startPos, endPos) = GetWord(parameter.Position.Character, lines[parameter.Position.Line]);
+            var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
+            var (keyword, startPos, endPos) = GetWord((int)parameter.Position.Character, lines[(int)parameter.Position.Line]);
             if (keyword.Length == 0)
             {
                 return null;
             }
             string keyword_uppercase = keyword.ToUpperInvariant();
 
-            SumType<string, MarkedString>[] hoverContent = null;
+            string[] hoverContent = null;
+            string hoverUrl = null;       // URL for clickable hyperlink
+            string hoverKeyword = null;   // Keyword text for the hyperlink
 
             switch (this.GetAsmTokenType(keyword_uppercase))
             {
@@ -1505,6 +1812,13 @@ namespace AsmDude2LS
                         string archStr = ":" + ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
                         string descr = this.mnemonicStore.GetDescription(mnemonic);
                         string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonicStr} {archStr} {descr}", MaxNumberOfCharsInToolTips);
+
+                        // Get URL for clickable hyperlink
+                        if (mnemonic != Mnemonic.NONE)
+                        {
+                            hoverUrl = this.mnemonicStore.GetHtmlRef(mnemonic);
+                            hoverKeyword = mnemonicStr;
+                        }
                         string performanceStr = "";
 
                         bool performanceInfoAvailable = false;
@@ -1551,18 +1865,10 @@ namespace AsmDude2LS
                             }
                         }
 
-                        hoverContent = new SumType<string, MarkedString>[]{
-                            new(new MarkedString
-                            {
-                                Language = MarkupKind.PlainText.ToString(),
-                                Value = full_Descr + "\n",
-                            }),
-                            new(new MarkedString
-                            {
-                                Language = MarkupKind.Markdown.ToString(),
-                                Value = ((performanceInfoAvailable) ? "**Performance:**\n```text\n" + performanceStr + "\n```" : "No performance info"),
-                            })
-                        };
+                        hoverContent = [
+                            full_Descr + "\n",
+                            (performanceInfoAvailable) ? "**Performance:**\n```text\n" + performanceStr + "\n```" : "No performance info",
+                        ];
                         break;
                     }
                 case AsmTokenType.Register:
@@ -1586,13 +1892,9 @@ namespace AsmDude2LS
                                 descr = "\n" + descr;
                             }
                             string full_Descr = AsmTools.AsmSourceTools.Linewrap(archStr + descr, MaxNumberOfCharsInToolTips);
-                            hoverContent = new SumType<string, MarkedString>[]{
-                                new(new MarkedString
-                                {
-                                    Language = MarkupKind.PlainText.ToString(),
-                                    Value = $"Register {regStr}: {full_Descr}",
-                                }),
-                            };
+                            hoverContent = [
+                                $"Register {regStr}: {full_Descr}",
+                            ];
                         }
                         break;
                     }
@@ -1612,13 +1914,9 @@ namespace AsmDude2LS
                                 descr = "\n" + descr;
                             }
                             descr = AsmTools.AsmSourceTools.Linewrap(descr, MaxNumberOfCharsInToolTips);
-                            hoverContent = new SumType<string, MarkedString>[]{
-                                new(new MarkedString
-                                {
-                                    Language = MarkupKind.PlainText.ToString(),
-                                    Value = $"Keyword {keyword}: {descr}",
-                                }),
-                            };
+                            hoverContent = [
+                                $"Keyword {keyword}: {descr}",
+                            ];
                         }
                         break;
                     }
@@ -1798,24 +2096,34 @@ namespace AsmDude2LS
 
             if (hoverContent != null)
             {
-                //return new Microsoft.VisualStudio.LanguageServer.Protocol.VSInternalHover
-                //{
-                //    Range = new Range()
-                //    {
-                //        Start = new Position(parameter.Position.Line, startPos),
-                //        End = new Position(parameter.Position.Line, endPos),
-                //    },
-                //    Contents = new MarkupContent
-                //    {
-                //        Kind = MarkupKind.Markdown,
-                //        Value = "TODO **bold**"
-                //    },
-                //    //RawContent = new ClassifiedTextElement(descriptionBuilder.Select(tp => new ClassifiedTextRun(tp.Tag.ToClassificationTypeName(), tp.Text)))
-                //};
+                // If URL is available, create VSInternalHover with clickable hyperlink
+                if (!string.IsNullOrEmpty(hoverUrl) && !string.IsNullOrEmpty(hoverKeyword))
+                {
+                    LogInfo($"GetHover: Creating VSInternalHover with clickable link: {hoverKeyword} -> {hoverUrl}");
 
+                    // Build description from hoverContent
+                    string description = string.Join("\n", hoverContent);
+
+                    return HoverBuilder.CreateHoverWithLink(
+                        hoverKeyword,
+                        hoverUrl,
+                        description,
+                        (int)parameter.Position.Line,
+                        startPos,
+                        endPos
+                    );
+                }
+
+                // Otherwise, return standard Hover with MarkupContent
+                // Combine all hover content into a single markdown string
+                string combinedContent = string.Join("\n\n", hoverContent);
                 return new Hover()
                 {
-                    Contents = hoverContent,
+                    Contents = new MarkupContent
+                    {
+                        Kind = MarkupKind.Markdown,
+                        Value = combinedContent
+                    },
                     Range = new Range()
                     {
                         Start = new Position(parameter.Position.Line, startPos),
@@ -1836,7 +2144,7 @@ namespace AsmDude2LS
             return this.Symbols.ToArray();
         }
 
-        private void UpdateSymbols(Uri uri)
+        private void UpdateSymbols(string uri)
         {
             IList<VSSymbolInformation> symbolInfo = new List<VSSymbolInformation>();
             var lines = this.GetLines(uri);
@@ -1850,25 +2158,18 @@ namespace AsmDude2LS
                 if (label.Length > 0)
                 {
                     int pos = lineStr.IndexOf(label);
+#pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
                     symbolInfo.Add(new VSSymbolInformation
                     {
                         Name = label,
                         Kind = SymbolKind.Key,
                         Location = new Location
                         {
-                            Uri = uri,
+                            DocumentUri = new DocumentUri(new Uri(uri)),
                             Range = new Range
                             {
-                                Start = new Position
-                                {
-                                    Line = lineNumber,
-                                    Character = pos,
-                                },
-                                End = new Position
-                                {
-                                    Line = lineNumber,
-                                    Character = pos + label.Length,
-                                }
+                                Start = new Position(lineNumber, pos),
+                                End = new Position(lineNumber, pos + label.Length)
                             }
                         },
                         #region VS specific
@@ -1877,11 +2178,13 @@ namespace AsmDude2LS
                         //Icon = // If specified, this icon is used instead of SymbolKind.
                         #endregion
                     });
+#pragma warning restore CS0618
                 }
                 if (mnemonic != Mnemonic.NONE)
                 {
                     int pos = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
                     string mnemonicStr = mnemonic.ToString();
+#pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
                     symbolInfo.Add(new VSSymbolInformation
                     {
                         Name = mnemonicStr,
@@ -1890,25 +2193,19 @@ namespace AsmDude2LS
                         Description = "some description here?",
                         Location = new Location
                         {
-                            Uri = uri,
+                            DocumentUri = new DocumentUri(new Uri(uri)),
                             Range = new Range
                             {
-                                Start = new Position
-                                {
-                                    Line = lineNumber,
-                                    Character = pos,
-                                },
-                                End = new Position
-                                {
-                                    Line = lineNumber,
-                                    Character = pos + mnemonicStr.Length,
-                                }
+                                Start = new Position(lineNumber, pos),
+                                End = new Position(lineNumber, pos + mnemonicStr.Length)
                             }
                         }
                     });
+#pragma warning restore CS0618
                     if (false)
                     {
 #pragma warning disable CS0162 // Unreachable code detected
+#pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
                         for (int i = 0; i < args.Length; ++i)
                         {
                             symbolInfo.Add(new VSSymbolInformation
@@ -1919,6 +2216,7 @@ namespace AsmDude2LS
                                 Description = "some description here?",
                             });
                         }
+#pragma warning restore CS0618
 #pragma warning restore CS0162 // Unreachable code detected
                     }
                 }
@@ -1945,7 +2243,7 @@ namespace AsmDude2LS
                 AsmTokenType.Register => CompletionItemKind.Variable,
                 AsmTokenType.Misc => CompletionItemKind.Unit,
                 AsmTokenType.Label => CompletionItemKind.Reference,
-                _ => CompletionItemKind.None,
+                _ => CompletionItemKindExtensions.None,
             };
         }
 
@@ -1953,24 +2251,24 @@ namespace AsmDude2LS
 
         public static void LogInfo(string message)
         {
-            if (Instance.target.traceSetting == TraceSetting.Verbose)
+            if (Instance?.target?.traceSetting == TraceSetting.Verbose)
             {
                 Console.WriteLine($"INFO {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
-                Instance.traceSource.TraceEvent(TraceEventType.Information, 0, message);
+                Instance?.traceSource?.TraceEvent(TraceEventType.Information, 0, message);
             }
         }
 
         public static void LogWarning(string message)
         {
             Console.WriteLine($"WARNING {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
-            Instance.traceSource.TraceEvent(TraceEventType.Warning, 0, message);
+            Instance?.traceSource?.TraceEvent(TraceEventType.Warning, 0, message);
         }
 
         public static void LogError(string message)
         {
             Console.WriteLine($"ERROR {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
-            Instance.MakeWindowVisible();
-            Instance.traceSource.TraceEvent(TraceEventType.Error, 0, message);
+            Instance?.MakeWindowVisible();
+            Instance?.traceSource?.TraceEvent(TraceEventType.Error, 0, message);
         }
 
         public void LogMessage(object arg)
@@ -1985,7 +2283,7 @@ namespace AsmDude2LS
 
         public void LogMessage(object arg, string message, MessageType messageType)
         {
-            _ = this.SendMethodNotificationAsync(Methods.WindowLogMessage, new LogMessageParams
+            _ = this.SendMethodNotificationAsync(LspMethods.WindowLogMessage, new LogMessageParams
             {
                 Message = message,
                 MessageType = messageType
@@ -2000,7 +2298,7 @@ namespace AsmDude2LS
                 Message = message,
                 MessageType = messageType
             };
-            _ = this.SendMethodNotificationAsync(Methods.WindowShowMessage, parameter);
+            _ = this.SendMethodNotificationAsync(LspMethods.WindowShowMessage, parameter);
         }
 
         public async Task<MessageActionItem> ShowMessageRequestAsync(string message, MessageType messageType, string[] actionItems)
@@ -2012,7 +2310,7 @@ namespace AsmDude2LS
                 Actions = actionItems.Select(a => new MessageActionItem { Title = a }).ToArray()
             };
 
-            return await this.SendMethodRequestAsync(Methods.WindowShowMessageRequest, parameter);
+            return await this.SendMethodRequestAsync(LspMethods.WindowShowMessageRequest, parameter);
         }
 
         #endregion
@@ -2020,13 +2318,32 @@ namespace AsmDude2LS
         // store incoming settings from VS
         public void SendSettings(DidChangeConfigurationParams parameter)
         {
-            this.CurrentSettings = parameter.Settings.ToString();
+            this.CurrentSettings = parameter.Settings?.ToString() ?? "{}";
             this.NotifyPropertyChanged(nameof(this.CurrentSettings));
 
-            JToken parsedSettings = JToken.Parse(this.CurrentSettings);
-            int newMaxProblems = parsedSettings.Children().First().Values<int>("maxNumberOfProblems").First();
+            try
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(this.CurrentSettings);
+                // Try to get maxNumberOfProblems from the settings
+                if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object)
+                {
+                    foreach (var prop in doc.RootElement.EnumerateObject())
+                    {
+                        if (prop.Value.TryGetProperty("maxNumberOfProblems", out var maxProblems) &&
+                            maxProblems.TryGetInt32(out int newMaxProblems))
+                        {
+                            // Use newMaxProblems if needed
+                            LogInfo($"SendSettings: maxNumberOfProblems = {newMaxProblems}");
+                        }
+                    }
+                }
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                LogInfo($"SendSettings: Failed to parse settings: {ex.Message}");
+            }
 
-            LogInfo($"SendSettings: received {parameter}");
+            LogInfo($"SendSettings: received settings update");
         }
 
         public void Exit()
@@ -2103,7 +2420,7 @@ namespace AsmDude2LS
                 {
                     return new Location
                     {
-                        Uri = uri,
+                        DocumentUri = new DocumentUri(uri),
                         Range = new Range
                         {
                             Start = new Position(lineOffset, characterOffset),
@@ -2172,12 +2489,136 @@ namespace AsmDude2LS
 
         private Task SendMethodNotificationAsync<TIn>(LspNotification<TIn> method, TIn param)
         {
+            if (this.rpc == null)
+            {
+                return Task.CompletedTask;
+            }
             return this.rpc.NotifyWithParameterObjectAsync(method.Name, param);
         }
 
         private Task<TOut> SendMethodRequestAsync<TIn, TOut>(LspRequest<TIn, TOut> method, TIn param)
         {
+            if (this.rpc == null)
+            {
+                return Task.FromResult<TOut>(default);
+            }
             return this.rpc.InvokeWithParameterObjectAsync<TOut>(method.Name, param);
         }
     }
-}
+
+#nullable enable
+
+    /// <summary>
+    /// System.Text.Json converter for Roslyn's SumType union types.
+    /// This is needed when using SystemTextJsonFormatter instead of JsonMessageFormatter.
+    /// </summary>
+    public class SystemTextJsonSumTypeConverter : System.Text.Json.Serialization.JsonConverterFactory
+    {
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeToConvert.IsGenericType && typeToConvert.Name.StartsWith("SumType`");
+        }
+
+        public override System.Text.Json.Serialization.JsonConverter CreateConverter(Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+        {
+            var converterType = typeof(SystemTextJsonSumTypeConverterInner<>).MakeGenericType(typeToConvert);
+            return (System.Text.Json.Serialization.JsonConverter)Activator.CreateInstance(converterType)!;
+        }
+
+        private class SystemTextJsonSumTypeConverterInner<T> : System.Text.Json.Serialization.JsonConverter<T>
+        {
+            public override T? Read(ref System.Text.Json.Utf8JsonReader reader, Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+            {
+                // Try each type argument in order
+                var typeArgs = typeToConvert.GetGenericArguments();
+                using var doc = System.Text.Json.JsonDocument.ParseValue(ref reader);
+                var json = doc.RootElement.GetRawText();
+
+                foreach (var typeArg in typeArgs)
+                {
+                    try
+                    {
+                        var value = System.Text.Json.JsonSerializer.Deserialize(json, typeArg, options);
+                        if (value != null)
+                        {
+                            return (T)Activator.CreateInstance(typeToConvert, value)!;
+                        }
+                    }
+                    catch
+                    {
+                        // Try next type
+                    }
+                }
+                return default;
+            }
+
+            public override void Write(System.Text.Json.Utf8JsonWriter writer, T value, System.Text.Json.JsonSerializerOptions options)
+            {
+                if (value == null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+
+                // Get the Value property which contains the active value
+                var valueProperty = value.GetType().GetProperty("Value");
+                if (valueProperty != null)
+                {
+                    var innerValue = valueProperty.GetValue(value);
+                    System.Text.Json.JsonSerializer.Serialize(writer, innerValue, innerValue?.GetType() ?? typeof(object), options);
+                }
+                else
+                {
+                    writer.WriteNullValue();
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// System.Text.Json converter for Roslyn's DocumentUri type.
+    /// This is needed when using SystemTextJsonFormatter instead of JsonMessageFormatter.
+    /// </summary>
+    public class SystemTextJsonDocumentUriConverter : System.Text.Json.Serialization.JsonConverter<DocumentUri>
+    {
+        public override DocumentUri? Read(ref System.Text.Json.Utf8JsonReader reader, Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
+        {
+            if (reader.TokenType == System.Text.Json.JsonTokenType.Null)
+                return null;
+
+            if (reader.TokenType == System.Text.Json.JsonTokenType.String)
+            {
+                var uriString = reader.GetString();
+                if (uriString != null)
+                {
+                    return new DocumentUri(uriString);
+                }
+            }
+            else if (reader.TokenType == System.Text.Json.JsonTokenType.StartObject)
+            {
+                using var doc = System.Text.Json.JsonDocument.ParseValue(ref reader);
+                if (doc.RootElement.TryGetProperty("UriString", out var uriProp) ||
+                    doc.RootElement.TryGetProperty("uriString", out uriProp))
+                {
+                    var uriString = uriProp.GetString();
+                    if (uriString != null)
+                    {
+                        return new DocumentUri(uriString);
+                    }
+                }
+            }
+            return null;
+        }
+
+        public override void Write(System.Text.Json.Utf8JsonWriter writer, DocumentUri value, System.Text.Json.JsonSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStringValue(value.ToString());
+            }
+        }
+    }

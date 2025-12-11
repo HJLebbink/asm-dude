@@ -1,14 +1,43 @@
-# AsmDude2
-AsmDude2 represents a natural evolution from its predecessor, AsmDude. While AsmDude served as a 
-single, all-encompassing plugin for VS2015/17/19, providing support for Assembly source code, 
-AsmDude2 is built around a Language Server Protocol ([LSP](https://microsoft.github.io/language-server-protocol/))
-and a lightweight Visual Studio extension (for VS2022), drawing its functionality from this LSP. 
-Transitioning from a Visual Studio 2019 extension to one compatible with Visual Studio 2022 wasn't 
-straightforward. Many of the features from the older AsmDude have yet to be ported, and some may 
-never be. See the list of known issues and things still todo.
+# AsmDude3 - Modern Assembly Language Support for Visual Studio
 
-This extension can be found in the [visual studio extensions gallery](https://marketplace.visualstudio.com/items?itemName=Henk-JanLebbink.AsmDude2)
-or download latest installer [AsmDude.vsix (v2.0.0.4)](https://github.com/HJLebbink/asm-dude/releases/download/v2.0.0.4/Asmdude2.v2-0-0-4.vsix). 
+Welcome to **AsmDude3**, the next-generation assembly language extension for Visual Studio 2022 and 2026.
+
+## 📚 Documentation
+
+**Start Here** ⭐:
+- **[QUICK_START.md](QUICK_START.md)** - Get AsmDude3 running in 5 minutes (installation & first use)
+- **[FEATURES.md](FEATURES.md)** - Complete feature matrix and capabilities
+
+**For Users**:
+- **[USER_GUIDE.md](USER_GUIDE.md)** - Comprehensive user manual with all features
+- **[CONFIGURATION.md](CONFIGURATION.md)** - Customize colors, assemblers, architectures, and settings
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Solutions for common problems
+
+**For Developers**:
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design and implementation details (coming soon)
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute to the project (coming soon)
+
+---
+
+## About AsmDude3
+
+AsmDude3 represents a natural evolution from its predecessor, AsmDude. While AsmDude served as a
+single, all-encompassing plugin for VS2015/17/19, providing support for Assembly source code,
+AsmDude3 is built around a Language Server Protocol ([LSP](https://microsoft.github.io/language-server-protocol/))
+and a lightweight Visual Studio extension (for VS 2022/2026), drawing its functionality from this LSP.
+
+**Key Features**:
+- ✅ **Syntax highlighting** for MASM, NASM Intel, and NASM AT&T
+- ✅ **56+ CPU architectures** (x86/x64, SSE, AVX, AVX-512, and more)
+- ✅ **Clickable hyperlinks** in hover tooltips to online documentation
+- ✅ **Performance data** showing latency, throughput, and µOps for multiple microarchitectures
+- ✅ **Code folding** for procedures and sections
+- ✅ **Auto-detection** of assembler syntax
+- ✅ **157 customizable settings** for colors, architectures, and performance
+- ✅ **Disassembly support** for debugger output
+
+This extension can be found in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Henk-JanLebbink.AsmDude3)
+or download from [GitHub releases](https://github.com/HJLebbink/asm-dude/releases). 
 
 ### Features
 
@@ -19,16 +48,19 @@ Most of the commonly used Masm directives covered, along with a selection of Nas
 
 ![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-syntax-highlighting.png?raw=true "Syntax highlighting")
 
-#### Code Descriptions
-When you hover over a mnemonic, you may receive a pop-up with descriptions. These descriptions 
-can be modified and added by updating the AsmDudeData.xml file, which will be located alongside
-the installed plugin binaries (.vsix). Finding the directory where plugins are installed can be
-a bit challenging; you might want to try a location like C:\Users<user>\AppData\Local\Microsoft\VisualStudio\17.0\Extensions\AsmDude2\2.0.0.1\Server.
-I kindly encourage you to share any updates you make.
+#### Code Descriptions with Clickable Hyperlinks
+When you hover over a mnemonic, you receive a pop-up with descriptions and **clickable hyperlinks** to online documentation.
+Click on the instruction name to open detailed documentation in your browser.
 
-![code-descriptions](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-descriptions.png?raw=true "Code descriptions")
+The hover tooltip shows:
+- **Instruction name** (clickable link to documentation)
+- **Description** from curated signature files
+- **Architecture support** (e.g., [X64, SSE, AVX])
+- **Performance data** (latency, throughput, µOps) for Haswell, Skylake, and other microarchitectures
 
-Please note that the formatting of the pop-up does not display Markdown (see the known issues)
+Descriptions can be modified by updating the AsmDudeData.xml file, located alongside the installed plugin binaries.
+
+![code-descriptions](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-descriptions.png?raw=true "Code descriptions with clickable hyperlinks")
 
 #### Code Completion 
 While typing text, the completion lists will be refined to display the relevant 
