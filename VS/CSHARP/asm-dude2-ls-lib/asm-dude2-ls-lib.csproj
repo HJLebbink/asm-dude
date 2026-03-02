@@ -28,6 +28,7 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="asm-dude2-ls-tests" />
+    <InternalsVisibleTo Include="asm-fuzz" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Resourses\**" />
@@ -74,54 +75,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <!--
-    ============================================================================
-    IMPORTANT: IgnoresAccessChecksToGenerator CLR Hack
-    ============================================================================
-    This project uses IgnoresAccessChecksToGenerator to access INTERNAL types
-    from Microsoft.CodeAnalysis.LanguageServer.Protocol (Roslyn LSP).
-
-    WHY: Roslyn's LSP types (Position, Range, Hover, VSInternalHover, etc.) are
-    marked as 'internal' and not publicly accessible. However, we need these
-    types for proper Visual Studio LSP integration, especially for features like:
-    - VSInternalHover with clickable hyperlinks (RawContent)
-    - ClassifiedTextElement/ClassifiedTextRun for styled text
-    - Other VS-specific LSP extensions
-
-    HOW: The IgnoresAccessChecksToAttribute is a secret CLR attribute (recognized
-    by .NET Framework 4.6+ and .NET Core) that bypasses visibility checks. The
-    IgnoresAccessChecksToGenerator package generates reference assemblies where
-    internal types become public, allowing compilation against them.
-
-    RISKS:
-    - Internal APIs may change without notice in future Roslyn versions
-    - This is an unsupported usage pattern
-    - May break on Roslyn updates - version lock recommended
-
-    References:
-    - https://github.com/aelij/IgnoresAccessChecksToGenerator
-    - https://www.strathweb.com/2018/10/no-internalvisibleto-no-problem-bypassing-c-visibility-rules-with-roslyn/
-    - https://github.com/dotnet/roslyn/issues/68696 (Roslyn LSP public API tracking)
-    ============================================================================
-  -->
-
-  <!-- Configure IgnoresAccessChecksTo for Roslyn LSP internal types -->
-  <ItemGroup>
-    <IgnoresAccessChecksTo Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="17.14.249" />
-
-    <!-- Roslyn LSP types (internal, accessed via IgnoresAccessChecksToGenerator) -->
-    <PackageReference Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" Version="5.6.0-2.26125.2" />
-
-    <!-- CLR hack to access internal types - generates public reference assemblies -->
-    <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.8.0" PrivateAssets="All" />
-
+    <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="18.6.19" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.5.1" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="18.5.1" />
 	<PackageReference Include="StreamJsonRpc" Version="2.25.6" />
-    <!-- Newtonsoft.Json removed - using System.Text.Json via SystemTextJsonFormatter -->
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />

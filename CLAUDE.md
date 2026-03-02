@@ -42,7 +42,7 @@ AsmDude2 is a Visual Studio 2022/2026 extension that provides assembly language 
    - Main class: `LanguageServer.cs` manages LSP communication via StreamJsonRpc
    - Features: syntax highlighting, code completion, signature help, hover info, folding ranges
    - **Semantic Tokens**: Rich syntax highlighting via `textDocument/semanticTokens/full`
-   - **LSP Types**: Uses Roslyn's `Microsoft.CodeAnalysis.LanguageServer.Protocol` via IgnoresAccessChecksToGenerator (see below)
+   - **LSP Types**: Uses `Microsoft.VisualStudio.LanguageServer.Protocol` 18.5.1 (public API, no hacks needed)
    - **VS-specific Types**: Uses `VSTypes.cs` and `VSInternalTypes.cs` for Visual Studio extensions
 
 2. **VS Extension (asm-dude2-vsix)**: Lightweight Visual Studio 2022 extension (.NET Framework 4.8)
@@ -115,38 +115,33 @@ dotnet test VS\CSHARP\asm-dude2-ls-tests\asm-dude2-ls-tests.csproj
 |---------|--------|---------|-------|
 | asm-tools-tests | 27 | 0 | Core assembly tools |
 | asm-sim-tests | 149 | 28 | Z3 simulator (28 skipped due to known issue) |
-| asm-dude2-ls-tests | 45 | 33 | 45 unit tests pass, 33 integration tests skipped |
+| asm-dude2-ls-tests | 66 | 36 | 66 unit tests pass, 36 integration tests skipped |
 
 **Note**: 28 tests in `asm-sim-tests` are skipped due to a known regression (see Known Issues below).
 
-**LSP Integration Tests**: `LspIntegrationTests.cs` contains true JSON-RPC tests over streams. These 33 tests are currently skipped due to Roslyn's internal `SumType` and `DocumentUri` types being incompatible with Newtonsoft.Json serialization. The `IgnoresAccessChecksToGenerator` approach allows C# code to access internal types, but Newtonsoft.Json uses reflection which doesn't benefit from this. Visual Studio internally uses custom serializers for these types. The 45 unit tests in `LanguageServerTests.cs` provide comprehensive coverage without requiring JSON-RPC serialization.
+**LSP Integration Tests**: `LspIntegrationTests.cs` contains true JSON-RPC tests over streams. Some integration tests are skipped due to serialization complexity. The unit tests in `LanguageServerTests.cs` provide comprehensive coverage.
 
 ## Known Issues
 
-### ✅ RESOLVED: Migration to Roslyn LSP Types Complete
+### ✅ RESOLVED: Migration to Public LSP Types Complete
 
 **Status**: COMPLETE
 
-The LSP server now uses Roslyn's `Microsoft.CodeAnalysis.LanguageServer.Protocol` types directly via the `IgnoresAccessChecksToGenerator` CLR hack. This ensures full compatibility with Visual Studio's LSP implementation.
+The LSP server uses `Microsoft.VisualStudio.LanguageServer.Protocol` 18.5.1 (from vssdk feed) with 261 public types. No CLR hacks needed.
 
 **Current Setup**:
-- ✅ `IgnoresAccessChecksToGenerator` package bypasses internal visibility checks
-- ✅ `Microsoft.CodeAnalysis.LanguageServer.Protocol 5.0.0-1.25277.114` provides all LSP types
-- ✅ Uses `Uri` type for document identifiers (not string)
-- ✅ Uses `int` for Position.Line/Character (Roslyn convention)
-- ✅ All 45 asm-dude2-ls-tests pass
-- ⚠️ ~50 deprecation warnings (`.Uri` → `.DocumentUri`) - cosmetic, not functional
+- ✅ `Microsoft.VisualStudio.LanguageServer.Protocol` 18.5.1 - all LSP types public
+- ✅ `Microsoft.VisualStudio.LanguageServer.Protocol.Extensions` 18.5.1 - VS-specific extensions
+- ✅ Built-in System.Text.Json serialization (no custom converters needed)
+- ✅ Uses `Uri` type for document identifiers
+- ✅ Uses `int` for Position.Line/Character
+- ✅ All 66 asm-dude2-ls-tests pass
+- ✅ No more `IgnoresAccessChecksToGenerator` CLR hack
 
-**IgnoresAccessChecksToGenerator CLR Hack**:
-The project uses `IgnoresAccessChecksToGenerator` to bypass C# visibility rules and access Roslyn's internal types. This is documented in `asm-dude2-ls-lib.csproj`. References:
-- https://github.com/aelij/IgnoresAccessChecksToGenerator
-- https://www.strathweb.com/2018/10/no-internalvisibleto-no-problem-bypassing-c-visibility-rules-with-roslyn/
-- https://github.com/dotnet/roslyn/issues/68696 (Roslyn LSP public API tracking)
-
-**Risks**:
-- Internal APIs may change without notice in future Roslyn versions
-- This is an unsupported usage pattern
-- May break on Roslyn updates - version lock recommended
+**NuGet Source**: Requires vssdk feed in NuGet.config:
+```
+https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.json
+```
 
 ---
 
@@ -287,48 +282,22 @@ The LSP server implements clickable hyperlinks in hover tooltips using custom ty
 3. Visual Studio recognizes VSInternalHover and renders clickable hyperlink
 
 **Why Custom Types:**
-Standard LSP types come from Roslyn's `Microsoft.CodeAnalysis.LanguageServer.Protocol` package. However, VS-internal hover types (`ClassifiedTextElement`, `ClassifiedTextRun`) with navigation actions are not part of the standard LSP types. These custom types serialize to the JSON format VS expects for clickable hyperlinks.
+VS-internal hover types (`ClassifiedTextElement`, `ClassifiedTextRun`) with navigation actions are not part of the standard LSP protocol. These custom types in `VSInternalTypes.cs` serialize to the JSON format VS expects for clickable hyperlinks.
 
 ## Package Dependencies (Updated for VS 2026)
 
 **Current Packages** (All Stable & Available):
-- `StreamJsonRpc` **2.23.41-alpha** (JSON-RPC communication)
+- `Microsoft.VisualStudio.LanguageServer.Protocol` **18.5.1** (LSP types - public API, vssdk feed)
+- `Microsoft.VisualStudio.LanguageServer.Protocol.Extensions` **18.5.1** (VS-specific LSP extensions)
+- `StreamJsonRpc` **2.25.6** (JSON-RPC communication)
 - `Microsoft.VisualStudio.SDK` **17.14.40265** (Latest for VS 2022/2026)
 - `Microsoft.VSSDK.BuildTools` **17.12.40391** (Latest)
-- `Newtonsoft.Json` **13.0.4** (JSON serialization)
-- `Microsoft.Extensions.Logging.Abstractions` **10.0.0** (Logging)
+- `Microsoft.Extensions.Logging.Abstractions` **10.0.3** (Logging)
 
-### LSP Types via IgnoresAccessChecksToGenerator
-
-**asm-dude2-ls-lib uses Roslyn's internal LSP types** via the `IgnoresAccessChecksToGenerator` CLR hack.
-
-**How It Works**:
-- `Microsoft.CodeAnalysis.LanguageServer.Protocol 5.0.0-1.25277.114` contains all LSP types
-- All types in this package are marked `internal` by Roslyn
-- `IgnoresAccessChecksToGenerator 0.8.0` generates reference assemblies where internal types appear public
-- At runtime, the CLR recognizes `IgnoresAccessChecksTo` attribute and bypasses visibility checks
-
-**Configuration in csproj**:
-```xml
-<ItemGroup>
-  <IgnoresAccessChecksTo Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" />
-</ItemGroup>
-<ItemGroup>
-  <PackageReference Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" Version="5.0.0-1.25277.114" />
-  <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.8.0" PrivateAssets="All" />
-</ItemGroup>
+**NuGet Sources**: Requires both nuget.org and vssdk feed (configured in `NuGet.config`):
 ```
-
-**Why This Approach**:
-- Roslyn's LSP types are what Visual Studio actually uses internally
-- Ensures serialization compatibility with VS (no `FormatException` errors)
-- Roslyn team intends to make these types public eventually (issue #68696)
-- Avoids maintaining custom LSP type definitions
-
-**Alternative Approaches (Rejected)**:
-- `LspTypes 3.16.6` - Outdated (Jan 2021), no longer maintained
-- `Microsoft.VisualStudio.LanguageServer.Protocol 17.2.8` - Frozen since May 2022, incompatible APIs
-- Custom `Protocol/LspTypes.cs` - Works but requires manual maintenance
+https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.json
+```
 
 ## Project Structure
 

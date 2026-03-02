@@ -11,43 +11,22 @@
 		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 
-	<!-- IgnoresAccessChecksTo for Roslyn LSP internal types (same as asm-dude2-ls-lib) -->
 	<ItemGroup>
-		<IgnoresAccessChecksTo Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" />
-	</ItemGroup>
-
-	<!-- Latest testing packages for .NET 10 -->
-	<ItemGroup>
-		<!-- xUnit testing framework -->
 		<PackageReference Include="xunit" Version="2.9.3" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-
-		<!-- Test SDK -->
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
-
-		<!-- Code coverage -->
 		<PackageReference Include="coverlet.collector" Version="8.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-
-		<!-- Mocking framework -->
 		<PackageReference Include="Moq" Version="4.20.72" />
-
-		<!-- Fluent assertions for readable tests -->
 		<PackageReference Include="FluentAssertions" Version="8.8.0" />
-
-		<!-- Stream utilities for integration testing -->
 		<PackageReference Include="Nerdbank.Streams" Version="2.13.16" />
-
-		<!-- Roslyn LSP types (internal, accessed via IgnoresAccessChecksToGenerator) -->
-		<PackageReference Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" Version="5.6.0-2.26125.2" />
-
-		<!-- CLR hack to access internal types -->
-		<PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.8.0" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.5.1" />
+		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="18.5.1" />
 	</ItemGroup>
 
 	<!-- Reference to the server project -->

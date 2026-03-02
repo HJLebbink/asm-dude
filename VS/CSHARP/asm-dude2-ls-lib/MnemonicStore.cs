@@ -33,7 +33,7 @@ namespace AsmDude2LS
 
     using AsmTools;
 
-    using Roslyn.LanguageServer.Protocol;
+    using Microsoft.VisualStudio.LanguageServer.Protocol;
 
     public class MnemonicStore
     {

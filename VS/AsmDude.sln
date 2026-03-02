@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools-lib-net48", "CSHA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asm-sim-main", "CSHARP\asm-sim-main\asm-sim-main.csproj", "{042DE8B6-4982-4BC1-8E37-1DEC75B4FD78}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleWinTest", "CPP\ConsoleTest\ConsoleTest\ConsoleTest.vcxproj", "{3999DC4F-3A96-4B9B-805E-6BBDF0B101E1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleTest", "CPP\ConsoleTest\ConsoleTest\ConsoleTest.vcxproj", "{3999DC4F-3A96-4B9B-805E-6BBDF0B101E1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asm-tools-tests", "CSHARP\asm-tools-tests\asm-tools-tests.csproj", "{95DD9330-E49E-4F95-B68B-7E158CED2E6E}"
 EndProject
@@ -44,6 +44,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSHARP", "CSHARP", "{B41BF331-FCCB-2ADF-CDB6-767964B34647}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude2-ls-tests", "CSHARP\asm-dude2-ls-tests\asm-dude2-ls-tests.csproj", "{47F0742D-8918-4BED-B331-8FB6A2FF4906}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-fuzz", "CSHARP\asm-fuzz\asm-fuzz.csproj", "{E7978D99-D610-4AB8-AABC-52F709B742FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -233,6 +235,18 @@ Global
 		{47F0742D-8918-4BED-B331-8FB6A2FF4906}.Release|x64.Build.0 = Release|Any CPU
 		{47F0742D-8918-4BED-B331-8FB6A2FF4906}.Release|x86.ActiveCfg = Release|Any CPU
 		{47F0742D-8918-4BED-B331-8FB6A2FF4906}.Release|x86.Build.0 = Release|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Debug|x64.Build.0 = Debug|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Debug|x86.Build.0 = Debug|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Release|x64.ActiveCfg = Release|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Release|x64.Build.0 = Release|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{E7978D99-D610-4AB8-AABC-52F709B742FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -241,6 +255,7 @@ Global
 		{BF80AE23-E323-48FB-8B44-156B2524EFFF} = {8539E7E0-634A-459F-A5AF-25ECBD16DE13}
 		{16019732-E6FC-4299-B075-4B5537A7FDB5} = {8539E7E0-634A-459F-A5AF-25ECBD16DE13}
 		{47F0742D-8918-4BED-B331-8FB6A2FF4906} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
+		{E7978D99-D610-4AB8-AABC-52F709B742FF} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89D318BB-C529-4DDE-8EAF-DAEA3986256B}

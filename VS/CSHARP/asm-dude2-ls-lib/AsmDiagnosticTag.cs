@@ -1,4 +1,4 @@
-using Roslyn.LanguageServer.Protocol;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 namespace AsmDude2LS
 {
@@ -6,8 +6,8 @@ namespace AsmDude2LS
     {
         Unnecessary = DiagnosticTag.Unnecessary,
         Deprecated = DiagnosticTag.Deprecated,
-        BuildError = VSDiagnosticTags.BuildError,
-        IntellisenseError = VSDiagnosticTags.IntellisenseError,
+        BuildError = (int)VSDiagnosticTags.BuildError,
+        IntellisenseError = (int)VSDiagnosticTags.IntellisenseError,
         AsmDudeSimulatorError = -9,
     }
 }

@@ -1,0 +1,1 @@
+XMMWORD PTR [RSI+32]

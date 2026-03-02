@@ -23,7 +23,7 @@
 using AsmDude2LS;
 using AsmTools;
 using FluentAssertions;
-using Roslyn.LanguageServer.Protocol;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 using Xunit;
 
 namespace AsmDude2LS.Tests;

@@ -22,7 +22,7 @@
 
 using AsmSourceTools;
 using AsmTools;
-using Roslyn.LanguageServer.Protocol;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 using StreamJsonRpc;
 using System;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Range = Roslyn.LanguageServer.Protocol.Range;
+using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 
 namespace AsmDude2LS;
 
@@ -106,12 +106,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         diagnostics = [];
         Symbols = [];
 
-        // Use SystemTextJsonFormatter for compatibility with Roslyn's LSP types
-        // Roslyn's SumType and DocumentUri are designed for System.Text.Json
+        // Use SystemTextJsonFormatter - the 18.5.1 LSP package has built-in STJ converters
         var formatter = new SystemTextJsonFormatter();
-        formatter.JsonSerializerOptions.Converters.Add(new SystemTextJsonSumTypeConverter());
-        formatter.JsonSerializerOptions.Converters.Add(new SystemTextJsonDocumentUriConverter());
-        // PropertyNameCaseInsensitive for flexibility with different client naming conventions
         formatter.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         messageHandler = new HeaderDelimitedMessageHandler(sender, reader, formatter);
         rpc = new JsonRpc(messageHandler, target);
@@ -385,14 +381,14 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         public void OnTextDocumentOpened(DidOpenTextDocumentParams messageParams)
         {
-            var uri = messageParams.TextDocument.DocumentUri.ToString();
+            var uri = messageParams.TextDocument.Uri.ToString();
             this.textDocuments.Add(uri, messageParams.TextDocument);
             this.UpdateInternals(uri);
         }
 
         public void OnTextDocumentClosed(DidCloseTextDocumentParams messageParams)
         {
-            var uri = messageParams.TextDocument.DocumentUri.ToString();
+            var uri = messageParams.TextDocument.Uri.ToString();
             this.textDocuments.Remove(uri);
             this.textDocumentLines.Remove(uri);
             this.parsedDocuments.Remove(uri);
@@ -404,7 +400,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             this.labelGraphs.Remove(uri);
 
             var textDocument = this.GetTextDocument(uri);
-            string filename = new Uri(textDocument.DocumentUri.ToString()).LocalPath;
+            string filename = new Uri(textDocument.Uri.ToString()).LocalPath;
             string[] lines = this.GetLines(uri);
             bool caseSensitiveLabels = true; //nasm has case sensitive labels
             LabelGraph labelGraph = new(lines, filename, caseSensitiveLabels, this.options);
@@ -497,10 +493,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             PublishDiagnosticParams parameter = new()
             {
-                Uri = new DocumentUri(uri),
+                Uri = new Uri(uri),
                 Diagnostics = this.diagnostics.ToArray(),
             };
-            _ = this.SendMethodNotificationAsync(LspMethods.TextDocumentPublishDiagnostics, parameter);
+            _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnosticsName, parameter);
         }
 
         public CodeAction GetResolvedCodeAction(CodeAction parameter)
@@ -518,7 +514,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             #region File Operation actions
 
-            var documentUri = parameter.TextDocument.DocumentUri;
+            var documentUri = parameter.TextDocument.Uri;
             string absolutePath = new Uri(documentUri.ToString()).LocalPath.TrimStart('/');
             string documentFilePath = Path.GetFullPath(absolutePath);
             string documentDirectory = Path.GetDirectoryName(documentFilePath);
@@ -541,7 +537,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     {
                         new CreateFile()
                         {
-                            DocumentUri = new DocumentUri(createFileUri),
+                            Uri = createFileUri,
                             Options = new CreateFileOptions()
                             {
                                 Overwrite = true,
@@ -569,8 +565,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     {
                         new RenameFile()
                         {
-                            OldDocumentUri = new DocumentUri(createFileUri),
-                            NewDocumentUri = new DocumentUri(renameNewFileUri),
+                            OldUri = createFileUri,
+                            NewUri = renameNewFileUri,
                             Options = new RenameFileOptions()
                             {
                                 Overwrite = true,
@@ -596,8 +592,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 }
             };
 
-            // Convert TextEdit[] to SumType<TextEdit, AnnotatedTextEdit>[]
-            var sumTypeEdits = addTextEdit.Select(e => new SumType<TextEdit, AnnotatedTextEdit>(e)).ToArray();
+            var textEdits = addTextEdit;
 
             CodeAction addTextAction = new()
             {
@@ -610,9 +605,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
-                                    DocumentUri = parameter.TextDocument.DocumentUri,
+                                    Uri = parameter.TextDocument.Uri,
                                 },
-                                Edits = sumTypeEdits,
+                                Edits = textEdits,
                             },
                         }
                 },
@@ -620,7 +615,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             };
 
             Dictionary<string, TextEdit[]> changes = new();
-            changes.Add(parameter.TextDocument.DocumentUri.ToString(), addTextEdit);
+            changes.Add(parameter.TextDocument.Uri.ToString(), addTextEdit);
 
             CodeAction addTextActionChangesProperty = new()
             {
@@ -643,9 +638,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
-                                    DocumentUri = parameter.TextDocument.DocumentUri,
+                                    Uri = parameter.TextDocument.Uri,
                                 },
-                                Edits = new SumType<TextEdit, AnnotatedTextEdit>[]
+                                Edits = new TextEdit[]
                                     {
                                         new TextEdit
                                         {
@@ -698,9 +693,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
-                                    DocumentUri = new DocumentUri(new Uri(editFilePath)),
+                                    Uri = new Uri(editFilePath),
                                 },
-                                Edits = sumTypeEdits,
+                                Edits = textEdits,
                             },
                         }
                 },
@@ -731,7 +726,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token)
         {
             LogInfo($"Received: {System.Text.Json.JsonSerializer.Serialize(args)}");
-            var uri = args.TextDocument.DocumentUri.ToString();
+            var uri = args.TextDocument.Uri.ToString();
 
             var lines = this.GetLines(uri);
             if ((int)args.Position.Line >= lines.Length) return Array.Empty<object>();
@@ -875,7 +870,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     return null;
                 }
 
-                var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
+                var lines = this.GetLines(parameter.TextDocument.Uri.ToString());
                 int lineNumber = (int)parameter.Position.Line;
                 if (lineNumber >= lines.Length) return null;
                 string completeLineStr = lines[lineNumber];
@@ -972,7 +967,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             {
                 return Array.Empty<FoldingRange>();
             }
-            if (this.foldingRanges.TryGetValue(parameter.TextDocument.DocumentUri.ToString(), out IEnumerable<FoldingRange> value))
+            if (this.foldingRanges.TryGetValue(parameter.TextDocument.Uri.ToString(), out IEnumerable<FoldingRange> value))
             {
                 return value.ToArray();
             }
@@ -994,7 +989,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         /// </summary>
         public SemanticTokens GetSemanticTokens(SemanticTokensParams parameter)
         {
-            string uri = parameter.TextDocument.DocumentUri.ToString();
+            string uri = parameter.TextDocument.Uri.ToString();
 
             if (!this.parsedDocuments.TryGetValue(uri, out KeywordID[][] keywords))
             {
@@ -1088,7 +1083,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         /// </summary>
         public InlayHint[] GetInlayHints(InlayHintParams parameter)
         {
-            string uri = parameter.TextDocument.DocumentUri.ToString();
+            string uri = parameter.TextDocument.Uri.ToString();
 
             if (!this.textDocumentLines.TryGetValue(uri, out string[] lines))
             {
@@ -1456,7 +1451,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     return new CompletionList();
                 }
 
-                var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
+                var lines = this.GetLines(parameter.TextDocument.Uri.ToString());
                 int lineNumber = (int)parameter.Position.Line;
                 if (lineNumber >= lines.Length) return new CompletionList();
                 string completeLineStr = lines[lineNumber];
@@ -1527,7 +1522,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 // if the mnemonic is a jump, we should suggest labels   
                 if (AsmTools.AsmSourceTools.IsJump(mnemonic))
                 {
-                    var labelGraph = this.GetLabelGraph(parameter.TextDocument.DocumentUri.ToString());
+                    var labelGraph = this.GetLabelGraph(parameter.TextDocument.Uri.ToString());
                     if (extraLogging) LogInfo($"OnTextDocumentCompletion: C");
                     return new CompletionList()
                     {
@@ -1680,7 +1675,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         /// </summary>
         public Location GetDefinition(TextDocumentPositionParams parameter)
         {
-            var uri = parameter.TextDocument.DocumentUri.ToString();
+            var uri = parameter.TextDocument.Uri.ToString();
             var lines = this.GetLines(uri);
             if (lines == null || lines.Length == 0)
             {
@@ -1736,7 +1731,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                                 LogInfo($"GetDefinition: found label definition at line {i}, position {labelDefPos}");
                                 return new Location
                                 {
-                                    DocumentUri = new DocumentUri(new Uri(uri)),
+                                    Uri = new Uri(uri),
                                     Range = new Range
                                     {
                                         Start = new Position(i, labelDefPos),
@@ -1767,7 +1762,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         LogInfo($"GetDefinition: found label definition at line {i}, position {labelDefPos}");
                         return new Location
                         {
-                            DocumentUri = new DocumentUri(new Uri(uri)),
+                            Uri = new Uri(uri),
                             Range = new Range
                             {
                                 Start = new Position(i, labelDefPos),
@@ -1814,7 +1809,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 LogInfo($"OnHover: switched off");
                 return null;
             }
-            var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
+            var lines = this.GetLines(parameter.TextDocument.Uri.ToString());
             if ((int)parameter.Position.Line >= lines.Length) return null;
             var (keyword, startPos, endPos) = GetWord((int)parameter.Position.Character, lines[(int)parameter.Position.Line]);
             if (keyword.Length == 0)
@@ -2190,7 +2185,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         Kind = SymbolKind.Key,
                         Location = new Location
                         {
-                            DocumentUri = new DocumentUri(new Uri(uri)),
+                            Uri = new Uri(uri),
                             Range = new Range
                             {
                                 Start = new Position(lineNumber, pos),
@@ -2218,7 +2213,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         Description = "some description here?",
                         Location = new Location
                         {
-                            DocumentUri = new DocumentUri(new Uri(uri)),
+                            Uri = new Uri(uri),
                             Range = new Range
                             {
                                 Start = new Position(lineNumber, pos),
@@ -2316,7 +2311,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         public void LogMessage(object arg, string message, MessageType messageType)
         {
-            _ = this.SendMethodNotificationAsync(LspMethods.WindowLogMessage, new LogMessageParams
+            _ = this.SendMethodNotificationAsync(Methods.WindowLogMessageName, new LogMessageParams
             {
                 Message = message,
                 MessageType = messageType
@@ -2331,7 +2326,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 Message = message,
                 MessageType = messageType
             };
-            _ = this.SendMethodNotificationAsync(LspMethods.WindowShowMessage, parameter);
+            _ = this.SendMethodNotificationAsync(Methods.WindowShowMessageName, parameter);
         }
 
         public async Task<MessageActionItem> ShowMessageRequestAsync(string message, MessageType messageType, string[] actionItems)
@@ -2343,7 +2338,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 Actions = actionItems.Select(a => new MessageActionItem { Title = a }).ToArray()
             };
 
-            return await this.SendMethodRequestAsync(LspMethods.WindowShowMessageRequest, parameter);
+            return await this.SendMethodRequestAsync<ShowMessageRequestParams, MessageActionItem>(Methods.WindowShowMessageRequestName, parameter);
         }
 
         #endregion
@@ -2460,7 +2455,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     return new Location
                     {
-                        DocumentUri = new DocumentUri(uri),
+                        Uri = uri,
                         Range = new Range
                         {
                             Start = new Position(lineOffset, characterOffset),
@@ -2533,138 +2528,22 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private Task SendMethodNotificationAsync<TIn>(LspNotification<TIn> method, TIn param)
+        private Task SendMethodNotificationAsync<TIn>(string methodName, TIn param)
         {
             if (this.rpc == null)
             {
                 return Task.CompletedTask;
             }
-            return this.rpc.NotifyWithParameterObjectAsync(method.Name, param);
+            return this.rpc.NotifyWithParameterObjectAsync(methodName, param);
         }
 
-        private Task<TOut> SendMethodRequestAsync<TIn, TOut>(LspRequest<TIn, TOut> method, TIn param)
+        private Task<TOut> SendMethodRequestAsync<TIn, TOut>(string methodName, TIn param)
         {
             if (this.rpc == null)
             {
                 return Task.FromResult<TOut>(default);
             }
-            return this.rpc.InvokeWithParameterObjectAsync<TOut>(method.Name, param);
+            return this.rpc.InvokeWithParameterObjectAsync<TOut>(methodName, param);
         }
     }
 
-#nullable enable
-
-    /// <summary>
-    /// System.Text.Json converter for Roslyn's SumType union types.
-    /// This is needed when using SystemTextJsonFormatter instead of JsonMessageFormatter.
-    /// </summary>
-    public class SystemTextJsonSumTypeConverter : System.Text.Json.Serialization.JsonConverterFactory
-    {
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert.IsGenericType && typeToConvert.Name.StartsWith("SumType`");
-        }
-
-        public override System.Text.Json.Serialization.JsonConverter CreateConverter(Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
-        {
-            var converterType = typeof(SystemTextJsonSumTypeConverterInner<>).MakeGenericType(typeToConvert);
-            return (System.Text.Json.Serialization.JsonConverter)Activator.CreateInstance(converterType)!;
-        }
-
-        private class SystemTextJsonSumTypeConverterInner<T> : System.Text.Json.Serialization.JsonConverter<T>
-        {
-            public override T? Read(ref System.Text.Json.Utf8JsonReader reader, Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
-            {
-                // Try each type argument in order
-                var typeArgs = typeToConvert.GetGenericArguments();
-                using var doc = System.Text.Json.JsonDocument.ParseValue(ref reader);
-                var json = doc.RootElement.GetRawText();
-
-                foreach (var typeArg in typeArgs)
-                {
-                    try
-                    {
-                        var value = System.Text.Json.JsonSerializer.Deserialize(json, typeArg, options);
-                        if (value != null)
-                        {
-                            return (T)Activator.CreateInstance(typeToConvert, value)!;
-                        }
-                    }
-                    catch
-                    {
-                        // Try next type
-                    }
-                }
-                return default;
-            }
-
-            public override void Write(System.Text.Json.Utf8JsonWriter writer, T value, System.Text.Json.JsonSerializerOptions options)
-            {
-                if (value == null)
-                {
-                    writer.WriteNullValue();
-                    return;
-                }
-
-                // Get the Value property which contains the active value
-                var valueProperty = value.GetType().GetProperty("Value");
-                if (valueProperty != null)
-                {
-                    var innerValue = valueProperty.GetValue(value);
-                    System.Text.Json.JsonSerializer.Serialize(writer, innerValue, innerValue?.GetType() ?? typeof(object), options);
-                }
-                else
-                {
-                    writer.WriteNullValue();
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// System.Text.Json converter for Roslyn's DocumentUri type.
-    /// This is needed when using SystemTextJsonFormatter instead of JsonMessageFormatter.
-    /// </summary>
-    public class SystemTextJsonDocumentUriConverter : System.Text.Json.Serialization.JsonConverter<DocumentUri>
-    {
-        public override DocumentUri? Read(ref System.Text.Json.Utf8JsonReader reader, Type typeToConvert, System.Text.Json.JsonSerializerOptions options)
-        {
-            if (reader.TokenType == System.Text.Json.JsonTokenType.Null)
-                return null;
-
-            if (reader.TokenType == System.Text.Json.JsonTokenType.String)
-            {
-                var uriString = reader.GetString();
-                if (uriString != null)
-                {
-                    return new DocumentUri(uriString);
-                }
-            }
-            else if (reader.TokenType == System.Text.Json.JsonTokenType.StartObject)
-            {
-                using var doc = System.Text.Json.JsonDocument.ParseValue(ref reader);
-                if (doc.RootElement.TryGetProperty("UriString", out var uriProp) ||
-                    doc.RootElement.TryGetProperty("uriString", out uriProp))
-                {
-                    var uriString = uriProp.GetString();
-                    if (uriString != null)
-                    {
-                        return new DocumentUri(uriString);
-                    }
-                }
-            }
-            return null;
-        }
-
-        public override void Write(System.Text.Json.Utf8JsonWriter writer, DocumentUri value, System.Text.Json.JsonSerializerOptions options)
-        {
-            if (value == null)
-            {
-                writer.WriteNullValue();
-            }
-            else
-            {
-                writer.WriteStringValue(value.ToString());
-            }
-        }
-    }

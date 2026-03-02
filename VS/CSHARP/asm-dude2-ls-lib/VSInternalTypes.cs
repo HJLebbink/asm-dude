@@ -22,9 +22,9 @@
 
 using System;
 using System.Text.Json.Serialization;
-using Roslyn.LanguageServer.Protocol;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
-using Range = Roslyn.LanguageServer.Protocol.Range;
+using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 
 namespace AsmDude2LS;
 

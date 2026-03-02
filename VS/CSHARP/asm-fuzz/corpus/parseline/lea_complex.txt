@@ -1,0 +1,1 @@
+lea rax, [rbp+rcx*4-8]

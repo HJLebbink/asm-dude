@@ -1,0 +1,1 @@
+    xor eax, eax    ; zero out

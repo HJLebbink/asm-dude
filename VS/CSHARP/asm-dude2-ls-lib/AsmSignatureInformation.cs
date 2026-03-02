@@ -22,7 +22,7 @@
 
 using AsmSourceTools;
 using AsmTools;
-using Roslyn.LanguageServer.Protocol;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 using System;
 using System.Collections.Generic;
 

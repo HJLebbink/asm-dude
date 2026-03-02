@@ -23,7 +23,7 @@
 #nullable enable
 
 using System.Collections.Generic;
-using Roslyn.LanguageServer.Protocol;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 namespace AsmDude2LS
 {
