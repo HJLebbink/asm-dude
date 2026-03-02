@@ -60,8 +60,8 @@ public class LspIntegrationTests : IDisposable
         _clientStream = streams.Item1;
         _serverStream = streams.Item2;
 
-        // Create the server with its stream (reads and writes on same stream)
-        _server = LanguageServer.Create(
+        // Create a fresh server for this test (bypasses singleton used by production code)
+        _server = LanguageServer.CreateForTest(
             sender: _serverStream,  // Server sends to client
             reader: _serverStream   // Server reads from client
         );
@@ -80,6 +80,7 @@ public class LspIntegrationTests : IDisposable
     public void Dispose()
     {
         _clientRpc?.Dispose();
+        _server?.Dispose();
         _clientStream?.Dispose();
         _serverStream?.Dispose();
         _cts?.Dispose();
@@ -122,7 +123,7 @@ public class LspIntegrationTests : IDisposable
         var initParams = new InitializeParams
         {
             ProcessId = 1234,
-            RootUri = new Uri("file:///test"),
+            WorkspaceFolders = [new WorkspaceFolder { DocumentUri = new DocumentUri("file:///test"), Name = "test" }],
             Capabilities = new ClientCapabilities(),
             InitializationOptions = CreateDefaultOptions()
         };
@@ -151,7 +152,7 @@ public class LspIntegrationTests : IDisposable
         var initParams = new InitializeParams
         {
             ProcessId = 1234,
-            RootUri = new Uri("file:///test"),
+            WorkspaceFolders = [new WorkspaceFolder { DocumentUri = new DocumentUri("file:///test"), Name = "test" }],
             Capabilities = new ClientCapabilities(),
             InitializationOptions = CreateDefaultOptions()
         };
@@ -184,7 +185,7 @@ public class LspIntegrationTests : IDisposable
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri("file:///test.asm"),
+                DocumentUri = new DocumentUri("file:///test.asm"),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov rax, rbx\nadd rcx, rdx"
@@ -203,7 +204,7 @@ public class LspIntegrationTests : IDisposable
 
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 1 }
         };
 
@@ -227,7 +228,7 @@ public class LspIntegrationTests : IDisposable
         {
             TextDocument = new VersionedTextDocumentIdentifier
             {
-                Uri = new Uri("file:///test.asm"),
+                DocumentUri = new DocumentUri("file:///test.asm"),
                 Version = 2
             },
             ContentChanges = new TextDocumentContentChangeEvent[]
@@ -251,7 +252,7 @@ public class LspIntegrationTests : IDisposable
         // Verify by checking hover on the new content (ADD instead of MOV)
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 1 }
         };
 
@@ -273,7 +274,7 @@ public class LspIntegrationTests : IDisposable
 
         var closeParams = new DidCloseTextDocumentParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") }
         };
 
         // Act
@@ -287,7 +288,7 @@ public class LspIntegrationTests : IDisposable
 
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 1 }
         };
 
@@ -313,7 +314,7 @@ public class LspIntegrationTests : IDisposable
 
         var completionParams = new CompletionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 2 }
         };
 
@@ -338,7 +339,7 @@ public class LspIntegrationTests : IDisposable
 
         var completionParams = new CompletionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 6 }
         };
 
@@ -367,7 +368,7 @@ public class LspIntegrationTests : IDisposable
 
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 1 } // On "mov"
         };
 
@@ -391,7 +392,7 @@ public class LspIntegrationTests : IDisposable
 
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 5 } // On "rax"
         };
 
@@ -415,7 +416,7 @@ public class LspIntegrationTests : IDisposable
 
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 3 } // On space between mov and rax
         };
 
@@ -443,7 +444,7 @@ public class LspIntegrationTests : IDisposable
 
         var sigHelpParams = new SignatureHelpParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 4 },
             Context = new SignatureHelpContext
             {
@@ -473,7 +474,7 @@ public class LspIntegrationTests : IDisposable
 
         var sigHelpParams = new SignatureHelpParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 9 },
             Context = new SignatureHelpContext
             {
@@ -509,7 +510,7 @@ public class LspIntegrationTests : IDisposable
 
         var foldingParams = new FoldingRangeParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") }
         };
 
         // Act
@@ -533,7 +534,7 @@ public class LspIntegrationTests : IDisposable
 
         var foldingParams = new FoldingRangeParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") }
         };
 
         // Act
@@ -594,7 +595,7 @@ public class LspIntegrationTests : IDisposable
 
         var semanticTokensParams = new SemanticTokensParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") }
         };
 
         // Act
@@ -621,7 +622,7 @@ public class LspIntegrationTests : IDisposable
 
         var semanticTokensParams = new SemanticTokensParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") }
         };
 
         // Act
@@ -647,7 +648,7 @@ public class LspIntegrationTests : IDisposable
 
         var semanticTokensParams = new SemanticTokensParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") }
         };
 
         // Act
@@ -671,7 +672,7 @@ public class LspIntegrationTests : IDisposable
 
         var semanticTokensParams = new SemanticTokensParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") }
         };
 
         // Act
@@ -700,7 +701,7 @@ public class LspIntegrationTests : IDisposable
 
         var highlightParams = new DocumentHighlightParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 4 } // On "rax"
         };
 
@@ -728,7 +729,7 @@ public class LspIntegrationTests : IDisposable
 
         var highlightParams = new DocumentHighlightParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 2 } // On "test_label"
         };
 
@@ -754,7 +755,7 @@ public class LspIntegrationTests : IDisposable
 
         var highlightParams = new DocumentHighlightParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 3 } // On whitespace
         };
 
@@ -784,7 +785,7 @@ public class LspIntegrationTests : IDisposable
 
         var referencesParams = new ReferenceParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 2 }, // On "my_label" definition
             Context = new ReferenceContext { IncludeDeclaration = true }
         };
@@ -812,7 +813,7 @@ public class LspIntegrationTests : IDisposable
 
         var referencesParams = new ReferenceParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 2, Character = 8 }, // On "my_label" in jmp
             Context = new ReferenceContext { IncludeDeclaration = true }
         };
@@ -838,7 +839,7 @@ public class LspIntegrationTests : IDisposable
 
         var referencesParams = new ReferenceParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 3 }, // On whitespace
             Context = new ReferenceContext { IncludeDeclaration = true }
         };
@@ -869,7 +870,7 @@ public class LspIntegrationTests : IDisposable
 
         var symbolParams = new DocumentSymbolParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") }
         };
 
         // Act
@@ -899,7 +900,7 @@ public class LspIntegrationTests : IDisposable
 
         var codeActionParams = new CodeActionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Range = new Roslyn.LanguageServer.Protocol.Range
             {
                 Start = new Position { Line = 0, Character = 0 },
@@ -937,7 +938,7 @@ public class LspIntegrationTests : IDisposable
 
         var renameParams = new RenameParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 2 }, // On "old_name"
             NewName = "new_name"
         };
@@ -978,7 +979,7 @@ public class LspIntegrationTests : IDisposable
 
         var definitionParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 2, Character = 8 } // On "my_label" in jmp
         };
 
@@ -1005,7 +1006,7 @@ public class LspIntegrationTests : IDisposable
 
         var definitionParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 2 } // On "my_label" definition
         };
 
@@ -1030,7 +1031,7 @@ public class LspIntegrationTests : IDisposable
 
         var definitionParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 1 } // On "mov"
         };
 
@@ -1054,7 +1055,7 @@ public class LspIntegrationTests : IDisposable
 
         var definitionParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 3 } // On whitespace
         };
 
@@ -1128,7 +1129,7 @@ public class LspIntegrationTests : IDisposable
 
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///test.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///test.asm") },
             Position = new Position { Line = 0, Character = 0 }
         };
 
@@ -1202,7 +1203,7 @@ public class LspIntegrationTests : IDisposable
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri(uri),
+                DocumentUri = new DocumentUri(uri),
                 LanguageId = "asm",
                 Version = 1,
                 Text = text

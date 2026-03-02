@@ -101,7 +101,7 @@ public class LanguageServerTests
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri("file:///test.asm"),
+                DocumentUri = new DocumentUri("file:///test.asm"),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov rax, rbx"
@@ -122,7 +122,7 @@ public class LanguageServerTests
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri("file:///test.asm"),
+                DocumentUri = new DocumentUri("file:///test.asm"),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov rax, rbx"
@@ -134,7 +134,7 @@ public class LanguageServerTests
         {
             TextDocument = new TextDocumentIdentifier
             {
-                Uri = new Uri("file:///test.asm")
+                DocumentUri = new DocumentUri("file:///test.asm")
             }
         };
 
@@ -152,7 +152,7 @@ public class LanguageServerTests
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri("file:///test.asm"),
+                DocumentUri = new DocumentUri("file:///test.asm"),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov rax, rbx"
@@ -179,7 +179,7 @@ public class LanguageServerTests
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri(uri),
+                DocumentUri = new DocumentUri(uri),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov rax, rbx\nadd "
@@ -189,7 +189,7 @@ public class LanguageServerTests
 
         var completionParams = new CompletionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri(uri) },
             Position = new Position { Line = 1, Character = 4 }
         };
 
@@ -213,7 +213,7 @@ public class LanguageServerTests
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri(uri),
+                DocumentUri = new DocumentUri(uri),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov rax, rbx"
@@ -223,7 +223,7 @@ public class LanguageServerTests
 
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri(uri) },
             Position = new Position { Line = 0, Character = 1 } // Position on "mov"
         };
 
@@ -246,7 +246,7 @@ public class LanguageServerTests
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri(uri),
+                DocumentUri = new DocumentUri(uri),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov rax, rbx"
@@ -256,7 +256,7 @@ public class LanguageServerTests
 
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri(uri) },
             Position = new Position { Line = 0, Character = 5 } // Position on "rax"
         };
 
@@ -280,7 +280,7 @@ public class LanguageServerTests
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri(uri),
+                DocumentUri = new DocumentUri(uri),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov "
@@ -290,7 +290,7 @@ public class LanguageServerTests
 
         var sigHelpParams = new SignatureHelpParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri(uri) },
             Position = new Position { Line = 0, Character = 4 },
             Context = new SignatureHelpContext
             {
@@ -328,7 +328,7 @@ add rcx, rdx
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri(uri),
+                DocumentUri = new DocumentUri(uri),
                 LanguageId = "asm",
                 Version = 1,
                 Text = textWithRegions
@@ -338,7 +338,7 @@ add rcx, rdx
 
         var foldingParams = new FoldingRangeParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri(uri) }
         };
 
         // Act
@@ -393,7 +393,7 @@ add rcx, rdx
         {
             TextDocument = new TextDocumentItem
             {
-                Uri = new Uri("file:///lifecycle.asm"),
+                DocumentUri = new DocumentUri("file:///lifecycle.asm"),
                 LanguageId = "asm",
                 Version = 1,
                 Text = "mov rax, rbx"
@@ -407,7 +407,7 @@ add rcx, rdx
         // Get hover
         var hoverParams = new TextDocumentPositionParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///lifecycle.asm") },
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///lifecycle.asm") },
             Position = new Position { Line = 0, Character = 1 }
         };
         var hover = server.GetHover(hoverParams);
@@ -415,7 +415,7 @@ add rcx, rdx
         // Close document
         var closeParams = new DidCloseTextDocumentParams
         {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///lifecycle.asm") }
+            TextDocument = new TextDocumentIdentifier { DocumentUri = new DocumentUri("file:///lifecycle.asm") }
         };
         server.OnTextDocumentClosed(closeParams);
 

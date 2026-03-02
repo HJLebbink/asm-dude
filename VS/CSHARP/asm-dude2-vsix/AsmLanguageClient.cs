@@ -31,7 +31,6 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Threading;
-using Newtonsoft.Json.Linq;
 using System.ComponentModel.Composition;
 using AsmDude2.Tools;
 using AsmTools;
@@ -350,30 +349,6 @@ namespace AsmDude2
             return Task.FromResult(failureContext);
         }
 
-        public object MiddleLayer => DiagnosticsFilterMiddleLayer.Instance;
-
-        internal class DiagnosticsFilterMiddleLayer : ILanguageClientMiddleLayer
-        {
-            internal readonly static DiagnosticsFilterMiddleLayer Instance = new DiagnosticsFilterMiddleLayer();
-
-            private DiagnosticsFilterMiddleLayer() { }
-
-            public bool CanHandle(string methodName)
-            {
-                return true;
-            }
-
-            public async Task HandleNotificationAsync(string methodName, JToken methodParam, Func<JToken, Task> sendNotification)
-            {
-                AsmDudeToolsStatic.Output_INFO($"Received a LSP notification: name={methodName}; param={methodParam}");
-                await sendNotification(methodParam);
-            }
-
-            public async Task<JToken> HandleRequestAsync(string methodName, JToken methodParam, Func<JToken, Task<JToken>> sendRequest)
-            {
-                AsmDudeToolsStatic.Output_INFO($"Received a LSP request: name={methodName}; param={methodParam}");
-                return await sendRequest(methodParam);
-            }
-        }
+        public object MiddleLayer => null;
     }
 }

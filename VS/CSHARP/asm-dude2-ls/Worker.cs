@@ -42,9 +42,15 @@ public partial class Worker : BackgroundService
         if (UseStdio)
         {
             // Use stdin/stdout for communication (for testing and CLI usage)
-            logger.LogInformation("Using stdio mode for LSP communication");
+            // Get raw streams BEFORE redirecting Console.Out
             var stdin = Console.OpenStandardInput();
             var stdout = Console.OpenStandardOutput();
+
+            // Redirect Console.Out to stderr to prevent asm-tools-lib debug output
+            // from corrupting the LSP protocol on stdout
+            Console.SetOut(Console.Error);
+
+            LanguageServer.UseStdio = true;
             this._languageServer = LanguageServer.Create(stdout, stdin);
         }
         else

@@ -111,16 +111,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="17.14.249" />
 
     <!-- Roslyn LSP types (internal, accessed via IgnoresAccessChecksToGenerator) -->
-    <PackageReference Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" Version="5.0.0-1.25277.114" />
+    <PackageReference Include="Microsoft.CodeAnalysis.LanguageServer.Protocol" Version="5.6.0-2.26125.2" />
 
     <!-- CLR hack to access internal types - generates public reference assemblies -->
     <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.8.0" PrivateAssets="All" />
 
-	<PackageReference Include="StreamJsonRpc" Version="2.24.84" />
+	<PackageReference Include="StreamJsonRpc" Version="2.25.6" />
     <!-- Newtonsoft.Json removed - using System.Text.Json via SystemTextJsonFormatter -->
   </ItemGroup>
   <ItemGroup>

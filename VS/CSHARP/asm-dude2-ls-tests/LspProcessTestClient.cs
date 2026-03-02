@@ -73,17 +73,35 @@ public sealed class LspProcessTestClient : IAsyncDisposable
         serverProjectPath ??= FindServerProjectPath();
         timeout ??= TimeSpan.FromSeconds(30);
 
+        // Find the server executable based on the project path
+        var serverDir = Path.GetDirectoryName(serverProjectPath)!;
+        var exePath = Path.Combine(serverDir, "bin", "Release", "net10.0-windows", "AsmDude2.LSP.exe");
+
+        // Fall back to Debug if Release doesn't exist
+        if (!File.Exists(exePath))
+        {
+            exePath = Path.Combine(serverDir, "bin", "Debug", "net10.0-windows", "AsmDude2.LSP.exe");
+        }
+
+        if (!File.Exists(exePath))
+        {
+            throw new FileNotFoundException($"LSP server executable not found. Build the project first: {exePath}");
+        }
+
+        // Use UTF8 without BOM to avoid corrupting the LSP header
+        var utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
         var startInfo = new ProcessStartInfo
         {
-            FileName = "dotnet",
-            Arguments = $"run --project \"{serverProjectPath}\" --no-build -- --stdio",
+            FileName = exePath,
+            Arguments = "--stdio",
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true,
-            StandardInputEncoding = Encoding.UTF8,
-            StandardOutputEncoding = Encoding.UTF8,
+            StandardInputEncoding = utf8NoBom,
+            StandardOutputEncoding = utf8NoBom,
         };
 
         var process = new Process { StartInfo = startInfo };
@@ -93,7 +111,9 @@ public sealed class LspProcessTestClient : IAsyncDisposable
         process.ErrorDataReceived += (_, e) =>
         {
             if (e.Data != null)
+            {
                 stderrBuilder.AppendLine(e.Data);
+            }
         };
 
         if (!process.Start())
@@ -165,25 +185,12 @@ public sealed class LspProcessTestClient : IAsyncDisposable
         if (_initialized)
             throw new InvalidOperationException("Already initialized");
 
+        // Use a simple request format that works reliably
         var initParams = new
         {
             processId = Environment.ProcessId,
             rootUri = rootUri ?? "file:///test",
-            capabilities = new
-            {
-                textDocument = new
-                {
-                    hover = new { contentFormat = new[] { "markdown", "plaintext" } },
-                    completion = new { completionItem = new { snippetSupport = false } },
-                    inlayHint = new { dynamicRegistration = false },
-                    semanticTokens = new { dynamicRegistration = false },
-                }
-            },
-            initializationOptions = new
-            {
-                PerformanceInfo_On = true,
-                PerformanceInfo_IsDefaultOn = true,
-            }
+            capabilities = new { }
         };
 
         var response = await SendRequestAsync("initialize", initParams);
@@ -380,6 +387,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
     /// <summary>
     /// Sends a JSON-RPC request and waits for a response.
+    /// Skips any notifications received while waiting for the response.
     /// </summary>
     public async Task<JsonNode?> SendRequestAsync(string method, object? @params, TimeSpan? timeout = null)
     {
@@ -396,24 +404,40 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
         await SendMessageAsync(request);
 
-        // Read response with timeout
+        // Read responses with timeout, skipping notifications until we get the actual response
         using var cts = new CancellationTokenSource(timeout.Value);
-        var response = await ReadMessageAsync(cts.Token);
 
-        if (response == null)
+        while (!cts.Token.IsCancellationRequested)
         {
-            throw new TimeoutException($"No response received for {method} request");
+            var message = await ReadMessageAsync(cts.Token);
+
+            if (message == null)
+            {
+                throw new TimeoutException($"No response received for {method} request");
+            }
+
+            // Check if this is a response (has "id" field) or a notification (has "method" field)
+            var messageId = message["id"];
+            if (messageId != null)
+            {
+                // This is a response - verify it matches our request id
+                if (messageId.GetValue<int>() == id)
+                {
+                    // Check for error
+                    var error = message["error"];
+                    if (error != null)
+                    {
+                        throw new InvalidOperationException(
+                            $"LSP error: {error["message"]?.GetValue<string>()} (code: {error["code"]?.GetValue<int>()})");
+                    }
+
+                    return message["result"];
+                }
+            }
+            // If it's a notification (no id), just skip it and continue reading
         }
 
-        // Check for error
-        var error = response["error"];
-        if (error != null)
-        {
-            throw new InvalidOperationException(
-                $"LSP error: {error["message"]?.GetValue<string>()} (code: {error["code"]?.GetValue<int>()})");
-        }
-
-        return response["result"];
+        throw new TimeoutException($"No response received for {method} request");
     }
 
     /// <summary>
@@ -487,32 +511,13 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
     private async Task<string?> ReadLineAsync(CancellationToken cancellationToken)
     {
-        var sb = new StringBuilder();
-        var buffer = new char[1];
+        if (_serverProcess.HasExited)
+            return null;
 
-        while (true)
-        {
-            var readTask = _reader.ReadAsync(buffer, 0, 1);
-            var completedTask = await Task.WhenAny(readTask, Task.Delay(-1, cancellationToken));
-
-            if (completedTask != readTask)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-
-            var read = await readTask;
-            if (read == 0)
-            {
-                return sb.Length > 0 ? sb.ToString() : null;
-            }
-
-            if (buffer[0] == '\n')
-            {
-                return sb.ToString().TrimEnd('\r');
-            }
-
-            sb.Append(buffer[0]);
-        }
+        // Use ReadLineAsync(CancellationToken) which is properly cancellable on .NET 7+.
+        // The old Peek()-based polling loop blocked because StreamReader.Peek() internally
+        // calls Read() to fill its buffer, which blocks on Windows process pipes.
+        return await _reader.ReadLineAsync(cancellationToken);
     }
 
     private void EnsureInitialized()
@@ -542,15 +547,26 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
         try
         {
+            // Cancel async stderr reading so the background thread exits cleanly.
+            // Without this, BeginErrorReadLine's background thread keeps the test host alive.
+            _serverProcess.CancelErrorRead();
+        }
+        catch { }
+
+        try
+        {
             if (!_serverProcess.HasExited)
             {
                 _serverProcess.Kill();
-                await _serverProcess.WaitForExitAsync();
             }
+            // Always wait for the process to fully exit and its async I/O threads
+            // to complete. Without this, the test host may hang after all tests finish.
+            using var exitCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await _serverProcess.WaitForExitAsync(exitCts.Token);
         }
         catch
         {
-            // Ignore errors during kill
+            // Ignore errors during kill/wait
         }
 
         _serverProcess.Dispose();

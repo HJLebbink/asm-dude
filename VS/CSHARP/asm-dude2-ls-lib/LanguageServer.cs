@@ -40,7 +40,7 @@ using Range = Roslyn.LanguageServer.Protocol.Range;
 
 namespace AsmDude2LS;
 
-public class LanguageServer : INotifyPropertyChanged
+public class LanguageServer : INotifyPropertyChanged, IDisposable
 {
     private const int MAX_LENGTH_DESCR_TEXT = 120;
     internal const double SlowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
@@ -54,6 +54,7 @@ public class LanguageServer : INotifyPropertyChanged
     private readonly HeaderDelimitedMessageHandler messageHandler;
     private readonly LanguageServerTarget target;
     private readonly ManualResetEvent disconnectEvent = new(false);
+    private int _disposed = 0;
     private readonly List<Diagnostic> diagnostics;
 
     private readonly Dictionary<string, TextDocumentItem> textDocuments;
@@ -81,6 +82,13 @@ public class LanguageServer : INotifyPropertyChanged
         Instance ??= new LanguageServer(sender, reader);
         return Instance;
     }
+
+    /// <summary>
+    /// Creates a new LanguageServer instance for unit/integration testing, bypassing the singleton.
+    /// Each test should call this to get an isolated server connected to its own streams.
+    /// </summary>
+    internal static LanguageServer CreateForTest(Stream sender, Stream reader)
+        => new LanguageServer(sender, reader);
 
     private static LanguageServer Instance { get; set; }
 
@@ -120,7 +128,10 @@ public class LanguageServer : INotifyPropertyChanged
         // Note: VSExtensionConverter is not available in LspTypes package
         // The VS-specific type conversion is handled manually where needed
 
+        // Always log startup info to stderr for debugging (regardless of trace setting)
+        Console.Error.WriteLine($"LanguageServer: Starting RPC listener. Sender CanWrite={sender.CanWrite}, Reader CanRead={reader.CanRead}");
         rpc.StartListening();
+        Console.Error.WriteLine("LanguageServer: RPC listener started");
 
         target.OnInitializeCompletion += OnTargetInitializeCompletion;
         target.OnInitialized += OnTargetInitialized;
@@ -300,6 +311,15 @@ public class LanguageServer : INotifyPropertyChanged
             LogInfo("LanguageServer: OnTargetInitializeCompletion");
         }
 
+        /// <summary>
+        /// Called when initialization is complete. This is called directly instead of using
+        /// the OnInitializeCompletion event because StreamJsonRpc proxies events as notifications.
+        /// </summary>
+        public void OnInitializeComplete()
+        {
+            LogInfo("LanguageServer: OnInitializeComplete");
+        }
+
         private void OnTargetInitialized(object sender, EventArgs e)
         {
             LogInfo("LanguageServer: OnTargetInitialized");
@@ -336,7 +356,7 @@ public class LanguageServer : INotifyPropertyChanged
             if (document != null)
             {
                 this.textDocumentLines.Remove(uri);
-                var lines = document.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                var lines = document.Text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
                 this.textDocumentLines.Add(uri, lines);
 
                 int fileID = 0; //TODO
@@ -346,6 +366,8 @@ public class LanguageServer : INotifyPropertyChanged
                     (KeywordID[] keywords, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lines[lineNumber], lineNumber, fileID);
                     lineData[lineNumber] = keywords;
                 }
+                this.parsedDocuments.Remove(uri);
+                this.parsedDocuments.Add(uri, lineData);
 
                 this.diagnostics.Clear();
                 this.UpdateFoldingRanges(uri);
@@ -373,6 +395,7 @@ public class LanguageServer : INotifyPropertyChanged
             var uri = messageParams.TextDocument.DocumentUri.ToString();
             this.textDocuments.Remove(uri);
             this.textDocumentLines.Remove(uri);
+            this.parsedDocuments.Remove(uri);
         }
 
         private void UpdateLabelGraph(string uri)
@@ -711,6 +734,7 @@ public class LanguageServer : INotifyPropertyChanged
             var uri = args.TextDocument.DocumentUri.ToString();
 
             var lines = this.GetLines(uri);
+            if ((int)args.Position.Line >= lines.Length) return Array.Empty<object>();
             var (referenceWord, _, _) = GetWord((int)args.Position.Character, lines[(int)args.Position.Line]);
             if (referenceWord.Length == 0)
             {
@@ -853,19 +877,20 @@ public class LanguageServer : INotifyPropertyChanged
 
                 var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
                 int lineNumber = (int)parameter.Position.Line;
+                if (lineNumber >= lines.Length) return null;
                 string completeLineStr = lines[lineNumber];
                 int pos = (int)parameter.Position.Character;
                 string lineStr = completeLineStr[..pos];
 
                 //LogInfo($"GetTextDocumentSignatureHelp: lineStr = {lineStr}");
   
-                if (extraLogging)
+                if (extraLogging && parameter.Context != null)
                 {
                     LogInfo("===========================");
                     LogInfo($"GetTextDocumentSignatureHelp: TriggerKind={parameter.Context.TriggerKind}; triggerChar={parameter.Context.TriggerCharacter}; IsRetrigger={parameter.Context.IsRetrigger}");
                 }
 
-                if (parameter.Context.TriggerCharacter == ";")
+                if (parameter.Context?.TriggerCharacter == ";")
                 {
                     LogError($"GetTextDocumentSignatureHelp: TriggerCharacter = {parameter.Context.TriggerCharacter}");
                     return null;
@@ -1065,11 +1090,6 @@ public class LanguageServer : INotifyPropertyChanged
         {
             string uri = parameter.TextDocument.DocumentUri.ToString();
 
-            if (!this.parsedDocuments.TryGetValue(uri, out KeywordID[][] keywords))
-            {
-                return Array.Empty<InlayHint>();
-            }
-
             if (!this.textDocumentLines.TryGetValue(uri, out string[] lines))
             {
                 return Array.Empty<InlayHint>();
@@ -1077,7 +1097,7 @@ public class LanguageServer : INotifyPropertyChanged
 
             var hints = new List<InlayHint>();
             int startLine = parameter.Range.Start.Line;
-            int endLine = Math.Min(parameter.Range.End.Line, keywords.Length - 1);
+            int endLine = Math.Min(parameter.Range.End.Line, lines.Length - 1);
 
             // Get selected microarchitectures for performance info
             MicroArch selectedArch = this.options?.Get_MicroArch_Switched_On() ?? MicroArch.NONE;
@@ -1085,78 +1105,80 @@ public class LanguageServer : INotifyPropertyChanged
 
             for (int lineNumber = startLine; lineNumber <= endLine; lineNumber++)
             {
-                if (lineNumber >= keywords.Length) break;
-                var lineTokens = keywords[lineNumber];
-                if (lineTokens == null) continue;
+                if (lineNumber >= lines.Length) break;
+                string lineText = lines[lineNumber];
+                if (string.IsNullOrWhiteSpace(lineText)) continue;
 
-                string lineText = (lineNumber < lines.Length) ? lines[lineNumber] : string.Empty;
+                int fileID = 0;
+                (_, _, Mnemonic mnemonic, string[] args, _) = AsmTools.AsmSourceTools.ParseLine(lineText, lineNumber, fileID);
 
-                foreach (var token in lineTokens)
+                // Add performance hint for mnemonic
+                if (showPerformance && mnemonic != Mnemonic.NONE && this.performanceStore != null)
                 {
-                    switch (token.Type)
+                    int mnemonicStart = lineText.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
+                    if (mnemonicStart >= 0)
                     {
-                        case AsmTokenType.Mnemonic:
-                        case AsmTokenType.MnemonicOff:
-                            // Show instruction latency hint
-                            if (showPerformance && this.performanceStore != null)
+                        int mnemonicEnd = mnemonicStart + mnemonic.ToString().Length;
+                        var perfItems = this.performanceStore.GetPerformance(mnemonic, selectedArch);
+                        var firstPerf = perfItems.FirstOrDefault();
+                        if (!string.IsNullOrEmpty(firstPerf.latency_))
+                        {
+                            hints.Add(new InlayHint
                             {
-                                string mnemonicText = lineText.Substring(token.Start_Pos, token.End_Pos - token.Start_Pos);
-                                if (AsmTools.AsmSourceTools.ParseMnemonic(mnemonicText, true) is Mnemonic mnemonic && mnemonic != Mnemonic.NONE)
+                                Position = new Position(lineNumber, mnemonicEnd),
+                                Label = $" ⏱{firstPerf.latency_}cy",
+                                Kind = InlayHintKind.Type,
+                                PaddingLeft = true,
+                                ToolTip = new MarkupContent
                                 {
-                                    var perfItems = this.performanceStore.GetPerformance(mnemonic, selectedArch);
-                                    var firstPerf = perfItems.FirstOrDefault();
-                                    if (!string.IsNullOrEmpty(firstPerf.latency_))
-                                    {
-                                        hints.Add(new InlayHint
-                                        {
-                                            Position = new Position(lineNumber, token.End_Pos),
-                                            Label = $" ⏱{firstPerf.latency_}cy",
-                                            Kind = InlayHintKind.Type,
-                                            PaddingLeft = true,
-                                            ToolTip = new MarkupContent
-                                            {
-                                                Kind = MarkupKind.Markdown,
-                                                Value = $"**Latency:** {firstPerf.latency_} cycles\n\n**Throughput:** {firstPerf.throughput_}\n\n**µops:** {firstPerf.mu_Ops_Fused_}"
-                                            }
-                                        });
-                                    }
+                                    Kind = MarkupKind.Markdown,
+                                    Value = $"**Latency:** {firstPerf.latency_} cycles\n\n**Throughput:** {firstPerf.throughput_}\n\n**µops:** {firstPerf.mu_Ops_Fused_}"
                                 }
-                            }
-                            break;
-
-                        case AsmTokenType.Constant:
-                            // Show hex/decimal conversion hint
-                            string constText = lineText.Substring(token.Start_Pos, token.End_Pos - token.Start_Pos);
-                            var (valid, value, _) = AsmTools.AsmSourceTools.Evaluate_Constant(constText);
-                            if (valid)
-                            {
-                                string hint;
-                                // If it looks like hex, show decimal; if decimal, show hex
-                                if (constText.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ||
-                                    constText.EndsWith("h", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    hint = $" ={value}";  // Show decimal
-                                }
-                                else if (value >= 10 || value < 0)
-                                {
-                                    hint = $" =0x{value:X}";  // Show hex
-                                }
-                                else
-                                {
-                                    continue; // Skip small decimals (0-9)
-                                }
-
-                                hints.Add(new InlayHint
-                                {
-                                    Position = new Position(lineNumber, token.End_Pos),
-                                    Label = hint,
-                                    Kind = InlayHintKind.Type,
-                                    PaddingLeft = true,
-                                    ToolTip = $"Value: {value} (0x{value:X})"
-                                });
-                            }
-                            break;
+                            });
+                        }
                     }
+                }
+
+                // Scan each operand for numeric constants and add hex/decimal conversion hints.
+                // Note: ParseLine does not populate keywords with operand tokens, so we scan args directly.
+                int searchStart = 0;
+                foreach (string arg in args)
+                {
+                    string trimmedArg = arg.Trim();
+                    if (trimmedArg.Length == 0) continue;
+
+                    // Find the position of this arg in the original line text
+                    int argStart = lineText.IndexOf(trimmedArg, searchStart, StringComparison.OrdinalIgnoreCase);
+                    if (argStart < 0) continue;
+                    int argEnd = argStart + trimmedArg.Length;
+                    searchStart = argEnd;
+
+                    var (valid, value, _) = AsmTools.AsmSourceTools.Evaluate_Constant(trimmedArg);
+                    if (!valid) continue;
+
+                    string hint;
+                    if (trimmedArg.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ||
+                        trimmedArg.EndsWith("h", StringComparison.OrdinalIgnoreCase))
+                    {
+                        hint = $" ={value}";  // Show decimal for hex literals
+                    }
+                    else if (value >= 10)
+                    {
+                        hint = $" =0x{value:X}";  // Show hex for large decimal literals
+                    }
+                    else
+                    {
+                        continue; // Skip small decimals (0-9)
+                    }
+
+                    hints.Add(new InlayHint
+                    {
+                        Position = new Position(lineNumber, argEnd),
+                        Label = hint,
+                        Kind = InlayHintKind.Type,
+                        PaddingLeft = true,
+                        ToolTip = $"Value: {value} (0x{value:X})"
+                    });
                 }
             }
 
@@ -1436,6 +1458,7 @@ public class LanguageServer : INotifyPropertyChanged
 
                 var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
                 int lineNumber = (int)parameter.Position.Line;
+                if (lineNumber >= lines.Length) return new CompletionList();
                 string completeLineStr = lines[lineNumber];
                 int pos = (int)parameter.Position.Character;
 
@@ -1578,6 +1601,7 @@ public class LanguageServer : INotifyPropertyChanged
             }
 
             var lines = this.GetLines(uri);
+            if ((int)position.Line >= lines.Length) return Array.Empty<DocumentHighlight>();
             var lineStr2 = lines[(int)position.Line];
             (int startPos, int endPos) = FindWordBoundary((int)position.Character, lineStr2);
             int length = endPos - startPos;
@@ -1791,6 +1815,7 @@ public class LanguageServer : INotifyPropertyChanged
                 return null;
             }
             var lines = this.GetLines(parameter.TextDocument.DocumentUri.ToString());
+            if ((int)parameter.Position.Line >= lines.Length) return null;
             var (keyword, startPos, endPos) = GetWord((int)parameter.Position.Character, lines[(int)parameter.Position.Line]);
             if (keyword.Length == 0)
             {
@@ -2249,24 +2274,32 @@ public class LanguageServer : INotifyPropertyChanged
 
         #region Logging
 
+        /// <summary>
+        /// When true, logging uses stderr instead of stdout to avoid interfering with LSP protocol.
+        /// Set this before creating the LanguageServer when using stdio mode.
+        /// </summary>
+        public static bool UseStdio { get; set; } = false;
+
+        private static TextWriter LogWriter => UseStdio ? Console.Error : Console.Out;
+
         public static void LogInfo(string message)
         {
             if (Instance?.target?.traceSetting == TraceSetting.Verbose)
             {
-                Console.WriteLine($"INFO {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
+                LogWriter.WriteLine($"INFO {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
                 Instance?.traceSource?.TraceEvent(TraceEventType.Information, 0, message);
             }
         }
 
         public static void LogWarning(string message)
         {
-            Console.WriteLine($"WARNING {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
+            LogWriter.WriteLine($"WARNING {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
             Instance?.traceSource?.TraceEvent(TraceEventType.Warning, 0, message);
         }
 
         public static void LogError(string message)
         {
-            Console.WriteLine($"ERROR {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
+            LogWriter.WriteLine($"ERROR {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
             Instance?.MakeWindowVisible();
             Instance?.traceSource?.TraceEvent(TraceEventType.Error, 0, message);
         }
@@ -2351,6 +2384,13 @@ public class LanguageServer : INotifyPropertyChanged
             this.disconnectEvent.Set();
 
             Disconnected?.Invoke(this, new EventArgs());
+        }
+
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+            this.Exit();
+            this.rpc?.Dispose();
         }
 
         //public void ApplyTextEdit(string text, Uri uri)
@@ -2474,6 +2514,12 @@ public class LanguageServer : INotifyPropertyChanged
 
         private void OnRpcDisconnected(object sender, JsonRpcDisconnectedEventArgs e)
         {
+            // Always log disconnection to stderr for debugging (regardless of trace setting)
+            Console.Error.WriteLine($"OnRpcDisconnected: Reason={e.Reason}, Description={e.Description}, Exception={e.Exception?.Message}");
+            if (e.Exception != null)
+            {
+                Console.Error.WriteLine($"OnRpcDisconnected Exception: {e.Exception}");
+            }
             this.Exit();
         }
         

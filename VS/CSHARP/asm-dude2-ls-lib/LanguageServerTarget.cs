@@ -44,6 +44,24 @@ public class LanguageServerTarget(LanguageServer server)
 
         public event EventHandler OnInitialized;
 
+        private static AsmLanguageServerOptions CreateDefaultOptions() => new AsmLanguageServerOptions
+        {
+            AsmDoc_On = true,
+            CodeCompletion_On = true,
+            SignatureHelp_On = true,
+            CodeFolding_On = true,
+            CodeFolding_BeginTag = "#region",
+            CodeFolding_EndTag = "#endregion",
+            ARCH_8086 = true,
+            ARCH_X64 = true,
+            ARCH_SSE = true,
+            ARCH_SSE2 = true,
+            ARCH_AVX = true,
+            ARCH_AVX2 = true,
+            IntelliSense_Label_Analysis_On = true,
+            useAssemblerAutoDetect = true,
+        };
+
         [JsonRpcMethod(Methods.InitializeName, UseSingleObjectParameterDeserialization = true)]
         public object Initialize(InitializeParams parameter)
         {
@@ -58,11 +76,14 @@ public class LanguageServerTarget(LanguageServer server)
             LanguageServer.LogInfo($"Initialize: traceSetting={traceSetting}");
 
             // Parse InitializationOptions - it comes as a JsonElement when using System.Text.Json
+            // IncludeFields = true is required because AsmLanguageServerOptions uses public fields, not properties
+            var jsonOptionsWithFields = new System.Text.Json.JsonSerializerOptions { IncludeFields = true, PropertyNameCaseInsensitive = true };
             var options = parameter.InitializationOptions switch
             {
-                System.Text.Json.JsonElement jsonElement => System.Text.Json.JsonSerializer.Deserialize<AsmLanguageServerOptions>(jsonElement.GetRawText()),
+                System.Text.Json.JsonElement jsonElement => System.Text.Json.JsonSerializer.Deserialize<AsmLanguageServerOptions>(jsonElement.GetRawText(), jsonOptionsWithFields),
                 _ => null
-            } ?? new AsmLanguageServerOptions();
+            } ?? CreateDefaultOptions();
+            LanguageServer.LogInfo($"Initialize: AsmDoc_On={options.AsmDoc_On}, CodeCompletion_On={options.CodeCompletion_On}, ARCH_8086={options.ARCH_8086}");
 
             server.Initialize(options);
 
@@ -238,7 +259,10 @@ public class LanguageServerTarget(LanguageServer server)
                 }
             };
 
-            OnInitializeCompletion?.Invoke(this, EventArgs.Empty);
+            // Note: OnInitializeCompletion event is not invoked here because StreamJsonRpc
+            // automatically proxies events as JSON-RPC notifications, which interferes with
+            // the response when using stdio mode. The event handler logic is called directly instead.
+            server.OnInitializeComplete();
             LanguageServer.LogInfo($"Initialize: Sent: {System.Text.Json.JsonSerializer.Serialize(result)}");
             return result;
         }

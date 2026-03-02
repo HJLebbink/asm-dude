@@ -112,13 +112,14 @@
 	<ItemGroup>
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
 		<!-- Latest stable packages for VS 2022/2026 compatibility -->
-		<PackageReference Include="StreamJsonRpc" Version="2.24.84" />
+		<!-- Note: Microsoft.VisualStudio.SDK and Threading.Analyzers 18.x are pre-release only; 17.14.x is latest stable -->
+		<PackageReference Include="StreamJsonRpc" Version="2.25.6" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" />
 		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.14.2120">
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="18.5.38461">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

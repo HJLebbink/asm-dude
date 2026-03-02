@@ -8,10 +8,11 @@ try
     var builder = Host.CreateApplicationBuilder(args);
     builder.Services.AddHostedService<Worker>();
 
-    // In stdio mode, minimize logging to stderr to avoid interference
+    // In stdio mode, disable console logging completely to avoid interference with LSP protocol
+    // Stdout must be reserved exclusively for LSP JSON-RPC messages
     if (Worker.UseStdio)
     {
-        builder.Logging.SetMinimumLevel(LogLevel.Warning);
+        builder.Logging.ClearProviders();
     }
 
     var host = builder.Build();
