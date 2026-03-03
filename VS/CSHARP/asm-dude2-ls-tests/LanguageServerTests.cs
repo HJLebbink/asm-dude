@@ -207,26 +207,18 @@ public class LanguageServerTests
     #region Hover Tests
 
     [Fact]
-    public void GetHover_WithMnemonic_ShouldReturnHoverInfo()
+    public void GetHover_WithMnemonic_ShouldReturnHover()
     {
         // Arrange
         var uri = "file:///test.asm";
-        var openParams = new DidOpenTextDocumentParams
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
-            TextDocument = new TextDocumentItem
-            {
-                Uri = new Uri(uri),
-                LanguageId = "asm",
-                Version = 1,
-                Text = "mov rax, rbx"
-            }
-        };
-        _server.OnTextDocumentOpened(openParams);
-
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
         var hoverParams = new TextDocumentPositionParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
-            Position = new Position { Line = 0, Character = 1 } // Position on "mov"
+            Position = new Position { Line = 0, Character = 1 }
         };
 
         // Act
@@ -234,9 +226,72 @@ public class LanguageServerTests
 
         // Assert
         result.Should().NotBeNull("hover on MOV should return documentation");
-        // Result can be either Hover or VSInternalHover (with clickable link)
-        // Both types have contents, but we check the object is not null
-        (result is Hover || result is VSInternalHover).Should().BeTrue("result should be Hover or VSInternalHover");
+        result.Should().BeOfType<Hover>("GetHover should return standard Hover, not a custom type");
+        var hover = (Hover)result;
+        hover.Contents.Should().NotBeNull();
+        var markup = hover.Contents.Value.Fourth;
+        markup.Should().NotBeNull("Contents should be MarkupContent");
+        markup.Kind.Should().Be(MarkupKind.Markdown);
+        markup.Value.Should().Contain("MOV", "hover text should mention the mnemonic");
+    }
+
+    [Fact]
+    public void GetHover_WithMnemonic_WithAsmDocUrl_ShouldContainMarkdownLink()
+    {
+        // Arrange – create a fresh server with AsmDoc_Url configured
+        var server = new LanguageServer();
+        server.Initialize(new AsmLanguageServerOptions
+        {
+            ARCH_X64 = true,
+            AsmDoc_On = true,
+            AsmDoc_Url = "https://github.com/HJLebbink/asm-dude/wiki/"
+        });
+        server.Initialized();
+
+        var uri = "file:///test.asm";
+        server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        // Act
+        var result = server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 1 }
+        });
+
+        // Assert
+        result.Should().BeOfType<Hover>();
+        var markup = ((Hover)result).Contents!.Value.Fourth;
+        markup.Should().NotBeNull();
+        markup.Value.Should().MatchRegex(@"\[MOV\]\(https://github\.com/HJLebbink/asm-dude/wiki/.*\)",
+            "hover should open with a markdown hyperlink to the documentation page");
+        markup.Value.Should().StartWith("[MOV](", "link should be at the top of the hover text");
+    }
+
+    [Fact]
+    public void GetHover_WithMnemonic_WithoutAsmDocUrl_ShouldNotContainMarkdownLink()
+    {
+        // Arrange – _server has no AsmDoc_Url set (see constructor)
+        var uri = "file:///test.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        // Act
+        var result = _server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 1 }
+        });
+
+        // Assert
+        result.Should().BeOfType<Hover>();
+        var markup = ((Hover)result).Contents!.Value.Fourth;
+        markup.Should().NotBeNull();
+        markup.Value.Should().NotStartWith("[", "without AsmDoc_Url there should be no leading markdown link");
     }
 
     [Fact]
@@ -404,6 +459,136 @@ add rcx, rdx
         var outer = result.First(r => r.StartLine == 0);
         inner.CollapsedText.Should().Be("Inner");
         outer.CollapsedText.Should().Be("Outer");
+    }
+
+    #endregion
+
+    #region Semantic Tokens Tests
+
+    [Fact]
+    public void GetSemanticTokens_WithMnemonicAndRegister_ShouldReturnTokens()
+    {
+        // Arrange
+        var uri = "file:///test_semantic.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        // Act
+        var result = _server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Data.Should().NotBeEmpty("mov rax, rbx contains tokens");
+        result.Data.Length.Should().BeGreaterThan(0);
+        (result.Data.Length % 5).Should().Be(0, "LSP semantic tokens are always encoded as groups of 5 ints");
+    }
+
+    [Fact]
+    public void GetSemanticTokens_ShouldReturnResultId()
+    {
+        // Arrange — ResultId is required for the delta protocol to work (prevents VS polling every 2s)
+        var uri = "file:///test_semantic_resultid.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        // Act
+        var result = _server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ResultId.Should().NotBeNullOrEmpty("ResultId must be set so VS can use delta protocol instead of polling every 2 seconds");
+    }
+
+    [Fact]
+    public void GetSemanticTokensDelta_WhenDocumentUnchanged_ShouldReturnEmptyEdits()
+    {
+        // Arrange — this is the key test that would have caught the 2-second polling problem:
+        // after a full request, a delta with the same resultId must return zero edits
+        var uri = "file:///test_delta_unchanged.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        var full = _server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        // Act — request delta with the resultId just returned
+        var delta = _server.GetSemanticTokensDelta(new SemanticTokensDeltaParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            PreviousResultId = full.ResultId!
+        });
+
+        // Assert
+        delta.Should().BeOfType<SemanticTokensDelta>("unchanged document should return a delta, not full tokens");
+        var tokensDelta = (SemanticTokensDelta)delta;
+        tokensDelta.Edits.Should().BeEmpty("no changes were made to the document");
+        tokensDelta.ResultId.Should().Be(full.ResultId, "resultId should be stable when document is unchanged");
+    }
+
+    [Fact]
+    public void GetSemanticTokensDelta_WhenDocumentChanged_ShouldReturnNewTokens()
+    {
+        // Arrange
+        var uri = "file:///test_delta_changed.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        var full = _server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        // Act — update the document then request delta
+        _server.UpdateServerSideTextDocument("add rcx, rdx\nnop", 2, uri);
+        var delta = _server.GetSemanticTokensDelta(new SemanticTokensDeltaParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            PreviousResultId = full.ResultId!
+        });
+
+        // Assert
+        delta.Should().BeOfType<SemanticTokens>("changed document should return full tokens");
+        var newFull = (SemanticTokens)delta;
+        newFull.ResultId.Should().NotBe(full.ResultId, "resultId must change when document version changes");
+        newFull.Data.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void GetSemanticTokens_EmptyDocument_ShouldReturnEmptyData()
+    {
+        // Arrange
+        var uri = "file:///test_empty_semantic.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "" }
+        });
+
+        // Act
+        var result = _server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Data.Should().BeEmpty();
+        result.ResultId.Should().NotBeNullOrEmpty("ResultId must be set even for empty documents");
     }
 
     #endregion

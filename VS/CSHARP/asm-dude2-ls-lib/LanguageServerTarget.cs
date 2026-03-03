@@ -47,6 +47,7 @@ public class LanguageServerTarget(LanguageServer server)
         private static AsmLanguageServerOptions CreateDefaultOptions() => new AsmLanguageServerOptions
         {
             AsmDoc_On = true,
+            AsmDoc_Url = "https://github.com/HJLebbink/asm-dude/wiki/",
             CodeCompletion_On = true,
             SignatureHelp_On = true,
             CodeFolding_On = true,
@@ -79,12 +80,26 @@ public class LanguageServerTarget(LanguageServer server)
             // IncludeFields = true is required because AsmLanguageServerOptions uses public fields, not properties
             var jsonOptionsWithFields = new System.Text.Json.JsonSerializerOptions { IncludeFields = true, PropertyNameCaseInsensitive = true };
             jsonOptionsWithFields.Converters.Add(new ColorJsonConverter());
-            var options = parameter.InitializationOptions switch
+            AsmLanguageServerOptions options;
+            try
             {
-                System.Text.Json.JsonElement jsonElement => System.Text.Json.JsonSerializer.Deserialize<AsmLanguageServerOptions>(jsonElement.GetRawText(), jsonOptionsWithFields),
-                _ => null
-            } ?? CreateDefaultOptions();
-            LanguageServer.LogInfo($"Initialize: AsmDoc_On={options.AsmDoc_On}, CodeCompletion_On={options.CodeCompletion_On}, ARCH_8086={options.ARCH_8086}");
+                options = parameter.InitializationOptions switch
+                {
+                    System.Text.Json.JsonElement jsonElement => System.Text.Json.JsonSerializer.Deserialize<AsmLanguageServerOptions>(jsonElement.GetRawText(), jsonOptionsWithFields),
+                    _ => null
+                } ?? CreateDefaultOptions();
+            }
+            catch (Exception ex)
+            {
+                LanguageServer.LogError($"Initialize: Failed to deserialize InitializationOptions: {ex.Message}; using defaults");
+                options = CreateDefaultOptions();
+            }
+            // If AsmDoc_Url was not received (e.g. older client), fall back to the default wiki URL
+            if (string.IsNullOrEmpty(options.AsmDoc_Url))
+            {
+                options.AsmDoc_Url = "https://github.com/HJLebbink/asm-dude/wiki/";
+            }
+            LanguageServer.LogInfo($"Initialize: AsmDoc_On={options.AsmDoc_On}, AsmDoc_Url=\"{options.AsmDoc_Url}\", CodeCompletion_On={options.CodeCompletion_On}, ARCH_8086={options.ARCH_8086}");
 
             server.Initialize(options);
 
@@ -143,7 +158,7 @@ public class LanguageServerTarget(LanguageServer server)
                     // enable semantic tokens for rich syntax highlighting
                     SemanticTokensOptions = new SemanticTokensOptions
                     {
-                        Full = true,
+                        Full = new SemanticTokensFullOptions { Delta = true },
                         Range = false,
                         Legend = new SemanticTokensLegend
                         {
@@ -384,10 +399,21 @@ public class LanguageServerTarget(LanguageServer server)
         public DocumentHighlight[] GetDocumentHighlights(DocumentHighlightParams parameter, CancellationToken token)
         {
             LanguageServer.LogInfo($"GetDocumentHighlights: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
-            // Create a simple progress adapter that discards intermediate results
-            // Full progress support would require JsonRpc partial result handling
-            var progress = new Progress<DocumentHighlight[]>(_ => { });
-            var result = server.GetDocumentHighlights(progress, parameter.Position, parameter.TextDocument.Uri.ToString(), token);
+
+            if (parameter.PartialResultToken != null)
+            {
+                // LSP spec: when partialResultToken is present, send results via $/progress and return null.
+                // VS always sends a partialResultToken and only processes $/progress notifications.
+                var progress = new Progress<DocumentHighlight[]>(highlights =>
+                {
+                    _ = server.SendPartialResultAsync(parameter.PartialResultToken, highlights);
+                });
+                server.GetDocumentHighlights(progress, parameter.Position, parameter.TextDocument.Uri.ToString(), token);
+                LanguageServer.LogInfo($"GetDocumentHighlights: Sent via $/progress");
+                return null;
+            }
+
+            var result = server.GetDocumentHighlights(new Progress<DocumentHighlight[]>(_ => { }), parameter.Position, parameter.TextDocument.Uri.ToString(), token);
             LanguageServer.LogInfo($"GetDocumentHighlights: Sent: {System.Text.Json.JsonSerializer.Serialize(result)}");
             return result;
         }
@@ -419,9 +445,9 @@ public class LanguageServerTarget(LanguageServer server)
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensFullName, UseSingleObjectParameterDeserialization = true)]
         public SemanticTokens GetSemanticTokensFull(SemanticTokensParams parameter)
         {
-            LanguageServer.LogInfo($"GetSemanticTokensFull: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
+            LanguageServer.LogInfo($"GetSemanticTokensFull: uri={parameter.TextDocument.Uri}");
             var result = server.GetSemanticTokens(parameter);
-            LanguageServer.LogInfo($"GetSemanticTokensFull: Sent: {System.Text.Json.JsonSerializer.Serialize(result)}");
+            LanguageServer.LogInfo($"GetSemanticTokensFull: resultId={result?.ResultId}, tokenCount={result?.Data?.Length / 5 ?? 0}");
             return result;
         }
 
@@ -461,8 +487,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         /// <summary>
-        /// Handle hover request.
-        /// Returns VSInternalHover with clickable links when URL is available, otherwise standard Hover.
+        /// Handle hover request. Returns standard Hover with MarkupContent.
         /// </summary>
         [JsonRpcMethod(Methods.TextDocumentHoverName, UseSingleObjectParameterDeserialization = true)]
         public object OnHover(TextDocumentPositionParams parameter)
@@ -574,9 +599,13 @@ public class LanguageServerTarget(LanguageServer server)
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensFullDeltaName, UseSingleObjectParameterDeserialization = true)]
         public object TextDocumentSemanticTokensFullDelta(SemanticTokensDeltaParams parameter)
         {
-            LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: NOT IMPLEMENTED. Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
-            // TODO
-            return null;
+            LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: uri={parameter.TextDocument.Uri}, previousResultId={parameter.PreviousResultId}");
+            var result = server.GetSemanticTokensDelta(parameter);
+            if (result is SemanticTokensDelta delta)
+                LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: delta edits={delta.Edits?.Length ?? 0}, resultId={delta.ResultId}");
+            else if (result is SemanticTokens full)
+                LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: full tokens, tokenCount={full.Data?.Length / 5 ?? 0}, resultId={full.ResultId}");
+            return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentSignatureHelpName, UseSingleObjectParameterDeserialization = true)]

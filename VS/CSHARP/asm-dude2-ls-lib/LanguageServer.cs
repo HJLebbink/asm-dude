@@ -1003,7 +1003,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
             if (!this.parsedDocuments.TryGetValue(uri, out KeywordID[][] keywords))
             {
-                return new SemanticTokens { Data = [] };
+                return new SemanticTokens { ResultId = GetDocumentResultId(uri), Data = [] };
             }
 
             var data = new List<int>();
@@ -1048,7 +1048,34 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 }
             }
 
-            return new SemanticTokens { Data = [.. data] };
+            return new SemanticTokens { ResultId = GetDocumentResultId(uri), Data = [.. data] };
+        }
+
+        /// <summary>
+        /// Handle semantic tokens delta request. Returns empty edits when the document hasn't changed,
+        /// or full tokens when it has. This prevents VS from polling every ~2 seconds.
+        /// </summary>
+        public object GetSemanticTokensDelta(SemanticTokensDeltaParams parameter)
+        {
+            string uri = parameter.TextDocument.Uri.ToString();
+            string currentResultId = GetDocumentResultId(uri);
+
+            if (currentResultId == parameter.PreviousResultId)
+            {
+                return new SemanticTokensDelta { ResultId = currentResultId, Edits = [] };
+            }
+
+            // Document changed since last request — return full tokens
+            return GetSemanticTokens(new SemanticTokensParams { TextDocument = parameter.TextDocument });
+        }
+
+        private string GetDocumentResultId(string uri)
+        {
+            if (this.textDocuments.TryGetValue(uri, out var doc))
+            {
+                return doc.Version.ToString();
+            }
+            return "0";
         }
 
         /// <summary>
@@ -1809,8 +1836,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         }
 
         /// <summary>
-        /// Handle hover request.
-        /// Returns VSInternalHover with clickable links when URL is available, otherwise standard Hover.
+        /// Handle hover request. Returns standard Hover with MarkupContent.
         /// </summary>
         public object GetHover(TextDocumentPositionParams parameter)
         {
@@ -2126,27 +2152,22 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
             if (hoverContent != null)
             {
-                // If URL is available, create VSInternalHover with clickable hyperlink
-                if (!string.IsNullOrEmpty(hoverUrl) && !string.IsNullOrEmpty(hoverKeyword))
+                string combinedContent = string.Join("\n\n", hoverContent);
+
+                // Prepend a documentation link if URL is available.
+                // GetHtmlRef returns a reference key (e.g. "KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD");
+                // combine with AsmDoc_Url to form the full link.
+                if (!string.IsNullOrEmpty(hoverUrl) && !string.IsNullOrEmpty(hoverKeyword) && !string.IsNullOrEmpty(this.options.AsmDoc_Url))
                 {
-                    LogInfo($"GetHover: Creating VSInternalHover with clickable link: {hoverKeyword} -> {hoverUrl}");
-
-                    // Build description from hoverContent
-                    string description = string.Join("\n", hoverContent);
-
-                    return HoverBuilder.CreateHoverWithLink(
-                        hoverKeyword,
-                        hoverUrl,
-                        description,
-                        (int)parameter.Position.Line,
-                        startPos,
-                        endPos
-                    );
+                    string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + hoverUrl;
+                    LogInfo($"GetHover: adding link [{hoverKeyword}]({fullUrl})");
+                    combinedContent = $"[{hoverKeyword}]({fullUrl})\n\n" + combinedContent;
+                }
+                else
+                {
+                    LogInfo($"GetHover: no link — hoverKeyword=\"{hoverKeyword}\", hoverUrl=\"{hoverUrl}\", AsmDoc_Url=\"{this.options.AsmDoc_Url}\"");
                 }
 
-                // Otherwise, return standard Hover with MarkupContent
-                // Combine all hover content into a single markdown string
-                string combinedContent = string.Join("\n\n", hoverContent);
                 return new Hover()
                 {
                     Contents = new MarkupContent
@@ -2537,6 +2558,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        internal Task SendPartialResultAsync(object token, object value) =>
+            SendMethodNotificationAsync(Methods.ProgressNotificationName, new { token, value });
 
         private Task SendMethodNotificationAsync<TIn>(string methodName, TIn param)
         {
