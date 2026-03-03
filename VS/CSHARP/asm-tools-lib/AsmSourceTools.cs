@@ -729,8 +729,7 @@ namespace AsmTools
             for (int i = 0; i < x.Length; ++i)
             {
                 string y = x[i].Trim();
-
-                (bool valid, ulong value, int nBits_NOTUSED) = ExpressionEvaluator.Parse_Constant(y, true);
+                (bool valid, ulong value, _) = ExpressionEvaluator.Parse_Constant(y, true);
                 if (valid)
                 {
                     if (foundDisplacement)

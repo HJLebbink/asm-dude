@@ -297,8 +297,7 @@ namespace AsmSim
             Contract.Requires(ctx != null);
             Contract.Assume(op != null);
             Contract.Assume(ctx != null);
-
-            uint nBitsOperand = (uint)op.NBits;
+            _ = (uint)op.NBits;
             uint nBitsAddress = 64;
 
             if (op.IsReg)

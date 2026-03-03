@@ -106,7 +106,7 @@ namespace AsmTools
                 // special case with trailing B: either this B is from a hex number of the Binary
                 if (str.EndsWith("B", StringComparison.Ordinal))
                 {
-                    bool parsedSuccessfully_tmp = ulong.TryParse(str, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out ulong dummy);
+                    bool parsedSuccessfully_tmp = ulong.TryParse(str, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out _);
                     if (parsedSuccessfully_tmp)
                     {
                         isHex = true;

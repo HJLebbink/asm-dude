@@ -121,7 +121,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(sFlow));
             }
 
-            State state = dFlow.Create_EndState;
+            _ = dFlow.Create_EndState;
         }
 
         [TestMethod]

@@ -1213,7 +1213,7 @@ namespace unit_tests_asm_z3
             string line1 = "cmovz rbx, rax";
 
             State state = this.CreateState(tools);
-            Context ctx = state.Ctx;
+            _ = state.Ctx;
             {
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
                 updateState.Set(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_0000000U");
@@ -1329,7 +1329,7 @@ namespace unit_tests_asm_z3
                 ulong b = 0b0000_0100;
 
                 State state = this.CreateState(tools);
-                Context ctx = state.Ctx;
+                _ = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate(state.TailKey, Tools.CreateKey(state.Tools.Rand), tools);
                 if (LogToDisplay)
@@ -1360,7 +1360,7 @@ namespace unit_tests_asm_z3
                 ulong b = 0b1000_0000;
 
                 State state = this.CreateState(tools);
-                Context ctx = state.Ctx;
+                _ = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools);
                 updateState.Set(Rn.AL, a);
@@ -1370,9 +1370,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 // if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
-                BoolExpr of = ToolsFlags.Create_OF_Add(state.Ctx.MkBV(a, nBits), state.Ctx.MkBV(b, nBits), nBits, state.Ctx);
+                _ = ToolsFlags.Create_OF_Add(state.Ctx.MkBV(a, nBits), state.Ctx.MkBV(b, nBits), nBits, state.Ctx);
                 if (LogToDisplay)
                 {
+                    BoolExpr of;
                     Console.WriteLine(of);
                 }
 
@@ -1384,7 +1385,7 @@ namespace unit_tests_asm_z3
                 ulong b = 0b0000_0100;
 
                 State state = this.CreateState(tools);
-                Context ctx = state.Ctx;
+                _ = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools);
                 updateState.Set(Rn.AL, a);
@@ -1397,9 +1398,10 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                BoolExpr of = ToolsFlags.Create_OF_Add(state.Ctx.MkBV(a, nBits), state.Ctx.MkBV(b, nBits), nBits, state.Ctx);
+                _ = ToolsFlags.Create_OF_Add(state.Ctx.MkBV(a, nBits), state.Ctx.MkBV(b, nBits), nBits, state.Ctx);
                 if (LogToDisplay)
                 {
+                    BoolExpr of;
                     Console.WriteLine(of);
                 }
 
@@ -1428,7 +1430,7 @@ namespace unit_tests_asm_z3
                     ulong result = rax_value + rbx_value;
 
                     State state = this.CreateState(tools);
-                    Context ctx = state.Ctx;
+                    _ = state.Ctx;
 
                     StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
                     updateState.Set(Rn.RAX, rax_value);
@@ -1461,7 +1463,7 @@ namespace unit_tests_asm_z3
                     ulong result = (ax_value + bx_value) & 0xFFFF;
 
                     State state = this.CreateState(tools);
-                    Context ctx = state.Ctx;
+                    _ = state.Ctx;
 
                     StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
                     updateState.Set(Rn.AX, ax_value);
@@ -3887,7 +3889,7 @@ namespace unit_tests_asm_z3
 
             { // forward
                 State state = this.CreateState(tools);
-                Context ctx = state.Ctx;
+                _ = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
                 updateState.Set(Rn.RAX, "0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_00U0");
@@ -3942,7 +3944,7 @@ namespace unit_tests_asm_z3
 
             { // forward
                 State state = this.CreateState(tools);
-                Context ctx = state.Ctx;
+                _ = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
                 updateState.Set(Rn.EAX, "????_????_????_????_????_????_????_UU??");
@@ -4710,7 +4712,7 @@ namespace unit_tests_asm_z3
             int byteD_1 = 2;
 
             int result = decimalA / byteD_1;
-            int al_result = result % imm8;
+            _ = result % imm8;
 
             string line0 = "mov ax, " + ((byteA_2 << 8) | (byteA_1 << 0));
             string line1 = "mov dl, " + byteD_1;

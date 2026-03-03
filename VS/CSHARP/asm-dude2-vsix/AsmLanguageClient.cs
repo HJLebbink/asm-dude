@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2023 Henk-Jan Lebbink
 //
@@ -36,6 +36,8 @@ using AsmDude2.Tools;
 using AsmTools;
 using System.Windows.Forms;
 using System.Security.Principal;
+using System.Runtime.CompilerServices;
+using Newtonsoft.Json.Linq;
 
 namespace AsmDude2
 {
@@ -56,6 +58,13 @@ namespace AsmDude2
             get;
             set;
         }
+
+        /// <summary>
+        /// The JsonRpc connection to the LSP server, set by VS via duck-typed
+        /// AttachForCustomMessageAsync. Stored as object to avoid loading
+        /// StreamJsonRpc assembly in the QuickInfoSource's load context.
+        /// </summary>
+        private object rpc;
 
         public event AsyncEventHandler<EventArgs> StartAsync;
         public event AsyncEventHandler<EventArgs> StopAsync;
@@ -232,7 +241,7 @@ namespace AsmDude2
                 };
             }
         }
-        
+
         public IEnumerable<string> FilesToWatch => null;
 
         public object CustomMessageTarget => null;
@@ -349,6 +358,63 @@ namespace AsmDude2
             return Task.FromResult(failureContext);
         }
 
-        public object MiddleLayer => null;
+        public object MiddleLayer { get; } = new CodeFolding.FoldingMiddleLayer();
+
+        /// <summary>
+        /// Duck-typed method discovered by VS via reflection (ILanguageClientCustomMessage2 pattern).
+        /// Called after the language server has been activated to provide the JsonRpc connection.
+        /// Parameter type is object to avoid requiring StreamJsonRpc in callers' load context.
+        /// </summary>
+        public Task AttachForCustomMessageAsync(object rpc)
+        {
+            AsmDudeToolsStatic.Output_WARNING("AsmLanguageClient: AttachForCustomMessageAsync — JsonRpc received");
+            this.rpc = rpc;
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Sends a textDocument/hover request to the LSP server via the stored JsonRpc connection.
+        /// This method isolates StreamJsonRpc usage so callers don't need to load that assembly.
+        /// Returns the hover text, or null if unavailable.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal async Task<string> SendHoverRequestAsync(string uri, int line, int character, CancellationToken cancellationToken)
+        {
+            if (this.rpc == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                var jsonRpc = (StreamJsonRpc.JsonRpc)this.rpc;
+                var hoverParams = new JObject
+                {
+                    ["textDocument"] = new JObject { ["uri"] = uri },
+                    ["position"] = new JObject { ["line"] = line, ["character"] = character },
+                };
+
+                var response = await jsonRpc.InvokeWithParameterObjectAsync<JToken>(
+                    "textDocument/hover",
+                    hoverParams,
+                    cancellationToken).ConfigureAwait(false);
+
+                if (response == null || response.Type == JTokenType.Null)
+                {
+                    return null;
+                }
+
+                return response["contents"]?["value"]?.ToString();
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
+            catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_WARNING($"AsmLanguageClient: hover request failed: {e.Message}");
+                return null;
+            }
+        }
     }
 }

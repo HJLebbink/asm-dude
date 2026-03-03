@@ -162,7 +162,8 @@ namespace AsmSim
                 Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
                 return (Mnemonic.NONE, Array.Empty<string>());
             }
-            (string label, Mnemonic mnemonic, string[] args) = this.Current[lineNumber];
+
+            (_, Mnemonic mnemonic, string[] args) = this.Current[lineNumber];
 
             return (mnemonic, args);
         }
@@ -411,7 +412,7 @@ namespace AsmSim
         {
             for (int i = 0; i < args.Length; ++i)
             {
-                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(args[i]);
+                (bool valid, ulong value, _) = ExpressionEvaluator.Evaluate_Constant(args[i]);
                 if (valid)
                 {
                     args[i] = value.ToString();

@@ -231,12 +231,12 @@ public class LanguageServerTests
         hover.Contents.Should().NotBeNull();
         var markup = hover.Contents.Value.Fourth;
         markup.Should().NotBeNull("Contents should be MarkupContent");
-        markup.Kind.Should().Be(MarkupKind.Markdown);
+        markup.Kind.Should().Be(MarkupKind.PlainText);
         markup.Value.Should().Contain("MOV", "hover text should mention the mnemonic");
     }
 
     [Fact]
-    public void GetHover_WithMnemonic_WithAsmDocUrl_ShouldContainMarkdownLink()
+    public void GetHover_WithMnemonic_WithAsmDocUrl_ShouldContainDocUrl()
     {
         // Arrange – create a fresh server with AsmDoc_Url configured
         var server = new LanguageServer();
@@ -265,9 +265,8 @@ public class LanguageServerTests
         result.Should().BeOfType<Hover>();
         var markup = ((Hover)result).Contents!.Value.Fourth;
         markup.Should().NotBeNull();
-        markup.Value.Should().MatchRegex(@"\[MOV\]\(https://github\.com/HJLebbink/asm-dude/wiki/.*\)",
-            "hover should open with a markdown hyperlink to the documentation page");
-        markup.Value.Should().StartWith("[MOV](", "link should be at the top of the hover text");
+        markup.Value.Should().Contain("https://github.com/HJLebbink/asm-dude/wiki/",
+            "hover should contain a documentation URL");
     }
 
     [Fact]
@@ -652,7 +651,7 @@ add rcx, rdx
             TextDocument = new TextDocumentIdentifier { Uri = new Uri("file:///lifecycle.asm") },
             Position = new Position { Line = 0, Character = 1 }
         };
-        var hover = server.GetHover(hoverParams);
+        _ = server.GetHover(hoverParams);
 
         // Close document
         var closeParams = new DidCloseTextDocumentParams

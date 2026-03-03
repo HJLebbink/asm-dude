@@ -856,7 +856,7 @@ namespace AsmTools
       
         private static bool IsConstant(string token)
         {
-            if (long.TryParse(token, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out long dummy1))
+            if (long.TryParse(token, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out _))
             {
                 return true;
             }

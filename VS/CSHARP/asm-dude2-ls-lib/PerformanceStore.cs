@@ -241,7 +241,7 @@ namespace AsmDude2LS
                                     values.Add(mnemonic);
                                 }
                             }
-                            LanguageServer.LogInfo("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
+                            //LanguageServer.LogInfo("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
                             if (translations.ContainsKey(key))
                             {
                                 LanguageServer.LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");

@@ -54,9 +54,8 @@ namespace AsmSim
                 { "proof", "true" }         // enable proof generation
             };
             this._ctx = new Context(settings);
-
-            Tactic ta1 = this._ctx.MkTactic("simplify"); // some minor rewrites
-            Tactic ta2 = this._ctx.MkTactic("ctx-simplify"); // 
+            _ = this._ctx.MkTactic("simplify"); // some minor rewrites
+            _ = this._ctx.MkTactic("ctx-simplify"); // 
             Tactic ta3 = this._ctx.MkTactic("ctx-solver-simplify"); //VERY SLOW
 
             this._tactic = ta3;// ctx.AndThen(ta2, ta1);
@@ -110,14 +109,14 @@ namespace AsmSim
             #region Add Target Constains
 
             // rax_1: negate the lowest bit
-            BitVecExpr rax_1 = ctx.MkConcat(ctx.MkExtract(63, 1, GetReg(Rn.RAX, 0, ctx)), ctx.MkBVNeg(ctx.MkExtract(0, 0, GetReg(Rn.RAX, 0, ctx))));
+            _ = ctx.MkConcat(ctx.MkExtract(63, 1, GetReg(Rn.RAX, 0, ctx)), ctx.MkBVNeg(ctx.MkExtract(0, 0, GetReg(Rn.RAX, 0, ctx))));
             // rax_2: add 1
-            BitVecExpr rax_2 = ctx.MkBVAdd(GetReg(Rn.RAX, 0, ctx), ctx.MkBV(1, 64));
+            _ = ctx.MkBVAdd(GetReg(Rn.RAX, 0, ctx), ctx.MkBV(1, 64));
             // rax_3: constant 32
-            BitVecExpr rax_3 = ctx.MkBV(32, 64);
+            _ = ctx.MkBV(32, 64);
 
             BitVecExpr rax_n = GetReg(Rn.RAX, this._nLines, ctx);
-            BitVecExpr rax_0 = GetReg(Rn.RAX, 0, ctx);
+            _ = GetReg(Rn.RAX, 0, ctx);
 
             if (true)
             {
@@ -138,6 +137,7 @@ namespace AsmSim
             }
             else
             {
+                BitVecExpr rax_2;
                 this._solver.Assert(ctx.MkEq(rax_n, rax_2));
                 this._solver.Assert(IsKnownTest(Rn.RAX, this._nLines, ctx));
             }
@@ -239,7 +239,7 @@ namespace AsmSim
 
         private static BoolExpr ZeroFlag(Rn reg, int lineNumber, Context ctx)
         {
-            int ln0 = lineNumber - 1;
+            _ = lineNumber - 1;
             int ln1 = lineNumber;
             uint nBits = (uint)RegisterTools.NBits(reg);
             BitVecExpr ZERO = ctx.MkBV(0, nBits);
@@ -339,7 +339,7 @@ namespace AsmSim
 
 
                     #region Create Constant
-                    string constantName_prev = "Const-SHL-" + reg + "-L" + (lineNumber - 1);
+                    _ = "Const-SHL-" + reg + "-L" + (lineNumber - 1);
                     string constantName = "Const-SHL-" + reg + "-L" + lineNumber;
                     BitVecExpr constant;
 

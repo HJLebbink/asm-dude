@@ -308,7 +308,7 @@ namespace AsmSim
                 {
                     if (op1.IsMem)
                     {
-                        (Rn baseReg, Rn indexReg, int scale, long displacement) = op1.Mem;
+                        (Rn baseReg, Rn indexReg, _, _) = op1.Mem;
                         if (baseReg != Rn.NOREG)
                         {
                             yield return baseReg;
@@ -2535,7 +2535,7 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
+                (BitVecExpr result, _, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
                 this.RegularUpdate.Set(this.op1_, result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -2558,7 +2558,7 @@ namespace AsmSim
 
             public override void Execute()
             {
-                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
+                (BitVecExpr result, _, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
                 this.RegularUpdate.Set(this.op1_, result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -2707,7 +2707,7 @@ namespace AsmSim
 
                 BitVecExpr ax = this.Get(Rn.AX);
                 BoolExpr af = this.Get(Flags.AF);
-                BoolExpr cf = this.Get(Flags.CF);
+                _ = this.Get(Flags.CF);
 
                 BoolExpr condition1 = ctx.MkOr(ctx.MkBVUGT(ctx.MkExtract(3, 0, ax), ctx.MkBV(9, 4)), af);
 
@@ -2745,7 +2745,7 @@ namespace AsmSim
 
                 BitVecExpr ax = this.Get(Rn.AX);
                 BoolExpr af = this.Get(Flags.AF);
-                BoolExpr cf = this.Get(Flags.CF);
+                _ = this.Get(Flags.CF);
 
                 BoolExpr condition1 = ctx.MkOr(ctx.MkBVUGT(ctx.MkExtract(3, 0, ax), ctx.MkBV(9, 4)), af);
 
@@ -3321,7 +3321,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                (BitVecExpr result, _) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
                 this.RegularUpdate.Set(this.op1_, result);
             }
         }
@@ -3334,7 +3334,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                (BitVecExpr result, _) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
                 this.RegularUpdate.Set(this.op1_, result);
             }
         }
@@ -3347,7 +3347,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                (BitVecExpr result, _) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
                 this.RegularUpdate.Set(this.op1_, result);
             }
         }
@@ -3360,7 +3360,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                (BitVecExpr result, _) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
                 this.RegularUpdate.Set(this.op1_, result);
             }
         }

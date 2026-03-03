@@ -400,7 +400,7 @@ public class MnemonicStoreTests
     public void ToString_ShouldNotThrow()
     {
         // Act
-        Action act = () => _store.ToString();
+        Func<string> act = () => _store.ToString();
 
         // Assert
         try

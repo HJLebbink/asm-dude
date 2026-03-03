@@ -359,7 +359,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 KeywordID[][] lineData = new KeywordID[lines.Length][];
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
-                    (KeywordID[] keywords, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lines[lineNumber], lineNumber, fileID);
+                (KeywordID[] keywords, _, _, _, _) = AsmTools.AsmSourceTools.ParseLine(lines[lineNumber], lineNumber, fileID);
                     lineData[lineNumber] = keywords;
                 }
                 this.parsedDocuments.Remove(uri);
@@ -1446,7 +1446,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                             selected = this.options.Is_Arch_Switched_On(arch);
                         }
 
-                        LogInfo("CodeCompletionSource:Selected_Completions; keyword=" + keyword_uppercase + "; arch=" + arch + "; selected=" + selected);
+                        //LogInfo("CodeCompletionSource:Selected_Completions; keyword=" + keyword_uppercase + "; arch=" + arch + "; selected=" + selected);
 
                         if (selected)
                         {
@@ -1727,7 +1727,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 return null;
             }
 
-            var (word, startPos, endPos) = GetWord((int)parameter.Position.Character, lines[lineNumber]);
+        var (word, _, _) = GetWord((int)parameter.Position.Character, lines[lineNumber]);
             if (string.IsNullOrEmpty(word))
             {
                 LogInfo($"GetDefinition: no word at position");
@@ -1905,7 +1905,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                                     performanceStr += msg2;
                                 }
 
-                                string msg3 = string.Format(
+                                performanceStr += string.Format(
                                     CultureUI,
                                     "\n" + format,
                                     item.microArch_ + " ",
@@ -1916,14 +1916,12 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                                     item.latency_ + " ",
                                     item.throughput_ + " ",
                                     item.remark_);
-
-                                performanceStr += msg3;
                             }
                         }
 
                         hoverContent = [
-                            full_Descr + "\n",
-                            (performanceInfoAvailable) ? "**Performance:**\n```text\n" + performanceStr + "\n```" : "No performance info",
+                            full_Descr,
+                            (performanceInfoAvailable) ? "\nPerformance:\n" + performanceStr : "",
                         ];
                         break;
                     }
@@ -2152,27 +2150,21 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
             if (hoverContent != null)
             {
-                string combinedContent = string.Join("\n\n", hoverContent);
+                string combinedContent = string.Join("\n", hoverContent);
 
-                // Prepend a documentation link if URL is available.
-                // GetHtmlRef returns a reference key (e.g. "KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD");
-                // combine with AsmDoc_Url to form the full link.
+                // Prepend a documentation URL if available (plain text — VS does not render markdown in hover)
                 if (!string.IsNullOrEmpty(hoverUrl) && !string.IsNullOrEmpty(hoverKeyword) && !string.IsNullOrEmpty(this.options.AsmDoc_Url))
                 {
                     string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + hoverUrl;
-                    LogInfo($"GetHover: adding link [{hoverKeyword}]({fullUrl})");
-                    combinedContent = $"[{hoverKeyword}]({fullUrl})\n\n" + combinedContent;
-                }
-                else
-                {
-                    LogInfo($"GetHover: no link — hoverKeyword=\"{hoverKeyword}\", hoverUrl=\"{hoverUrl}\", AsmDoc_Url=\"{this.options.AsmDoc_Url}\"");
+                    LogInfo($"GetHover: adding link {fullUrl}");
+                    combinedContent += "\n\nDoc: " + fullUrl;
                 }
 
                 return new Hover()
                 {
                     Contents = new MarkupContent
                     {
-                        Kind = MarkupKind.Markdown,
+                        Kind = MarkupKind.PlainText,
                         Value = combinedContent
                     },
                     Range = new Range()
@@ -2205,8 +2197,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string lineStr = lines[lineNumber];
-                (object _, string label, Mnemonic mnemonic, string[] args, string _) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
-                if (label.Length > 0)
+            (object _, string label, Mnemonic mnemonic, _, _) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
+            if (label.Length > 0)
                 {
                     int pos = lineStr.IndexOf(label);
 #pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
@@ -2255,21 +2247,22 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 #pragma warning restore CS0618
                     if (false)
                     {
+                    string[] args;
 #pragma warning disable CS0162 // Unreachable code detected
 #pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
-                        for (int i = 0; i < args.Length; ++i)
+                    for (int i = 0; i < args.Length; ++i)
+                    {
+                        symbolInfo.Add(new VSSymbolInformation
                         {
-                            symbolInfo.Add(new VSSymbolInformation
-                            {
-                                Name = mnemonic.ToString(),
-                                Kind = SymbolKind.Function,
-                                HintText = "some hint text here?",
-                                Description = "some description here?",
-                            });
-                        }
+                            Name = mnemonic.ToString(),
+                            Kind = SymbolKind.Function,
+                            HintText = "some hint text here?",
+                            Description = "some description here?",
+                        });
+                    }
 #pragma warning restore CS0618
 #pragma warning restore CS0162 // Unreachable code detected
-                    }
+                }
                 }
             }
             this.SetDocumentSymbols(symbolInfo);

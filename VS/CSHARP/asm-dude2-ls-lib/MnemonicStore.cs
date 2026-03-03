@@ -112,8 +112,8 @@ namespace AsmDude2LS
                 foreach (AsmSignatureInformation sig in element.Value)
                 {
                     string s2 = sig.SignatureInformation.Label;
-                    string s3 = "ARCH";// sig.Arch_Str;
-                    string s4 = "TODO XYZZY";// sig.Parameters.ToString();
+                    string s3 = "ARCH TODO";// sig.Arch_Str;
+                    string s4 = "PARAM TODO";// sig.Parameters.ToString();
                     var s5 = sig.SignatureInformation.Documentation;
                     sb.AppendLine(s1 + "\t" + s2 + "\t" + s3 + "\t" + s4 + "\t" + s5 + "\t" + s6);
                 }
@@ -318,7 +318,7 @@ namespace AsmDude2LS
                                 else
                                 {
                                     var se = this.CreateAsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
-                                    LanguageServer.LogInfo($"MnemonicStore: adding AsmSignatureInformation {se.SignatureInformation.Label}");
+                                    //LanguageServer.LogInfo($"MnemonicStore: adding AsmSignatureInformation {se.SignatureInformation.Label}");
                                     if (Add(se, ref data))
                                     {
                                         LanguageServer.LogWarning("MnemonicStore:loadRegularData: signature already exists" + se.ToString());

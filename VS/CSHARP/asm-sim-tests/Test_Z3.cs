@@ -323,7 +323,7 @@ namespace unit_tests_asm_z3
             BitVecExpr rax = ctx.MkBVConst("RAX!0", nBits);
             BitVecExpr rbx = ctx.MkBVConst("RBX!0", nBits);
             BitVecExpr rcx = ctx.MkBVConst("RCX!0", nBits);
-            BitVecExpr rdx = ctx.MkBVConst("RDX!0", nBits);
+            _ = ctx.MkBVConst("RDX!0", nBits);
 
             ArrayExpr mem = ctx.MkArrayConst("mem", ctx.MkBitVecSort(nBits), ctx.MkBitVecSort(nBits));
 
@@ -377,10 +377,9 @@ namespace unit_tests_asm_z3
             #region Definitions
             uint nBits = 8;
             Context ctx = new Context();
-
-            BitVecExpr bv_0 = ctx.MkBV(0, nBits);
+            _ = ctx.MkBV(0, nBits);
             BitVecExpr bv_16 = ctx.MkBV(16, nBits);
-            BitVecExpr bv_32 = ctx.MkBV(32, nBits);
+            _ = ctx.MkBV(32, nBits);
 
             BitVecExpr rax = ctx.MkBVConst("RAX!0", nBits);
             BitVecExpr rbx = ctx.MkBVConst("RBX!0", nBits);
@@ -431,8 +430,7 @@ namespace unit_tests_asm_z3
             #region Definitions
             uint nBits = 8;
             Context ctx = new Context();
-
-            BitVecExpr bv_0 = ctx.MkBV(0, nBits);
+            _ = ctx.MkBV(0, nBits);
             BitVecExpr bv_16 = ctx.MkBV(16, nBits);
             BitVecExpr bv_32 = ctx.MkBV(32, nBits);
 
@@ -440,8 +438,7 @@ namespace unit_tests_asm_z3
             BitVecExpr rbx = ctx.MkBVConst("RBX!0", nBits);
             BitVecExpr rcx = ctx.MkBVConst("RCX!0", nBits);
             BitVecExpr rdx = ctx.MkBVConst("RDX!0", nBits);
-
-            IList<(BitVecExpr, BitVecExpr)> writes = [];
+            _ = [];
 
             Goal state = ctx.MkGoal();
             ArrayExpr mem = ctx.MkArrayConst("mem", ctx.MkBitVecSort(nBits), ctx.MkBitVecSort(nBits));
@@ -501,14 +498,13 @@ namespace unit_tests_asm_z3
 
             BitVecExpr addr = ctx.MkBVConst("ADDR", 64);
             BitVecExpr value = ctx.MkBVConst("VALUE", 64);
-
-            BitVecExpr value1 = ctx.MkBVConst("value1", 64);
-            BitVecExpr value2 = ctx.MkBVConst("value2", 64);
+            _ = ctx.MkBVConst("value1", 64);
+            _ = ctx.MkBVConst("value2", 64);
 
             BitVecExpr rax = ctx.MkBVConst("RAX!0-1955042C05A090D2", 64);
-            BitVecExpr rbx = ctx.MkBVConst("RBX!1-5000C87A5EB2FB98", 64);
-            BitVecExpr rcx = ctx.MkBVConst("RCX!1-68FC98BF6AFBF63E", 64);
-            BitVecExpr rdx = ctx.MkBVConst("RDX!0-231D57E228F579AD", 64);
+            _ = ctx.MkBVConst("RBX!1-5000C87A5EB2FB98", 64);
+            _ = ctx.MkBVConst("RCX!1-68FC98BF6AFBF63E", 64);
+            _ = ctx.MkBVConst("RDX!0-231D57E228F579AD", 64);
 
             Goal state = ctx.MkGoal();
             // mov qword ptr[0], 10

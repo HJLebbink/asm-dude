@@ -66,9 +66,8 @@ namespace AsmSim
             //if (carry.IsFalse) return Addition(a, b, ctx);
 
             uint nBits = a.SortSize;
-
-            BitVecExpr bv0_1bit = ctx.MkBV(0, 1);
-            BitVecExpr bv1_1bit = ctx.MkBV(1, 1);
+            _ = ctx.MkBV(0, 1);
+            _ = ctx.MkBV(1, 1);
 
             BitVecExpr ax = ctx.MkZeroExt(1, a);
             BitVecExpr bx = ctx.MkZeroExt(1, b);
@@ -113,7 +112,7 @@ namespace AsmSim
             uint nBits = a.SortSize;
 
             BitVecExpr bv0_1bit = ctx.MkBV(0, 1);
-            BitVecExpr bv1_1bit = ctx.MkBV(1, 1);
+            _ = ctx.MkBV(1, 1);
 
             BitVecExpr ax = ctx.MkConcat(bv0_1bit, a);
             BitVecExpr bx = ctx.MkConcat(bv0_1bit, b);

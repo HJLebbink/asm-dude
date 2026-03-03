@@ -334,19 +334,19 @@ namespace unit_tests_asm_z3
             }
 
             {
-                (bool isLoopBranchPoint, bool branchToExitLoop) = flow.Is_Loop_Branch_Point(0);
+                (bool isLoopBranchPoint, _) = flow.Is_Loop_Branch_Point(0);
                 Assert.IsFalse(isLoopBranchPoint);
             }
             {
-                (bool isLoopBranchPoint, bool branchToExitLoop) = flow.Is_Loop_Branch_Point(1);
+                (bool isLoopBranchPoint, _) = flow.Is_Loop_Branch_Point(1);
                 Assert.IsFalse(isLoopBranchPoint);
             }
             {
-                (bool isLoopBranchPoint, bool branchToExitLoop) = flow.Is_Loop_Branch_Point(2);
+                (bool isLoopBranchPoint, _) = flow.Is_Loop_Branch_Point(2);
                 Assert.IsFalse(isLoopBranchPoint);
             }
             {
-                (bool isLoopBranchPoint, bool branchToExitLoop) = flow.Is_Loop_Branch_Point(3);
+                (bool isLoopBranchPoint, _) = flow.Is_Loop_Branch_Point(3);
                 Assert.IsFalse(isLoopBranchPoint);
             }
             {
@@ -355,7 +355,7 @@ namespace unit_tests_asm_z3
                 Assert.IsFalse(branchToExitLoop);
             }
             {
-                (bool isLoopBranchPoint, bool branchToExitLoop) = flow.Is_Loop_Branch_Point(5);
+                (bool isLoopBranchPoint, _) = flow.Is_Loop_Branch_Point(5);
                 Assert.IsFalse(isLoopBranchPoint);
             }
         }
@@ -379,28 +379,28 @@ namespace unit_tests_asm_z3
             }
 
             {
-                (bool isLoopMergePoint, int loopLineNumber) = flow.Is_Loop_Merge_Point(0);
+                (bool isLoopMergePoint, _) = flow.Is_Loop_Merge_Point(0);
                 Assert.IsFalse(isLoopMergePoint);
             }
             {
-                (bool isLoopMergePoint, int loopLineNumber) = flow.Is_Loop_Merge_Point(1);
+                (bool isLoopMergePoint, _) = flow.Is_Loop_Merge_Point(1);
                 Assert.IsTrue(isLoopMergePoint);
                 // Assert.IsFalse(v.BranchToExitLoop);
             }
             {
-                (bool isLoopMergePoint, int loopLineNumber) = flow.Is_Loop_Merge_Point(2);
+                (bool isLoopMergePoint, _) = flow.Is_Loop_Merge_Point(2);
                 Assert.IsFalse(isLoopMergePoint);
             }
             {
-                (bool isLoopMergePoint, int loopLineNumber) = flow.Is_Loop_Merge_Point(3);
+                (bool isLoopMergePoint, _) = flow.Is_Loop_Merge_Point(3);
                 Assert.IsFalse(isLoopMergePoint);
             }
             {
-                (bool isLoopMergePoint, int loopLineNumber) = flow.Is_Loop_Merge_Point(4);
+                (bool isLoopMergePoint, _) = flow.Is_Loop_Merge_Point(4);
                 Assert.IsFalse(isLoopMergePoint);
             }
             {
-                (bool isLoopMergePoint, int loopLineNumber) = flow.Is_Loop_Merge_Point(5);
+                (bool isLoopMergePoint, _) = flow.Is_Loop_Merge_Point(5);
                 Assert.IsFalse(isLoopMergePoint);
             }
         }

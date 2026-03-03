@@ -117,7 +117,7 @@ namespace AsmSim
 
         private static void ExpressionTest()
         {
-            (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant("01b", false);
+            (_, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant("01b", false);
             Console.WriteLine("valid = " + value + "; value = " + value, "; nBits = " + nBits);
         }
 
@@ -1203,26 +1203,23 @@ namespace AsmSim
 
         private static void TestDynamicFlow()
         {
-            string programStr1a =
+            _ =
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        ";
-
-            string programStr1b =
+            _ =
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
                 "           mov     rbx,        0               ";
-
-            string programStr2 =
+            _ =
                 "           xor     rbx,        rbx               " + Environment.NewLine +
                 "           mov     rax,        0               " + Environment.NewLine +
                 "           add     rax,        1               " + Environment.NewLine +
                 "           add     rbx,        10              " + Environment.NewLine +
                 "           xor     rax,        rax             ";
-
-            string programStr3 =
+            _ =
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        0               " + Environment.NewLine +
@@ -1230,38 +1227,34 @@ namespace AsmSim
                 "label1:                                        " + Environment.NewLine +
                 "           mov     rax,        1               " + Environment.NewLine +
                 "label2:";
-
-            string programStr3b =
+            _ =
                  "           cmp     rax,        0               " + Environment.NewLine +
                  "           jz      label1                      " + Environment.NewLine +
                  "           mov     rax,        10              " + Environment.NewLine +
                  "label1:                                        " + Environment.NewLine +
                  "           mov     rax,        10              ";
-
-            string programStr4 =
+            _ =
                 "           mov        rbx,     0               " + Environment.NewLine +
                 "           mov        rax,     0x3             " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
                 "           inc        rbx                      " + Environment.NewLine +
                 "           dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
-
-            string programStr5 =
+            _ =
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        1               " + Environment.NewLine +
                 "           jc      label1                      " + Environment.NewLine +
                 "           mov     rbx,        1               " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
                 "           mov     rcx,        1               ";
-            string programStr6 =
+            _ =
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        1               " + Environment.NewLine +
                 "           jc      label1                      " + Environment.NewLine +
                 "           mov     rbx,        2               " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
                 "           mov     rcx,        3               ";
-
-            string programStr7 =
+            _ =
                 "           mov     rax,        0               " + Environment.NewLine +
                 "                                               " + Environment.NewLine +
                 "           cmp     rax,        0               " + Environment.NewLine +
@@ -1873,8 +1866,7 @@ namespace AsmSim
                 { "timeout", "1000" },
             };
             int nContexts = 4000;
-
-            Context[] ctxArray = new Context[nContexts];
+            _ = new Context[nContexts];
 
             for (int i = 0; i < nContexts; ++i)
             {

@@ -596,7 +596,7 @@ namespace AsmDude2
                 {
                     string title = null;
                     string message = "I'm sorry " + Environment.UserName + ", I'm afraid I can't do that.";
-                    int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_ABORTRETRYIGNORE, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    _ = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_ABORTRETRYIGNORE, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 }
             }
             changed |= this.Setting_Changed(PropertyEnum.AsmSim_Z3_Timeout_MS, sb);
