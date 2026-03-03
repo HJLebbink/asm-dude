@@ -281,8 +281,7 @@ namespace AsmDude2.Tools
                 sb.Append($"INFO: AsmDude2 VSIX {vsixVersion} ({vsixBuildInfo})\n");
                 sb.Append($"INFO: AsmDude2 LSP {lspVersion}\n");
                 sb.Append("INFO: Open source assembly extension. Making programming in assembler almost bearable.\n");
-                sb.Append("INFO: made possible by generous support from https://Sneller.ai \n");
-                sb.Append("INFO: More info at https://github.com/Sneller/asm-dude \n");
+                sb.Append("INFO: More info at https://github.com/asm-dude \n");
                 sb.Append("----------------------------------\n");
                 msg2 = sb.ToString() + msg2;
             }

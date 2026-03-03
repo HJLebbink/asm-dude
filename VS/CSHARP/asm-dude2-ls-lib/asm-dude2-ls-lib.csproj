@@ -23,7 +23,6 @@
   <PropertyGroup>
     <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
     <Authors>Henk-Jan Lebbink</Authors>
-    <Company>SnellerInc</Company>
     <Product>AsmDude2.LSP.Lib</Product>
   </PropertyGroup>
   <ItemGroup>

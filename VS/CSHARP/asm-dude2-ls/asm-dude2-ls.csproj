@@ -23,7 +23,6 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <RootNamespace>AsmDude2LS</RootNamespace>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/SnellerInc/asm-dude</RepositoryUrl>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
