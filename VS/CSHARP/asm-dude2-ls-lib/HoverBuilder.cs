@@ -64,7 +64,7 @@ namespace AsmDude2LS
             }
 
             // Create classified text element
-            var textElement = new ClassifiedTextElement(runs.ToArray());
+            var textElement = new ClassifiedTextElement([.. runs]);
 
             // Create container
             var container = new ContainerElement(ContainerElementStyle.Wrapped, textElement);

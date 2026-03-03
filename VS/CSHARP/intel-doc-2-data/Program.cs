@@ -241,37 +241,37 @@ namespace intel_doc_2_data
                     {
                         if (descr.Contains("R64"))
                         {
-                            archs = new List<Arch> { Arch.ARCH_X64 };
+                            archs = [Arch.ARCH_X64];
                         }
                         else
                         {
-                            archs = new List<Arch> { Arch.ARCH_P6 };
+                            archs = [Arch.ARCH_P6];
                         }
                     }
                     else if (descr.Contains("REL16") || descr.Contains("REL32"))
                     {
-                        archs = new List<Arch> { Arch.ARCH_386 };
+                        archs = [Arch.ARCH_386];
                     }
                     else if (descr.Contains("REL64"))
                     {
-                        archs = new List<Arch> { Arch.ARCH_X64 };
+                        archs = [Arch.ARCH_X64];
                     }
                     else if (descr.Contains("M64") || descr.Contains("R64") || descr.Contains("RCX"))
                     {
-                        archs = new List<Arch> { Arch.ARCH_X64 };
+                        archs = [Arch.ARCH_X64];
                     }
                     else if (descr.Contains("IMM32") || descr.Contains("M32") || descr.Contains("R32") || descr.Contains("ECX"))
                     {
-                        archs = new List<Arch> { Arch.ARCH_386 };
+                        archs = [Arch.ARCH_386];
                     }
                     else
                     {
-                        archs = new List<Arch> { Arch.ARCH_8086 };
+                        archs = [Arch.ARCH_8086];
                     }
                 }
                 else if (arch_column == -10)
                 {
-                    archs = new List<Arch> { Arch.ARCH_SMX };
+                    archs = [Arch.ARCH_SMX];
                 }
                 else
                 {
@@ -281,7 +281,7 @@ namespace intel_doc_2_data
                     }
                     else
                     {
-                        archs = new List<Arch> { Arch.ARCH_NONE };
+                        archs = [Arch.ARCH_NONE];
                     }
                 }
 
@@ -366,7 +366,7 @@ namespace intel_doc_2_data
 
         static IList<Arch> Parse_Archs(string str)
         {
-            IList<Arch> Results = new List<Arch>();
+            IList<Arch> Results = [];
             foreach (string s in str.Replace(",", " ").Split(' '))
             {
                 Arch a = ArchTools.ParseArch(s.Trim(), false, false);
@@ -406,7 +406,7 @@ namespace intel_doc_2_data
 
         static IList<string> Parse_Table_Cells(string str)
         {
-            IList<string> Results = new List<string>();
+            IList<string> Results = [];
             // remove the first <td> and all </td>
 
             string str2 = str.Replace("</td>", "");

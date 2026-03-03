@@ -441,7 +441,7 @@ namespace unit_tests_asm_z3
             BitVecExpr rcx = ctx.MkBVConst("RCX!0", nBits);
             BitVecExpr rdx = ctx.MkBVConst("RDX!0", nBits);
 
-            IList<(BitVecExpr, BitVecExpr)> writes = new List<(BitVecExpr, BitVecExpr)>();
+            IList<(BitVecExpr, BitVecExpr)> writes = [];
 
             Goal state = ctx.MkGoal();
             ArrayExpr mem = ctx.MkArrayConst("mem", ctx.MkBitVecSort(nBits), ctx.MkBitVecSort(nBits));

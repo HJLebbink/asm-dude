@@ -906,7 +906,7 @@ public class LspIntegrationTests : IDisposable
             },
             Context = new CodeActionContext
             {
-                Diagnostics = Array.Empty<Diagnostic>()
+                Diagnostics = []
             }
         };
 

@@ -67,7 +67,7 @@ namespace AsmSim
             this._switches = new Dictionary<int, List<BoolExpr>>();
             for (int i = 1; i <= this._nLines; ++i)
             {
-                this._switches.Add(i, new List<BoolExpr>());
+                this._switches.Add(i, []);
             }
         }
 
@@ -95,7 +95,7 @@ namespace AsmSim
                 }
                 this.AddInstruction_Nop(lineNumber);
 
-                BoolExpr[] switches_line = this._switches[lineNumber].ToArray();
+                BoolExpr[] switches_line = [.. this._switches[lineNumber]];
                 this._solver.Assert(ctx.MkAtMost(switches_line, 1));
                 this._solver.Assert(ctx.MkOr(switches_line));
             }
@@ -160,7 +160,7 @@ namespace AsmSim
         }
         private void GetAllModels(Solver solver, Context ctx)
         {
-            IList<int> freeLines = new List<int>();
+            IList<int> freeLines = [];
             for (int lineNumber = 1; lineNumber <= this._nLines; ++lineNumber) freeLines.Add(lineNumber);
             int count = 0;
             this.GetMostModels(ref count, solver, ctx, freeLines);
@@ -726,7 +726,7 @@ namespace AsmSim
             BoolExpr instruction_Switch = ctx.MkBoolConst("L" + lineNumber + "_" + asm);
             this._switches[lineNumber].Add(instruction_Switch);
 
-            IList<BoolExpr> r = new List<BoolExpr>();
+            IList<BoolExpr> r = [];
             for (int i = 0; i < this._registers.Count; ++i)
             {
                 Rn reg = this._registers[i];

@@ -53,7 +53,7 @@ namespace AsmDude2LS
             string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ");
             if (cleanedString.Length > LanguageServer.MaxNumberOfCharsInToolTips)
             {
-                return cleanedString.Substring(0, LanguageServer.MaxNumberOfCharsInToolTips - 3) + "...";
+                return cleanedString[..(LanguageServer.MaxNumberOfCharsInToolTips - 3)] + "...";
             }
             else
             {
@@ -101,7 +101,7 @@ namespace AsmDude2LS
                         char c = label[i];
                         if (c.Equals(']'))
                         {
-                            return label.Substring(i + 1);
+                            return label[(i + 1)..];
                         }
                     }
                 }
@@ -113,7 +113,7 @@ namespace AsmDude2LS
                     char c = label[i];
                     if (c.Equals('.'))
                     {
-                        return label.Substring(i);
+                        return label[i..];
                     }
                 }
             }

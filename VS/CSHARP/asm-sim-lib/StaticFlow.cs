@@ -50,8 +50,8 @@ namespace AsmSim
             //Console.WriteLine("INFO: CFlow: constructor");
             this.tools_ = tools;
             this.use_Parsed_Code_A_ = true;
-            this.parsed_Code_A_ = new List<(string label, Mnemonic mnemonic, string[] args)>();
-            this.parsed_Code_B_ = new List<(string label, Mnemonic mnemonic, string[] args)>();
+            this.parsed_Code_A_ = [];
+            this.parsed_Code_B_ = [];
             this.graph_ = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // allowParallesEdges is true because of conditional jumps to the next line
         }
 
@@ -637,7 +637,7 @@ namespace AsmSim
                 {
                     int labelBeginPos = beginPos;
                     int labelEndPos = endPos;
-                    string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
+                    string label = line[labelBeginPos..labelEndPos];
                     if (result.ContainsKey(label))
                     {
                         Console.WriteLine(string.Format(Culture, "WARNING: getLabels: found a clashing label \"{0}\" at line=\"{1}\".", label, lineNumber));

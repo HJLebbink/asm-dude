@@ -249,7 +249,7 @@ namespace AsmSim
         {
             get
             {
-                HashSet<string> alreadyVisisted = new();
+                HashSet<string> alreadyVisisted = [];
                 foreach (string key in Get_Leafs_LOCAL(this.rootKey_))
                 {
                     yield return this.Create_State_Private(key, true);
@@ -626,7 +626,7 @@ namespace AsmSim
 
         private State Create_State_Private(string key, bool after)
         {
-            List<string> visisted = new();
+            List<string> visisted = [];
             lock (this.updateLock_)
             {
                 State result = Construct_State_Private_LOCAL(key, after, visisted) ?? new State(this.tools_, key, key);
@@ -752,11 +752,11 @@ namespace AsmSim
                 }
                 State result_State = new(this.tools_, state1.TailKey, state1.HeadKey);
 
-                IList<StateUpdate> mergeStateUpdates = new List<StateUpdate>();
-                HashSet<BoolExpr> tempSet1 = new();
-                HashSet<BoolExpr> tempSet2 = new();
-                HashSet<string> sharedBranchConditions = new();
-                List<BranchInfo> allBranchConditions = new();
+                IList<StateUpdate> mergeStateUpdates = [];
+                HashSet<BoolExpr> tempSet1 = [];
+                HashSet<BoolExpr> tempSet2 = [];
+                HashSet<string> sharedBranchConditions = [];
+                List<BranchInfo> allBranchConditions = [];
 
                 foreach (BoolExpr v1 in state1.Solver.Assertions)
                 {

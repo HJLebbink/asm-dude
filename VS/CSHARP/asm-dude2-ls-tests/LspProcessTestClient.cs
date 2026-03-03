@@ -481,7 +481,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
             if (line.StartsWith("Content-Length:", StringComparison.OrdinalIgnoreCase))
             {
-                var lengthStr = line.Substring("Content-Length:".Length).Trim();
+                var lengthStr = line["Content-Length:".Length..].Trim();
                 contentLength = int.Parse(lengthStr);
             }
         }

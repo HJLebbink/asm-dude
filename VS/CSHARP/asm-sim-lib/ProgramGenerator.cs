@@ -206,7 +206,7 @@ namespace AsmSim
 
         private static IList<Mnemonic> EligibleMnemonics()
         {
-            return new List<Mnemonic>() {
+            return [
                 Mnemonic.MOV,
                 //Mnemonic.CMOVE, // duplicate
                 Mnemonic.CMOVZ,
@@ -304,7 +304,7 @@ namespace AsmSim
                 Mnemonic.SETPO
                 //Mnemonic.SETNP // duplicate
                 //Mnemonic.TEST // not implemented yet
-            };
+            ];
         }
     }
 }

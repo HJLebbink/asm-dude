@@ -39,7 +39,7 @@ namespace AsmSim
         public bool ShowUndefConstraints { get; set; }
 
         public Tools()
-            : this(new Dictionary<string, string>(), string.Empty) { }
+            : this([], string.Empty) { }
 
         public Tools(Tools other)
         {

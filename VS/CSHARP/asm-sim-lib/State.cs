@@ -906,7 +906,7 @@ namespace AsmSim
         #region Misc
         public void Remove_History()
         {
-            HashSet<string> keep = new();
+            HashSet<string> keep = [];
             foreach (Flags v in this.tools_.StateConfig.GetFlagOn())
             {
                 using BoolExpr expr = this.Create(v);
@@ -927,7 +927,7 @@ namespace AsmSim
 
         public void Compress(string keep)
         {
-            this.Compress(new HashSet<string>() { keep });
+            this.Compress([keep]);
         }
 
         public void Compress(HashSet<string> keep)

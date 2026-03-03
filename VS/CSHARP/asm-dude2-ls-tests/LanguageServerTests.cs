@@ -48,6 +48,8 @@ public class LanguageServerTests
             CodeCompletion_On = true,
             SignatureHelp_On = true,
             CodeFolding_On = true,
+            CodeFolding_BeginTag = "#region",
+            CodeFolding_EndTag = "#endregion",
             AsmDoc_On = true
         };
         _server.Initialize(_options);
@@ -346,7 +348,62 @@ add rcx, rdx
 
         // Assert
         result.Should().NotBeNull();
-        // Note: Actual folding depends on whether code folding is enabled and region tags match
+        result.Should().HaveCount(1);
+        result[0].StartLine.Should().Be(0);
+        result[0].EndLine.Should().Be(3);
+        result[0].Kind.Should().Be(FoldingRangeKind.Region);
+        result[0].CollapsedText.Should().Be("Test");
+    }
+
+    [Fact]
+    public void GetFoldingRanges_WithRegionNoName_ShouldReturnEllipsis()
+    {
+        var uri = "file:///test_noname.asm";
+        var text = @"#region
+mov rax, rbx
+#endregion";
+
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = text }
+        });
+
+        var result = _server.GetFoldingRanges(new FoldingRangeParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        result.Should().HaveCount(1);
+        result[0].CollapsedText.Should().Be("...");
+    }
+
+    [Fact]
+    public void GetFoldingRanges_NestedRegions_ShouldReturnCorrectCollapsedText()
+    {
+        var uri = "file:///test_nested.asm";
+        var text = @"#region Outer
+#region Inner
+mov rax, rbx
+#endregion
+add rcx, rdx
+#endregion";
+
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = text }
+        });
+
+        var result = _server.GetFoldingRanges(new FoldingRangeParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        result.Should().HaveCount(2);
+        // Inner region closes first
+        var inner = result.First(r => r.StartLine == 1);
+        var outer = result.First(r => r.StartLine == 0);
+        inner.CollapsedText.Should().Be("Inner");
+        outer.CollapsedText.Should().Be("Outer");
     }
 
     #endregion

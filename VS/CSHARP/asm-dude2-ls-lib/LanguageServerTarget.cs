@@ -78,6 +78,7 @@ public class LanguageServerTarget(LanguageServer server)
             // Parse InitializationOptions - it comes as a JsonElement when using System.Text.Json
             // IncludeFields = true is required because AsmLanguageServerOptions uses public fields, not properties
             var jsonOptionsWithFields = new System.Text.Json.JsonSerializerOptions { IncludeFields = true, PropertyNameCaseInsensitive = true };
+            jsonOptionsWithFields.Converters.Add(new ColorJsonConverter());
             var options = parameter.InitializationOptions switch
             {
                 System.Text.Json.JsonElement jsonElement => System.Text.Json.JsonSerializer.Deserialize<AsmLanguageServerOptions>(jsonElement.GetRawText(), jsonOptionsWithFields),

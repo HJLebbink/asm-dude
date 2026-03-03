@@ -131,7 +131,7 @@ namespace AsmDude2LS
 
             List<AsmSignatureEnum> ParseOperands(string str)
             {
-                List<AsmSignatureEnum> result = new();
+                List<AsmSignatureEnum> result = [];
                 str = str.Replace("R/M", "R_M");
                 foreach (string op in str.Split('/'))
                 {
@@ -164,7 +164,7 @@ namespace AsmDude2LS
                 }
                 if (startPos == -1)
                 {
-                    return Array.Empty<Tuple<int, int>>();
+                    return [];
                 }
                 var result = new List<Tuple<int, int>>();
                 int previousPos = startPos;
@@ -180,11 +180,11 @@ namespace AsmDude2LS
                 {
                     result.Add(new Tuple<int, int>(previousPos, signature.Length));
                 }
-                return result.ToArray<Tuple<int, int>>();
+                return [.. result];
             }
 
             var parameters = new List<ParameterInformation>();
-            var operands = (args.Length == 0) ? Array.Empty<string>() : args.Split(',');
+            var operands = (args.Length == 0) ? [] : args.Split(',');
             var parameterOffsets = FindParamPositions(sign);
 
             if (operands.Length != parameterOffsets.Length)
@@ -226,7 +226,7 @@ namespace AsmDude2LS
                 SignatureInformation = new SignatureInformation
                 {
                     Label = sign,
-                    Parameters = parameters.ToArray<ParameterInformation>(),
+                    Parameters = [.. parameters],
                     Documentation = doc,
                 }
             };
@@ -234,10 +234,10 @@ namespace AsmDude2LS
 
         private (Dictionary<Mnemonic, List<AsmSignatureInformation>> data, Dictionary<Mnemonic, List<Arch>> arch, Dictionary<Mnemonic, string> htmlRef, Dictionary<Mnemonic, string> description) CalcSignatureInformation(string filename_RegularData, string filename_HandcraftedData)
         {
-            Dictionary<Mnemonic, List<AsmSignatureInformation>> data = new();
-            Dictionary<Mnemonic, List<Arch>> arch = new();
-            Dictionary<Mnemonic, string> htmlRef = new();
-            Dictionary<Mnemonic, string> description = new();
+            Dictionary<Mnemonic, List<AsmSignatureInformation>> data = [];
+            Dictionary<Mnemonic, List<Arch>> arch = [];
+            Dictionary<Mnemonic, string> htmlRef = [];
+            Dictionary<Mnemonic, string> description = [];
 
             /// <summary>
             /// Add (and overwrite) return true if an existing signature element is overwritten;
@@ -255,7 +255,7 @@ namespace AsmDude2LS
                 }
                 else
                 {
-                    data.Add(asmSignatureElement.Mnemonic, new List<AsmSignatureInformation> { asmSignatureElement });
+                    data.Add(asmSignatureElement.Mnemonic, [asmSignatureElement]);
                 }
                 //LanguageServer.LogInfo($"MnemonicStore: Add: number of elements after {this.data_.Count}");
                 return result;
@@ -275,7 +275,7 @@ namespace AsmDude2LS
                     string line;
                     while ((line = file.ReadLine()) != null)
                     {
-                        if ((line.Length > 0) && (!line.StartsWith(";", StringComparison.Ordinal)))
+                        if ((line.Length > 0) && (!line.StartsWith(';')))
                         {
                             string[] columns = line.Split('\t');
                             if (columns.Length == 4)
@@ -335,12 +335,12 @@ namespace AsmDude2LS
 
                     foreach ((Mnemonic key, List<AsmSignatureInformation> value) in data)
                     {
-                        HashSet<Arch> archs = new();
+                        HashSet<Arch> archs = [];
                         foreach (AsmSignatureInformation signatureElement in value)
                         {
                             archs.UnionWith(signatureElement.Arch);
                         }
-                        arch[key] = archs.ToList();
+                        arch[key] = [.. archs];
                     }
                 }
                 catch (FileNotFoundException)
@@ -367,7 +367,7 @@ namespace AsmDude2LS
                     string line;
                     while ((line = file.ReadLine()) != null)
                     {
-                        if ((line.Length > 0) && (!line.StartsWith(";", StringComparison.Ordinal)))
+                        if ((line.Length > 0) && (!line.StartsWith(';')))
                         {
                             string[] columns = line.Split('\t');
                             if (columns.Length == 4)
@@ -417,12 +417,12 @@ namespace AsmDude2LS
 
                     foreach ((Mnemonic key, List<AsmSignatureInformation> value) in data)
                     {
-                        HashSet<Arch> archs = new();
+                        HashSet<Arch> archs = [];
                         foreach (AsmSignatureInformation signatureElement in value)
                         {
                             archs.UnionWith(signatureElement.Arch);
                         }
-                        arch[key] = archs.ToList();
+                        arch[key] = [.. archs];
                     }
                 }
                 catch (FileNotFoundException)
@@ -470,7 +470,7 @@ namespace AsmDude2LS
 
         private HashSet<Mnemonic> CalcMnemonicsSwitchedOn()
         {
-            HashSet<Mnemonic> result = new();
+            HashSet<Mnemonic> result = [];
 
             ISet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
@@ -499,7 +499,7 @@ namespace AsmDude2LS
 
         private HashSet<Rn> CalcRegisterSwitchedOn()
         {
-            HashSet<Rn> result = new();
+            HashSet<Rn> result = [];
 
             ISet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
             foreach (Rn reg in Enum.GetValues(typeof(Rn)))

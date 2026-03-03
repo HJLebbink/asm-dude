@@ -34,7 +34,7 @@ namespace AsmSim
         {
             Contract.Requires(graph != null);
 
-            HashSet<string> visited = new();
+            HashSet<string> visited = [];
             return Get_Branch_Points_Backwards_LOCAL(vertex);
 
             #region Local Method
@@ -72,7 +72,7 @@ namespace AsmSim
         {
             Contract.Requires(graph != null);
 
-            HashSet<string> visited = new();
+            HashSet<string> visited = [];
             return Get_Branch_Point_Backwards_LOCAL(vertex);
 
             #region Local Method
@@ -129,8 +129,8 @@ namespace AsmSim
 
                 if (s1 != s2)
                 {
-                    HashSet<string> branchPoints1 = new();
-                    HashSet<string> branchPoints2 = new();
+                    HashSet<string> branchPoints1 = [];
+                    HashSet<string> branchPoints2 = [];
 
                     foreach (string v in Get_First_Branch_Point_Backwards(s1, graph))
                     {
@@ -162,8 +162,8 @@ namespace AsmSim
                 return vertex1;
             }
 
-            HashSet<string> branchPoints1 = new();
-            HashSet<string> branchPoints2 = new();
+            HashSet<string> branchPoints1 = [];
+            HashSet<string> branchPoints2 = [];
 
             foreach (string v in Get_Branch_Points_Backwards(vertex1, graph))
             {

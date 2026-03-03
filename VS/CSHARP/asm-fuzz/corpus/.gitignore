@@ -1,0 +1,6 @@
+# Keep only hand-written seed corpus files (.asm)
+# Ignore auto-generated fuzzer corpus (SHA1-named binary blobs)
+*
+!*/
+!.gitignore
+!**/*.asm

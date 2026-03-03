@@ -78,15 +78,15 @@ namespace AsmDude2LS
             this.caseSensitiveLabel_ = caseSensitiveLabel;
             this.options = options;
 
-            this.filenames_ = new Dictionary<int, string>();
-            this.usedAt_ = new Dictionary<string, List<KeywordID>>(); // if LabelGraph is case insensitive then string is UPPERCASE
-            this.defAt_ = new Dictionary<string, List<KeywordID>>();// if LabelGraph is case insensitive then string is UPPERCASE
-            this.defAt_PROTO_ = new Dictionary<string, List<KeywordID>>();// if LabelGraph is case insensitive then string is UPPERCASE
-            this.hasLabel_ = new HashSet<KeywordID>();
-            this.hasDef_ = new HashSet<KeywordID>();
-            this.undefined_includes_ = new List<(string include_filename, string path, string source_filename, int lineNumber)>();
+            this.filenames_ = [];
+            this.usedAt_ = []; // if LabelGraph is case insensitive then string is UPPERCASE
+            this.defAt_ = [];// if LabelGraph is case insensitive then string is UPPERCASE
+            this.defAt_PROTO_ = [];// if LabelGraph is case insensitive then string is UPPERCASE
+            this.hasLabel_ = [];
+            this.hasDef_ = [];
+            this.undefined_includes_ = [];
             this.Enabled = this.options.IntelliSense_Label_Analysis_On;
-            this.current_diagnostics = new List<VSDiagnostic>();
+            this.current_diagnostics = [];
 
             if (lines.Length >= options.MaxFileLines)
             {
@@ -240,7 +240,7 @@ namespace AsmDude2LS
         {
             get
             {
-                SortedDictionary<string, string> result = new();
+                SortedDictionary<string, string> result = [];
                 {
                     foreach (KeyValuePair<string, List<KeywordID>> entry in this.defAt_)
                     {
@@ -373,7 +373,7 @@ namespace AsmDude2LS
             }
             else
             {
-                dict.Add(key2, new List<KeywordID> { id });
+                dict.Add(key2, [id]);
             }
         }
 
@@ -388,13 +388,13 @@ namespace AsmDude2LS
                 }
                 if (includeFilename.Length > 2)
                 {
-                    if (includeFilename.StartsWith("[", StringComparison.Ordinal) && includeFilename.EndsWith("]", StringComparison.Ordinal))
+                    if (includeFilename.StartsWith('[') && includeFilename.EndsWith(']'))
                     {
-                        includeFilename = includeFilename.Substring(1, includeFilename.Length - 2);
+                        includeFilename = includeFilename[1..^1];
                     }
-                    else if (includeFilename.StartsWith("\"", StringComparison.Ordinal) && includeFilename.EndsWith("\"", StringComparison.Ordinal))
+                    else if (includeFilename.StartsWith('"') && includeFilename.EndsWith('"'))
                     {
-                        includeFilename = includeFilename.Substring(1, includeFilename.Length - 2);
+                        includeFilename = includeFilename[1..^1];
                     }
                 }
                 string filePath = Path.GetDirectoryName(this.thisFilename_) + Path.DirectorySeparatorChar + includeFilename;

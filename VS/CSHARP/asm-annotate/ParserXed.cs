@@ -252,7 +252,7 @@ namespace asm_annotate
             var y = x[0].Split('_');
             Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(y[0], true);
 
-            List<IformRegister> args = new List<IformRegister>();
+            List<IformRegister> args = [];
             for (int i = 1; i<y.Length; ++i)
             {
                 var z = ParseIformRegister(y[i], false);

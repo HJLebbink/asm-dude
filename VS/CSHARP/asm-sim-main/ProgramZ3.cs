@@ -1437,7 +1437,7 @@ namespace AsmSim
                 using Context ctx = new(settings);
                 Solver solver = ctx.MkSolver();
 
-                IList<BoolExpr> switchList = new List<BoolExpr>();
+                IList<BoolExpr> switchList = [];
 
                 BitVecExpr rax_0 = ctx.MkBVConst("RAX!0", 8); // register values
                 BitVecExpr rax_1 = ctx.MkBVConst("RAX!1", 8);

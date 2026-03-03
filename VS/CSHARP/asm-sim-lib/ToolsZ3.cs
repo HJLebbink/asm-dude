@@ -68,7 +68,7 @@ namespace AsmSim
             if (beginPos < endPos)
             {
                 int result = -1;
-                string substr = label.Substring(beginPos, endPos - beginPos);
+                string substr = label[beginPos..endPos];
                 //Console.WriteLine("INFO: ToolsZ3:getLineNumberFromLabel: substr=" + substr + ".");
                 if (int.TryParse(substr, out result))
                 {
@@ -83,7 +83,7 @@ namespace AsmSim
         {
             string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
             return (cleanedString.Length > maxNumberOfCharsOnLine)
-                ? cleanedString.Substring(0, maxNumberOfCharsOnLine - 3) + "..."
+                ? cleanedString[..(maxNumberOfCharsOnLine - 3)] + "..."
                 : cleanedString;
         }
 
@@ -375,7 +375,7 @@ namespace AsmSim
         {
             if (e.IsConst)
             {
-                flags |= FlagTools.Parse(e.ToString().Substring(0, 2), false);
+                flags |= FlagTools.Parse(e.ToString()[..2], false);
             }
             else
             {
@@ -1176,8 +1176,8 @@ namespace AsmSim
 
         private static (IList<Symbol> boolConstants, IList<Symbol> bvConstants) GetConstants(Expr expr)
         {
-            IList<Symbol> boolResults = new List<Symbol>();
-            IList<Symbol> bvResults = new List<Symbol>();
+            IList<Symbol> boolResults = [];
+            IList<Symbol> bvResults = [];
             GetConstants(expr, ref boolResults, ref bvResults);
             return (boolConstants: boolResults, bvConstants: bvResults);
         }

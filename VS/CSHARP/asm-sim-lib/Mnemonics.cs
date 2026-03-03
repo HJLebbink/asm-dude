@@ -172,9 +172,9 @@ namespace AsmSim
             /// <summary>Gets the flags that are written by this Mnemnonic</summary>
             public virtual Flags FlagsWriteStatic { get { return Flags.NONE; } }
 
-            public virtual IEnumerable<Rn> RegsReadStatic { get { return Enumerable.Empty<Rn>(); } }
+            public virtual IEnumerable<Rn> RegsReadStatic { get { return []; } }
 
-            public virtual IEnumerable<Rn> RegsWriteStatic { get { return Enumerable.Empty<Rn>(); } }
+            public virtual IEnumerable<Rn> RegsWriteStatic { get { return []; } }
 
             public virtual bool MemReadStatic { get { return false; } }
 

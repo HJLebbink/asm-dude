@@ -42,7 +42,7 @@ namespace AsmDude2LS
         public string throughput_;
         public string remark_;
 
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             //Check for null and compare run-time types.
             if ((obj == null) || !this.GetType().Equals(obj.GetType()))
@@ -56,7 +56,7 @@ namespace AsmDude2LS
             }
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return this.microArch_.GetHashCode() ^ this.instr_.GetHashCode() ^ this.args_.GetHashCode();
         }
@@ -71,7 +71,7 @@ namespace AsmDude2LS
             return !(left == right);
         }
 
-        public bool Equals(PerformanceItem other)
+        public readonly bool Equals(PerformanceItem other)
         {
             return this == other;
         }
@@ -85,7 +85,7 @@ namespace AsmDude2LS
         public PerformanceStore(string path, AsmLanguageServerOptions options)
         {
             this.options = options;
-            this.data_ = new List<PerformanceItem>();
+            this.data_ = [];
 
             if (this.options.PerformanceInfo_On)
             {
@@ -143,7 +143,7 @@ namespace AsmDude2LS
 
                 while ((line = file.ReadLine()) != null)
                 {
-                    if ((line.Trim().Length > 0) && (!line.StartsWith(";", StringComparison.Ordinal)))
+                    if ((line.Trim().Length > 0) && (!line.StartsWith(';')))
                     {
                         string[] columns = line.Split('\t');
                         if (columns.Length == 8)
@@ -152,7 +152,7 @@ namespace AsmDude2LS
                                 string mnemonicKey = columns[0].Trim();
                                 if (!translations.TryGetValue(mnemonicKey, out IList<Mnemonic> mnemonics))
                                 {
-                                    mnemonics = new List<Mnemonic>();
+                                    mnemonics = [];
                                     foreach (string mnemonicStr in mnemonicKey.Split(' '))
                                     {
                                         Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr, false);
@@ -221,14 +221,14 @@ namespace AsmDude2LS
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {
-                    if ((line.Trim().Length > 0) && (!line.StartsWith(";", StringComparison.Ordinal)))
+                    if ((line.Trim().Length > 0) && (!line.StartsWith(';')))
                     {
                         string[] columns = line.Split('\t');
                         if (columns.Length == 2)
                         {
                             string key = columns[0].Trim();
 
-                            IList<Mnemonic> values = new List<Mnemonic>();
+                            IList<Mnemonic> values = [];
                             foreach (string mnemonicStr in columns[1].Trim().Split(' '))
                             {
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr, false);

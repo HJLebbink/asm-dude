@@ -86,7 +86,7 @@ namespace AsmSim
                 return store1;
             }
 
-            IList<string> sharedKeys = new List<string>();
+            IList<string> sharedKeys = [];
 
             if ((store1.branchInfo_ != null) && (store2.branchInfo_ != null))
             {

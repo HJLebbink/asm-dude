@@ -94,24 +94,24 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     private LanguageServer(Stream sender, Stream reader)
     {
-        traceSource = Tools.CreateTraceSource();
+        this.traceSource = Tools.CreateTraceSource();
         //LogInfo("LanguageServer: constructor"); // This lineNumber produces a crash
-        target = new LanguageServerTarget(this);
-        textDocuments = new Dictionary<string, TextDocumentItem>();
-        textDocumentLines = new Dictionary<string, string[]>();
-        parsedDocuments = new Dictionary<string, KeywordID[][]>();
+        this.target = new LanguageServerTarget(this);
+        this.textDocuments = [];
+        this.textDocumentLines = [];
+        this.parsedDocuments = [];
 
-        labelGraphs = new Dictionary<string, LabelGraph>();
-        foldingRanges = new Dictionary<string, IEnumerable<FoldingRange>>();
-        diagnostics = [];
-        Symbols = [];
+        this.labelGraphs = [];
+        this.foldingRanges = [];
+        this.diagnostics = [];
+        this.Symbols = [];
 
-        // Use SystemTextJsonFormatter - the 18.5.1 LSP package has built-in STJ converters
         var formatter = new SystemTextJsonFormatter();
         formatter.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-        messageHandler = new HeaderDelimitedMessageHandler(sender, reader, formatter);
-        rpc = new JsonRpc(messageHandler, target);
-        rpc.Disconnected += OnRpcDisconnected;
+        formatter.JsonSerializerOptions.Converters.Add(new ColorJsonConverter());
+        this.messageHandler = new HeaderDelimitedMessageHandler(sender, reader, formatter);
+        this.rpc = new JsonRpc(this.messageHandler, this.target);
+        this.rpc.Disconnected += this.OnRpcDisconnected;
 
         /* 30-09-23 why would we need the following code?
         rpc.ActivityTracingStrategy = new CorrelationManagerTracingStrategy()
@@ -126,11 +126,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         // Always log startup info to stderr for debugging (regardless of trace setting)
         Console.Error.WriteLine($"LanguageServer: Starting RPC listener. Sender CanWrite={sender.CanWrite}, Reader CanRead={reader.CanRead}");
-        rpc.StartListening();
+        this.rpc.StartListening();
         Console.Error.WriteLine("LanguageServer: RPC listener started");
 
-        target.OnInitializeCompletion += OnTargetInitializeCompletion;
-        target.OnInitialized += OnTargetInitialized;
+        this.target.OnInitializeCompletion += this.OnTargetInitializeCompletion;
+        this.target.OnInitialized += this.OnTargetInitialized;
     }
 
     /// <summary>
@@ -138,14 +138,14 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     /// </summary>
     internal LanguageServer()
     {
-        traceSource = Tools.CreateTraceSource();
-        textDocuments = new Dictionary<string, TextDocumentItem>();
-        textDocumentLines = new Dictionary<string, string[]>();
-        parsedDocuments = new Dictionary<string, KeywordID[][]>();
-        labelGraphs = new Dictionary<string, LabelGraph>();
-        foldingRanges = new Dictionary<string, IEnumerable<FoldingRange>>();
-        diagnostics = [];
-        Symbols = [];
+        this.traceSource = Tools.CreateTraceSource();
+        this.textDocuments = [];
+        this.textDocumentLines = [];
+        this.parsedDocuments = [];
+        this.labelGraphs = [];
+        this.foldingRanges = [];
+        this.diagnostics = [];
+        this.Symbols = [];
     }
 
         #region Tools
@@ -217,7 +217,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             {
                 return lines;
             }
-            return Array.Empty<string>();
+            return [];
         }
 
         private TextDocumentItem GetTextDocument(string uri)
@@ -425,9 +425,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             int startKeywordLength = StartKeyword.Length;
             int endKeywordLength = EndKeyword.Length;
 
-            List<FoldingRange> foldingRanges = new();
+            List<FoldingRange> foldingRanges = [];
             Stack<int> startLineNumbers = new();
             Stack<int> startCharacters = new();
+            Stack<string> collapsedTexts = new();
 
             var lines = this.GetLines(uri);
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
@@ -438,6 +439,12 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     startLineNumbers.Push(lineNumber);
                     startCharacters.Push(offsetRegion);
+                    // Extract the text after the #region keyword as collapsed text
+                    int textStart = offsetRegion + startKeywordLength;
+                    string collapsedText = textStart < lines[lineNumber].Length
+                        ? lines[lineNumber][textStart..].Trim()
+                        : string.Empty;
+                    collapsedTexts.Push(collapsedText.Length > 0 ? collapsedText : "...");
                 }
                 else
                 {
@@ -461,6 +468,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         {
                             int startLine = startLineNumbers.Pop();
                             int startCharacter = startCharacters.Pop();
+                            string collapsedText = collapsedTexts.Pop();
                             foldingRanges.Add(new FoldingRange
                             {
                                 StartLine = startLine,
@@ -468,7 +476,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                                 EndLine = lineNumber,
                                 EndCharacter = offsetEndRegion + endKeywordLength,
                                 Kind = FoldingRangeKind.Region,
-                                // CollapsedText is VS-specific extension, not in standard LSP
+                                CollapsedText = collapsedText,
                             });
                         }
                     }
@@ -494,7 +502,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             PublishDiagnosticParams parameter = new()
             {
                 Uri = new Uri(uri),
-                Diagnostics = this.diagnostics.ToArray(),
+                Diagnostics = [.. this.diagnostics],
             };
             _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnosticsName, parameter);
         }
@@ -614,8 +622,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 Kind = CodeActionKind.QuickFix,
             };
 
-            Dictionary<string, TextEdit[]> changes = new();
-            changes.Add(parameter.TextDocument.Uri.ToString(), addTextEdit);
+            Dictionary<string, TextEdit[]> changes = new()
+            {
+                { parameter.TextDocument.Uri.ToString(), addTextEdit }
+            };
 
             CodeAction addTextActionChangesProperty = new()
             {
@@ -729,11 +739,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             var uri = args.TextDocument.Uri.ToString();
 
             var lines = this.GetLines(uri);
-            if ((int)args.Position.Line >= lines.Length) return Array.Empty<object>();
+            if ((int)args.Position.Line >= lines.Length) return [];
             var (referenceWord, _, _) = GetWord((int)args.Position.Character, lines[(int)args.Position.Line]);
             if (referenceWord.Length == 0)
             {
-                return Array.Empty<object>();
+                return [];
             }
 
             // PartialResultToken is a token, not an IProgress object
@@ -742,8 +752,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             int delay = this.referencesDelayMs;
 
             //TODO why not use VSLocation??
-            List<Location> locations = new();
-            List<Location> locationsChunk = new();
+            List<Location> locations = [];
+            List<Location> locationsChunk = [];
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -925,7 +935,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                 IEnumerable<AsmSignatureInformation> x = this.mnemonicStore.GetSignatures(mnemonic);
                 IEnumerable<AsmSignatureInformation> y = this.Constrain_Signatures(x, operands, selectedArchitectures);
-                List<SignatureInformation> z = new();
+                List<SignatureInformation> z = [];
                 foreach (AsmSignatureInformation asmSignatureElement in y)
                 {
                     if (asmSignatureElement.Operands.Count > 0)
@@ -946,7 +956,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     ActiveSignature = 0,
                     ActiveParameter = nCommas,
-                    Signatures = z.ToArray<SignatureInformation>(),
+                    Signatures = [.. z],
                 };
             } catch (Exception e)
             {
@@ -965,13 +975,13 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             if (!this.options.CodeFolding_On)
             {
-                return Array.Empty<FoldingRange>();
+                return [];
             }
             if (this.foldingRanges.TryGetValue(parameter.TextDocument.Uri.ToString(), out IEnumerable<FoldingRange> value))
             {
-                return value.ToArray();
+                return [.. value];
             }
-            return Array.Empty<FoldingRange>();
+            return [];
         }
 
         /// <summary>
@@ -993,7 +1003,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
             if (!this.parsedDocuments.TryGetValue(uri, out KeywordID[][] keywords))
             {
-                return new SemanticTokens { Data = Array.Empty<int>() };
+                return new SemanticTokens { Data = [] };
             }
 
             var data = new List<int>();
@@ -1038,7 +1048,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 }
             }
 
-            return new SemanticTokens { Data = data.ToArray() };
+            return new SemanticTokens { Data = [.. data] };
         }
 
         /// <summary>
@@ -1087,7 +1097,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
             if (!this.textDocumentLines.TryGetValue(uri, out string[] lines))
             {
-                return Array.Empty<InlayHint>();
+                return [];
             }
 
             var hints = new List<InlayHint>();
@@ -1177,7 +1187,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 }
             }
 
-            return hints.ToArray();
+            return [.. hints];
         }
 
         private HashSet<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, HashSet<AsmSignatureEnum> allowedOperands, int lineNumber)
@@ -1187,7 +1197,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             //bool use_AsmSim_In_Code_Completion = this.asmSimulator_.Enabled && Settings.Default.AsmSim_Show_Register_In_Code_Completion;
             bool att_Syntax = this.options.Used_Assembler == AssemblerEnum.NASM_ATT;
 
-            HashSet<CompletionItem> completions = new();
+            HashSet<CompletionItem> completions = [];
 
             foreach (Rn regName in this.mnemonicStore.Get_Allowed_Registers())
             {
@@ -1324,7 +1334,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             IEnumerable<CompletionItem> Selected_Completions(bool useCapitals, HashSet<AsmTokenType> selectedTypes, bool addSpecialKeywords)
             {
-                HashSet<CompletionItem> completions = new();
+                HashSet<CompletionItem> completions = [];
 
                 // Add the completions of AsmDude directives (such as code folding directives)
                 #region
@@ -1491,11 +1501,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 // if the mnemonic is NONE we should suggest mnemonics
                 if (mnemonic == Mnemonic.NONE)
                 {
-                    HashSet<AsmTokenType> selected = new() { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
+                    HashSet<AsmTokenType> selected = [AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic];
                     if (extraLogging) LogInfo($"OnTextDocumentCompletion: A");
                     return new CompletionList()
                     {
-                        Items = Selected_Completions(useCapitals, selected, true).ToArray(),
+                        Items = [.. Selected_Completions(useCapitals, selected, true)],
                     };
                 }
 
@@ -1511,11 +1521,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 if (extraLogging) LogInfo($"OnTextDocumentCompletion: pos={pos}; mnemonicOffsetEnd={mnemonicOffsetEnd}");
                 if (pos <= mnemonicOffsetEnd)
                 {
-                    HashSet<AsmTokenType> selected = new() { AsmTokenType.Jump, AsmTokenType.Mnemonic };
+                    HashSet<AsmTokenType> selected = [AsmTokenType.Jump, AsmTokenType.Mnemonic];
                     if (extraLogging) LogInfo($"OnTextDocumentCompletion: B");
                     return new CompletionList()
                     {
-                        Items = Selected_Completions(useCapitals, selected, true).ToArray(),
+                        Items = [.. Selected_Completions(useCapitals, selected, true)],
                     };
                 }
 
@@ -1526,7 +1536,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     if (extraLogging) LogInfo($"OnTextDocumentCompletion: C");
                     return new CompletionList()
                     {
-                        Items = this.Label_Completions(labelGraph, useCapitals, true).ToArray(),
+                        Items = [.. this.Label_Completions(labelGraph, useCapitals, true)],
                     };
                 }
 
@@ -1534,7 +1544,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 // parameters of the mnemonic and make suggestions based on the allowed parameters
 
                 HashSet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
-                HashSet<AsmSignatureEnum> allowed = new();
+                HashSet<AsmSignatureEnum> allowed = [];
                 List<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
                 int nCommas = Math.Max(0, operands.Count - 1);
 
@@ -1569,7 +1579,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 }
                 return new CompletionList()
                 {
-                    Items = this.Mnemonic_Operand_Completions(useCapitals, allowed, (int)parameter.Position.Line).ToArray()
+                    Items = [.. this.Mnemonic_Operand_Completions(useCapitals, allowed, (int)parameter.Position.Line)]
                 };
             }
             catch (Exception e)
@@ -1586,17 +1596,17 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             if (progress == null)
             {
                 LogInfo($"LanguageServer:GetDocumentHighlights: progress is null");
-                return Array.Empty<DocumentHighlight>();
+                return [];
             }
             TextDocumentItem document = this.GetTextDocument(uri);
             if (document == null)
             {
                 LogInfo($"LanguageServer:GetDocumentHighlights: document is null");
-                return Array.Empty<DocumentHighlight>();
+                return [];
             }
 
             var lines = this.GetLines(uri);
-            if ((int)position.Line >= lines.Length) return Array.Empty<DocumentHighlight>();
+            if ((int)position.Line >= lines.Length) return [];
             var lineStr2 = lines[(int)position.Line];
             (int startPos, int endPos) = FindWordBoundary((int)position.Character, lineStr2);
             int length = endPos - startPos;
@@ -1604,16 +1614,16 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             if (length <= 0)
             {
                 LogInfo($"LanguageServer:GetDocumentHighlights: argStrLength too small ({length})");
-                return Array.Empty<DocumentHighlight>();
+                return [];
             }
             string currentHighlightedWord = lineStr2.Substring(startPos, length);
             if (string.IsNullOrEmpty(currentHighlightedWord))
             {
                 LogInfo($"LanguageServer:GetDocumentHighlights: currentHighlightedWord is not significant ({currentHighlightedWord})");
-                return Array.Empty<DocumentHighlight>();
+                return [];
             }
 
-            IList<string> currentHighlightedWords = new List<string>();
+            IList<string> currentHighlightedWords = [];
             Rn reg = RegisterTools.ParseRn(currentHighlightedWord, false);
             if (reg == Rn.NOREG)
             {
@@ -1628,8 +1638,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
             LogInfo($"LanguageServer:GetDocumentHighlights: currentHighlightedWords={string.Join(",", currentHighlightedWords)}");
 
-            List<DocumentHighlight> highlights = new();
-            List<DocumentHighlight> chunk = new();
+            List<DocumentHighlight> highlights = [];
+            List<DocumentHighlight> chunk = [];
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -1651,7 +1661,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                         if (chunk.Count == this.highlightChunkSize)
                         {
-                            progress.Report(chunk.ToArray());
+                            progress.Report([.. chunk]);
                             Thread.Sleep(this.highlightsDelayMs);  // Wait between chunks
                             chunk.Clear();
                         }
@@ -1663,10 +1673,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             // Report last chunk if it has elements since it didn't reached the specified size
             if (chunk.Count > 0)
             {
-                progress.Report(chunk.ToArray());
+                progress.Report([.. chunk]);
             }
 
-            return highlights.ToArray();
+            return [.. highlights];
         }
 
         /// <summary>
@@ -1894,9 +1904,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 case AsmTokenType.Register:
                     {
                         // int lineNumber = //AsmTools.Tools.Get_LineNumber(tagSpan);
-                        if (keyword_uppercase.StartsWith("%", StringComparison.Ordinal))
+                        if (keyword_uppercase.StartsWith('%'))
                         {
-                            keyword_uppercase = keyword_uppercase.Substring(1); // remove the preceding % in AT&T syntax
+                            keyword_uppercase = keyword_uppercase[1..]; // remove the preceding % in AT&T syntax
                         }
 
                         Rn reg = RegisterTools.ParseRn(keyword_uppercase, true);
@@ -2161,12 +2171,12 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         public VSSymbolInformation[] GetDocumentSymbols(DocumentSymbolParams parameters)
         {
-            return this.Symbols.ToArray();
+            return [.. this.Symbols];
         }
 
         private void UpdateSymbols(string uri)
         {
-            IList<VSSymbolInformation> symbolInfo = new List<VSSymbolInformation>();
+            IList<VSSymbolInformation> symbolInfo = [];
             var lines = this.GetLines(uri);
 
             int fileID = 0; //TODO
@@ -2248,7 +2258,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             VSProjectContextList result = new()
             {
-                ProjectContexts = this.Contexts.ToArray(),
+                ProjectContexts = [.. this.Contexts],
                 DefaultIndex = 0
             };
 
@@ -2335,7 +2345,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             {
                 Message = message,
                 MessageType = messageType,
-                Actions = actionItems.Select(a => new MessageActionItem { Title = a }).ToArray()
+                Actions = [.. actionItems.Select(a => new MessageActionItem { Title = a })]
             };
 
             return await this.SendMethodRequestAsync<ShowMessageRequestParams, MessageActionItem>(Methods.WindowShowMessageRequestName, parameter);
@@ -2383,7 +2393,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         public void Dispose()
         {
-            if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+            if (Interlocked.Exchange(ref this._disposed, 1) != 0) return;
             this.Exit();
             this.rpc?.Dispose();
         }

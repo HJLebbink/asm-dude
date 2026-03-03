@@ -86,7 +86,7 @@ namespace unit_tests
                 }
                 Assert.AreEqual(3, result.Count);
                 Assert.AreEqual("db", line[result[0].Item1..result[0].Item2]);
-                Assert.AreEqual("\"This string contains the word jmp inside of it\"", line.Substring(result[1].Item1, result[1].Item2 - result[1].Item1));
+                Assert.AreEqual("\"This string contains the word jmp inside of it\"", line[result[1].Item1..result[1].Item2]);
                 Assert.AreEqual("0", line[result[2].Item1..result[2].Item2]);
             }
             {
@@ -99,7 +99,7 @@ namespace unit_tests
                 }
                 Assert.AreEqual(2, result.Count);
                 Assert.AreEqual("call", line[result[0].Item1..result[0].Item2]);
-                Assert.AreEqual("??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z", line.Substring(result[1].Item1, result[1].Item2 - result[1].Item1));
+                Assert.AreEqual("??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z", line[result[1].Item1..result[1].Item2]);
             }
         }
 
