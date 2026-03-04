@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2023 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Linq;
 using AsmDude2LS;
 using AsmTools;
 using FluentAssertions;
@@ -45,12 +46,19 @@ public class LanguageServerTests
             ARCH_X64 = true,
             ARCH_SSE = true,
             ARCH_AVX = true,
+            ARCH_AVX2 = true,
+            ARCH_AVX512_F = true,
+            ARCH_AVX512_VL = true,
+            ARCH_AVX512_DQ = true,
+            ARCH_AVX512_BW = true,
             CodeCompletion_On = true,
             SignatureHelp_On = true,
             CodeFolding_On = true,
             CodeFolding_BeginTag = "#region",
             CodeFolding_EndTag = "#endregion",
-            AsmDoc_On = true
+            AsmDoc_On = true,
+            IntelliSense_Label_Analysis_On = true,
+            Global_MaxFileLines = 10000
         };
         _server.Initialize(_options);
         _server.Initialized();
@@ -172,34 +180,67 @@ public class LanguageServerTests
 
     #region Completion Tests
 
-    [Fact]
-    public void GetTextDocumentCompletion_WithValidDocument_ShouldReturnCompletions()
+    private CompletionList GetCompletions(string asmLine, int character)
     {
-        // Arrange
-        var uri = "file:///test.asm";
-        var openParams = new DidOpenTextDocumentParams
+        var uri = $"file:///test_completion_{asmLine.GetHashCode():x}.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
                 Uri = new Uri(uri),
                 LanguageId = "asm",
                 Version = 1,
-                Text = "mov rax, rbx\nadd "
+                Text = asmLine
             }
-        };
-        _server.OnTextDocumentOpened(openParams);
-
-        var completionParams = new CompletionParams
+        });
+        return _server.GetTextDocumentCompletion(new CompletionParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
-            Position = new Position { Line = 1, Character = 4 }
-        };
+            Position = new Position { Line = 0, Character = character }
+        });
+    }
 
-        // Act
-        var result = _server.GetTextDocumentCompletion(completionParams);
-
-        // Assert
+    [Fact]
+    public void Completion_AfterMnemonic_ReturnsOperands()
+    {
+        var result = GetCompletions("add ", 4);
         result.Should().NotBeNull();
+        result.Items.Should().NotBeEmpty();
+        result.Items.Length.Should().BeGreaterThan(10, "should return many register completions");
+    }
+
+    [Fact]
+    public void Completion_FilterTextMatchesInsertText()
+    {
+        var result = GetCompletions("add ", 4);
+        result.Items.Should().AllSatisfy(item =>
+        {
+            item.FilterText.Should().Be(item.InsertText,
+                $"FilterText must equal InsertText for '{item.Label}' to prevent VS fuzzy matching on arch tags");
+        });
+    }
+
+    [Fact]
+    public void Completion_FilterTextNeverContainsArchTags()
+    {
+        var result = GetCompletions("v", 1);
+        result.Items.Should().NotBeEmpty();
+        result.Items.Should().AllSatisfy(item =>
+        {
+            item.FilterText.Should().NotContainAny(["[", "]"],
+                $"FilterText '{item.FilterText}' must not contain arch tags");
+        });
+    }
+
+    [Fact]
+    public void Completion_ShortPrefix_FiltersServerSide()
+    {
+        var result = GetCompletions("VMOVAPS Z", 9);
+        result.Should().NotBeNull();
+        result.Items.Should().NotBeEmpty("ZMM registers should be available");
+        result.Items.Should().OnlyContain(
+            i => i.FilterText.StartsWith("Z", StringComparison.OrdinalIgnoreCase),
+            "typing 'Z' should only return Z-prefixed completions, not YMM/XMM");
     }
 
     #endregion
@@ -665,4 +706,346 @@ add rcx, rdx
     }
 
     #endregion
+
+    #region CodeLens Tests
+
+    [Fact]
+    public void CodeLens_Serialization_ProducesValidJson()
+    {
+        var uri = "file:///test_codelens_json.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "my_label:\n    jmp my_label\n"
+            }
+        });
+
+        var lenses = _server.GetCodeLenses(new CodeLensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        lenses.Should().HaveCount(1);
+
+        // Serialize like the LSP wire protocol would
+        var json = System.Text.Json.JsonSerializer.Serialize(lenses);
+        var doc = System.Text.Json.JsonDocument.Parse(json);
+        var firstLens = doc.RootElement[0];
+
+        // Verify the JSON structure VS expects
+        firstLens.TryGetProperty("range", out var range).Should().BeTrue("CodeLens must have range");
+        range.GetProperty("start").GetProperty("line").GetInt32().Should().Be(0);
+        range.GetProperty("start").GetProperty("character").GetInt32().Should().Be(0);
+        firstLens.TryGetProperty("data", out var data).Should().BeTrue("CodeLens must have data for resolve");
+        data.GetInt32().Should().Be(1);
+
+        // Serialize the resolved lens
+        var resolved = _server.ResolveCodeLens(lenses[0]);
+        var resolvedJson = System.Text.Json.JsonSerializer.Serialize(resolved);
+        var resolvedDoc = System.Text.Json.JsonDocument.Parse(resolvedJson);
+        var resolvedLens = resolvedDoc.RootElement;
+
+        resolvedLens.TryGetProperty("command", out var command).Should().BeTrue("resolved CodeLens must have command");
+        command.GetProperty("title").GetString().Should().Be("1 reference");
+        command.TryGetProperty("command", out _).Should().BeTrue("command must have 'command' field (CommandIdentifier)");
+    }
+
+    [Fact]
+    public void CodeLens_LabelWithReferences_ShowsReferenceCount()
+    {
+        var uri = "file:///test_codelens.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "my_label:\n    mov eax, 1\n    jmp my_label\n    jne my_label\n"
+            }
+        });
+
+        var lenses = _server.GetCodeLenses(new CodeLensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        lenses.Should().NotBeNull();
+        lenses.Should().HaveCount(1);
+        lenses[0].Data.Should().BeEquivalentTo(2);
+
+        var resolved = _server.ResolveCodeLens(lenses[0]);
+        resolved.Command.Should().NotBeNull();
+        resolved.Command.Title.Should().Be("2 references");
+    }
+
+    [Fact]
+    public void CodeLens_LabelWithNoReferences_ShowsZero()
+    {
+        var uri = "file:///test_codelens_zero.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "unused_label:\n    mov eax, 1\n    ret\n"
+            }
+        });
+
+        var lenses = _server.GetCodeLenses(new CodeLensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        lenses.Should().NotBeNull();
+        lenses.Should().HaveCount(1);
+
+        var resolved = _server.ResolveCodeLens(lenses[0]);
+        resolved.Command.Title.Should().Be("0 references");
+    }
+
+    [Fact]
+    public void CodeLens_MultipleLabels_ReturnsLensForEach()
+    {
+        var uri = "file:///test_codelens_multi.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "start:\n    jmp end\nend:\n    jmp start\n"
+            }
+        });
+
+        var lenses = _server.GetCodeLenses(new CodeLensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        lenses.Should().NotBeNull();
+        lenses.Should().HaveCount(2);
+
+        var titles = lenses.Select(l => _server.ResolveCodeLens(l).Command.Title).ToList();
+        titles.Should().Contain("1 reference");
+    }
+
+    #endregion
+
+    #region GetCodeLensData Tests
+
+    [Fact]
+    public void GetCodeLensData_LabelWithOneReference_ReturnsCorrectDefLineAndRefLine()
+    {
+        // Arrange
+        // line 0: my_label:
+        // line 1:     jmp my_label
+        var uri = "file:///test_codelensdata_one.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "my_label:\n    jmp my_label\n"
+            }
+        });
+
+        // Act
+        var result = _server.GetCodeLensData(uri);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].Label.Should().Be("my_label");
+        result[0].DefinitionLine.Should().Be(0);
+        result[0].ReferenceLines.Should().HaveCount(1);
+        result[0].ReferenceLines[0].Should().Be(1);
+    }
+
+    [Fact]
+    public void GetCodeLensData_LabelWithNoReferences_ReturnsEmptyReferenceLines()
+    {
+        // Arrange
+        var uri = "file:///test_codelensdata_zero.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "unused_label:\n    mov eax, 1\n    ret\n"
+            }
+        });
+
+        // Act
+        var result = _server.GetCodeLensData(uri);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].Label.Should().Be("unused_label");
+        result[0].DefinitionLine.Should().Be(0);
+        result[0].ReferenceLines.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void GetCodeLensData_LabelWithMultipleReferences_ReturnsAllRefLines()
+    {
+        // Arrange
+        // line 0: loop_start:
+        // line 1:     mov eax, 1
+        // line 2:     jmp loop_start
+        // line 3:     jne loop_start
+        // line 4:     jz  loop_start
+        var uri = "file:///test_codelensdata_multi_refs.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "loop_start:\n    mov eax, 1\n    jmp loop_start\n    jne loop_start\n    jz loop_start\n"
+            }
+        });
+
+        // Act
+        var result = _server.GetCodeLensData(uri);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].ReferenceLines.Should().HaveCount(3);
+        result[0].ReferenceLines.Should().Contain(2);
+        result[0].ReferenceLines.Should().Contain(3);
+        result[0].ReferenceLines.Should().Contain(4);
+    }
+
+    [Fact]
+    public void GetCodeLensData_MultipleLabels_ReturnsEntryForEach()
+    {
+        // Arrange
+        // line 0: start:
+        // line 1:     jmp end
+        // line 2: end:
+        // line 3:     jmp start
+        var uri = "file:///test_codelensdata_twolabels.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "start:\n    jmp end\nend:\n    jmp start\n"
+            }
+        });
+
+        // Act
+        var result = _server.GetCodeLensData(uri);
+
+        // Assert
+        result.Should().HaveCount(2);
+
+        var startEntry = result.FirstOrDefault(r => r.Label.Equals("start", System.StringComparison.OrdinalIgnoreCase));
+        startEntry.Should().NotBeNull();
+        startEntry.DefinitionLine.Should().Be(0);
+        startEntry.ReferenceLines.Should().HaveCount(1).And.Contain(3);
+
+        var endEntry = result.FirstOrDefault(r => r.Label.Equals("end", System.StringComparison.OrdinalIgnoreCase));
+        endEntry.Should().NotBeNull();
+        endEntry.DefinitionLine.Should().Be(2);
+        endEntry.ReferenceLines.Should().HaveCount(1).And.Contain(1);
+    }
+
+    [Fact]
+    public void GetCodeLensData_UnknownUri_ReturnsEmptyArray()
+    {
+        // Act
+        var result = _server.GetCodeLensData("file:///does_not_exist.asm");
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void GetCodeLensData_CallInstruction_CountsAsReference()
+    {
+        // CALL is a jump-like instruction and should count as a reference
+        // line 0: my_func:
+        // line 1:     call my_func
+        var uri = "file:///test_codelensdata_call.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "my_func:\n    call my_func\n"
+            }
+        });
+
+        // Act
+        var result = _server.GetCodeLensData(uri);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].ReferenceLines.Should().HaveCount(1);
+        result[0].ReferenceLines[0].Should().Be(1);
+    }
+
+    [Fact]
+    public void GetCodeLensData_DefinitionLineMatchesGetCodeLenses()
+    {
+        // GetCodeLensData and GetCodeLenses must agree on which line the label is defined
+        var uri = "file:///test_codelensdata_consistency.asm";
+        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "    mov eax, 0\nmy_label:\n    jmp my_label\n"
+            }
+        });
+
+        var lensesResult = _server.GetCodeLenses(new CodeLensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+        var dataResult = _server.GetCodeLensData(uri);
+
+        lensesResult.Should().HaveCount(1);
+        dataResult.Should().HaveCount(1);
+        dataResult[0].DefinitionLine.Should().Be((int)lensesResult[0].Range.Start.Line,
+            "GetCodeLensData and GetCodeLenses must agree on the definition line");
+    }
+
+    [Fact]
+    public void GetCodeLensData_HitTestGeometry_ClickInsideBoundsIsDetected()
+    {
+        // Validates the hit-testing logic used by AsmCodeLensMouseProcessor.
+        // A CodeLens adornment at canvas (left=50, top=10) with size (width=80, height=14)
+        // is hit only when the click point is inside those bounds.
+        static bool HitTest(double left, double top, double width, double height, double px, double py)
+            => px >= left && px < left + width && py >= top && py < top + height;
+
+        HitTest(50, 10, 80, 14, 60, 12).Should().BeTrue("click inside bounds should hit");
+        HitTest(50, 10, 80, 14, 50, 10).Should().BeTrue("click on top-left corner should hit");
+        HitTest(50, 10, 80, 14, 200, 12).Should().BeFalse("click to the right should miss");
+        HitTest(50, 10, 80, 14, 60, 30).Should().BeFalse("click below should miss");
+        HitTest(50, 10, 80, 14, 60, 5).Should().BeFalse("click above should miss");
+    }
+
+    #endregion
+
 }

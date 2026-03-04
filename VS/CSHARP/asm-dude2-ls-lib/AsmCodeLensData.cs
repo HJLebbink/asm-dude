@@ -20,39 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2.BraceMatching
+namespace AsmDude2LS
 {
-    using System.ComponentModel.Composition;
-    using Microsoft.VisualStudio.Text;
-    using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Utilities;
-
-    [Export(typeof(IViewTaggerProvider))]
-    [ContentType(AsmDude2Package.AsmDudeContentType)]
-    [TagType(typeof(TextMarkerTag))]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class BraceMatchingTaggerProvider : IViewTaggerProvider
+    public class AsmCodeLensData
     {
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
-        {
-            if (textView == null)
-            {
-                return null;
-            }
-
-            // Provide highlighting only on the top-level buffer
-            if (textView.TextBuffer != buffer)
-            {
-                return null;
-            }
-
-            ITagger<T> CreateTaggerInstance()
-            {
-                return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
-            }
-
-            return buffer.Properties.GetOrCreateSingletonProperty(CreateTaggerInstance);
-        }
+        public string Label { get; set; }
+        public int DefinitionLine { get; set; }
+        public int[] ReferenceLines { get; set; }
     }
 }

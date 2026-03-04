@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2023 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,16 @@
 namespace AsmDude2.QuickInfo
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Media;
     using AsmDude2.Tools;
+
     using Microsoft.VisualStudio.Language.Intellisense;
-    using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Adornments;
 
     internal sealed class AsmQuickInfoSource : IAsyncQuickInfoSource
     {
@@ -49,6 +50,10 @@ namespace AsmDude2.QuickInfo
             {
                 return null;
             }
+
+            // Must be called BEFORE accessing AsmLanguageClient type, which implements
+            // ILanguageClientCustomMessage2 and references StreamJsonRpc.JsonRpc.
+            AssemblyResolver.EnsureInitialized();
 
             var triggerPoint = session.GetTriggerPoint(this.textBuffer.CurrentSnapshot);
             if (!triggerPoint.HasValue)
@@ -73,35 +78,56 @@ namespace AsmDude2.QuickInfo
                 return null;
             }
 
-            // Send textDocument/hover request to the LSP server via AsmLanguageClient
             string hoverText = await client.SendHoverRequestAsync(uri, lineNumber, character, cancellationToken).ConfigureAwait(false);
-
             if (string.IsNullOrEmpty(hoverText))
             {
                 return null;
             }
 
-            // Switch to UI thread to create WPF elements
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            var textBlock = new TextBlock
+            // Parse "<a href=URL>NAME</a>" embedded in the hover text by the LSP server.
+            // The server formats links without quotes: <a href=https://example.com/mov>MOV</a>
+            // Build a single ClassifiedTextElement with inline runs so the hyperlink replaces
+            // the mnemonic name in-place rather than appearing as a separate stacked element.
+            var anchorMatch = Regex.Match(hoverText, @"<a href=([^\s>]+)>([^<]+)</a>");
+
+            ClassifiedTextElement textElement;
+            if (anchorMatch.Success)
             {
-                Text = hoverText,
-                FontFamily = new FontFamily("Consolas"),
-                FontSize = 13,
-                Padding = new Thickness(4),
-                TextWrapping = TextWrapping.NoWrap,
-            };
+                string linkUrl = anchorMatch.Groups[1].Value;
+                string linkName = anchorMatch.Groups[2].Value;
+                string beforeLink = hoverText.Substring(0, anchorMatch.Index);
+                string afterLink = hoverText.Substring(anchorMatch.Index + anchorMatch.Length);
 
-            // Use VS environment colors for theme support
-            textBlock.SetResourceReference(TextBlock.ForegroundProperty, Microsoft.VisualStudio.PlatformUI.EnvironmentColors.ToolWindowTextBrushKey);
+                string capturedUrl = linkUrl;
+                var runs = new List<ClassifiedTextRun>();
+                if (beforeLink.Length > 0)
+                {
+                    runs.Add(new ClassifiedTextRun("formal language", beforeLink, ClassifiedTextRunStyle.UseClassificationFont));
+                }
+                runs.Add(new ClassifiedTextRun("keyword", linkName, () => Process.Start(capturedUrl)));
+                if (afterLink.Length > 0)
+                {
+                    runs.Add(new ClassifiedTextRun("formal language", afterLink, ClassifiedTextRunStyle.UseClassificationFont));
+                }
+                textElement = new ClassifiedTextElement(runs);
+            }
+            else
+            {
+                textElement = new ClassifiedTextElement(
+                    new ClassifiedTextRun("formal language", hoverText, ClassifiedTextRunStyle.UseClassificationFont));
+            }
 
-            // Build the applicable span (the word under cursor)
+            // Build tooltip content using VS's native tooltip elements
+            var elements = new List<object> { textElement };
+
+            var content = new ContainerElement(ContainerElementStyle.Stacked, elements);
+
             var currentSnapshot = this.textBuffer.CurrentSnapshot;
             var extent = GetWordExtent(point);
             var applicableSpan = currentSnapshot.CreateTrackingSpan(extent, SpanTrackingMode.EdgeInclusive);
 
-            return new QuickInfoItem(applicableSpan, textBlock);
+            return new QuickInfoItem(applicableSpan, content);
         }
 
         private static Span GetWordExtent(SnapshotPoint point)
@@ -134,7 +160,6 @@ namespace AsmDude2.QuickInfo
         {
             return char.IsLetterOrDigit(c) || c == '_' || c == '.' || c == '%';
         }
-
         private static string GetDocumentUri(ITextBuffer textBuffer)
         {
             if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document))

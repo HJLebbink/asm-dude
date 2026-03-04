@@ -20,39 +20,55 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2.BraceMatching
+namespace AsmDude2.CodeLens
 {
     using System.ComponentModel.Composition;
-    using Microsoft.VisualStudio.Text;
+    using System.Windows.Input;
     using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Text.Tagging;
     using Microsoft.VisualStudio.Utilities;
 
-    [Export(typeof(IViewTaggerProvider))]
+    [Export(typeof(IMouseProcessorProvider))]
     [ContentType(AsmDude2Package.AsmDudeContentType)]
-    [TagType(typeof(TextMarkerTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class BraceMatchingTaggerProvider : IViewTaggerProvider
+    [Name("AsmCodeLensMouseProcessor")]
+    internal sealed class AsmCodeLensMouseProcessorProvider : IMouseProcessorProvider
     {
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
+        public IMouseProcessor GetAssociatedProcessor(IWpfTextView textView)
         {
-            if (textView == null)
+            return new AsmCodeLensMouseProcessor(textView);
+        }
+    }
+
+    internal sealed class AsmCodeLensMouseProcessor : MouseProcessorBase
+    {
+        private readonly IWpfTextView textView;
+
+        public AsmCodeLensMouseProcessor(IWpfTextView textView)
+        {
+            this.textView = textView;
+        }
+
+        public override void PreprocessMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            if (!this.textView.Properties.TryGetProperty(typeof(AsmCodeLensAdornmentManager), out AsmCodeLensAdornmentManager manager))
             {
-                return null;
+                return;
             }
 
-            // Provide highlighting only on the top-level buffer
-            if (textView.TextBuffer != buffer)
+            if (manager.TryHandleClick(e.GetPosition(this.textView.VisualElement)))
             {
-                return null;
+                e.Handled = true;
+            }
+        }
+
+        public override void PreprocessMouseMove(MouseEventArgs e)
+        {
+            if (!this.textView.Properties.TryGetProperty(typeof(AsmCodeLensAdornmentManager), out AsmCodeLensAdornmentManager manager))
+            {
+                return;
             }
 
-            ITagger<T> CreateTaggerInstance()
-            {
-                return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
-            }
-
-            return buffer.Properties.GetOrCreateSingletonProperty(CreateTaggerInstance);
+            manager.UpdateHover(e.GetPosition(this.textView.VisualElement));
         }
     }
 }

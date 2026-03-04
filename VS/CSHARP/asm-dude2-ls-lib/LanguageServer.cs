@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2023 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,13 @@
 // SOFTWARE.
 
 using AsmSourceTools;
+
 using AsmTools;
+
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+
 using StreamJsonRpc;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -63,6 +67,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     private readonly Dictionary<string, IEnumerable<FoldingRange>> foldingRanges;
     private readonly Dictionary<string, LabelGraph> labelGraphs;
+    private readonly HashSet<string> labelGraphDirty;
 
     private readonly int referencesChunkSize = 10;
     private readonly int referencesDelayMs = 10;
@@ -102,6 +107,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.parsedDocuments = [];
 
         this.labelGraphs = [];
+        this.labelGraphDirty = [];
         this.foldingRanges = [];
         this.diagnostics = [];
         this.Symbols = [];
@@ -143,6 +149,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.textDocumentLines = [];
         this.parsedDocuments = [];
         this.labelGraphs = [];
+        this.labelGraphDirty = [];
         this.foldingRanges = [];
         this.diagnostics = [];
         this.Symbols = [];
@@ -231,6 +238,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         private LabelGraph GetLabelGraph(string uri)
         {
+            if (this.labelGraphDirty.Remove(uri))
+            {
+                this.UpdateLabelGraph(uri);
+            }
             if (this.labelGraphs.TryGetValue(uri, out var graph))
             {
                 return graph;
@@ -367,7 +378,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                 this.diagnostics.Clear();
                 this.UpdateFoldingRanges(uri);
-                this.UpdateLabelGraph(uri);
+                this.labelGraphDirty.Add(uri);
 
                 if (false)
                 {
@@ -392,6 +403,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             this.textDocuments.Remove(uri);
             this.textDocumentLines.Remove(uri);
             this.parsedDocuments.Remove(uri);
+            this.labelGraphs.Remove(uri);
+            this.labelGraphDirty.Remove(uri);
         }
 
         private void UpdateLabelGraph(string uri)
@@ -887,28 +900,17 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 int pos = (int)parameter.Position.Character;
                 string lineStr = completeLineStr[..pos];
 
-                //LogInfo($"GetTextDocumentSignatureHelp: lineStr = {lineStr}");
-  
                 if (extraLogging && parameter.Context != null)
                 {
-                    LogInfo("===========================");
                     LogInfo($"GetTextDocumentSignatureHelp: TriggerKind={parameter.Context.TriggerKind}; triggerChar={parameter.Context.TriggerCharacter}; IsRetrigger={parameter.Context.IsRetrigger}");
-                }
-
-                if (parameter.Context?.TriggerCharacter == ";")
-                {
-                    LogError($"GetTextDocumentSignatureHelp: TriggerCharacter = {parameter.Context.TriggerCharacter}");
-                    return null;
                 }
 
                 int fileID = 0; //TODO
                 (object _, string _, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
-                if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: completeLineStr=\"{completeLineStr}\"; lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
-                //if there was a backspace, and the mnemonic becomes null, cancel the signature help, and start the code completion
+                if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
 
                 if (remark.Length > 0)
                 {
-                    LogInfo($"GetTextDocumentSignatureHelp: No signature help in a remark");
                     return null;
                 }
 
@@ -1262,6 +1264,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         Label = displayText,
                         InsertText = insertionText,
                         SortText = insertionText,
+                        FilterText = insertionText,
                         Documentation = descriptionStr
                     });
                 }
@@ -1310,6 +1313,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         Label = displayText,
                         InsertText = insertionText,
                         SortText = insertionText,
+                        FilterText = insertionText,
                         Documentation = descriptionStr
                     });
                 }
@@ -1326,6 +1330,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     Kind = this.GetCompletionItemKind(AsmTokenType.Misc),
                     Label = "SHORT",
                     InsertText = useCapitals ? "SHORT" : "short",
+                    FilterText = useCapitals ? "SHORT" : "short",
                     SortText = "\tSHORT", // use a tab to get on top when sorting
                     Documentation = string.Empty
                 };
@@ -1334,6 +1339,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     Kind = this.GetCompletionItemKind(AsmTokenType.Misc),
                     Label = "NEAR",
                     InsertText = useCapitals ? "NEAR" : "near",
+                    FilterText = useCapitals ? "NEAR" : "near",
                     SortText = "\tNEAR", // use a tab to get on top when sorting
                     Documentation = string.Empty
                 };
@@ -1352,6 +1358,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     Kind = this.GetCompletionItemKind(AsmTokenType.Label),
                     Label = Truncate(insertionText, 30),
                     InsertText = insertionText,
+                    FilterText = insertionText,
                     Documentation = displayTextFull
                 };
             }
@@ -1375,7 +1382,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                             Label = $"{labelText} - keyword to start code folding",
                             InsertText = labelText[1..], // remove the prefix #
                             SortText = labelText,
-                            //Documentation = $"keyword to start code folding",
+                            FilterText = labelText[1..],
                         });
                     }
                     {
@@ -1386,7 +1393,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                             Label = $"{labelText} - keyword to end code folding",
                             InsertText = labelText[1..], // remove the prefix #
                             SortText = labelText,
-                            //Documentation = $"keyword to end code folding",
+                            FilterText = labelText[1..],
                         });
                     }
                 }
@@ -1409,6 +1416,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                             Label = $"{keyword_uppercase} {archStr}",
                             InsertText = insertionText,
                             SortText = insertionText,
+                            FilterText = insertionText,
                             Documentation = this.mnemonicStore.GetDescription(mnemonic2),
                         });
                     }
@@ -1464,6 +1472,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                                 Label = displayText,
                                 InsertText = insertionText,
                                 SortText = insertionText,
+                                FilterText = insertionText,
                                 Documentation = descriptionStr
                             });
                         }
@@ -1494,36 +1503,36 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 string completeLineStr = lines[lineNumber];
                 int pos = (int)parameter.Position.Character;
 
-                if (extraLogging) LogInfo($"===========================\nOnTextDocumentCompletion: completeLineStr=\"{completeLineStr}\"; pos=\'{pos}\'");
-
-                // if the current characters is a asm separator, no code completion
-                char currentChar = this.GetChar(completeLineStr, pos - 1);
-                //if (AsmTools.AsmSourceTools.IsSeparatorChar(currentChar))
-                //{
-                //    if (extraLogging) LogInfo($"OnTextDocumentCompletion: we just typed a separator char \'{currentChar}\' thus no code completion");
-                //    return new CompletionList();
-                //}
-
                 // we only consider the line till (and including) the current position
                 string lineStr = completeLineStr[..pos];
-                if (extraLogging) LogInfo($"OnTextDocumentCompletion: lineStr=\"{lineStr}\"; currentChar=\'{currentChar}\'");
+
+                char currentChar = this.GetChar(completeLineStr, pos - 1);
 
                 int fileID = 0; //TODO
                 (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
-                if (extraLogging) LogInfo($"OnTextDocumentCompletion: label=\"{label}\"; mnemonic={mnemonic}; args={string.Join(',', args)}; remark=\"{remark}\"");
+                if (extraLogging) LogInfo($"OnTextDocumentCompletion: lineStr=\"{lineStr}\"; mnemonic={mnemonic}; args={string.Join(',', args)}");
 
                 // if we are typing in a remark: no code completion please
                 if (remark.Length > 0)
                 {
-                    if (extraLogging) LogInfo($"OnTextDocumentCompletion: we are in a remark: no code completion");
                     return new CompletionList();
                 }
 
                 // determine if the current word we are typing is all capitals
                 (string currentWord, _, _) = GetWord(pos-1, lineStr);
                 bool useCapitals = (currentWord == currentWord.ToUpper());
+                string prefix = currentWord.ToUpperInvariant();
 
                 if (extraLogging) LogInfo($"OnTextDocumentCompletion: currentWord=\"{currentWord}\"; useCapitals={useCapitals}");
+
+                // Filter completion items by the prefix the user has typed so far.
+                // With only 1-2 characters typed, VS fuzzy matching is too broad (e.g., "Z" matches YMM via "[AVX512]"),
+                // so we apply strict prefix filtering. With 3+ characters, VS fuzzy matching works well.
+                CompletionItem[] FilterByPrefix(IEnumerable<CompletionItem> items)
+                {
+                    if (prefix.Length == 0 || prefix.Length > 2) return [.. items];
+                    return [.. items.Where(i => i.FilterText != null && i.FilterText.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))];
+                }
 
                 // if the mnemonic is NONE we should suggest mnemonics
                 if (mnemonic == Mnemonic.NONE)
@@ -1532,7 +1541,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     if (extraLogging) LogInfo($"OnTextDocumentCompletion: A");
                     return new CompletionList()
                     {
-                        Items = [.. Selected_Completions(useCapitals, selected, true)],
+                        Items = FilterByPrefix(Selected_Completions(useCapitals, selected, true)),
                     };
                 }
 
@@ -1552,7 +1561,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     if (extraLogging) LogInfo($"OnTextDocumentCompletion: B");
                     return new CompletionList()
                     {
-                        Items = [.. Selected_Completions(useCapitals, selected, true)],
+                        Items = FilterByPrefix(Selected_Completions(useCapitals, selected, true)),
                     };
                 }
 
@@ -1563,7 +1572,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     if (extraLogging) LogInfo($"OnTextDocumentCompletion: C");
                     return new CompletionList()
                     {
-                        Items = [.. this.Label_Completions(labelGraph, useCapitals, true)],
+                        Items = FilterByPrefix(this.Label_Completions(labelGraph, useCapitals, true)),
                     };
                 }
 
@@ -1606,7 +1615,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 }
                 return new CompletionList()
                 {
-                    Items = [.. this.Mnemonic_Operand_Completions(useCapitals, allowed, (int)parameter.Position.Line)]
+                    Items = FilterByPrefix(this.Mnemonic_Operand_Completions(useCapitals, allowed, (int)parameter.Position.Line))
                 };
             }
             catch (Exception e)
@@ -1707,6 +1716,104 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         }
 
         /// <summary>
+        public CodeLens[] GetCodeLenses(CodeLensParams parameter)
+        {
+            string uri = parameter.TextDocument.Uri.ToString();
+            LabelGraph labelGraph = this.GetLabelGraph(uri);
+            if (labelGraph == null || !labelGraph.Enabled)
+            {
+                return [];
+            }
+
+            AssemblerEnum usedAssembler = this.options.Used_Assembler;
+            List<CodeLens> lenses = [];
+
+            foreach ((string label, List<KeywordID> defList) in labelGraph.Definitions)
+            {
+                KeywordID def = defList[0];
+                int lineNumber = def.LineNumber;
+
+                int referenceCount = 0;
+                // Check both the full qualified label and the regular label
+                if (labelGraph.Usages.TryGetValue(label, out List<KeywordID> usages))
+                {
+                    referenceCount = usages.Count;
+                }
+
+                lenses.Add(new CodeLens
+                {
+                    Range = new Range
+                    {
+                        Start = new Position(lineNumber, def.Start_Pos),
+                        End = new Position(lineNumber, def.End_Pos),
+                    },
+                    Data = referenceCount,
+                });
+            }
+
+            return [.. lenses];
+        }
+
+        /// <summary>
+        /// Returns label definitions with their reference locations for CodeLens adornments.
+        /// Each entry contains the label name, definition line, and the line numbers where the label is referenced.
+        /// </summary>
+        public AsmCodeLensData[] GetCodeLensData(string uri)
+        {
+            LabelGraph labelGraph = this.GetLabelGraph(uri);
+            if (labelGraph == null || !labelGraph.Enabled)
+            {
+                return [];
+            }
+
+            List<AsmCodeLensData> result = [];
+
+            foreach ((string label, List<KeywordID> defList) in labelGraph.Definitions)
+            {
+                KeywordID def = defList[0];
+                int defLine = def.LineNumber;
+
+                List<int> refLines = [];
+                if (labelGraph.Usages.TryGetValue(label, out List<KeywordID> usages))
+                {
+                    foreach (KeywordID usage in usages)
+                    {
+                        refLines.Add(usage.LineNumber);
+                    }
+                }
+
+                result.Add(new AsmCodeLensData
+                {
+                    Label = label,
+                    DefinitionLine = defLine,
+                    ReferenceLines = [.. refLines],
+                });
+            }
+
+            return [.. result];
+        }
+
+        public CodeLens ResolveCodeLens(CodeLens codeLens)
+        {
+            int referenceCount = 0;
+            if (codeLens.Data is System.Text.Json.JsonElement je && je.TryGetInt32(out int count))
+            {
+                referenceCount = count;
+            }
+            else if (codeLens.Data is int intCount)
+            {
+                referenceCount = intCount;
+            }
+
+            codeLens.Command = new Command
+            {
+                Title = referenceCount == 1 ? "1 reference" : $"{referenceCount} references",
+                CommandIdentifier = "asm.showReferences",
+            };
+            return codeLens;
+        }
+
+        /// <summary>
         /// Handle "Go To Definition (F12)" request.
         /// Returns the location of label definitions.
         /// </summary>
@@ -1737,7 +1844,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             LogInfo($"GetDefinition: looking for definition of '{word}'");
 
             // First check if we have a label graph for this document
-            if (this.labelGraphs.TryGetValue(uri, out LabelGraph labelGraph) && labelGraph.Enabled)
+            LabelGraph labelGraph = this.GetLabelGraph(uri);
+            if (labelGraph != null && labelGraph.Enabled)
             {
                 // Search for the label definition in the label graph
                 // Most assemblers are case-insensitive for labels
@@ -1835,6 +1943,18 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             return AsmTokenType.UNKNOWN;
         }
 
+
+    private string AsHtmlUrl(Mnemonic mnemonic)
+    {
+        string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic); // URL for clickable hyperlink
+        if (htmlRef == null) {
+            return mnemonic.ToString();
+        }
+        string fullURL = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
+        return "<a href="+fullURL+">" + mnemonic.ToString() + "</a>";
+    }
+
+
         /// <summary>
         /// Handle hover request. Returns standard Hover with MarkupContent.
         /// </summary>
@@ -1853,10 +1973,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 return null;
             }
             string keyword_uppercase = keyword.ToUpperInvariant();
-
             string[] hoverContent = null;
-            string hoverUrl = null;       // URL for clickable hyperlink
-            string hoverKeyword = null;   // Keyword text for the hyperlink
 
             switch (this.GetAsmTokenType(keyword_uppercase))
             {
@@ -1864,17 +1981,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 case AsmTokenType.Jump:
                     {
                         Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword_uppercase, true);
-                        string mnemonicStr = mnemonic.ToString();
+
+                        string mnemonicStr = this.AsHtmlUrl(mnemonic);
                         string archStr = ":" + ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
                         string descr = this.mnemonicStore.GetDescription(mnemonic);
                         string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonicStr} {archStr} {descr}", MaxNumberOfCharsInToolTips);
-
-                        // Get URL for clickable hyperlink
-                        if (mnemonic != Mnemonic.NONE)
-                        {
-                            hoverUrl = this.mnemonicStore.GetHtmlRef(mnemonic);
-                            hoverKeyword = mnemonicStr;
-                        }
                         string performanceStr = "";
 
                         bool performanceInfoAvailable = false;
@@ -2152,6 +2263,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             {
                 string combinedContent = string.Join("\n", hoverContent);
 
+            /*
                 // Prepend a documentation URL if available (plain text — VS does not render markdown in hover)
                 if (!string.IsNullOrEmpty(hoverUrl) && !string.IsNullOrEmpty(hoverKeyword) && !string.IsNullOrEmpty(this.options.AsmDoc_Url))
                 {
@@ -2159,6 +2271,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     LogInfo($"GetHover: adding link {fullUrl}");
                     combinedContent += "\n\nDoc: " + fullUrl;
                 }
+            */
 
                 return new Hover()
                 {

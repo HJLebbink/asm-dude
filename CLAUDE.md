@@ -14,6 +14,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **DO NOT STOP WHEN YOU HAVE COMPILATION ERRORS**: Continue implementing features and fixing compilation errors incrementally. Create new features/files even if earlier files have compilation issues. The build will eventually succeed as you address errors systematically.
 
+**ABSOLUTE REQUIREMENT — TESTS MUST BE MEANINGFUL**: Every test must exercise real production code and be capable of catching a real bug. The following are forbidden:
+- Tests that only test a local helper function written inside the test file itself (tautological — they can never fail due to a bug in production code)
+- Tests that re-implement logic from production code in the test and verify that re-implementation (testing a copy, not the original)
+- Tests whose assertions would still pass even if the production code was deleted or completely wrong
+- "Circus" tests: multiple tests dressed up as coverage that all test the same trivial condition
+
+Before writing a test, ask: **"If I introduced a bug in the production code this test is supposed to cover, would this test fail?"** If the answer is no, do not write the test.
+
 ## Project Overview
 
 AsmDude2 is a Visual Studio 2022/2026 extension that provides assembly language support (x86/x64, SSE, AVX, AVX2, AVX-512) through a Language Server Protocol (LSP) implementation. The project evolved from the original AsmDude VS2015/17/19 plugin into a modern LSP-based architecture.
@@ -320,3 +328,49 @@ https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.js
 - `asm-irony`: Experimental parser (unused)
 
 **Focus development on `asm-dude2-ls-lib`** (LSP server) and `asm-dude2-vsix` (VS extension).
+
+### Assembly CodeLens (asm-dude2-vsix)
+
+**Implementation:** `VS\CSHARP\asm-dude2-vsix\CodeLens\`
+
+Shows "N references" above each assembly label definition line, with click-to-navigate. Implemented as a WPF adornment (not the official `IAsyncCodeLensDataPointProvider`, which requires complex async provider/tagger/aggregator machinery and doesn't integrate with LSP easily).
+
+**Why adornment-based, not `IAsyncCodeLensDataPointProvider`:**
+The official Roslyn CodeLens path (`src/VisualStudio/Core/Def/CodeLens/` in `github.com/dotnet/roslyn`) uses `IAsyncCodeLensDataPointProvider` with VS-internal types. It requires a `ICodeLensCallbackListener` service and is tightly coupled to the Roslyn workspace model. Our LSP-based approach is simpler: request data from the language server, render a TextBlock adornment above the line.
+
+**Reference implementations:**
+- Roslyn CodeLens: `github.com/dotnet/roslyn`, `src/VisualStudio/Core/Def/CodeLens/`
+- IntraText adornments: `github.com/microsoft/VSSDK-Extensibility-Samples`
+
+**Files:**
+
+| File | Role |
+|------|------|
+| `AsmCodeLensProvider.cs` | MEF exports: `IWpfTextViewCreationListener` (creates manager), `ILineTransformSourceProvider` (creates transform source) |
+| `AsmCodeLensLineTransformSource.cs` | `ILineTransformSource` — adds `topSpace` pixels above label lines to make room for the TextBlock |
+| `AsmCodeLensAdornmentManager.cs` | Requests LSP data, renders TextBlock adornments, handles clicks and hover underline |
+| `AsmCodeLensMouseProcessor.cs` | `IMouseProcessor` — routes `MouseMove` to manager for hover underline tracking |
+
+**Data flow:**
+1. `AsmCodeLensAdornmentManager.RequestCodeLensData()` calls `AsmLanguageClient.SendCodeLensDataRequestAsync()` (custom `asm/codeLensData` LSP method)
+2. LSP server returns JSON array: `[{ label, definitionLine, referenceLines[] }, ...]`
+3. Manager stores data in `codeLensData` dict, calls `lineTransformSource.UpdateLabelLines()` with definition line numbers
+4. `ILineTransformSource.GetLineTransform()` returns `LineTransform(topSpace, 0, 1.0)` for label lines — this adds blank space above the line
+5. On `LayoutChanged`, manager renders a `TextBlock` per visible label line, positioned at `viewLine.Top - topSpace`
+
+**Font metrics (via `IClassificationFormatMap`):**
+Derived from the live editor format map so they scale correctly when the user changes font/size:
+- `IClassificationFormatMapService.GetClassificationFormatMap(textView)` → injected via MEF `[Import]` in `AsmCodeLensLineTransformSourceProvider`
+- `formatMap.DefaultTextProperties.FontRenderingEmSize` = editor font size (e.g. 16px at Consolas 12pt)
+- `CodeLensFontSize = editorFontSize × 0.70` (CodeLens text at 70% of editor font)
+- `topSpace = Math.Ceiling(CodeLensFontSize × GlyphTypeface.Baseline)` — typographic ascent only (NOT full line height); `GlyphTypeface.Baseline ≈ 0.727` for Consolas
+- `ClassificationFormatMappingChanged` event invalidates cache; VS re-layouts the view, which re-calls `GetLineTransform` with fresh values
+
+**Why typographic ascent, not full TextBlock height:**
+`GlyphTypeface.Baseline = sTypoAscender / unitsPerEm` is the ratio of the font's capital/ascender height to the em square. Using the full `TextBlock.DesiredSize.Height` as `topSpace` includes transparent descender space and leading, creating a visible empty gap above the text. Using just the ascent makes the visible ink sit flush above the label line.
+
+**Click mechanism:**
+`MouseLeftButtonDown` is attached directly to each `TextBlock` (cursor changes to `Hand`, proving the TextBlock is hit-test visible and WPF routes clicks to it). Clicking navigates to a reference line (single reference) or shows a `Popup` list (multiple references). The popup items also use `MouseLeftButtonDown` for navigation.
+
+**Hover underline:**
+`AsmCodeLensMouseProcessor.PreprocessMouseMove` calls `manager.UpdateHover(position)`. The manager checks if the mouse position is inside any active block's `Rect bounds` (stored in `activeBlocks` list) and sets/clears `TextDecorations.Underline` on the hovered `TextBlock`.

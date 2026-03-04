@@ -20,39 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2.BraceMatching
+namespace AsmDude2.Tools
 {
-    using System.ComponentModel.Composition;
-    using Microsoft.VisualStudio.Text;
-    using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Utilities;
+    using System;
+    using System.Reflection;
 
-    [Export(typeof(IViewTaggerProvider))]
-    [ContentType(AsmDude2Package.AsmDudeContentType)]
-    [TagType(typeof(TextMarkerTag))]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class BraceMatchingTaggerProvider : IViewTaggerProvider
+    /// <summary>
+    /// Bridges the LoadFrom and default assembly load contexts.
+    /// VSIX extensions are loaded in the LoadFrom context, which can't resolve
+    /// assemblies from VS's default load context (like StreamJsonRpc).
+    /// This handler returns already-loaded assemblies from the AppDomain,
+    /// bridging the gap between load contexts.
+    /// Must be initialized BEFORE any type referencing StreamJsonRpc is loaded.
+    /// </summary>
+    internal static class AssemblyResolver
     {
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
+        private static bool initialized;
+
+        internal static void EnsureInitialized()
         {
-            if (textView == null)
+            if (!initialized)
             {
-                return null;
+                initialized = true;
+                AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+            }
+        }
+
+        private static Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            var requestedName = new AssemblyName(args.Name);
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (asm.GetName().Name == requestedName.Name)
+                {
+                    return asm;
+                }
             }
 
-            // Provide highlighting only on the top-level buffer
-            if (textView.TextBuffer != buffer)
-            {
-                return null;
-            }
-
-            ITagger<T> CreateTaggerInstance()
-            {
-                return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
-            }
-
-            return buffer.Properties.GetOrCreateSingletonProperty(CreateTaggerInstance);
+            return null;
         }
     }
 }

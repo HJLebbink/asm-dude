@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2023 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -70,6 +70,7 @@ public class LspIntegrationTests : IDisposable
         // The 18.5.1 LSP package has built-in STJ converters
         var formatter = new SystemTextJsonFormatter();
         formatter.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        formatter.JsonSerializerOptions.IncludeFields = true;
         var clientHandler = new HeaderDelimitedMessageHandler(_clientStream, formatter);
         _clientRpc = new JsonRpc(clientHandler);
         _clientRpc.StartListening();
@@ -1171,6 +1172,85 @@ public class LspIntegrationTests : IDisposable
 
     #endregion
 
+    #region CodeLens Integration Tests
+
+    [Fact]
+    public async Task CodeLens_OverJsonRpc_ReturnsLensesAndResolves()
+    {
+        await InitializeServerAsync();
+
+        // Open document with a label and a jump to it
+        var openParams = new
+        {
+            textDocument = new
+            {
+                uri = "file:///test_codelens.asm",
+                languageId = "asm",
+                version = 1,
+                text = "my_label:\n    jmp my_label\n"
+            }
+        };
+        await _clientRpc.NotifyWithParameterObjectAsync(Methods.TextDocumentDidOpenName, openParams);
+        await Task.Delay(100);
+
+        // Request codeLens using the exact method name string
+        var codeLensParams = new
+        {
+            textDocument = new { uri = "file:///test_codelens.asm" }
+        };
+
+        var result = await _clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
+            "textDocument/codeLens",
+            codeLensParams,
+            _cts.Token
+        );
+
+        result.ValueKind.Should().Be(System.Text.Json.JsonValueKind.Array, "codeLens should return an array");
+        result.GetArrayLength().Should().Be(1, "should have 1 lens for 1 label definition");
+
+        var lens = result[0];
+        lens.TryGetProperty("range", out var range).Should().BeTrue("lens must have range");
+        range.GetProperty("start").GetProperty("line").GetInt32().Should().Be(0);
+        lens.TryGetProperty("data", out var data).Should().BeTrue("lens must have data");
+        data.GetInt32().Should().Be(1, "my_label is referenced once by jmp");
+
+        // Now resolve the lens
+        var resolveResult = await _clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
+            Methods.CodeLensResolveName,
+            lens,
+            _cts.Token
+        );
+
+        resolveResult.TryGetProperty("command", out var command).Should().BeTrue("resolved lens must have command");
+        command.GetProperty("title").GetString().Should().Be("1 reference");
+    }
+
+    [Fact]
+    public async Task CodeLens_Capabilities_AdvertisesCodeLensProvider()
+    {
+        var initParams = new
+        {
+            processId = 1234,
+            rootUri = "file:///test",
+            capabilities = new { },
+            initializationOptions = CreateDefaultOptions()
+        };
+
+        var result = await _clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
+            Methods.InitializeName,
+            initParams,
+            _cts.Token
+        );
+
+        var capabilities = result.GetProperty("capabilities");
+        capabilities.TryGetProperty("codeLensProvider", out var codeLensProvider).Should().BeTrue(
+            "server must advertise codeLensProvider capability");
+        codeLensProvider.GetProperty("resolveProvider").GetBoolean().Should().BeTrue(
+            "server must support codeLens/resolve");
+    }
+
+    #endregion
+
     #region Helper Methods
 
     private async Task InitializeServerAsync()
@@ -1225,7 +1305,9 @@ public class LspIntegrationTests : IDisposable
             CodeFolding_On = true,
             CodeFolding_BeginTag = "#region",
             CodeFolding_EndTag = "#endregion",
-            AsmDoc_On = true
+            AsmDoc_On = true,
+            IntelliSense_Label_Analysis_On = true,
+            Global_MaxFileLines = 10000
         };
     }
 

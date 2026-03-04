@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2023 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,18 +28,21 @@ namespace AsmDude2.CodeFolding
     using Newtonsoft.Json.Linq;
 
     /// <summary>
-    /// Intercepts LSP folding range requests and returns empty results.
-    /// This prevents the LSP client from creating outlining regions that would
-    /// conflict with our client-side <see cref="OutliningTagger"/>, which provides
-    /// folding regions with hover tooltip support.
+    /// Intercepts LSP requests for folding ranges and hover.
+    /// - Folding ranges: returns empty results so our client-side OutliningTagger handles folding.
+    /// - Hover: returns JSON null to suppress the default LSP hover QuickInfo.
+    ///   Our client-side <see cref="QuickInfo.AsmQuickInfoSource"/> handles hover independently
+    ///   via JsonRpc and renders tooltips with a monospace font.
     /// </summary>
     internal sealed class FoldingMiddleLayer : ILanguageClientMiddleLayer
     {
         private const string TextDocumentFoldingRangeName = "textDocument/foldingRange";
+        private const string TextDocumentHoverName = "textDocument/hover";
 
         public bool CanHandle(string methodName)
         {
-            return methodName == TextDocumentFoldingRangeName;
+            return methodName == TextDocumentFoldingRangeName
+                || methodName == TextDocumentHoverName;
         }
 
         public Task HandleNotificationAsync(string methodName, JToken methodParam, Func<JToken, Task> sendNotification)
@@ -52,8 +55,14 @@ namespace AsmDude2.CodeFolding
             if (methodName == TextDocumentFoldingRangeName)
             {
                 // Return empty array — folding is handled client-side by OutliningTagger
-                // which provides hover tooltips via OutliningRegionTag.CollapsedHintForm
                 return Task.FromResult(JToken.FromObject(new object[0]));
+            }
+
+            if (methodName == TextDocumentHoverName)
+            {
+                // Return JSON null to suppress the default LSP hover.
+                // Our AsmQuickInfoSource sends its own hover request via JsonRpc.
+                return Task.FromResult((JToken)JValue.CreateNull());
             }
 
             return sendRequest(methodParam);

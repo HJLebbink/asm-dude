@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2023 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,7 @@ namespace AsmDude2LS
             this.Enabled = this.options.IntelliSense_Label_Analysis_On;
             this.current_diagnostics = [];
 
-            if (lines.Length >= options.MaxFileLines)
+            if (options.MaxFileLines > 0 && lines.Length >= options.MaxFileLines)
             {
                 this.Enabled = false;
                 LanguageServer.LogWarning($"{this}:LabelGraph; file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
@@ -236,6 +236,10 @@ namespace AsmDude2LS
             }
         }
 
+        public Dictionary<string, List<KeywordID>> Definitions => this.defAt_;
+
+        public Dictionary<string, List<KeywordID>> Usages => this.usedAt_;
+
         public SortedDictionary<string, string> Label_Descriptions
         {
             get
@@ -329,7 +333,7 @@ namespace AsmDude2LS
                     {
                         KeywordID labelID = new(lineNumber, fileID, startPos, startPos + labelStr.Length);
                         Add_To_Dictionary(full_Qualified_Label, labelID, this.caseSensitiveLabel_, this.usedAt_);
-                        LanguageServer.LogInfo("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
+                        LanguageServer.LogInfo("LabelGraph:Add_Linenumber: used label \"" + full_Qualified_Label + "\" at line " + lineNumber);
                         this.hasLabel_.Add(labelID);
                     }
                 }

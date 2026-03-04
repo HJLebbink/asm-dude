@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2023 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,8 +36,8 @@ using AsmDude2.Tools;
 using AsmTools;
 using System.Windows.Forms;
 using System.Security.Principal;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Linq;
+using StreamJsonRpc;
 
 namespace AsmDude2
 {
@@ -45,7 +45,7 @@ namespace AsmDude2
     [ContentType(AsmDude2Package.AsmDudeContentType)]
     [Export(typeof(ILanguageClient))]
     //[RunOnContext(RunningContext.RunOnHost)]
-    public class AsmLanguageClient : ILanguageClient
+    public class AsmLanguageClient : ILanguageClient, ILanguageClientCustomMessage2
     {
         public AsmLanguageClient()
         {
@@ -60,11 +60,10 @@ namespace AsmDude2
         }
 
         /// <summary>
-        /// The JsonRpc connection to the LSP server, set by VS via duck-typed
-        /// AttachForCustomMessageAsync. Stored as object to avoid loading
-        /// StreamJsonRpc assembly in the QuickInfoSource's load context.
+        /// The JsonRpc connection to the LSP server, set by VS via
+        /// ILanguageClientCustomMessage2.AttachForCustomMessageAsync.
         /// </summary>
-        private object rpc;
+        private JsonRpc rpc;
 
         public event AsyncEventHandler<EventArgs> StartAsync;
         public event AsyncEventHandler<EventArgs> StopAsync;
@@ -244,8 +243,6 @@ namespace AsmDude2
 
         public IEnumerable<string> FilesToWatch => null;
 
-        public object CustomMessageTarget => null;
-
         public bool ShowNotificationOnInitializeFailed => true;
 
         public async Task<Connection> ActivateAsync(CancellationToken token)
@@ -358,26 +355,23 @@ namespace AsmDude2
             return Task.FromResult(failureContext);
         }
 
+        // ILanguageClientCustomMessage2 implementation
+
         public object MiddleLayer { get; } = new CodeFolding.FoldingMiddleLayer();
 
-        /// <summary>
-        /// Duck-typed method discovered by VS via reflection (ILanguageClientCustomMessage2 pattern).
-        /// Called after the language server has been activated to provide the JsonRpc connection.
-        /// Parameter type is object to avoid requiring StreamJsonRpc in callers' load context.
-        /// </summary>
-        public Task AttachForCustomMessageAsync(object rpc)
+        public object CustomMessageTarget => null;
+
+        public Task AttachForCustomMessageAsync(JsonRpc rpc)
         {
-            AsmDudeToolsStatic.Output_WARNING("AsmLanguageClient: AttachForCustomMessageAsync — JsonRpc received");
+            AsmDudeToolsStatic.Output_INFO("AsmLanguageClient: AttachForCustomMessageAsync — JsonRpc received");
             this.rpc = rpc;
             return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Sends a textDocument/hover request to the LSP server via the stored JsonRpc connection.
-        /// This method isolates StreamJsonRpc usage so callers don't need to load that assembly.
+        /// Sends a textDocument/hover request to the LSP server via the JsonRpc connection.
         /// Returns the hover text, or null if unavailable.
         /// </summary>
-        [MethodImpl(MethodImplOptions.NoInlining)]
         internal async Task<string> SendHoverRequestAsync(string uri, int line, int character, CancellationToken cancellationToken)
         {
             if (this.rpc == null)
@@ -387,14 +381,13 @@ namespace AsmDude2
 
             try
             {
-                var jsonRpc = (StreamJsonRpc.JsonRpc)this.rpc;
                 var hoverParams = new JObject
                 {
                     ["textDocument"] = new JObject { ["uri"] = uri },
                     ["position"] = new JObject { ["line"] = line, ["character"] = character },
                 };
 
-                var response = await jsonRpc.InvokeWithParameterObjectAsync<JToken>(
+                JToken response = await this.rpc.InvokeWithParameterObjectAsync<JToken>(
                     "textDocument/hover",
                     hoverParams,
                     cancellationToken).ConfigureAwait(false);
@@ -416,5 +409,47 @@ namespace AsmDude2
                 return null;
             }
         }
+
+        /// <summary>
+        /// Sends a custom asm/codeLensData request to the LSP server.
+        /// Returns label definitions with their reference line locations.
+        /// </summary>
+        internal async Task<JArray> SendCodeLensDataRequestAsync(string uri, CancellationToken cancellationToken)
+        {
+            if (this.rpc == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                var codeLensParams = new JObject
+                {
+                    ["textDocument"] = new JObject { ["uri"] = uri },
+                };
+
+                JToken response = await this.rpc.InvokeWithParameterObjectAsync<JToken>(
+                    "asm/codeLensData",
+                    codeLensParams,
+                    cancellationToken).ConfigureAwait(false);
+
+                if (response == null || response.Type == JTokenType.Null)
+                {
+                    return null;
+                }
+
+                return response as JArray;
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
+            catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_WARNING($"AsmLanguageClient: codeLensData request failed: {e.Message}");
+                return null;
+            }
+        }
     }
 }
+

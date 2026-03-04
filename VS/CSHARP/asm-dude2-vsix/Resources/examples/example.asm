@@ -9,6 +9,11 @@ include "bla"
 ; give warning for an endregion that does not have an accompanying begin region
 #endregion
 
+pop rax
+labelx2:
+
+ja labelx2
+jc labelx2
 
     ; code completion suggestions when there exists another mnemonic that is a substring
 	VPAND ymm0, y, 
