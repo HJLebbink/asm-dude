@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2017 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
+using AsmTools;
 
 using Microsoft.Z3;
-using AsmTools;
+
 using System.Text;
 
 namespace AsmSim
@@ -512,7 +511,7 @@ namespace AsmSim
                     OverFlowFlag(reg1, lineNumber, ctx)
                 );
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newState));
-               // this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg1, ln0, ctx)));
+                // this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg1, ln0, ctx)));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, IsKnownTest(reg2, ln0, ctx)));
             }
         }
@@ -578,17 +577,19 @@ namespace AsmSim
                         ctx.MkAnd(
                             //GetRegGoal(reg1, ln0, ctx), // rax0_goal is irelevant 
                             GetRegGoal(reg1, ln1, ctx), // make application of this rule goal directed
-                            //GetRegProvided(reg1, ln0, ctx), // TODO: could this create inconsistencies with other instructions that updated rax!0
+                                                        //GetRegProvided(reg1, ln0, ctx), // TODO: could this create inconsistencies with other instructions that updated rax!0
                             GetRegProvided(reg1, ln1, ctx) // rax1 is not based on (variable) input but is a constant
                         )
                     ));
-                } else
+                }
+                else
                 {
 
                 }
             }
 
-            if (false) {
+            if (false)
+            {
                 BitVecExpr x = ctx.MkBVXOR(GetReg(Rn.RAX, ln0, ctx), GetReg(reg2, ln0, ctx));
                 BoolExpr newRegState = MakeRuleRegResult(reg1, this._registers, x, lineNumber, ctx);
 
@@ -601,10 +602,11 @@ namespace AsmSim
                     SignFlag(reg1, lineNumber, ctx),
                     OverFlowFlag(reg1, lineNumber, ctx)
                 );
-               // this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
+                // this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
             }
-            if (false) {
+            if (false)
+            {
                 BoolExpr newState = ctx.MkAnd(
                     ctx.MkEq(GetRegKnown(Rn.RAX, ln1, ctx), (reg1 == Rn.RAX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RAX, ln0, ctx)),
                     ctx.MkEq(GetRegKnown(Rn.RBX, ln1, ctx), (reg1 == Rn.RBX) ? GetRegKnown(reg2, ln0, ctx) : GetRegKnown(Rn.RBX, ln0, ctx)),
@@ -650,7 +652,8 @@ namespace AsmSim
                 ));
             }
 #pragma warning disable CS0162 // Unreachable code detected
-            if (false) {
+            if (false)
+            {
                 BitVecExpr x = ctx.MkBVAdd(GetReg(reg, ln0, ctx), ctx.MkBV(1, nBits));
                 BoolExpr newRegState = MakeRuleRegResult(reg, this._registers, x, lineNumber, ctx);
                 BoolExpr newFlagState = ctx.MkAnd(
@@ -660,7 +663,8 @@ namespace AsmSim
                 this._solver.Assert(ctx.MkImplies(instruction_Switch, newRegState));
                 //this._solver.Assert(ctx.MkImplies(instruction_Switch, newFlagState));
             }
-            if (false) {
+            if (false)
+            {
                 BoolExpr newState = ctx.MkAnd(
                     ctx.MkEq(GetRegKnown(Rn.RAX, ln1, ctx), GetRegKnown(Rn.RAX, ln0, ctx)),
                     ctx.MkEq(GetRegKnown(Rn.RBX, ln1, ctx), GetRegKnown(Rn.RBX, ln0, ctx)),

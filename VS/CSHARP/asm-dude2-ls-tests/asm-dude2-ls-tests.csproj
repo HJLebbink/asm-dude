@@ -12,7 +12,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="xunit" Version="2.9.3" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,6 +26,7 @@
 		<PackageReference Include="Nerdbank.Streams" Version="2.13.16" />
 		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.5.3" />
 		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="18.5.3" />
+		<PackageReference Include="xunit.v3" Version="3.2.2" />
 	</ItemGroup>
 
 	<!-- Reference to the server project -->

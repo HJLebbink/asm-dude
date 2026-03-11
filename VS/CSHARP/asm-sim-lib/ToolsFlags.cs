@@ -22,9 +22,10 @@
 
 namespace AsmSim
 {
-    using System;
-using System.Diagnostics;
     using Microsoft.Z3;
+
+    using System;
+    using System.Diagnostics;
 
     public static class ToolsFlags
     {

@@ -22,12 +22,14 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
+    using Microsoft.Z3;
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Text;
-    using AsmTools;
-    using Microsoft.Z3;
 
     public class State : IDisposable
     {
@@ -220,7 +222,7 @@ namespace AsmSim
 
                 // merge the contents of both solvers
                 {
-                    ISet<BoolExpr> mergedContent = new HashSet<BoolExpr>();
+                    HashSet<BoolExpr> mergedContent = new();
                     foreach (BoolExpr b in state1.Solver.Assertions)
                     {
                         mergedContent.Add(b.Translate(ctx) as BoolExpr);
@@ -236,7 +238,7 @@ namespace AsmSim
                         this.Solver.Assert(b);
                     }
 
-                    ISet<BoolExpr> mergedContent_U = new HashSet<BoolExpr>();
+                    HashSet<BoolExpr> mergedContent_U = new();
                     foreach (BoolExpr b in state1.Solver_U.Assertions)
                     {
                         mergedContent_U.Add(b.Translate(ctx) as BoolExpr);
@@ -751,7 +753,7 @@ namespace AsmSim
                     {
                         this.undefStore_ = this.Solver_U.Assertions;
 
-                        string key = this.TailKey;
+                        string? key = this.TailKey;
                         BoolExpr flagValue = ctx.MkTrue();
                         foreach (Flags flag in this.Tools.StateConfig.GetFlagOn())
                         {

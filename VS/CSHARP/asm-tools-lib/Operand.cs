@@ -23,11 +23,22 @@
 namespace AsmTools
 {
     using System;
-    using System.Diagnostics;
+
+    public readonly struct CapitalToken
+    {
+        public readonly string _data;
+
+        public CapitalToken(string token)
+        {
+            ArgumentNullException.ThrowIfNull(token);
+            this._data = token.ToUpper();
+        }
+    }
+
 
     public class Operand
     {
-        private readonly string str_;
+        private readonly CapitalToken str_;
         private readonly Ot1 type_;
         private readonly Rn rn_ = Rn.NOREG;
         private ulong imm_ = 0;
@@ -39,16 +50,16 @@ namespace AsmTools
         public int NBits { get; set; }
 
         /// <summary>constructor</summary>
-        public Operand(string token, bool isCapitals, AsmParameters? p = null)
+        public Operand(CapitalToken token, AsmParameters? p = null)
         {
-            ArgumentNullException.ThrowIfNull(token);
-
-            token = AsmSourceTools.ToCapitals(token, isCapitals);
             this.str_ = token;
 
             // TODO: properly handle optional elements {K}{Z} {AES}{ER}
-            string token2 = token.Contains('{')
-                ? token.
+
+            string tmpToken = token._data;
+
+            string token2 = tmpToken.Contains('{')
+                ? tmpToken.
                     Replace("{K0}", string.Empty).
                     Replace("{K1}", string.Empty).
                     Replace("{K2}", string.Empty).
@@ -63,7 +74,7 @@ namespace AsmTools
                     Replace("{1TO4}", string.Empty).
                     Replace("{1TO8}", string.Empty).
                     Replace("{1TO16}", string.Empty)
-                : token2 = token;
+                : token2 = tmpToken;
 
             (bool valid, Rn reg, int nBits) t0 = RegisterTools.ToRn(token2, true);
             if (t0.valid)
@@ -163,8 +174,7 @@ namespace AsmTools
 
         public override string ToString()
         {
-            Debug.Assert(this.str_ != null);
-            return this.str_;
+            return this.str_._data.ToString();
         }
     }
 }

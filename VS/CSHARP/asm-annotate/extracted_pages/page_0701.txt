@@ -1,0 +1,47 @@
+﻿AAA—ASCII Adjust After Addition Vol. 2A 3-1
+AAA—ASCII Adjust After Addition
+Instruction Operand Encoding
+Description
+Adjusts the sum of two unpacked BCD values to create an unpacked BCD result. The AL register is the implied 
+source and destination operand for this instruction. The AAA instruction is only useful when it follows an ADD 
+instruction that adds (binary addition) two unpacked BCD values and stores a byte result in the AL register. The 
+AAA instruction then adjusts the contents of the AL register to contain the correct 1-digit unpacked BCD result. 
+If the addition produces a decimal carry, the AH register increments by 1, and the CF and AF flags are set. If there 
+was no decimal carry, the CF and AF flags are cleared and the AH register is unchanged. In either case, bits 4 
+through 7 of the AL register are set to 0.
+This instruction executes as described in compatibility mode and legacy mode. It is not valid in 64-bit mode.
+Operation
+IF 64-Bit Mode
+THEN
+#UD;
+ELSE
+IF ((AL AND 0FH) > 9) or (AF = 1)
+THEN
+AX := AX + 106H;
+AF := 1;
+CF := 1;
+ELSE
+AF := 0;
+CF := 0;
+FI;
+AL := AL AND 0FH;
+FI;
+Flags Affected
+The AF and CF flags are set to 1 if the adjustment results in a decimal carry; otherwise they are set to 0. The OF, 
+SF, ZF, and PF flags are undefined.
+Protected Mode Exceptions
+#UD If the LOCK prefix is used.
+Real-Address Mode Exceptions
+Same exceptions as protected mode.
+Virtual-8086 Mode Exceptions
+Same exceptions as protected mode.
+Opcode Instruction Op/ 
+En
+64-bit 
+Mode
+Compat/
+Leg Mode
+Description
+37 AAA ZO Invalid Valid ASCII adjust AL after addition.
+Op/En Operand 1 Operand 2 Operand 3 Operand 4
+ZO N/A N/A N/A N/A

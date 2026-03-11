@@ -22,17 +22,18 @@
 
 namespace AsmDude2LS
 {
+    using AsmSourceTools;
+
+    using AsmTools;
+
+    using Microsoft.VisualStudio.LanguageServer.Protocol;
+
     using System;
     using System.Collections.Frozen;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
-    using AsmSourceTools;
-
-    using AsmTools;
-
-    using Microsoft.VisualStudio.LanguageServer.Protocol;
 
     public class MnemonicStore
     {
@@ -139,7 +140,7 @@ namespace AsmDude2LS
                 argDoc.Length -= 4;
                 return argDoc.ToString();
             }
-            
+
             Tuple<int, int>[] FindParamPositions(string signature)
             {
                 int startPos = -1;
@@ -208,7 +209,8 @@ namespace AsmDude2LS
                     Documentation = ParamDoc(operandList[j]),
                 });
             }
-            return new AsmSignatureInformation{
+            return new AsmSignatureInformation
+            {
                 Mnemonic = mnemonic,
                 Arch = archs,
                 Operands = operandList,

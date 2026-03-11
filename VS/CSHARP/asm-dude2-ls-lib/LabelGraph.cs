@@ -22,15 +22,14 @@
 
 namespace AsmDude2LS
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-
     using AsmTools;
 
     using Microsoft.VisualStudio.LanguageServer.Protocol;
+
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
 
     using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 
@@ -288,7 +287,7 @@ namespace AsmDude2LS
             }
             // Tools.Disable_Message(msg, this.thisFilename_, this.Error_List_Provider);
         }
- 
+
         private void Add_Linenumber(string lineStr, int lineNumber, int fileID)
         {
             AssemblerEnum usedAssembler = this.options.Used_Assembler;
@@ -327,7 +326,7 @@ namespace AsmDude2LS
                     if (startPos < 0)
                     {
                         LanguageServer.LogError($"LabelGraph:Add_Linenumber: startPos {startPos}");
-                    } 
+                    }
                     else
                     {
                         KeywordID labelID = new(lineNumber, fileID, startPos, startPos + labelStr.Length);

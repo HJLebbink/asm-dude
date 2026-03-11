@@ -20,12 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude2LS;
 using AsmTools;
+
 using FluentAssertions;
-using Nerdbank.Streams;
+
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+
+using Nerdbank.Streams;
+
 using StreamJsonRpc;
+
 using Xunit;
 
 namespace AsmDude2LS.Tests;

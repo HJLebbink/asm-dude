@@ -1,6 +1,6 @@
-using System.Text;
-using AsmDude2LS;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+
+using System.Text;
 
 namespace AsmFuzz.Targets;
 

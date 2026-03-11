@@ -22,14 +22,17 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
+    using Microsoft.Z3;
+
+    using QuikGraph;
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using AsmTools;
-    using Microsoft.Z3;
-    using QuikGraph;
 
     internal class AsmSimMain
     {
@@ -51,14 +54,14 @@ namespace AsmSim
             // TestMnemonic();
             // Test_Rep();
             // Test_Usage();
-            if (false)
+            if (true)
             {
                 TestMemorySpeed_mov_mov();
                 TestMemorySpeed_push_pop();
             }
             // TestDynamicFlow();
             // TestSIMD();
-            if (true)
+            if (false)
             {
                 EmptyMemoryTest();
             }
@@ -522,13 +525,13 @@ namespace AsmSim
             // push rax
             // pop rbx
 
-   //0: (= RAX!3D50632C10EAA838 RAX!0)
-   //1: (= RSP!3D50632C10EAA838(bvadd #xfffffffffffffff8 RSP!0))
-   //2: (let((a!1(store(store(store MEM!0 RSP!0((_ extract 7 0) RAX!0))(bvadd #x0000000000000001 RSP!0) ((_ extract 15 8) RAX!0)) (bvadd #x0000000000000002 RSP!0) ((_ extract 23 16) RAX!0)))) (let ((a!2 (store (store (store a!1 (bvadd #x0000000000000003 RSP!0) ((_ extract 31 24) RAX!0)) (bvadd #x0000000000000004 RSP!0) ((_ extract 39 32) RAX!0)) (bvadd #x0000000000000005 RSP!0) ((_ extract 47 40) RAX!0)))) (= MEM!3D50632C10EAA838 (store (store a!2 (bvadd #x0000000000000006 RSP!0) ((_ extract 55 48) RAX!0)) (bvadd #x0000000000000007 RSP!0) ((_ extract 63 56) RAX!0)))))
-   //3: (= RAX!6DE3EBEB4605B058 RAX!3D50632C10EAA838)
-   //4: (= RBX!6DE3EBEB4605B058(concat(select MEM!3D50632C10EAA838(bvadd #x000000000000000f RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000e RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000d RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000c RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000b RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000a RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x0000000000000009 RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x0000000000000008 RSP!3D50632C10EAA838))))
-   //5: (= RSP!6DE3EBEB4605B058(bvadd #x0000000000000008 RSP!3D50632C10EAA838))
-   //6: (= MEM!6DE3EBEB4605B058 MEM!3D50632C10EAA838)
+            //0: (= RAX!3D50632C10EAA838 RAX!0)
+            //1: (= RSP!3D50632C10EAA838(bvadd #xfffffffffffffff8 RSP!0))
+            //2: (let((a!1(store(store(store MEM!0 RSP!0((_ extract 7 0) RAX!0))(bvadd #x0000000000000001 RSP!0) ((_ extract 15 8) RAX!0)) (bvadd #x0000000000000002 RSP!0) ((_ extract 23 16) RAX!0)))) (let ((a!2 (store (store (store a!1 (bvadd #x0000000000000003 RSP!0) ((_ extract 31 24) RAX!0)) (bvadd #x0000000000000004 RSP!0) ((_ extract 39 32) RAX!0)) (bvadd #x0000000000000005 RSP!0) ((_ extract 47 40) RAX!0)))) (= MEM!3D50632C10EAA838 (store (store a!2 (bvadd #x0000000000000006 RSP!0) ((_ extract 55 48) RAX!0)) (bvadd #x0000000000000007 RSP!0) ((_ extract 63 56) RAX!0)))))
+            //3: (= RAX!6DE3EBEB4605B058 RAX!3D50632C10EAA838)
+            //4: (= RBX!6DE3EBEB4605B058(concat(select MEM!3D50632C10EAA838(bvadd #x000000000000000f RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000e RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000d RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000c RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000b RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x000000000000000a RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x0000000000000009 RSP!3D50632C10EAA838)) (select MEM!3D50632C10EAA838 (bvadd #x0000000000000008 RSP!3D50632C10EAA838))))
+            //5: (= RSP!6DE3EBEB4605B058(bvadd #x0000000000000008 RSP!3D50632C10EAA838))
+            //6: (= MEM!6DE3EBEB4605B058 MEM!3D50632C10EAA838)
 
             using (Context ctx = new(settings))
             {

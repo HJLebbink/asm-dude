@@ -22,11 +22,12 @@
 
 namespace AsmSourceTools
 {
-    using System;
-using System.Diagnostics;
-    using System.Collections.Generic;
-    using System.Text;
     using AsmTools;
+
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text;
 
     public enum AsmSignatureEnum
     {
@@ -315,7 +316,7 @@ using System.Diagnostics;
                 case "XMM_ZERO": return [AsmSignatureEnum.REG_XMM0];
                 case "XMM{K}": return [AsmSignatureEnum.XMMREG, AsmSignatureEnum.K];
                 case "XMM{K}{Z}": return [AsmSignatureEnum.XMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
-                
+
                 case "M16{K}{Z}": return [AsmSignatureEnum.M16, AsmSignatureEnum.K, AsmSignatureEnum.Z];
 
                 case "M32{K}": return [AsmSignatureEnum.M32, AsmSignatureEnum.K];
@@ -350,12 +351,12 @@ using System.Diagnostics;
                 case "YMM": return [AsmSignatureEnum.YMMREG];
                 case "YMM{K}": return [AsmSignatureEnum.YMMREG, AsmSignatureEnum.K];
                 case "YMM{K}{Z}": return [AsmSignatureEnum.YMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
- 
+
                 case "ZMM": return [AsmSignatureEnum.ZMMREG];
                 case "ZMM{K}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K];
                 case "ZMM{K}{Z}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
                 case "ZMM{SAE}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.SAE];
-              
+
                 #endregion
 
                 #region Misc
@@ -882,27 +883,32 @@ using System.Diagnostics;
                                 return true;
                             }
                             break;
-                        case Rn.DS: if (allowedOperands.Contains(AsmSignatureEnum.REG_DS))
+                        case Rn.DS:
+                            if (allowedOperands.Contains(AsmSignatureEnum.REG_DS))
                             {
                                 return true;
                             }
                             break;
-                        case Rn.ES: if (allowedOperands.Contains(AsmSignatureEnum.REG_ES))
+                        case Rn.ES:
+                            if (allowedOperands.Contains(AsmSignatureEnum.REG_ES))
                             {
                                 return true;
                             }
                             break;
-                        case Rn.SS: if (allowedOperands.Contains(AsmSignatureEnum.REG_SS))
+                        case Rn.SS:
+                            if (allowedOperands.Contains(AsmSignatureEnum.REG_SS))
                             {
                                 return true;
                             }
                             break;
-                        case Rn.FS: if (allowedOperands.Contains(AsmSignatureEnum.REG_FS))
+                        case Rn.FS:
+                            if (allowedOperands.Contains(AsmSignatureEnum.REG_FS))
                             {
                                 return true;
                             }
                             break;
-                        case Rn.GS: if (allowedOperands.Contains(AsmSignatureEnum.REG_GS))
+                        case Rn.GS:
+                            if (allowedOperands.Contains(AsmSignatureEnum.REG_GS))
                             {
                                 return true;
                             }

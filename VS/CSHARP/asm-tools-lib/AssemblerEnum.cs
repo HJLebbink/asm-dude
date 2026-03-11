@@ -37,7 +37,7 @@ namespace AsmTools
 
     public static partial class AsmSourceTools
     {
-        public static AssemblerEnum ParseAssembler(string str, bool strIsCapitals)
+        public static AssemblerEnum ParseAssembler(string? str, bool strIsCapitals)
         {
             if (string.IsNullOrEmpty(str))
             {

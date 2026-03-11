@@ -22,9 +22,10 @@ namespace AsmSim
     // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     // SOFTWARE.
 
+    using Microsoft.Z3;
+
     using System;
     using System.Collections.Generic;
-    using Microsoft.Z3;
 
     public static class ToolsFloatingPoint
     {

@@ -21,8 +21,11 @@
 // SOFTWARE.
 
 using AsmSourceTools;
+
 using AsmTools;
+
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+
 using System;
 using System.Collections.Generic;
 
@@ -38,9 +41,9 @@ namespace AsmDude2LS
         /// <summary>Return true if this Signature Element is allowed with the constraints of the provided operand</summary>
         public bool Is_Allowed(Operand op, int operandIndex)
         {
-            if (op == null) 
-            { 
-                return true; 
+            if (op == null)
+            {
+                return true;
             }
             if (operandIndex >= this.Operands.Count)
             {

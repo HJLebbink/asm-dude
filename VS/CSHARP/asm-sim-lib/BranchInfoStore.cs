@@ -22,11 +22,12 @@
 
 namespace AsmSim
 {
+    using Microsoft.Z3;
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Text;
-    using Microsoft.Z3;
 
     public class BranchInfoStore
     {

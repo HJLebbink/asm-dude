@@ -22,11 +22,11 @@
 
 namespace AsmDude2LS
 {
+    using AsmTools;
+
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
-    using AsmTools;
 
     public struct PerformanceItem : IEquatable<PerformanceItem>
     {
@@ -214,7 +214,7 @@ namespace AsmDude2LS
 
         private IDictionary<string, IList<Mnemonic>> Load_Instruction_Translation(string filename)
         {
-            IDictionary<string, IList<Mnemonic>> translations = new Dictionary<string, IList<Mnemonic>>();
+            Dictionary<string, IList<Mnemonic>> translations = [];
             try
             {
                 StreamReader file = new(filename);
@@ -242,13 +242,9 @@ namespace AsmDude2LS
                                 }
                             }
                             //LanguageServer.LogInfo("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
-                            if (translations.ContainsKey(key))
+                            if (!translations.TryAdd(key, values))
                             {
                                 LanguageServer.LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");
-                            }
-                            else
-                            {
-                                translations.Add(key, values);
                             }
                         }
                     }

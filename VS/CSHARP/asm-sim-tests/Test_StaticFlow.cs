@@ -22,10 +22,12 @@
 
 namespace unit_tests_asm_z3
 {
+    using AsmSim;
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     using System;
     using System.Collections.Generic;
-    using AsmSim;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class Test_StaticFlow

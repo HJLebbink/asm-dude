@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace AsmTools
@@ -111,7 +109,7 @@ namespace AsmTools
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
-                            else if (keyword_uppercase.StartsWith("\"", StringComparison.Ordinal) && keyword_uppercase.EndsWith("\"", StringComparison.Ordinal))
+                            else if (keyword_uppercase.StartsWith('"') && keyword_uppercase.EndsWith('"'))
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
@@ -272,11 +270,11 @@ namespace AsmTools
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
-                            else if (keyword_uppercase.StartsWith("\"", StringComparison.Ordinal) && keyword_uppercase.EndsWith("\"", StringComparison.Ordinal))
+                            else if (keyword_uppercase.StartsWith('"') && keyword_uppercase.EndsWith('"'))
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
-                            else if (keyword_uppercase.StartsWith("$", StringComparison.Ordinal))
+                            else if (keyword_uppercase.StartsWith('$'))
                             {
                                 yield return (pos[k].beginPos + 1, pos[k].length - 1, AsmTokenType.Constant);
                             }
@@ -455,7 +453,7 @@ namespace AsmTools
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
-                            else if (keyword_uppercase.StartsWith("\"", StringComparison.Ordinal) && keyword_uppercase.EndsWith("\"", StringComparison.Ordinal))
+                            else if (keyword_uppercase.StartsWith('"') && keyword_uppercase.EndsWith('"'))
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
@@ -665,7 +663,7 @@ namespace AsmTools
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
-                            else if (asmToken.StartsWith("\"", StringComparison.Ordinal) && asmToken.EndsWith("\"", StringComparison.Ordinal))
+                            else if (asmToken.StartsWith('"') && asmToken.EndsWith('"'))
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
@@ -774,11 +772,11 @@ namespace AsmTools
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
-                            else if (asmToken.StartsWith("$", StringComparison.Ordinal))
+                            else if (asmToken.StartsWith('$'))
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
-                            else if (asmToken.StartsWith("\"", StringComparison.Ordinal) && asmToken.EndsWith("\"", StringComparison.Ordinal))
+                            else if (asmToken.StartsWith('"') && asmToken.EndsWith('"'))
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
@@ -853,7 +851,7 @@ namespace AsmTools
             }
             return true;
         }
-      
+
         private static bool IsConstant(string token)
         {
             if (long.TryParse(token, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out _))
@@ -864,7 +862,7 @@ namespace AsmTools
             //{
             //    return true;
             //}
-            if (token.EndsWith("H", StringComparison.Ordinal))
+            if (token.EndsWith('H'))
             {
                 return true;
             }

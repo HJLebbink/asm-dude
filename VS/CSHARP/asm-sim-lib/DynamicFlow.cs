@@ -22,13 +22,16 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
+    using Microsoft.Z3;
+
+    using QuikGraph;
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Text;
-    using AsmTools;
-    using Microsoft.Z3;
-    using QuikGraph;
 
     public class DynamicFlow : IDisposable
     {

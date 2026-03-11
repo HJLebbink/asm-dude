@@ -30,7 +30,7 @@ namespace AsmTools
 
         public bool mode_32bit { get; set; }
 
-        public bool mode_16bit { get; set; }
+        public bool Mode_16bit { get; set; }
 
         public AsmParameters()
         {
@@ -38,7 +38,7 @@ namespace AsmTools
             this.assume_initial_known_mem = true;
             this.mode_64bit = true;
             this.mode_32bit = false;
-            this.mode_16bit = false;
+            this.Mode_16bit = false;
         }
     }
 }

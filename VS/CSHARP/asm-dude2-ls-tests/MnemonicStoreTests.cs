@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude2LS;
 using AsmTools;
+
 using FluentAssertions;
-using Microsoft.VisualStudio.LanguageServer.Protocol;
+
 using Xunit;
 
 namespace AsmDude2LS.Tests;

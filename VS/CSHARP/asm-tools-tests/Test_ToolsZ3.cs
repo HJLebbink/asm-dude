@@ -22,9 +22,11 @@
 
 namespace unit_tests_asm_tools
 {
-    using System;
     using AsmSim;
+
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    using System;
 
     [TestClass]
     public class Test_ToolsZ3
@@ -34,22 +36,22 @@ namespace unit_tests_asm_tools
         {
             {
                 string str = ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(10, 8));
-                Assert.AreEqual(str, "0b00001010");
+                Assert.AreEqual("0b00001010", str);
                 Console.WriteLine(str);
             }
             {
                 string str = ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(10, 16));
-                Assert.AreEqual(str, "0b00000000_00001010");
+                Assert.AreEqual("0b00000000_00001010", str);
                 Console.WriteLine(str);
             }
             {
                 string str = ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(10, 32));
-                Assert.AreEqual(str, "0b00000000_00000000_00000000_00001010");
+                Assert.AreEqual("0b00000000_00000000_00000000_00001010", str);
                 Console.WriteLine(str);
             }
             {
                 string str = ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(10, 64));
-                Assert.AreEqual(str, "0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001010");
+                Assert.AreEqual("0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001010", str);
                 Console.WriteLine(str);
             }
         }
@@ -110,22 +112,22 @@ namespace unit_tests_asm_tools
             {
                 string str = ToolsZ3.ToStringOct(ToolsZ3.GetTvArray(10, 8));
                 Console.WriteLine(str);
-                Assert.AreEqual(str, "0o012");
+                Assert.AreEqual("0o012", str);
             }
             {
                 string str = ToolsZ3.ToStringOct(ToolsZ3.GetTvArray(200, 8));
                 Console.WriteLine(str);
-                Assert.AreEqual(str, "0o310");
+                Assert.AreEqual("0o310", str);
             }
             {
                 string str = ToolsZ3.ToStringOct(ToolsZ3.GetTvArray(511, 16));
                 Console.WriteLine(str);
-                Assert.AreEqual(str, "0o000_777");
+                Assert.AreEqual("0o000_777", str);
             }
             {
                 string str = ToolsZ3.ToStringOct(ToolsZ3.GetTvArray(512, 10));
                 Console.WriteLine(str);
-                Assert.AreEqual(str, "0o1_000");
+                Assert.AreEqual("0o1_000", str);
             }
         }
 
@@ -134,22 +136,22 @@ namespace unit_tests_asm_tools
         {
             {
                 string str = ToolsZ3.ToStringDec(ToolsZ3.GetTvArray(10, 8));
-                Assert.AreEqual(str, "10d");
+                Assert.AreEqual("10d", str);
                 Console.WriteLine(str);
             }
             {
                 string str = ToolsZ3.ToStringDec(ToolsZ3.GetTvArray(200, 8));
-                Assert.AreEqual(str, "200d");
+                Assert.AreEqual("200d", str);
                 Console.WriteLine(str);
             }
             {
                 string str = ToolsZ3.ToStringDec(ToolsZ3.GetTvArray(511, 16));
-                Assert.AreEqual(str, "511d");
+                Assert.AreEqual("511d", str);
                 Console.WriteLine(str);
             }
             {
                 string str = ToolsZ3.ToStringDec(ToolsZ3.GetTvArray(512, 10));
-                Assert.AreEqual(str, "512d");
+                Assert.AreEqual("512d", str);
                 Console.WriteLine(str);
             }
         }

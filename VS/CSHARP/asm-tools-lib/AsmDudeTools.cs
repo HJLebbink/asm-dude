@@ -50,8 +50,8 @@ namespace AsmTools
 
         private static AsmDude2Tools Instance
         {
-            get; 
-            set; 
+            get;
+            set;
         }
 
         /// <summary>
@@ -183,28 +183,19 @@ namespace AsmTools
 
         private static void LogInfo(string msg)
         {
-            if (Instance.traceSource != null)
-            {
-                Instance.traceSource.TraceEvent(TraceEventType.Information, 0, msg);
-            }
+            Instance.traceSource?.TraceEvent(TraceEventType.Information, 0, msg);
             Console.WriteLine($"INFO: {msg}");
         }
 
         private static void LogWarning(string msg)
         {
-            if (Instance.traceSource != null)
-            {
-                Instance.traceSource.TraceEvent(TraceEventType.Warning, 0, msg);
-            }
+            Instance.traceSource?.TraceEvent(TraceEventType.Warning, 0, msg);
             Console.WriteLine($"WARNING: {msg}");
         }
 
         private static void LogError(string msg)
         {
-            if (Instance.traceSource != null)
-            {
-                Instance.traceSource.TraceEvent(TraceEventType.Error, 0, msg);
-            }
+            Instance.traceSource?.TraceEvent(TraceEventType.Error, 0, msg);
             Console.WriteLine($"ERROR: {msg}");
         }
 

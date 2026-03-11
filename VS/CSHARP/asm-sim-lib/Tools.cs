@@ -22,11 +22,13 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
+    using Microsoft.Z3;
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using AsmTools;
-    using Microsoft.Z3;
 
     public class Tools
     {
@@ -278,7 +280,7 @@ namespace AsmSim
         public static BitVecExpr Calc_Effective_Address(string op, string key, Tools tools, Context ctx)
         {
             ArgumentNullException.ThrowIfNull(tools);
-            return Calc_Effective_Address(new Operand(op, false, tools.Parameters), key, ctx);
+            return Calc_Effective_Address(new Operand(new CapitalToken(op), tools.Parameters), key, ctx);
         }
 
         public static BitVecExpr Calc_Effective_Address(Operand op, string key, Context ctx)

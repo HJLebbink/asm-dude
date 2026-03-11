@@ -22,17 +22,21 @@
 
 namespace AsmDude2LS
 {
+    using AsmSim;
+    using AsmSim.Mnemonics;
+
+    using AsmTools;
+
+    using Microsoft.Extensions.Logging;
+
     using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using AsmSim;
-    using AsmSim.Mnemonics;
-    using AsmTools;
-    using AsmSimTools = AsmSim.Tools;
+
     using AsmSimState = AsmSim.State;
-    using Microsoft.Extensions.Logging;
+    using AsmSimTools = AsmSim.Tools;
 
     internal enum SimDiagnosticKind
     {
@@ -226,24 +230,24 @@ namespace AsmDude2LS
                 tools.StateConfig.RDI = true;
                 tools.StateConfig.RSP = true;
                 tools.StateConfig.RBP = true;
-                tools.StateConfig.R8  = true;
-                tools.StateConfig.R9  = true;
+                tools.StateConfig.R8 = true;
+                tools.StateConfig.R9 = true;
                 tools.StateConfig.R10 = true;
                 tools.StateConfig.R11 = true;
                 tools.StateConfig.R12 = true;
                 tools.StateConfig.R13 = true;
                 tools.StateConfig.R14 = true;
                 tools.StateConfig.R15 = true;
-                tools.StateConfig.CF  = true;
-                tools.StateConfig.ZF  = true;
-                tools.StateConfig.SF  = true;
-                tools.StateConfig.OF  = true;
+                tools.StateConfig.CF = true;
+                tools.StateConfig.ZF = true;
+                tools.StateConfig.SF = true;
+                tools.StateConfig.OF = true;
                 tools.Quiet = true;
 
-                var newLineStringsAfter  = new Dictionary<int, string?>();
+                var newLineStringsAfter = new Dictionary<int, string?>();
                 var newLineStringsBefore = new Dictionary<int, string?>();
-                var newDiagnostics       = new List<SimDiagnostic>();
-                var ownedStates          = new List<AsmSimState>();
+                var newDiagnostics = new List<SimDiagnostic>();
+                var ownedStates = new List<AsmSimState>();
 
                 // Memoize ComputeStateString per state instance: multiple lines sharing the same
                 // state (blank/comment) reuse the pre-computed string without re-running Z3.
@@ -270,7 +274,7 @@ namespace AsmDude2LS
                         if (stateToString.TryGetValue(state, out string? cached))
                         {
                             newLineStringsBefore[i] = cached;
-                            newLineStringsAfter[i]  = cached;
+                            newLineStringsAfter[i] = cached;
                         }
                         continue;
                     }
@@ -323,7 +327,7 @@ namespace AsmDude2LS
                         DisposeList(old.ownedStates);
                     }
                     var newEntry = new DocCache();
-                    foreach (var kv in newLineStringsAfter)  newEntry.lineStringsAfter[kv.Key]  = kv.Value;
+                    foreach (var kv in newLineStringsAfter) newEntry.lineStringsAfter[kv.Key] = kv.Value;
                     foreach (var kv in newLineStringsBefore) newEntry.lineStringsBefore[kv.Key] = kv.Value;
                     newEntry.diagnostics.AddRange(newDiagnostics);
                     ownedStates.ForEach(s => newEntry.ownedStates.Add(s));

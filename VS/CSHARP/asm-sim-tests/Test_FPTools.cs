@@ -22,11 +22,13 @@
 
 namespace unit_tests_asm_z3
 {
-    using System;
-    using System.Collections.Generic;
     using AsmSim;
+
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.Z3;
+
+    using System;
+    using System.Collections.Generic;
 
     [TestClass]
     public class Test_FPTools

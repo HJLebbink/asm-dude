@@ -1,0 +1,5 @@
+﻿AAA—ASCII Adjust After Addition Vol. 2A 3-2
+Compatibility Mode Exceptions
+Same exceptions as protected mode.
+64-Bit Mode Exceptions
+#UD If in 64-bit mode.

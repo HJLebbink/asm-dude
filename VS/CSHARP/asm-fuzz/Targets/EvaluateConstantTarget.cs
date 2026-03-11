@@ -1,5 +1,6 @@
-using System.Text;
 using AsmTools;
+
+using System.Text;
 
 namespace AsmFuzz.Targets;
 

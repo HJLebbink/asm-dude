@@ -20,11 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Linq;
-using AsmDude2LS;
 using AsmTools;
+
 using FluentAssertions;
+
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+
 using Xunit;
 
 namespace AsmDude2LS.Tests;
@@ -203,7 +204,7 @@ public class LanguageServerTests
     [Fact]
     public void Completion_AfterMnemonic_ReturnsOperands()
     {
-        var result = this.GetCompletions("add ", 4);
+        CompletionList? result = this.GetCompletions("add ", 4);
         result.Should().NotBeNull();
         result.Items.Should().NotBeEmpty();
         result.Items.Length.Should().BeGreaterThan(10, "should return many register completions");
@@ -212,8 +213,8 @@ public class LanguageServerTests
     [Fact]
     public void Completion_FilterTextMatchesInsertText()
     {
-        var result = this.GetCompletions("add ", 4);
-        result.Items.Should().AllSatisfy(item =>
+        CompletionList? result = this.GetCompletions("add ", 4);
+        result?.Items.Should().AllSatisfy(item =>
         {
             item.FilterText.Should().Be(item.InsertText,
                 $"FilterText must equal InsertText for '{item.Label}' to prevent VS fuzzy matching on arch tags");
@@ -223,9 +224,9 @@ public class LanguageServerTests
     [Fact]
     public void Completion_FilterTextNeverContainsArchTags()
     {
-        var result = this.GetCompletions("v", 1);
-        result.Items.Should().NotBeEmpty();
-        result.Items.Should().AllSatisfy(item =>
+        CompletionList? result = this.GetCompletions("v", 1);
+        result?.Items.Should().NotBeEmpty();
+        result?.Items.Should().AllSatisfy(item =>
         {
             item.FilterText.Should().NotContainAny(["[", "]"],
                 $"FilterText '{item.FilterText}' must not contain arch tags");
@@ -235,10 +236,10 @@ public class LanguageServerTests
     [Fact]
     public void Completion_ShortPrefix_FiltersServerSide()
     {
-        var result = this.GetCompletions("VMOVAPS Z", 9);
-        result.Should().NotBeNull();
-        result.Items.Should().NotBeEmpty("ZMM registers should be available");
-        result.Items.Should().OnlyContain(
+        CompletionList? result = this.GetCompletions("VMOVAPS Z", 9);
+        result?.Should().NotBeNull();
+        result?.Items.Should().NotBeEmpty("ZMM registers should be available");
+        result?.Items.Should().OnlyContain(
             i => i.FilterText.StartsWith("Z", StringComparison.OrdinalIgnoreCase),
             "typing 'Z' should only return Z-prefixed completions, not YMM/XMM");
     }
@@ -401,10 +402,7 @@ public class LanguageServerTests
 
         // Assert
         result.Should().NotBeNull("signature help for MOV should return signatures");
-        if (result != null)
-        {
-            result.Signatures.Should().NotBeEmpty("MOV has multiple signatures");
-        }
+        result?.Signatures.Should().NotBeEmpty("MOV has multiple signatures");
     }
 
     #endregion
@@ -806,8 +804,8 @@ add rcx, rdx
         lenses.Should().NotBeNull();
         lenses.Should().HaveCount(1);
 
-        var resolved = this._server.ResolveCodeLens(lenses[0]);
-        resolved.Command.Title.Should().Be("0 references");
+        CodeLens resolved = this._server.ResolveCodeLens(lenses[0]);
+        resolved.Command?.Title.Should().Be("0 references");
     }
 
     [Fact]
@@ -833,7 +831,7 @@ add rcx, rdx
         lenses.Should().NotBeNull();
         lenses.Should().HaveCount(2);
 
-        var titles = lenses.Select(l => this._server.ResolveCodeLens(l).Command.Title).ToList();
+        var titles = lenses.Select(l => this._server.ResolveCodeLens(l)?.Command?.Title).ToList();
         titles.Should().Contain("1 reference");
     }
 

@@ -22,12 +22,15 @@
 
 namespace unit_tests_asm_z3
 {
-    using System;
-    using System.Numerics;
     using AsmSim;
+
     using AsmTools;
+
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.Z3;
+
+    using System;
+    using System.Numerics;
 
     public static class AsmTestTools
     {

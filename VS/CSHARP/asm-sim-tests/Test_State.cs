@@ -22,11 +22,13 @@
 
 namespace unit_tests_asm_z3
 {
+    using AsmSim;
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using AsmSim;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]

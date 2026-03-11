@@ -22,8 +22,9 @@
 
 #nullable enable
 
-using System.Collections.Generic;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+
+using System.Collections.Generic;
 
 namespace AsmDude2LS
 {

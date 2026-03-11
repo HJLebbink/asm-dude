@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Text.Json.Nodes;
 using FluentAssertions;
+
 using Xunit;
 
 namespace AsmDude2LS.Tests;
@@ -41,7 +41,7 @@ public class LspProcessIntegrationTests : IAsyncLifetime
 {
     private LspProcessTestClient? _client;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         try
         {
@@ -54,7 +54,7 @@ public class LspProcessIntegrationTests : IAsyncLifetime
         }
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (this._client != null)
         {

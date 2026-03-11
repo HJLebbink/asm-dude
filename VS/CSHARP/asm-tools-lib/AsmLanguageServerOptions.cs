@@ -344,7 +344,8 @@ namespace AsmTools
         public int Global_MaxFileLines;
 #pragma warning restore SA1401 // Fields should be private
 
-        public AsmLanguageServerOptions() {
+        public AsmLanguageServerOptions()
+        {
             this.CodeFolding_BeginTag = string.Empty;
             this.CodeFolding_EndTag = string.Empty;
             this.AsmDoc_Url = string.Empty;

@@ -20,15 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-
-using Microsoft.Z3;
 using AsmTools;
+
 using System.Text;
-using System.IO;
-using System.Text.RegularExpressions;
-using AsmSim.Mnemonics;
 
 namespace AsmSim
 {
@@ -56,7 +50,8 @@ namespace AsmSim
             return sb.ToString().TrimEnd();
         }
 
-        public static string ShuffleProgram(string program) {
+        public static string ShuffleProgram(string program)
+        {
             return program;
         }
 
@@ -77,7 +72,7 @@ namespace AsmSim
         private static string ToString(Flags flag, State state)
         {
             char c = ToolsZ3.ToStringBin(state.GetTv(flag));
-            return c+"";
+            return c + "";
         }
         private static string ToString(Rn name, State state)
         {
@@ -85,8 +80,10 @@ namespace AsmSim
             var tup = ToolsZ3.HasOneValue(array);
             if (tup.hasOneValue)
             {
-                return ToolsZ3.ToStringBin(tup.value) +"";
-            } else {
+                return ToolsZ3.ToStringBin(tup.value) + "";
+            }
+            else
+            {
                 return ToolsZ3.ToStringBin(array);
             }
         }

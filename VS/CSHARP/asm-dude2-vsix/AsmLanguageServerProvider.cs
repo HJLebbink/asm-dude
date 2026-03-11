@@ -36,14 +36,9 @@ namespace AsmDude2;
 /// <summary>
 /// Language server provider for assembly language files
 /// </summary>
-internal class AsmLanguageServerProvider : LanguageServerProvider
+internal class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudioExtensibility extensibility) : LanguageServerProvider(extensionCore, extensibility)
 {
-    private Process? _languageServerProcess;
-
-    public AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudioExtensibility extensibility)
-        : base(extensionCore, extensibility)
-    {
-    }
+    private Process? languageServerProcess;
 
     /// <summary>
     /// Configures the language server provider
@@ -82,8 +77,8 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
                 Debug.WriteLine($"AsmDude3: Starting LSP server from {lspPath}");
 
                 // Create named pipes for communication
-                const string stdInPipeName = "asmdude3-output";
-                const string stdOutPipeName = "asmdude3-input";
+                const string stdInPipeName = "asmdude2-output";
+                const string stdOutPipeName = "asmdude2-input";
 
                 // Set up pipe security (allow all users)
                 SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
@@ -123,28 +118,28 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
                     CreateNoWindow = true,
                 };
 
-                _languageServerProcess = Process.Start(startInfo);
+                languageServerProcess = Process.Start(startInfo);
 
-                if (_languageServerProcess == null)
+                if (languageServerProcess == null)
                 {
-                    Debug.WriteLine("AsmDude3: Failed to start LSP server process");
+                    Debug.WriteLine("AsmDude2: Failed to start LSP server process");
                     return null;
                 }
 
-                Debug.WriteLine($"AsmDude3: LSP server process started with PID {_languageServerProcess.Id}");
+                Debug.WriteLine($"AsmDude2: LSP server process started with PID {languageServerProcess.Id}");
 
                 // Wait for the LSP server to connect to the pipes
                 await readerPipe.WaitForConnectionAsync(cancellationToken);
                 await writerPipe.WaitForConnectionAsync(cancellationToken);
 
-                Debug.WriteLine("AsmDude3: LSP server connected via named pipes");
+                Debug.WriteLine("AsmDude2: LSP server connected via named pipes");
 
                 // Return a duplex pipe for bidirectional communication
                 return new DuplexPipe(readerPipe, writerPipe);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"AsmDude3: Error creating server connection: {ex}");
+                Debug.WriteLine($"AsmDude2: Error creating server connection: {ex}");
                 return null;
             }
         }, cancellationToken);
@@ -159,10 +154,10 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
         {
             try
             {
-                if (_languageServerProcess != null && !_languageServerProcess.HasExited)
+                if (languageServerProcess != null && !languageServerProcess.HasExited)
                 {
-                    _languageServerProcess.Kill();
-                    _languageServerProcess.Dispose();
+                    languageServerProcess.Kill();
+                    languageServerProcess.Dispose();
                 }
             }
             catch (Exception ex)
@@ -177,15 +172,9 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
     /// <summary>
     /// Simple duplex pipe implementation
     /// </summary>
-    private class DuplexPipe : IDuplexPipe
+    private class DuplexPipe(Stream input, Stream output) : IDuplexPipe
     {
-        public DuplexPipe(Stream input, Stream output)
-        {
-            Input = input.UsePipeReader();
-            Output = output.UsePipeWriter();
-        }
-
-        public PipeReader Input { get; }
-        public PipeWriter Output { get; }
+        public PipeReader Input { get; } = input.UsePipeReader();
+        public PipeWriter Output { get; } = output.UsePipeWriter();
     }
 }

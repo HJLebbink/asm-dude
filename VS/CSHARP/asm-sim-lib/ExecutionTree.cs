@@ -22,9 +22,10 @@
 
 namespace AsmSim
 {
+    using QuikGraph;
+
     using System;
     using System.Collections.Generic;
-    using QuikGraph;
 
     public class ExecutionTree : IDisposable
     {

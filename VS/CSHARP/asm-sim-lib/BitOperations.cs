@@ -22,10 +22,12 @@
 
 namespace AsmSim
 {
-    using System;
-using System.Diagnostics;
     using AsmTools;
+
     using Microsoft.Z3;
+
+    using System;
+    using System.Diagnostics;
 
     public static class BitOperations
     {

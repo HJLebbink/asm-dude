@@ -22,10 +22,11 @@
 
 namespace AsmSim
 {
+    using QuikGraph;
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using QuikGraph;
 
     public static class GraphTools<Tag>
     {

@@ -24,13 +24,14 @@ namespace AsmSim
 {
     namespace Mnemonics
     {
+        using AsmTools;
+
+        using Microsoft.Z3;
+
         using System;
         using System.Collections.Generic;
         using System.Diagnostics;
         using System.Globalization;
-        using System.Linq;
-        using AsmTools;
-        using Microsoft.Z3;
 
         #region Instructions
         #region Abstract OpcodeBases
@@ -91,9 +92,11 @@ namespace AsmSim
                 this.args_ = args;
                 this.tools_ = t;
                 this.keys_ = keys;
-                try {
+                try
+                {
                     this.ctx_ = new Context(t.ContextSettings);
-                } catch
+                }
+                catch
                 {
                     //TODO
                 }
@@ -464,7 +467,7 @@ namespace AsmSim
 
                 if (this.NOperands == 1)
                 {
-                    this.op1_ = new Operand(args[0], false);
+                    this.op1_ = new Operand(new CapitalToken(args[0]));
                     if (!string.IsNullOrEmpty(this.op1_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage);
@@ -516,8 +519,8 @@ namespace AsmSim
 
                 if (this.NOperands == 2)
                 {
-                    this.op1_ = new Operand(args[0], false);
-                    this.op2_ = new Operand(args[1], false);
+                    this.op1_ = new Operand(new CapitalToken(args[0]));
+                    this.op2_ = new Operand(new CapitalToken(args[1]));
                     if (!string.IsNullOrEmpty(this.op1_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage);
@@ -579,9 +582,9 @@ namespace AsmSim
 
                 if (this.NOperands == 3)
                 {
-                    this.op1_ = new Operand(args[0], false);
-                    this.op2_ = new Operand(args[1], false);
-                    this.op3_ = new Operand(args[2], false);
+                    this.op1_ = new Operand(new CapitalToken(args[0]));
+                    this.op2_ = new Operand(new CapitalToken(args[1]));
+                    this.op3_ = new Operand(new CapitalToken(args[2]));
 
                     if (!string.IsNullOrEmpty(this.op1_.ErrorMessage))
                     {
@@ -653,7 +656,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 1)
                 {
-                    this.op1_ = new Operand(args[0], false);
+                    this.op1_ = new Operand(new CapitalToken(args[0]));
                     if (!string.IsNullOrEmpty(this.op1_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1_.ErrorMessage);
@@ -661,7 +664,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 2)
                 {
-                    this.op2_ = new Operand(args[1], false);
+                    this.op2_ = new Operand(new CapitalToken(args[1]));
                     if (!string.IsNullOrEmpty(this.op2_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2_.ErrorMessage);
@@ -669,7 +672,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 3)
                 {
-                    this.op3_ = new Operand(args[2], false);
+                    this.op3_ = new Operand(new CapitalToken(args[2]));
                     if (!string.IsNullOrEmpty(this.op3_.ErrorMessage))
                     {
                         this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3_.ErrorMessage);
@@ -1251,7 +1254,7 @@ namespace AsmSim
                     this.RegularUpdate.Set(Rn.ESP, this.ctx_.MkBVSub(espExpr, this.ctx_.MkBV(4, 32)));
                     this.RegularUpdate.Set_Mem(espExpr, value);
                 }
-                else if (this.tools_.Parameters.mode_16bit)
+                else if (this.tools_.Parameters.Mode_16bit)
                 {
                     BitVecExpr value = this.Op1Value;
                     BitVecExpr spExpr = this.Get(Rn.SP);
@@ -1276,7 +1279,7 @@ namespace AsmSim
                     {
                         yield return Rn.ESP;
                     }
-                    else if (this.tools_.Parameters.mode_16bit)
+                    else if (this.tools_.Parameters.Mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -1300,7 +1303,7 @@ namespace AsmSim
                     {
                         yield return Rn.ESP;
                     }
-                    else if (this.tools_.Parameters.mode_16bit)
+                    else if (this.tools_.Parameters.Mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -1383,7 +1386,7 @@ namespace AsmSim
                     }
                     this.RegularUpdate.Set(Rn.ESP, newEspExpr);
                 }
-                else if (this.tools_.Parameters.mode_16bit)
+                else if (this.tools_.Parameters.Mode_16bit)
                 {
                     BitVecExpr spExpr = this.Get(Rn.SP);
                     BitVecExpr newSpExpr;
@@ -1418,7 +1421,7 @@ namespace AsmSim
                     {
                         yield return Rn.ESP;
                     }
-                    else if (this.tools_.Parameters.mode_16bit)
+                    else if (this.tools_.Parameters.Mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -1437,7 +1440,7 @@ namespace AsmSim
                     {
                         yield return Rn.ESP;
                     }
-                    else if (this.tools_.Parameters.mode_16bit)
+                    else if (this.tools_.Parameters.Mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -3998,7 +4001,7 @@ namespace AsmSim
                         yield return Rn.ESP;
                     }
 
-                    if (this.tools_.Parameters.mode_16bit)
+                    if (this.tools_.Parameters.Mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -4019,7 +4022,7 @@ namespace AsmSim
                         yield return Rn.ESP;
                     }
 
-                    if (this.tools_.Parameters.mode_16bit)
+                    if (this.tools_.Parameters.Mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -4078,7 +4081,7 @@ namespace AsmSim
                     nextLineNumberExpr = this.GetMem(newEspExpr, 4);
                     this.RegularUpdate.Set(Rn.ESP, newEspExpr);
                 }
-                else if (this.tools_.Parameters.mode_16bit)
+                else if (this.tools_.Parameters.Mode_16bit)
                 {
                     BitVecExpr newSpExpr = this.ctx_.MkBVSub(this.Get(Rn.SP), this.ctx_.MkBV(2, 16));
                     nextLineNumberExpr = this.GetMem(newSpExpr, 2);
@@ -4106,7 +4109,7 @@ namespace AsmSim
                         yield return Rn.ESP;
                     }
 
-                    if (this.tools_.Parameters.mode_16bit)
+                    if (this.tools_.Parameters.Mode_16bit)
                     {
                         yield return Rn.SP;
                     }
@@ -4127,7 +4130,7 @@ namespace AsmSim
                         yield return Rn.ESP;
                     }
 
-                    if (this.tools_.Parameters.mode_16bit)
+                    if (this.tools_.Parameters.Mode_16bit)
                     {
                         yield return Rn.SP;
                     }

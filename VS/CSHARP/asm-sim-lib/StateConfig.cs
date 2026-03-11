@@ -22,8 +22,9 @@
 
 namespace AsmSim
 {
-    using System.Collections.Generic;
     using AsmTools;
+
+    using System.Collections.Generic;
 
     public class StateConfig
     {

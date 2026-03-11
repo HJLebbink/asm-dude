@@ -22,11 +22,12 @@
 
 namespace AsmSim
 {
-    using System.Globalization;
-    using System.IO;
     using QuikGraph;
     using QuikGraph.Graphviz;
     using QuikGraph.Graphviz.Dot;
+
+    using System.Globalization;
+    using System.IO;
 
     public static class DotVisualizer
     {

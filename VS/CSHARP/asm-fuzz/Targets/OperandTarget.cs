@@ -1,5 +1,6 @@
-using System.Text;
 using AsmTools;
+
+using System.Text;
 
 namespace AsmFuzz.Targets;
 
@@ -16,6 +17,6 @@ public static class OperandTarget
         }
 
         string input = Encoding.UTF8.GetString(data);
-        _ = new Operand(input, false);
+        _ = new Operand(new CapitalToken(input));
     }
 }

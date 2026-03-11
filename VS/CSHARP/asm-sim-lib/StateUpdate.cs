@@ -22,14 +22,14 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
+    using Microsoft.Z3;
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Text;
-    using AsmTools;
-
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.Z3;
 
     public class StateUpdate : IDisposable
     {
@@ -365,7 +365,7 @@ namespace AsmSim
                 {
                     this.nextKey_ = value;
                 }
-               
+
 
                 else if (this.nextKey_ != value)
                 {
@@ -979,7 +979,7 @@ namespace AsmSim
 
         public void Set_Mem([DisallowNull] ArrayExpr memContent)
         {
-            
+
 
 
             this.Empty = false;

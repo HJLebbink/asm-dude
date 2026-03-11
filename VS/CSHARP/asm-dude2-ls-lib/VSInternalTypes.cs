@@ -22,7 +22,6 @@
 
 using System;
 using System.Text.Json.Serialization;
-using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 

@@ -1,6 +1,8 @@
-using System.Text;
 using AsmDude2LS;
+
 using AsmTools;
+
+using System.Text;
 
 namespace AsmFuzz.Targets;
 

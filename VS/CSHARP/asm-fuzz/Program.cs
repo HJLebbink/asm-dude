@@ -1,4 +1,5 @@
 using AsmFuzz.Targets;
+
 using SharpFuzz;
 
 if (args.Length == 0)

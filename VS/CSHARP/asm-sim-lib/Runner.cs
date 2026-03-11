@@ -22,9 +22,11 @@
 
 namespace AsmSim
 {
-    using System;
     using AsmSim.Mnemonics;
+
     using AsmTools;
+
+    using System;
 
     public static class Runner
     {

@@ -22,9 +22,11 @@
 
 namespace AsmSim
 {
-    using System;
     using AsmTools;
+
     using Microsoft.Z3;
+
+    using System;
 
     public enum ConditionalElement
     {

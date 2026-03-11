@@ -1,4 +1,5 @@
 using AsmDude2LS;
+
 using AsmTools;
 
 namespace AsmFuzz;

@@ -1,0 +1,38 @@
+﻿INSTRUCTION SET REFERENCE, A-L
+Vol. 2A 3-18
+1.3 INSTRUCTIONS (A-L)
+The remainder of this chapter provides descriptions of Intel 64 and IA-32 instructions (A-L). See also: Chapter 4, 
+“Instruction Set Reference, M-U,” in the Intel
+®
+ 64 and IA-32 Architectures Software Developer’s Manual, Volume 
+2B; Chapter 5, “Instruction Set Reference, V,” in the Intel
+®
+ 64 and IA-32 Architectures Software Developer’s 
+Manual, Volume 2C; and Chapter 6, “Instruction Set Reference, W-Z,” in the Intel
+®
+ 64 and IA-32 Architectures 
+Software Developer’s Manual, Volume 2D.
+define write_row_and_zero(treg, r, data, nbytes): 
+for j in 0 ... nbytes-1:
+treg.row[r].byte[j] := data.byte[j]
+// zero the rest of the row
+for j in nbytes ... palette_table[tilecfg.palette_id].bytes_per_row-1:
+treg.row[r].byte[j] := 0
+define zero_upper_rows(treg, r):
+for i in r ... palette_table[tilecfg.palette_id].max_rows-1:
+for j in 0 ... palette_table[tilecfg.palette_id].bytes_per_row-1: 
+treg.row[i].byte[j] := 0
+define zero_tilecfg_start(): 
+tilecfg.start_row := 0
+define zero_all_tile_data(): 
+if XCR0[TILEDATA]:
+b := CPUID.0DH.TILEDATA:EAX // size of feature 
+for j in 0 ... b:
+TILEDATA.byte[j] := 0
+define xcr0_supports_palette(palette_id): 
+if palette_id == 0:
+return 1
+elif palette_id == 1:
+if XCR0[TILECFG] and XCR0[TILEDATA]:
+return 1
+return 0

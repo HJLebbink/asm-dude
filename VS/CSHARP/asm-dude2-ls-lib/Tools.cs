@@ -22,13 +22,13 @@
 
 namespace AsmDude2LS
 {
+    using AsmTools;
+
     using System;
     using System.Diagnostics;
     using System.IO;
 
-    using AsmTools;
-
-    public static class Tools
+    public static partial class Tools
     {
 
         public static TraceSource CreateTraceSource()
@@ -50,7 +50,7 @@ namespace AsmDude2LS
         /// </summary>
         public static string Cleanup(string line)
         {
-            string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ");
+            string cleanedString = MyRegex().Replace(line, " ");
             if (cleanedString.Length > LanguageServer.MaxNumberOfCharsInToolTips)
             {
                 return cleanedString[..(LanguageServer.MaxNumberOfCharsInToolTips - 3)] + "...";
@@ -119,5 +119,8 @@ namespace AsmDude2LS
             }
             return label;
         }
+
+        [System.Text.RegularExpressions.GeneratedRegex(@"\s+")]
+        private static partial System.Text.RegularExpressions.Regex MyRegex();
     }
 }

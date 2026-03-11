@@ -23,8 +23,8 @@
 namespace AsmTools
 {
     using System;
-using System.Diagnostics;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using System.Text;
@@ -286,7 +286,7 @@ using System.Diagnostics;
                         }
                     }
                 }
-            
+
                 if (remarkPos.valid)
                 {
                     k.Add(remarkKeyword);
@@ -314,7 +314,7 @@ using System.Diagnostics;
                 var operands = new List<Operand>(nOperands);
                 foreach (string opStr in operandStrArray)
                 {
-                    operands.Add(new Operand(opStr, false));
+                    operands.Add(new Operand(new CapitalToken(opStr)));
                 }
                 return operands;
             }
@@ -602,7 +602,7 @@ using System.Diagnostics;
         {
             ArgumentNullException.ThrowIfNull(token);
 
-            if (token.StartsWith("$", StringComparison.Ordinal)) // AT&T syntax constants start with '$'
+            if (token.StartsWith('$')) // AT&T syntax constants start with '$'
             {
                 token = token.Substring(1);
             }
