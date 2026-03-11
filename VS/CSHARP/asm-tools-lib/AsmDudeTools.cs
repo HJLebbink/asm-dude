@@ -61,17 +61,17 @@ namespace AsmTools
         {
             this.traceSource = traceSource;
             this.xmlData_ = new XmlDocument() { XmlResolver = null };
-            this.type_ = new Dictionary<string, AsmTokenType>();
-            this.arch_ = new Dictionary<string, Arch>();
-            this.assembler_ = new Dictionary<string, AssemblerEnum>();
-            this.description_ = new Dictionary<string, string>();
+            this.type_ = [];
+            this.arch_ = [];
+            this.assembler_ = [];
+            this.description_ = [];
         }
 
         #region Public Methods
 
         public AsmTokenType Get_Token_Type_Att(string keyword)
         {
-            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             int length = keyword.Length;
@@ -119,7 +119,7 @@ namespace AsmTools
 
         public AsmTokenType Get_Token_Type_Intel(string keyword)
         {
-            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
@@ -142,7 +142,7 @@ namespace AsmTools
 
         public AssemblerEnum Get_Assembler(string keyword)
         {
-            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.assembler_.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
@@ -153,7 +153,7 @@ namespace AsmTools
         /// </summary>
         public string Get_Description(string keyword)
         {
-            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.description_.TryGetValue(keyword, out string description) ? description : string.Empty;
@@ -170,7 +170,7 @@ namespace AsmTools
         /// </summary>
         public Arch Get_Architecture(string keyword)
         {
-            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.arch_.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
@@ -355,7 +355,7 @@ namespace AsmTools
 
         private static Arch Retrieve_Arch(XmlNode node)
         {
-            if (node == null) throw new ArgumentNullException(nameof(node));
+            ArgumentNullException.ThrowIfNull(node);
 
             try
             {

@@ -45,14 +45,14 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
     private LspProcessTestClient(Process process)
     {
-        _serverProcess = process;
-        _writer = process.StandardInput;
-        _reader = process.StandardOutput;
-        _requestId = 0;
-        _initialized = false;
-        _disposed = false;
+        this._serverProcess = process;
+        this._writer = process.StandardInput;
+        this._reader = process.StandardOutput;
+        this._requestId = 0;
+        this._initialized = false;
+        this._disposed = false;
 
-        _jsonOptions = new JsonSerializerOptions
+        this._jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -182,7 +182,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> InitializeAsync(string? rootUri = null)
     {
-        if (_initialized)
+        if (this._initialized)
             throw new InvalidOperationException("Already initialized");
 
         // Use a simple request format that works reliably
@@ -193,12 +193,12 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             capabilities = new { }
         };
 
-        var response = await SendRequestAsync("initialize", initParams);
+        var response = await this.SendRequestAsync("initialize", initParams);
 
         // Send initialized notification
-        await SendNotificationAsync("initialized", new { });
+        await this.SendNotificationAsync("initialized", new { });
 
-        _initialized = true;
+        this._initialized = true;
         return response;
     }
 
@@ -207,7 +207,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task OpenDocumentAsync(string uri, string content, string languageId = "asm")
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var didOpenParams = new
         {
@@ -220,7 +220,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             }
         };
 
-        await SendNotificationAsync("textDocument/didOpen", didOpenParams);
+        await this.SendNotificationAsync("textDocument/didOpen", didOpenParams);
 
         // Give the server time to parse
         await Task.Delay(100);
@@ -231,14 +231,14 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task CloseDocumentAsync(string uri)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var didCloseParams = new
         {
             textDocument = new { uri }
         };
 
-        await SendNotificationAsync("textDocument/didClose", didCloseParams);
+        await this.SendNotificationAsync("textDocument/didClose", didCloseParams);
     }
 
     /// <summary>
@@ -246,7 +246,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> HoverAsync(string uri, int line, int character)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var hoverParams = new
         {
@@ -254,7 +254,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             position = new { line, character }
         };
 
-        return await SendRequestAsync("textDocument/hover", hoverParams);
+        return await this.SendRequestAsync("textDocument/hover", hoverParams);
     }
 
     /// <summary>
@@ -262,7 +262,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> CompletionAsync(string uri, int line, int character)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var completionParams = new
         {
@@ -270,7 +270,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             position = new { line, character }
         };
 
-        return await SendRequestAsync("textDocument/completion", completionParams);
+        return await this.SendRequestAsync("textDocument/completion", completionParams);
     }
 
     /// <summary>
@@ -278,7 +278,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> InlayHintsAsync(string uri, int startLine, int startChar, int endLine, int endChar)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var inlayHintParams = new
         {
@@ -290,7 +290,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             }
         };
 
-        return await SendRequestAsync("textDocument/inlayHint", inlayHintParams);
+        return await this.SendRequestAsync("textDocument/inlayHint", inlayHintParams);
     }
 
     /// <summary>
@@ -298,14 +298,14 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> SemanticTokensAsync(string uri)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var semanticTokensParams = new
         {
             textDocument = new { uri }
         };
 
-        return await SendRequestAsync("textDocument/semanticTokens/full", semanticTokensParams);
+        return await this.SendRequestAsync("textDocument/semanticTokens/full", semanticTokensParams);
     }
 
     /// <summary>
@@ -313,7 +313,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> SignatureHelpAsync(string uri, int line, int character)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var signatureHelpParams = new
         {
@@ -321,7 +321,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             position = new { line, character }
         };
 
-        return await SendRequestAsync("textDocument/signatureHelp", signatureHelpParams);
+        return await this.SendRequestAsync("textDocument/signatureHelp", signatureHelpParams);
     }
 
     /// <summary>
@@ -329,7 +329,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> DefinitionAsync(string uri, int line, int character)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var definitionParams = new
         {
@@ -337,7 +337,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             position = new { line, character }
         };
 
-        return await SendRequestAsync("textDocument/definition", definitionParams);
+        return await this.SendRequestAsync("textDocument/definition", definitionParams);
     }
 
     /// <summary>
@@ -345,7 +345,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> ReferencesAsync(string uri, int line, int character, bool includeDeclaration = true)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var referencesParams = new
         {
@@ -354,7 +354,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             context = new { includeDeclaration }
         };
 
-        return await SendRequestAsync("textDocument/references", referencesParams);
+        return await this.SendRequestAsync("textDocument/references", referencesParams);
     }
 
     /// <summary>
@@ -362,14 +362,14 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task<JsonNode?> FoldingRangesAsync(string uri)
     {
-        EnsureInitialized();
+        this.EnsureInitialized();
 
         var foldingRangeParams = new
         {
             textDocument = new { uri }
         };
 
-        return await SendRequestAsync("textDocument/foldingRange", foldingRangeParams);
+        return await this.SendRequestAsync("textDocument/foldingRange", foldingRangeParams);
     }
 
     /// <summary>
@@ -377,12 +377,12 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     /// </summary>
     public async Task ShutdownAsync()
     {
-        if (!_initialized) return;
+        if (!this._initialized) return;
 
-        await SendRequestAsync("shutdown", null);
-        await SendNotificationAsync("exit", null);
+        await this.SendRequestAsync("shutdown", null);
+        await this.SendNotificationAsync("exit", null);
 
-        _initialized = false;
+        this._initialized = false;
     }
 
     /// <summary>
@@ -392,7 +392,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     public async Task<JsonNode?> SendRequestAsync(string method, object? @params, TimeSpan? timeout = null)
     {
         timeout ??= TimeSpan.FromSeconds(10);
-        var id = Interlocked.Increment(ref _requestId);
+        var id = Interlocked.Increment(ref this._requestId);
 
         var request = new
         {
@@ -402,14 +402,14 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             @params
         };
 
-        await SendMessageAsync(request);
+        await this.SendMessageAsync(request);
 
         // Read responses with timeout, skipping notifications until we get the actual response
         using var cts = new CancellationTokenSource(timeout.Value);
 
         while (!cts.Token.IsCancellationRequested)
         {
-            var message = await ReadMessageAsync(cts.Token);
+            var message = await this.ReadMessageAsync(cts.Token);
 
             if (message == null)
             {
@@ -452,18 +452,18 @@ public sealed class LspProcessTestClient : IAsyncDisposable
             @params
         };
 
-        await SendMessageAsync(notification);
+        await this.SendMessageAsync(notification);
     }
 
     private async Task SendMessageAsync(object message)
     {
-        var json = JsonSerializer.Serialize(message, _jsonOptions);
+        var json = JsonSerializer.Serialize(message, this._jsonOptions);
         var contentLength = Encoding.UTF8.GetByteCount(json);
         var header = $"Content-Length: {contentLength}\r\n\r\n";
 
-        await _writer.WriteAsync(header);
-        await _writer.WriteAsync(json);
-        await _writer.FlushAsync();
+        await this._writer.WriteAsync(header);
+        await this._writer.WriteAsync(json);
+        await this._writer.FlushAsync();
     }
 
     private async Task<JsonNode?> ReadMessageAsync(CancellationToken cancellationToken)
@@ -472,7 +472,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
         int contentLength = -1;
         string? line;
 
-        while ((line = await ReadLineAsync(cancellationToken)) != null)
+        while ((line = await this.ReadLineAsync(cancellationToken)) != null)
         {
             if (string.IsNullOrWhiteSpace(line))
             {
@@ -497,7 +497,7 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
         while (totalRead < contentLength)
         {
-            var read = await _reader.ReadAsync(buffer.AsMemory(totalRead, contentLength - totalRead), cancellationToken);
+            var read = await this._reader.ReadAsync(buffer.AsMemory(totalRead, contentLength - totalRead), cancellationToken);
             if (read == 0)
             {
                 throw new EndOfStreamException("Server closed connection");
@@ -511,18 +511,18 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
     private async Task<string?> ReadLineAsync(CancellationToken cancellationToken)
     {
-        if (_serverProcess.HasExited)
+        if (this._serverProcess.HasExited)
             return null;
 
         // Use ReadLineAsync(CancellationToken) which is properly cancellable on .NET 7+.
         // The old Peek()-based polling loop blocked because StreamReader.Peek() internally
         // calls Read() to fill its buffer, which blocks on Windows process pipes.
-        return await _reader.ReadLineAsync(cancellationToken);
+        return await this._reader.ReadLineAsync(cancellationToken);
     }
 
     private void EnsureInitialized()
     {
-        if (!_initialized)
+        if (!this._initialized)
         {
             throw new InvalidOperationException("Client not initialized. Call InitializeAsync first.");
         }
@@ -530,14 +530,14 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (_disposed) return;
-        _disposed = true;
+        if (this._disposed) return;
+        this._disposed = true;
 
         try
         {
-            if (_initialized)
+            if (this._initialized)
             {
-                await ShutdownAsync();
+                await this.ShutdownAsync();
             }
         }
         catch
@@ -549,26 +549,26 @@ public sealed class LspProcessTestClient : IAsyncDisposable
         {
             // Cancel async stderr reading so the background thread exits cleanly.
             // Without this, BeginErrorReadLine's background thread keeps the test host alive.
-            _serverProcess.CancelErrorRead();
+            this._serverProcess.CancelErrorRead();
         }
         catch { }
 
         try
         {
-            if (!_serverProcess.HasExited)
+            if (!this._serverProcess.HasExited)
             {
-                _serverProcess.Kill();
+                this._serverProcess.Kill();
             }
             // Always wait for the process to fully exit and its async I/O threads
             // to complete. Without this, the test host may hang after all tests finish.
             using var exitCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-            await _serverProcess.WaitForExitAsync(exitCts.Token);
+            await this._serverProcess.WaitForExitAsync(exitCts.Token);
         }
         catch
         {
             // Ignore errors during kill/wait
         }
 
-        _serverProcess.Dispose();
+        this._serverProcess.Dispose();
     }
 }

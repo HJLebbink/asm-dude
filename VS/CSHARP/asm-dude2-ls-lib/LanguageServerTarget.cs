@@ -70,12 +70,12 @@ public class LanguageServerTarget(LanguageServer server)
             LanguageServer.LogInfo($"Initialize: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
 
 #if DEBUG
-            traceSetting = TraceSetting.Verbose;
+        this.traceSetting = TraceSetting.Verbose;
 #else
             traceSetting = TraceSetting.Off;
 #endif
 
-            LanguageServer.LogInfo($"Initialize: traceSetting={traceSetting}");
+            LanguageServer.LogInfo($"Initialize: traceSetting={this.traceSetting}");
 
             // Parse InitializationOptions - it comes as a JsonElement when using System.Text.Json
             // IncludeFields = true is required because AsmLanguageServerOptions uses public fields, not properties
@@ -330,7 +330,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.CodeActionResolveName, UseSingleObjectParameterDeserialization = true)]
-        public object GetResolvedCodeAction(CodeAction parameter)
+        public object? GetResolvedCodeAction(CodeAction parameter)
         {
             var result = server.GetResolvedCodeAction(parameter);
             LanguageServer.LogInfo($"GetResolvedCodeAction: title={parameter.Title}. result={result}");
@@ -404,7 +404,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentDocumentHighlightName, UseSingleObjectParameterDeserialization = true)]
-        public DocumentHighlight[] GetDocumentHighlights(DocumentHighlightParams parameter, CancellationToken token)
+        public DocumentHighlight[]? GetDocumentHighlights(DocumentHighlightParams parameter, CancellationToken token)
         {
             LanguageServer.LogInfo($"GetDocumentHighlights: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
 
@@ -427,7 +427,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentDocumentLinkName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentDocumentLink(DocumentLinkParams parameter)
+        public object? TextDocumentDocumentLink(DocumentLinkParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentDocumentLink: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -435,7 +435,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.DocumentLinkResolveName, UseSingleObjectParameterDeserialization = true)]
-        public object DocumentLinkResolve(DocumentLink parameter)
+        public object? DocumentLinkResolve(DocumentLink parameter)
         {
             LanguageServer.LogInfo($"DocumentLinkResolve: NOT IMPLEMENTED");
             // TODO
@@ -443,7 +443,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentDocumentColorName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentDocumentColor(DocumentColorParams parameter)
+        public object? TextDocumentDocumentColor(DocumentColorParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentDocumentColor: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -451,16 +451,16 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensFullName, UseSingleObjectParameterDeserialization = true)]
-        public SemanticTokens GetSemanticTokensFull(SemanticTokensParams parameter)
+        public SemanticTokens? GetSemanticTokensFull(SemanticTokensParams parameter)
         {
             LanguageServer.LogInfo($"GetSemanticTokensFull: uri={parameter.TextDocument.Uri}");
-            var result = server.GetSemanticTokens(parameter);
+            SemanticTokens? result = server.GetSemanticTokens(parameter);
             LanguageServer.LogInfo($"GetSemanticTokensFull: resultId={result?.ResultId}, tokenCount={result?.Data?.Length / 5 ?? 0}");
             return result;
         }
 
         [JsonRpcMethod(Methods.TextDocumentInlayHintName, UseSingleObjectParameterDeserialization = true)]
-        public InlayHint[] GetInlayHints(InlayHintParams parameter)
+        public InlayHint[]? GetInlayHints(InlayHintParams parameter)
         {
             LanguageServer.LogInfo($"GetInlayHints: uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
             var result = server.GetInlayHints(parameter);
@@ -469,7 +469,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentDocumentSymbolName, UseSingleObjectParameterDeserialization = true)]
-        public object GetDocumentSymbols(DocumentSymbolParams parameter)
+        public object? GetDocumentSymbols(DocumentSymbolParams parameter)
         {
             LanguageServer.LogInfo($"GetDocumentSymbols: uri={parameter.TextDocument.Uri}");
             var result = server.GetDocumentSymbols(parameter);
@@ -478,7 +478,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentFoldingRangeName, UseSingleObjectParameterDeserialization = true)]
-        public object GetFoldingRanges(FoldingRangeParams parameter)
+        public object? GetFoldingRanges(FoldingRangeParams parameter)
         {
             LanguageServer.LogInfo($"GetFoldingRanges: uri={parameter.TextDocument.Uri}");
             var result = server.GetFoldingRanges(parameter);
@@ -487,7 +487,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentFormattingName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentFormatting(DocumentFormattingParams parameter)
+        public object? TextDocumentFormatting(DocumentFormattingParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -498,7 +498,7 @@ public class LanguageServerTarget(LanguageServer server)
         /// Handle hover request. Returns standard Hover with MarkupContent.
         /// </summary>
         [JsonRpcMethod(Methods.TextDocumentHoverName, UseSingleObjectParameterDeserialization = true)]
-        public object OnHover(TextDocumentPositionParams parameter)
+        public object? OnHover(TextDocumentPositionParams parameter)
         {
             LanguageServer.LogInfo($"OnHover: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
             var result = server.GetHover(parameter);
@@ -507,7 +507,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentOnTypeFormattingName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentOnTypeFormatting(DocumentOnTypeFormattingParams parameter)
+        public object? TextDocumentOnTypeFormatting(DocumentOnTypeFormattingParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentOnTypeFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -515,7 +515,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentPublishDiagnosticsName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentPublishDiagnostics(PublishDiagnosticParams parameter)
+        public object? TextDocumentPublishDiagnostics(PublishDiagnosticParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentPublishDiagnostics: NOT IMPLEMENTED. uri={parameter.Uri}");
             // TODO
@@ -523,7 +523,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentRangeFormattingName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentRangeFormatting(DocumentRangeFormattingParams parameter)
+        public object? TextDocumentRangeFormatting(DocumentRangeFormattingParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentRangeFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -531,7 +531,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentDefinitionName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentDefinition(TextDocumentPositionParams parameter)
+        public object? TextDocumentDefinition(TextDocumentPositionParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentDefinition: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
             var result = server.GetDefinition(parameter);
@@ -540,14 +540,14 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentImplementationName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentImplementation(TextDocumentPositionParams parameter)
+        public object? TextDocumentImplementation(TextDocumentPositionParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentImplementation: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
             return null;
         }
 
         [JsonRpcMethod(Methods.TextDocumentTypeDefinitionName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentTypeDefinition(TextDocumentPositionParams parameter)
+        public object? TextDocumentTypeDefinition(TextDocumentPositionParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentTypeDefinition: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -555,7 +555,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentReferencesName, UseSingleObjectParameterDeserialization = true)]
-        public object[] OnTextDocumentFindReferences(ReferenceParams parameter, CancellationToken token)
+        public object[]? OnTextDocumentFindReferences(ReferenceParams parameter, CancellationToken token)
         {
             LanguageServer.LogInfo($"OnTextDocumentFindReferences: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
             var result = server.SendReferences(args: parameter, returnLocationsOnly: true, token: token);
@@ -568,8 +568,8 @@ public class LanguageServerTarget(LanguageServer server)
         {
             LanguageServer.LogInfo($"TextDocumentRename: uri={renameParams.TextDocument.Uri}, line={renameParams.Position.Line}, char={renameParams.Position.Character}, newName={renameParams.NewName}");
             string fullText = File.ReadAllText(new Uri(renameParams.TextDocument.Uri.ToString()).LocalPath);
-            string wordToReplace = GetWordAtPosition(fullText, renameParams.Position);
-            Range[] placesToReplace = GetWordRangesInText(fullText, wordToReplace);
+            string wordToReplace = this.GetWordAtPosition(fullText, renameParams.Position);
+            Range[] placesToReplace = this.GetWordRangesInText(fullText, wordToReplace);
 
             var result = new WorkspaceEdit
             {
@@ -580,7 +580,7 @@ public class LanguageServerTarget(LanguageServer server)
                         TextDocument = new OptionalVersionedTextDocumentIdentifier
                         {
                             Uri = renameParams.TextDocument.Uri,
-                            Version = ++version
+                            Version = ++this.version
                         },
                         Edits = [.. placesToReplace.Select(range =>
                             new TextEdit
@@ -597,7 +597,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentSemanticTokensRangeName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentSemanticTokensRange(SemanticTokensRangeParams parameter)
+        public object? TextDocumentSemanticTokensRange(SemanticTokensRangeParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentSemanticTokensRange: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -619,7 +619,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentSignatureHelpName, UseSingleObjectParameterDeserialization = true)]
-        public SignatureHelp TextDocumentSignatureHelp(SignatureHelpParams parameter)
+        public SignatureHelp? TextDocumentSignatureHelp(SignatureHelpParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentSignatureHelp: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
             var result = server.GetTextDocumentSignatureHelp(parameter);
@@ -628,7 +628,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentWillSaveName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentWillSave(WillSaveTextDocumentParams parameter)
+        public object? TextDocumentWillSave(WillSaveTextDocumentParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentWillSave: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -636,7 +636,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentLinkedEditingRangeName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentLinkedEditingRange(LinkedEditingRangeParams parameter)
+        public object? TextDocumentLinkedEditingRange(LinkedEditingRangeParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentLinkedEditingRange: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -644,7 +644,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentWillSaveWaitUntilName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentWillSaveWaitUntil(WillSaveTextDocumentParams parameter)
+        public object? TextDocumentWillSaveWaitUntil(WillSaveTextDocumentParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentWillSaveWaitUntil: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -652,7 +652,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.WindowLogMessageName, UseSingleObjectParameterDeserialization = true)]
-        public object WindowLogMessage(LogMessageParams parameter)
+        public object? WindowLogMessage(LogMessageParams parameter)
         {
             LanguageServer.LogInfo($"WindowLogMessage: NOT IMPLEMENTED. type={parameter.MessageType}");
             // TODO
@@ -660,7 +660,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.WindowShowMessageName, UseSingleObjectParameterDeserialization = true)]
-        public object WindowShowMessage(ShowMessageParams parameter)
+        public object? WindowShowMessage(ShowMessageParams parameter)
         {
             LanguageServer.LogInfo($"WindowShowMessage: NOT IMPLEMENTED. type={parameter.MessageType}");
             // TODO
@@ -668,7 +668,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.WindowShowMessageRequestName, UseSingleObjectParameterDeserialization = true)]
-        public object WindowShowMessageRequest(ShowMessageRequestParams parameter)
+        public object? WindowShowMessageRequest(ShowMessageRequestParams parameter)
         {
             LanguageServer.LogInfo($"WindowShowMessageRequest: NOT IMPLEMENTED. type={parameter.MessageType}");
             // TODO
@@ -676,7 +676,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.WorkspaceApplyEditName, UseSingleObjectParameterDeserialization = true)]
-        public object WorkspaceApplyEdit(ApplyWorkspaceEditParams parameter)
+        public object? WorkspaceApplyEdit(ApplyWorkspaceEditParams parameter)
         {
             LanguageServer.LogInfo($"WorkspaceApplyEdit: NOT IMPLEMENTED");
             // TODO
@@ -684,7 +684,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.WorkspaceConfigurationName, UseSingleObjectParameterDeserialization = true)]
-        public object WorkspaceConfiguration(ConfigurationParams parameter)
+        public object? WorkspaceConfiguration(ConfigurationParams parameter)
         {
             LanguageServer.LogInfo($"WorkspaceConfiguration: NOT IMPLEMENTED");
             // TODO
@@ -699,7 +699,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.WorkspaceExecuteCommandName, UseSingleObjectParameterDeserialization = true)]
-        public object WorkspaceExecuteCommand(ExecuteCommandParams parameter)
+        public object? WorkspaceExecuteCommand(ExecuteCommandParams parameter)
         {
             LanguageServer.LogInfo($"WorkspaceExecuteCommand: NOT IMPLEMENTED. command={parameter.Command}");
             // TODO
@@ -707,7 +707,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.WorkspaceSymbolName, UseSingleObjectParameterDeserialization = true)]
-        public object WorkspaceSymbol(WorkspaceSymbolParams parameter)
+        public object? WorkspaceSymbol(WorkspaceSymbolParams parameter)
         {
             LanguageServer.LogInfo($"WorkspaceSymbol: NOT IMPLEMENTED. query={parameter.Query}");
             // TODO
@@ -715,7 +715,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.WorkspaceDidChangeWatchedFilesName, UseSingleObjectParameterDeserialization = true)]
-        public object WorkspaceDidChangeWatchedFiles(DidChangeWatchedFilesParams parameter)
+        public object? WorkspaceDidChangeWatchedFiles(DidChangeWatchedFilesParams parameter)
         {
             LanguageServer.LogInfo($"WorkspaceDidChangeWatchedFiles: NOT IMPLEMENTED. changeCount={parameter.Changes?.Length ?? 0}");
             // TODO
@@ -723,7 +723,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.ShutdownName)]
-        public object Shutdown()
+        public object? Shutdown()
         {
             LanguageServer.LogInfo($"Received Shutdown notification");
             return null;
@@ -737,7 +737,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TelemetryEventName, UseSingleObjectParameterDeserialization = true)]
-        public object TelemetryEvent(object parameter)
+        public object? TelemetryEvent(object parameter)
         {
             LanguageServer.LogInfo($"TelemetryEvent: NOT IMPLEMENTED");
             // TODO
@@ -745,7 +745,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.ClientUnregisterCapabilityName, UseSingleObjectParameterDeserialization = true)]
-        public object ClientUnregisterCapability(UnregistrationParams parameter)
+        public object? ClientUnregisterCapability(UnregistrationParams parameter)
         {
             LanguageServer.LogInfo($"ClientUnregisterCapability: NOT IMPLEMENTED");
             // TODO
@@ -753,14 +753,14 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod("textDocument/prepareRename", UseSingleObjectParameterDeserialization = true)]
-        public object PrepareRename(PrepareRenameParams parameter)
+        public object? PrepareRename(PrepareRenameParams parameter)
         {
             LanguageServer.LogInfo($"PrepareRename: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
             return null;
         }
 
         [JsonRpcMethod(VSMethods.GetProjectContextsName, UseSingleObjectParameterDeserialization = true)]
-        public object GetProjectContexts(VSGetProjectContextsParams parameter)
+        public object? GetProjectContexts(VSGetProjectContextsParams parameter)
         {
             LanguageServer.LogInfo($"GetProjectContexts: uri={parameter.TextDocument.Uri}");
             var result = server.GetProjectContexts();

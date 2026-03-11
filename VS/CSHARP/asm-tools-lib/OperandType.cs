@@ -225,27 +225,25 @@ namespace AsmTools
 
         public static (Ot1 operand1, Ot1 operand2) SplitOt(Ot2 optup)
         {
-            switch (optup)
+            return optup switch
             {
-                case Ot2.reg_reg: return (Ot1.reg, Ot1.reg);
-                case Ot2.reg_mem: return (Ot1.reg, Ot1.mem);
-                case Ot2.reg_imm: return (Ot1.reg, Ot1.imm);
-                case Ot2.reg_UNKNOWN: return (Ot1.reg, Ot1.UNKNOWN);
-                case Ot2.mem_reg: return (Ot1.mem, Ot1.reg);
-                case Ot2.mem_mem: return (Ot1.mem, Ot1.mem);
-                case Ot2.mem_imm: return (Ot1.mem, Ot1.imm);
-                case Ot2.mem_UNKNOWN: return (Ot1.mem, Ot1.UNKNOWN);
-                case Ot2.imm_reg: return (Ot1.imm, Ot1.reg);
-                case Ot2.imm_mem: return (Ot1.imm, Ot1.mem);
-                case Ot2.imm_imm: return (Ot1.imm, Ot1.imm);
-                case Ot2.imm_UNKNOWN: return (Ot1.imm, Ot1.UNKNOWN);
-                case Ot2.UNKNOWN_reg: return (Ot1.UNKNOWN, Ot1.reg);
-                case Ot2.UNKNOWN_mem: return (Ot1.UNKNOWN, Ot1.mem);
-                case Ot2.UNKNOWN_imm: return (Ot1.UNKNOWN, Ot1.imm);
-                case Ot2.UNKNOWN_UNKNOWN:
-                default:
-                    return (Ot1.UNKNOWN, Ot1.UNKNOWN);
-            }
+                Ot2.reg_reg => (Ot1.reg, Ot1.reg),
+                Ot2.reg_mem => (Ot1.reg, Ot1.mem),
+                Ot2.reg_imm => (Ot1.reg, Ot1.imm),
+                Ot2.reg_UNKNOWN => (Ot1.reg, Ot1.UNKNOWN),
+                Ot2.mem_reg => (Ot1.mem, Ot1.reg),
+                Ot2.mem_mem => (Ot1.mem, Ot1.mem),
+                Ot2.mem_imm => (Ot1.mem, Ot1.imm),
+                Ot2.mem_UNKNOWN => (Ot1.mem, Ot1.UNKNOWN),
+                Ot2.imm_reg => (Ot1.imm, Ot1.reg),
+                Ot2.imm_mem => (Ot1.imm, Ot1.mem),
+                Ot2.imm_imm => (Ot1.imm, Ot1.imm),
+                Ot2.imm_UNKNOWN => (Ot1.imm, Ot1.UNKNOWN),
+                Ot2.UNKNOWN_reg => (Ot1.UNKNOWN, Ot1.reg),
+                Ot2.UNKNOWN_mem => (Ot1.UNKNOWN, Ot1.mem),
+                Ot2.UNKNOWN_imm => (Ot1.UNKNOWN, Ot1.imm),
+                _ => (Ot1.UNKNOWN, Ot1.UNKNOWN),
+            };
         }
 
         public static Ot2 MergeOt(Ot1 ot1, Ot1 ot2)

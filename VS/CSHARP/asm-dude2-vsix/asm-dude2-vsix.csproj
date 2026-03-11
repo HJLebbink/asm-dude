@@ -1,197 +1,81 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
-	<PropertyGroup>
-		<Title>AsmDude2</Title>
-		<Version>2.0.0.5</Version>
-		<Authors>Henk-Jan Lebbink</Authors>
-		<Product>AsmDude2</Product>
-		<Description>Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window </Description>
-		<Copyright>LICENSE.txt</Copyright>
-		<PackageProjectUrl>https://github.com/HJLebbink/asm-dude</PackageProjectUrl>
-		<StartAction>Program</StartAction>
-		<StartProgram>$(DevenvDir)devenv.exe</StartProgram>
-		<StartArguments>/rootSuffix Exp</StartArguments>
-		<RootNamespace>AsmDude2</RootNamespace>
-		<PlatformTarget>x64</PlatformTarget>
-		<ApplicationIcon>AsmDudePackage.ico</ApplicationIcon>
-		<IsPublishable>False</IsPublishable>
-		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-		<PackageId>AsmDude2</PackageId>
-		<Company>Henk-Jan Lebbink</Company>
-		<RepositoryType>git</RepositoryType>
-		<PackageOutputPath>vsix\</PackageOutputPath>
-		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-		<PackageTags>ASM; AVX512; syntax highlighting; code completion; signature help; hover help</PackageTags>
-		<RepositoryUrl>https://github.com/HJLebbink/asm-dude</RepositoryUrl>
-		<PackageIcon>AsmDude2.png</PackageIcon>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
+    <!-- Suppress preview feature warnings for LSP -->
+    <NoWarn>$(NoWarn);VSEXTPREVIEW_LSP;NETSDK1137;MSB9008;VSEXT0010</NoWarn>
 
-	
-	<PropertyGroup>
-		<TargetFramework>net48</TargetFramework>
-		<OutputType>Library</OutputType>
-		<UseWPF>true</UseWPF>
-		<OutputSubPath>MockLSPs\MockLanguageExtension</OutputSubPath>
-		<UseCodebase>true</UseCodebase>
-		<NoWarn>CA1001,CA1052,CA1507,CA1812,CA2007,CS1591,NU1605,NU5100,VSTHRD100</NoWarn>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <!-- Specify .NET versions this extension targets -->
+    <DotnetTargetVersions>10.0</DotnetTargetVersions>
 
-		<!-- VSIX configuration -->
-		<GeneratePkgDefFile>true</GeneratePkgDefFile>
-		<IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
-		<IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
-		<IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
-		<CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
-		<CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
-		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-		<GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-		<VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-	</PropertyGroup>
+    <!-- Extension metadata -->
+    <ExtensionName>AsmDude2</ExtensionName>
+    <ExtensionDisplayName>AsmDude2</ExtensionDisplayName>
+    <ExtensionDescription>Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window</ExtensionDescription>
+    <ExtensionVersion>1.0.0.0</ExtensionVersion>
+    <ExtensionPublisher>Henk-Jan Lebbink</ExtensionPublisher>
 
-	<PropertyGroup>
-		<SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
-	</PropertyGroup>
+    <!-- Build settings -->
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputType>Library</OutputType>
+    <Title>AsmDude2 - Assembly Language Extension for Visual Studio</Title>
+    <Version>1.0.0.0</Version>
+    <Authors>Henk-Jan Lebbink</Authors>
+    <Description>Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window</Description>
+    <AssemblyName>AsmDude2</AssemblyName>
+    <Company></Company>
+    <RootNamespace>AsmDude2</RootNamespace>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<DeployExtension>True</DeployExtension>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <WarningLevel>9999</WarningLevel>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <WarningLevel>9999</WarningLevel>
-	</PropertyGroup>
+  <ItemGroup>
+    <!-- VisualStudio.Extensibility SDK for LSP support -->
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.14.40608" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Contracts" Version="17.14.2098" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <None Remove="asmdude2-version.txt" />
-	  <None Remove="AsmDude2.png" />
-	</ItemGroup>
+  <ItemGroup>
+    <!-- Reference assembly tools library -->
+    <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Content Include="asmdude2-version.txt">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="AsmDude2.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="AsmDudePackage.ico">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\AsmDudeData.xml">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\signature-hand-1.txt">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="Resources\signature-may2019.txt">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<None Include="source.extension.vsixmanifest">
-		  <Generator>VsixManifestGenerator</Generator>
-		</None>
-	</ItemGroup>
-	
-	<ItemGroup>
-		<PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
-		<!-- Latest stable packages for VS 2022/2026 compatibility -->
-		<!-- Note: Microsoft.VisualStudio.SDK and Threading.Analyzers 18.x are pre-release only; 17.14.x is latest stable -->
-		<PackageReference Include="StreamJsonRpc" Version="2.24.84">
-		  <ExcludeAssets>runtime</ExcludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" />
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.14.2120">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<Reference Include="PresentationFramework" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Compile Update="Properties\Resources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Resources.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Settings.Designer.cs">
-	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Settings.settings</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	</ItemGroup>
-	<ItemGroup>
-	  <None Update="LICENSE.txt">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Update="Settings.settings">
-	    <Generator>SettingsSingleFileGenerator</Generator>
-	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-	  </None>
-	</ItemGroup>
+  <ItemGroup>
+    <None Update="LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
-	<Target Name="IncludeLanguageServers" BeforeTargets="GetVsixSourceItems">
-		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls\bin\$(Configuration)\net10.0-windows\*.*" Visible="false">
-				<IncludeInVSIX>true</IncludeInVSIX>
-				<VsixSubPath>Server</VsixSubPath>
-			</Content>
-		</ItemGroup>
-		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls-lib\Resources\*.*" Visible="false">
-				<IncludeInVSIX>true</IncludeInVSIX>
-				<VsixSubPath>Server\Resources</VsixSubPath>
-			</Content>
-		</ItemGroup>
-		<ItemGroup>
-			<Content Include="$(BaseOutputPath)\..\..\asm-dude2-ls-lib\Resources\Performance\*.*" Visible="false">
-				<IncludeInVSIX>true</IncludeInVSIX>
-				<VsixSubPath>Server\Resources\Performance</VsixSubPath>
-			</Content>
-		</ItemGroup>
-	</Target>
+  <!-- Bundle the LSP server with the extension -->
+  <Target Name="BundleLspServer" AfterTargets="Build">
+    <!-- Copy LSP server files to output -->
+    <ItemGroup>
+      <ServerFiles Include="..\asm-dude2-ls\bin\$(Configuration)\net10.0-windows\*.*" />
+      <ServerResources Include="..\asm-dude2-ls\bin\$(Configuration)\net10.0-windows\Resources\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ServerFiles)" DestinationFolder="$(OutputPath)Server\" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ServerResources)" DestinationFiles="@(ServerResources->'$(OutputPath)Server\Resources\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 
-	<!-- We shouldn't package the client definition dll with the extension -->
-	<Target Name="RemoveClientDefinition" AfterTargets="GetVsixSourceItems">
-		<ItemGroup>
-			<VsixSourceItem Remove="@(VsixSourceItem)" Condition=" '%(FileName)%(Extension)' == 'Microsoft.VisualStudio.LanguageServer.Client.dll' " />
-		</ItemGroup>
-	</Target>
-
-	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-	<Import Project="$(VSToolsPath)\vssdk\Microsoft.VSSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-	<ItemGroup>
-	  <AdditionalFiles Remove="C:\Users\henkj\.nuget\packages\microsoft.visualstudio.sdk.analyzers\16.10.10\build\AdditionalFiles\BannedSymbols.txt" />
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
-	</ItemGroup>
+    <!-- Package Server directory into VSIX using 7z -->
+    <Exec Command="cd /d &quot;$(OutputPath)&quot; &amp;&amp; 7z a -tzip &quot;AsmDude2.vsix&quot; &quot;Server\*&quot;" ContinueOnError="true" />
+  </Target>
 
 </Project>

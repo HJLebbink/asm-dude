@@ -113,108 +113,106 @@ namespace AsmSim
 
         public static (uint high, uint low) SIMD_Extract_Range(Rn rn)
         {
-            switch (rn)
+            return rn switch
             {
-                case Rn.XMM0: return ((128 * ((4 * 0) + 1)) - 1, 128 * 4 * 0);
-                case Rn.XMM1: return ((128 * ((4 * 1) + 1)) - 1, 128 * 4 * 1);
-                case Rn.XMM2: return ((128 * ((4 * 2) + 1)) - 1, 128 * 4 * 2);
-                case Rn.XMM3: return ((128 * ((4 * 3) + 1)) - 1, 128 * 4 * 3);
-                case Rn.XMM4: return ((128 * ((4 * 4) + 1)) - 1, 128 * 4 * 4);
-                case Rn.XMM5: return ((128 * ((4 * 5) + 1)) - 1, 128 * 4 * 5);
-                case Rn.XMM6: return ((128 * ((4 * 6) + 1)) - 1, 128 * 4 * 6);
-                case Rn.XMM7: return ((128 * ((4 * 7) + 1)) - 1, 128 * 4 * 7);
-                case Rn.XMM8: return ((128 * ((4 * 8) + 1)) - 1, 128 * 4 * 8);
-                case Rn.XMM9: return ((128 * ((4 * 9) + 1)) - 1, 128 * 4 * 9);
-                case Rn.XMM10: return ((128 * ((4 * 10) + 1)) - 1, 128 * 4 * 10);
-                case Rn.XMM11: return ((128 * ((4 * 11) + 1)) - 1, 128 * 4 * 11);
-                case Rn.XMM12: return ((128 * ((4 * 12) + 1)) - 1, 128 * 4 * 12);
-                case Rn.XMM13: return ((128 * ((4 * 13) + 1)) - 1, 128 * 4 * 13);
-                case Rn.XMM14: return ((128 * ((4 * 14) + 1)) - 1, 128 * 4 * 14);
-                case Rn.XMM15: return ((128 * ((4 * 15) + 1)) - 1, 128 * 4 * 15);
-                case Rn.XMM16: return ((128 * ((4 * 16) + 1)) - 1, 128 * 4 * 16);
-                case Rn.XMM17: return ((128 * ((4 * 17) + 1)) - 1, 128 * 4 * 17);
-                case Rn.XMM18: return ((128 * ((4 * 18) + 1)) - 1, 128 * 4 * 18);
-                case Rn.XMM19: return ((128 * ((4 * 19) + 1)) - 1, 128 * 4 * 19);
-                case Rn.XMM20: return ((128 * ((4 * 20) + 1)) - 1, 128 * 4 * 20);
-                case Rn.XMM21: return ((128 * ((4 * 21) + 1)) - 1, 128 * 4 * 21);
-                case Rn.XMM22: return ((128 * ((4 * 22) + 1)) - 1, 128 * 4 * 22);
-                case Rn.XMM23: return ((128 * ((4 * 23) + 1)) - 1, 128 * 4 * 23);
-                case Rn.XMM24: return ((128 * ((4 * 24) + 1)) - 1, 128 * 4 * 24);
-                case Rn.XMM25: return ((128 * ((4 * 25) + 1)) - 1, 128 * 4 * 25);
-                case Rn.XMM26: return ((128 * ((4 * 26) + 1)) - 1, 128 * 4 * 26);
-                case Rn.XMM27: return ((128 * ((4 * 27) + 1)) - 1, 128 * 4 * 27);
-                case Rn.XMM28: return ((128 * ((4 * 28) + 1)) - 1, 128 * 4 * 28);
-                case Rn.XMM29: return ((128 * ((4 * 29) + 1)) - 1, 128 * 4 * 29);
-                case Rn.XMM30: return ((128 * ((4 * 30) + 1)) - 1, 128 * 4 * 30);
-                case Rn.XMM31: return ((128 * ((4 * 31) + 1)) - 1, 128 * 4 * 31);
-
-                case Rn.YMM0: return ((128 * ((4 * 0) + 2)) - 1, 128 * 4 * 0);
-                case Rn.YMM1: return ((128 * ((4 * 1) + 2)) - 1, 128 * 4 * 1);
-                case Rn.YMM2: return ((128 * ((4 * 2) + 2)) - 1, 128 * 4 * 2);
-                case Rn.YMM3: return ((128 * ((4 * 3) + 2)) - 1, 128 * 4 * 3);
-                case Rn.YMM4: return ((128 * ((4 * 4) + 2)) - 1, 128 * 4 * 4);
-                case Rn.YMM5: return ((128 * ((4 * 5) + 2)) - 1, 128 * 4 * 5);
-                case Rn.YMM6: return ((128 * ((4 * 6) + 2)) - 1, 128 * 4 * 6);
-                case Rn.YMM7: return ((128 * ((4 * 7) + 2)) - 1, 128 * 4 * 7);
-                case Rn.YMM8: return ((128 * ((4 * 8) + 2)) - 1, 128 * 4 * 8);
-                case Rn.YMM9: return ((128 * ((4 * 9) + 2)) - 1, 128 * 4 * 9);
-                case Rn.YMM10: return ((128 * ((4 * 10) + 2)) - 1, 128 * 4 * 10);
-                case Rn.YMM11: return ((128 * ((4 * 11) + 2)) - 1, 128 * 4 * 11);
-                case Rn.YMM12: return ((128 * ((4 * 12) + 2)) - 1, 128 * 4 * 12);
-                case Rn.YMM13: return ((128 * ((4 * 13) + 2)) - 1, 128 * 4 * 13);
-                case Rn.YMM14: return ((128 * ((4 * 14) + 2)) - 1, 128 * 4 * 14);
-                case Rn.YMM15: return ((128 * ((4 * 15) + 2)) - 1, 128 * 4 * 15);
-                case Rn.YMM16: return ((128 * ((4 * 16) + 2)) - 1, 128 * 4 * 16);
-                case Rn.YMM17: return ((128 * ((4 * 17) + 2)) - 1, 128 * 4 * 17);
-                case Rn.YMM18: return ((128 * ((4 * 18) + 2)) - 1, 128 * 4 * 18);
-                case Rn.YMM19: return ((128 * ((4 * 19) + 2)) - 1, 128 * 4 * 19);
-                case Rn.YMM20: return ((128 * ((4 * 20) + 2)) - 1, 128 * 4 * 20);
-                case Rn.YMM21: return ((128 * ((4 * 21) + 2)) - 1, 128 * 4 * 21);
-                case Rn.YMM22: return ((128 * ((4 * 22) + 2)) - 1, 128 * 4 * 22);
-                case Rn.YMM23: return ((128 * ((4 * 23) + 2)) - 1, 128 * 4 * 23);
-                case Rn.YMM24: return ((128 * ((4 * 24) + 2)) - 1, 128 * 4 * 24);
-                case Rn.YMM25: return ((128 * ((4 * 25) + 2)) - 1, 128 * 4 * 25);
-                case Rn.YMM26: return ((128 * ((4 * 26) + 2)) - 1, 128 * 4 * 26);
-                case Rn.YMM27: return ((128 * ((4 * 27) + 2)) - 1, 128 * 4 * 27);
-                case Rn.YMM28: return ((128 * ((4 * 28) + 2)) - 1, 128 * 4 * 28);
-                case Rn.YMM29: return ((128 * ((4 * 29) + 2)) - 1, 128 * 4 * 29);
-                case Rn.YMM30: return ((128 * ((4 * 30) + 2)) - 1, 128 * 4 * 30);
-                case Rn.YMM31: return ((128 * ((4 * 31) + 2)) - 1, 128 * 4 * 31);
-
-                case Rn.ZMM0: return ((128 * ((4 * 0) + 4)) - 1, 128 * 4 * 0);
-                case Rn.ZMM1: return ((128 * ((4 * 1) + 4)) - 1, 128 * 4 * 1);
-                case Rn.ZMM2: return ((128 * ((4 * 2) + 4)) - 1, 128 * 4 * 2);
-                case Rn.ZMM3: return ((128 * ((4 * 3) + 4)) - 1, 128 * 4 * 3);
-                case Rn.ZMM4: return ((128 * ((4 * 4) + 4)) - 1, 128 * 4 * 4);
-                case Rn.ZMM5: return ((128 * ((4 * 5) + 4)) - 1, 128 * 4 * 5);
-                case Rn.ZMM6: return ((128 * ((4 * 6) + 4)) - 1, 128 * 4 * 6);
-                case Rn.ZMM7: return ((128 * ((4 * 7) + 4)) - 1, 128 * 4 * 7);
-                case Rn.ZMM8: return ((128 * ((4 * 8) + 4)) - 1, 128 * 4 * 8);
-                case Rn.ZMM9: return ((128 * ((4 * 9) + 4)) - 1, 128 * 4 * 9);
-                case Rn.ZMM10: return ((128 * ((4 * 10) + 4)) - 1, 128 * 4 * 10);
-                case Rn.ZMM11: return ((128 * ((4 * 11) + 4)) - 1, 128 * 4 * 11);
-                case Rn.ZMM12: return ((128 * ((4 * 12) + 4)) - 1, 128 * 4 * 12);
-                case Rn.ZMM13: return ((128 * ((4 * 13) + 4)) - 1, 128 * 4 * 13);
-                case Rn.ZMM14: return ((128 * ((4 * 14) + 4)) - 1, 128 * 4 * 14);
-                case Rn.ZMM15: return ((128 * ((4 * 15) + 4)) - 1, 128 * 4 * 15);
-                case Rn.ZMM16: return ((128 * ((4 * 16) + 4)) - 1, 128 * 4 * 16);
-                case Rn.ZMM17: return ((128 * ((4 * 17) + 4)) - 1, 128 * 4 * 17);
-                case Rn.ZMM18: return ((128 * ((4 * 18) + 4)) - 1, 128 * 4 * 18);
-                case Rn.ZMM19: return ((128 * ((4 * 19) + 4)) - 1, 128 * 4 * 19);
-                case Rn.ZMM20: return ((128 * ((4 * 20) + 4)) - 1, 128 * 4 * 20);
-                case Rn.ZMM21: return ((128 * ((4 * 21) + 4)) - 1, 128 * 4 * 21);
-                case Rn.ZMM22: return ((128 * ((4 * 22) + 4)) - 1, 128 * 4 * 22);
-                case Rn.ZMM23: return ((128 * ((4 * 23) + 4)) - 1, 128 * 4 * 23);
-                case Rn.ZMM24: return ((128 * ((4 * 24) + 4)) - 1, 128 * 4 * 24);
-                case Rn.ZMM25: return ((128 * ((4 * 25) + 4)) - 1, 128 * 4 * 25);
-                case Rn.ZMM26: return ((128 * ((4 * 26) + 4)) - 1, 128 * 4 * 26);
-                case Rn.ZMM27: return ((128 * ((4 * 27) + 4)) - 1, 128 * 4 * 27);
-                case Rn.ZMM28: return ((128 * ((4 * 28) + 4)) - 1, 128 * 4 * 28);
-                case Rn.ZMM29: return ((128 * ((4 * 29) + 4)) - 1, 128 * 4 * 29);
-                case Rn.ZMM30: return ((128 * ((4 * 30) + 4)) - 1, 128 * 4 * 30);
-                case Rn.ZMM31: return ((128 * ((4 * 31) + 4)) - 1, 128 * 4 * 31);
-                default: return (0, 0);
-            }
+                Rn.XMM0 => ((uint high, uint low))((128 * ((4 * 0) + 1)) - 1, 128 * 4 * 0),
+                Rn.XMM1 => ((uint high, uint low))((128 * ((4 * 1) + 1)) - 1, 128 * 4 * 1),
+                Rn.XMM2 => ((uint high, uint low))((128 * ((4 * 2) + 1)) - 1, 128 * 4 * 2),
+                Rn.XMM3 => ((uint high, uint low))((128 * ((4 * 3) + 1)) - 1, 128 * 4 * 3),
+                Rn.XMM4 => ((uint high, uint low))((128 * ((4 * 4) + 1)) - 1, 128 * 4 * 4),
+                Rn.XMM5 => ((uint high, uint low))((128 * ((4 * 5) + 1)) - 1, 128 * 4 * 5),
+                Rn.XMM6 => ((uint high, uint low))((128 * ((4 * 6) + 1)) - 1, 128 * 4 * 6),
+                Rn.XMM7 => ((uint high, uint low))((128 * ((4 * 7) + 1)) - 1, 128 * 4 * 7),
+                Rn.XMM8 => ((uint high, uint low))((128 * ((4 * 8) + 1)) - 1, 128 * 4 * 8),
+                Rn.XMM9 => ((uint high, uint low))((128 * ((4 * 9) + 1)) - 1, 128 * 4 * 9),
+                Rn.XMM10 => ((uint high, uint low))((128 * ((4 * 10) + 1)) - 1, 128 * 4 * 10),
+                Rn.XMM11 => ((uint high, uint low))((128 * ((4 * 11) + 1)) - 1, 128 * 4 * 11),
+                Rn.XMM12 => ((uint high, uint low))((128 * ((4 * 12) + 1)) - 1, 128 * 4 * 12),
+                Rn.XMM13 => ((uint high, uint low))((128 * ((4 * 13) + 1)) - 1, 128 * 4 * 13),
+                Rn.XMM14 => ((uint high, uint low))((128 * ((4 * 14) + 1)) - 1, 128 * 4 * 14),
+                Rn.XMM15 => ((uint high, uint low))((128 * ((4 * 15) + 1)) - 1, 128 * 4 * 15),
+                Rn.XMM16 => ((uint high, uint low))((128 * ((4 * 16) + 1)) - 1, 128 * 4 * 16),
+                Rn.XMM17 => ((uint high, uint low))((128 * ((4 * 17) + 1)) - 1, 128 * 4 * 17),
+                Rn.XMM18 => ((uint high, uint low))((128 * ((4 * 18) + 1)) - 1, 128 * 4 * 18),
+                Rn.XMM19 => ((uint high, uint low))((128 * ((4 * 19) + 1)) - 1, 128 * 4 * 19),
+                Rn.XMM20 => ((uint high, uint low))((128 * ((4 * 20) + 1)) - 1, 128 * 4 * 20),
+                Rn.XMM21 => ((uint high, uint low))((128 * ((4 * 21) + 1)) - 1, 128 * 4 * 21),
+                Rn.XMM22 => ((uint high, uint low))((128 * ((4 * 22) + 1)) - 1, 128 * 4 * 22),
+                Rn.XMM23 => ((uint high, uint low))((128 * ((4 * 23) + 1)) - 1, 128 * 4 * 23),
+                Rn.XMM24 => ((uint high, uint low))((128 * ((4 * 24) + 1)) - 1, 128 * 4 * 24),
+                Rn.XMM25 => ((uint high, uint low))((128 * ((4 * 25) + 1)) - 1, 128 * 4 * 25),
+                Rn.XMM26 => ((uint high, uint low))((128 * ((4 * 26) + 1)) - 1, 128 * 4 * 26),
+                Rn.XMM27 => ((uint high, uint low))((128 * ((4 * 27) + 1)) - 1, 128 * 4 * 27),
+                Rn.XMM28 => ((uint high, uint low))((128 * ((4 * 28) + 1)) - 1, 128 * 4 * 28),
+                Rn.XMM29 => ((uint high, uint low))((128 * ((4 * 29) + 1)) - 1, 128 * 4 * 29),
+                Rn.XMM30 => ((uint high, uint low))((128 * ((4 * 30) + 1)) - 1, 128 * 4 * 30),
+                Rn.XMM31 => ((uint high, uint low))((128 * ((4 * 31) + 1)) - 1, 128 * 4 * 31),
+                Rn.YMM0 => ((uint high, uint low))((128 * ((4 * 0) + 2)) - 1, 128 * 4 * 0),
+                Rn.YMM1 => ((uint high, uint low))((128 * ((4 * 1) + 2)) - 1, 128 * 4 * 1),
+                Rn.YMM2 => ((uint high, uint low))((128 * ((4 * 2) + 2)) - 1, 128 * 4 * 2),
+                Rn.YMM3 => ((uint high, uint low))((128 * ((4 * 3) + 2)) - 1, 128 * 4 * 3),
+                Rn.YMM4 => ((uint high, uint low))((128 * ((4 * 4) + 2)) - 1, 128 * 4 * 4),
+                Rn.YMM5 => ((uint high, uint low))((128 * ((4 * 5) + 2)) - 1, 128 * 4 * 5),
+                Rn.YMM6 => ((uint high, uint low))((128 * ((4 * 6) + 2)) - 1, 128 * 4 * 6),
+                Rn.YMM7 => ((uint high, uint low))((128 * ((4 * 7) + 2)) - 1, 128 * 4 * 7),
+                Rn.YMM8 => ((uint high, uint low))((128 * ((4 * 8) + 2)) - 1, 128 * 4 * 8),
+                Rn.YMM9 => ((uint high, uint low))((128 * ((4 * 9) + 2)) - 1, 128 * 4 * 9),
+                Rn.YMM10 => ((uint high, uint low))((128 * ((4 * 10) + 2)) - 1, 128 * 4 * 10),
+                Rn.YMM11 => ((uint high, uint low))((128 * ((4 * 11) + 2)) - 1, 128 * 4 * 11),
+                Rn.YMM12 => ((uint high, uint low))((128 * ((4 * 12) + 2)) - 1, 128 * 4 * 12),
+                Rn.YMM13 => ((uint high, uint low))((128 * ((4 * 13) + 2)) - 1, 128 * 4 * 13),
+                Rn.YMM14 => ((uint high, uint low))((128 * ((4 * 14) + 2)) - 1, 128 * 4 * 14),
+                Rn.YMM15 => ((uint high, uint low))((128 * ((4 * 15) + 2)) - 1, 128 * 4 * 15),
+                Rn.YMM16 => ((uint high, uint low))((128 * ((4 * 16) + 2)) - 1, 128 * 4 * 16),
+                Rn.YMM17 => ((uint high, uint low))((128 * ((4 * 17) + 2)) - 1, 128 * 4 * 17),
+                Rn.YMM18 => ((uint high, uint low))((128 * ((4 * 18) + 2)) - 1, 128 * 4 * 18),
+                Rn.YMM19 => ((uint high, uint low))((128 * ((4 * 19) + 2)) - 1, 128 * 4 * 19),
+                Rn.YMM20 => ((uint high, uint low))((128 * ((4 * 20) + 2)) - 1, 128 * 4 * 20),
+                Rn.YMM21 => ((uint high, uint low))((128 * ((4 * 21) + 2)) - 1, 128 * 4 * 21),
+                Rn.YMM22 => ((uint high, uint low))((128 * ((4 * 22) + 2)) - 1, 128 * 4 * 22),
+                Rn.YMM23 => ((uint high, uint low))((128 * ((4 * 23) + 2)) - 1, 128 * 4 * 23),
+                Rn.YMM24 => ((uint high, uint low))((128 * ((4 * 24) + 2)) - 1, 128 * 4 * 24),
+                Rn.YMM25 => ((uint high, uint low))((128 * ((4 * 25) + 2)) - 1, 128 * 4 * 25),
+                Rn.YMM26 => ((uint high, uint low))((128 * ((4 * 26) + 2)) - 1, 128 * 4 * 26),
+                Rn.YMM27 => ((uint high, uint low))((128 * ((4 * 27) + 2)) - 1, 128 * 4 * 27),
+                Rn.YMM28 => ((uint high, uint low))((128 * ((4 * 28) + 2)) - 1, 128 * 4 * 28),
+                Rn.YMM29 => ((uint high, uint low))((128 * ((4 * 29) + 2)) - 1, 128 * 4 * 29),
+                Rn.YMM30 => ((uint high, uint low))((128 * ((4 * 30) + 2)) - 1, 128 * 4 * 30),
+                Rn.YMM31 => ((uint high, uint low))((128 * ((4 * 31) + 2)) - 1, 128 * 4 * 31),
+                Rn.ZMM0 => ((uint high, uint low))((128 * ((4 * 0) + 4)) - 1, 128 * 4 * 0),
+                Rn.ZMM1 => ((uint high, uint low))((128 * ((4 * 1) + 4)) - 1, 128 * 4 * 1),
+                Rn.ZMM2 => ((uint high, uint low))((128 * ((4 * 2) + 4)) - 1, 128 * 4 * 2),
+                Rn.ZMM3 => ((uint high, uint low))((128 * ((4 * 3) + 4)) - 1, 128 * 4 * 3),
+                Rn.ZMM4 => ((uint high, uint low))((128 * ((4 * 4) + 4)) - 1, 128 * 4 * 4),
+                Rn.ZMM5 => ((uint high, uint low))((128 * ((4 * 5) + 4)) - 1, 128 * 4 * 5),
+                Rn.ZMM6 => ((uint high, uint low))((128 * ((4 * 6) + 4)) - 1, 128 * 4 * 6),
+                Rn.ZMM7 => ((uint high, uint low))((128 * ((4 * 7) + 4)) - 1, 128 * 4 * 7),
+                Rn.ZMM8 => ((uint high, uint low))((128 * ((4 * 8) + 4)) - 1, 128 * 4 * 8),
+                Rn.ZMM9 => ((uint high, uint low))((128 * ((4 * 9) + 4)) - 1, 128 * 4 * 9),
+                Rn.ZMM10 => ((uint high, uint low))((128 * ((4 * 10) + 4)) - 1, 128 * 4 * 10),
+                Rn.ZMM11 => ((uint high, uint low))((128 * ((4 * 11) + 4)) - 1, 128 * 4 * 11),
+                Rn.ZMM12 => ((uint high, uint low))((128 * ((4 * 12) + 4)) - 1, 128 * 4 * 12),
+                Rn.ZMM13 => ((uint high, uint low))((128 * ((4 * 13) + 4)) - 1, 128 * 4 * 13),
+                Rn.ZMM14 => ((uint high, uint low))((128 * ((4 * 14) + 4)) - 1, 128 * 4 * 14),
+                Rn.ZMM15 => ((uint high, uint low))((128 * ((4 * 15) + 4)) - 1, 128 * 4 * 15),
+                Rn.ZMM16 => ((uint high, uint low))((128 * ((4 * 16) + 4)) - 1, 128 * 4 * 16),
+                Rn.ZMM17 => ((uint high, uint low))((128 * ((4 * 17) + 4)) - 1, 128 * 4 * 17),
+                Rn.ZMM18 => ((uint high, uint low))((128 * ((4 * 18) + 4)) - 1, 128 * 4 * 18),
+                Rn.ZMM19 => ((uint high, uint low))((128 * ((4 * 19) + 4)) - 1, 128 * 4 * 19),
+                Rn.ZMM20 => ((uint high, uint low))((128 * ((4 * 20) + 4)) - 1, 128 * 4 * 20),
+                Rn.ZMM21 => ((uint high, uint low))((128 * ((4 * 21) + 4)) - 1, 128 * 4 * 21),
+                Rn.ZMM22 => ((uint high, uint low))((128 * ((4 * 22) + 4)) - 1, 128 * 4 * 22),
+                Rn.ZMM23 => ((uint high, uint low))((128 * ((4 * 23) + 4)) - 1, 128 * 4 * 23),
+                Rn.ZMM24 => ((uint high, uint low))((128 * ((4 * 24) + 4)) - 1, 128 * 4 * 24),
+                Rn.ZMM25 => ((uint high, uint low))((128 * ((4 * 25) + 4)) - 1, 128 * 4 * 25),
+                Rn.ZMM26 => ((uint high, uint low))((128 * ((4 * 26) + 4)) - 1, 128 * 4 * 26),
+                Rn.ZMM27 => ((uint high, uint low))((128 * ((4 * 27) + 4)) - 1, 128 * 4 * 27),
+                Rn.ZMM28 => ((uint high, uint low))((128 * ((4 * 28) + 4)) - 1, 128 * 4 * 28),
+                Rn.ZMM29 => ((uint high, uint low))((128 * ((4 * 29) + 4)) - 1, 128 * 4 * 29),
+                Rn.ZMM30 => ((uint high, uint low))((128 * ((4 * 30) + 4)) - 1, 128 * 4 * 30),
+                Rn.ZMM31 => ((uint high, uint low))((128 * ((4 * 31) + 4)) - 1, 128 * 4 * 31),
+                _ => ((uint high, uint low))(0, 0),
+            };
         }
 
         public static BitVecExpr Create_Key(Rn reg, string key, Context ctx)
@@ -315,15 +313,14 @@ namespace AsmSim
                 //2] add value of the base register
                 if (baseReg != Rn.NOREG)
                 {
-                    BitVecExpr baseRegister;
                     BitVecExpr keyBitVector = Create_Key(baseReg, key, ctx);
-                    switch (RegisterTools.NBits(baseReg))
+                    BitVecExpr baseRegister = RegisterTools.NBits(baseReg) switch
                     {
-                        case 64: baseRegister = keyBitVector; break;
-                        case 32: baseRegister = ctx.MkZeroExt(32, keyBitVector); break;
-                        case 16: baseRegister = ctx.MkZeroExt(48, keyBitVector); break;
-                        default: throw new Exception();
-                    }
+                        64 => keyBitVector,
+                        32 => ctx.MkZeroExt(32, keyBitVector),
+                        16 => ctx.MkZeroExt(48, keyBitVector),
+                        _ => throw new Exception(),
+                    };
                     //Console.WriteLine("baseRegister.NBits = " + baseRegister.SortSize + "; address.NBits = " + address.SortSize);
                     address = (address == null) ? baseRegister : ctx.MkBVAdd(address, baseRegister);
                     //Console.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: MemZ3:Calc_Effective_Address: B: address={0}", address));

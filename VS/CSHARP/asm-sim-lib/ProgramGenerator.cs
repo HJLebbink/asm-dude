@@ -64,14 +64,14 @@ namespace AsmSim
 
         public Rn RandomReg()
         {
-            switch(this._rand.Next(4))
+            return this._rand.Next(4) switch
             {
-                case 0: return Rn.RAX;
-                case 1: return Rn.RBX;
-                case 2: return Rn.RCX;
-                case 3: return Rn.RDX;
-                default: throw new Exception();
-            }
+                0 => Rn.RAX,
+                1 => Rn.RBX,
+                2 => Rn.RCX,
+                3 => Rn.RDX,
+                _ => throw new Exception(),
+            };
         }
 
         private static string ToString(Flags flag, State state)
@@ -93,115 +93,18 @@ namespace AsmSim
 
         private static string MakeCodeLine(Mnemonic mnemonic, Rn reg1, Rn reg2)
         {
-            switch (mnemonic)
+            return mnemonic switch
             {
-                case Mnemonic.CMOVE:
-                case Mnemonic.CMOVZ:
-                case Mnemonic.CMOVNE:
-                case Mnemonic.CMOVNZ:
-                case Mnemonic.CMOVA:
-                case Mnemonic.CMOVNBE:
-                case Mnemonic.CMOVAE:
-                case Mnemonic.CMOVNB:
-                case Mnemonic.CMOVB:
-                case Mnemonic.CMOVNAE:
-                case Mnemonic.CMOVBE:
-                case Mnemonic.CMOVNA:
-                case Mnemonic.CMOVG:
-                case Mnemonic.CMOVNLE:
-                case Mnemonic.CMOVGE:
-                case Mnemonic.CMOVNL:
-                case Mnemonic.CMOVL:
-                case Mnemonic.CMOVNGE:
-                case Mnemonic.CMOVLE:
-                case Mnemonic.CMOVNG:
-                case Mnemonic.CMOVC:
-                case Mnemonic.CMOVNC:
-                case Mnemonic.CMOVO:
-                case Mnemonic.CMOVNO:
-                case Mnemonic.CMOVS:
-                case Mnemonic.CMOVNS:
-                case Mnemonic.CMOVP:
-                case Mnemonic.CMOVPE:
-                case Mnemonic.CMOVNP:
-                case Mnemonic.CMOVPO:
-                    return mnemonic +" "+ reg1 + "," + reg2;
-
-                case Mnemonic.MOV:
-                case Mnemonic.ADD:
-                case Mnemonic.ADC:
-                case Mnemonic.SUB:
-                case Mnemonic.SBB:
-                    return mnemonic + " " + reg1 + "," + reg2;
-
-                case Mnemonic.INC:
-                case Mnemonic.DEC:
-                    return mnemonic + " " + reg1;
-
-                case Mnemonic.AND:
-                case Mnemonic.OR:
-                case Mnemonic.XOR:
-                case Mnemonic.TEST:
-                    return mnemonic + " " + reg1 + "," + reg2;
-
-                case Mnemonic.NEG:
-                    return mnemonic + " " + reg1;
-
-                case Mnemonic.SAR:
-                case Mnemonic.SHR:
-                case Mnemonic.SAL:
-                case Mnemonic.SHL:
-
-                case Mnemonic.ROR:
-                case Mnemonic.ROL:
-                case Mnemonic.RCR:
-                case Mnemonic.RCL:
-                    return mnemonic + " " + reg1 + ",cl";
-
-                case Mnemonic.BT:
-                case Mnemonic.BTS:
-                case Mnemonic.BTR:
-                case Mnemonic.BTC:
-
-                case Mnemonic.BSF:
-                case Mnemonic.BSR:
-                    return mnemonic + " " + reg1 + "," + reg2;
-
-                case Mnemonic.SETE:
-                case Mnemonic.SETZ:
-                case Mnemonic.SETNE:
-                case Mnemonic.SETNZ:
-                case Mnemonic.SETA:
-                case Mnemonic.SETNBE:
-                case Mnemonic.SETAE:
-                case Mnemonic.SETNB:
-                case Mnemonic.SETNC:
-                case Mnemonic.SETB:
-                case Mnemonic.SETNAE:
-                case Mnemonic.SETC:
-                case Mnemonic.SETBE:
-                case Mnemonic.SETNA:
-                case Mnemonic.SETG:
-                case Mnemonic.SETNLE:
-                case Mnemonic.SETGE:
-                case Mnemonic.SETNL:
-                case Mnemonic.SETL:
-                case Mnemonic.SETNGE:
-                case Mnemonic.SETLE:
-                case Mnemonic.SETNG:
-                case Mnemonic.SETS:
-                case Mnemonic.SETNS:
-                case Mnemonic.SETO:
-                case Mnemonic.SETNO:
-                case Mnemonic.SETPE:
-                case Mnemonic.SETP:
-                case Mnemonic.SETPO:
-                case Mnemonic.SETNP:
-                    return mnemonic + " " + RegisterTools.Get8BitsLowerPart(reg1);
-
-                default:
-                    return "nop";
-            }
+                Mnemonic.CMOVE or Mnemonic.CMOVZ or Mnemonic.CMOVNE or Mnemonic.CMOVNZ or Mnemonic.CMOVA or Mnemonic.CMOVNBE or Mnemonic.CMOVAE or Mnemonic.CMOVNB or Mnemonic.CMOVB or Mnemonic.CMOVNAE or Mnemonic.CMOVBE or Mnemonic.CMOVNA or Mnemonic.CMOVG or Mnemonic.CMOVNLE or Mnemonic.CMOVGE or Mnemonic.CMOVNL or Mnemonic.CMOVL or Mnemonic.CMOVNGE or Mnemonic.CMOVLE or Mnemonic.CMOVNG or Mnemonic.CMOVC or Mnemonic.CMOVNC or Mnemonic.CMOVO or Mnemonic.CMOVNO or Mnemonic.CMOVS or Mnemonic.CMOVNS or Mnemonic.CMOVP or Mnemonic.CMOVPE or Mnemonic.CMOVNP or Mnemonic.CMOVPO => mnemonic + " " + reg1 + "," + reg2,
+                Mnemonic.MOV or Mnemonic.ADD or Mnemonic.ADC or Mnemonic.SUB or Mnemonic.SBB => mnemonic + " " + reg1 + "," + reg2,
+                Mnemonic.INC or Mnemonic.DEC => mnemonic + " " + reg1,
+                Mnemonic.AND or Mnemonic.OR or Mnemonic.XOR or Mnemonic.TEST => mnemonic + " " + reg1 + "," + reg2,
+                Mnemonic.NEG => mnemonic + " " + reg1,
+                Mnemonic.SAR or Mnemonic.SHR or Mnemonic.SAL or Mnemonic.SHL or Mnemonic.ROR or Mnemonic.ROL or Mnemonic.RCR or Mnemonic.RCL => mnemonic + " " + reg1 + ",cl",
+                Mnemonic.BT or Mnemonic.BTS or Mnemonic.BTR or Mnemonic.BTC or Mnemonic.BSF or Mnemonic.BSR => mnemonic + " " + reg1 + "," + reg2,
+                Mnemonic.SETE or Mnemonic.SETZ or Mnemonic.SETNE or Mnemonic.SETNZ or Mnemonic.SETA or Mnemonic.SETNBE or Mnemonic.SETAE or Mnemonic.SETNB or Mnemonic.SETNC or Mnemonic.SETB or Mnemonic.SETNAE or Mnemonic.SETC or Mnemonic.SETBE or Mnemonic.SETNA or Mnemonic.SETG or Mnemonic.SETNLE or Mnemonic.SETGE or Mnemonic.SETNL or Mnemonic.SETL or Mnemonic.SETNGE or Mnemonic.SETLE or Mnemonic.SETNG or Mnemonic.SETS or Mnemonic.SETNS or Mnemonic.SETO or Mnemonic.SETNO or Mnemonic.SETPE or Mnemonic.SETP or Mnemonic.SETPO or Mnemonic.SETNP => mnemonic + " " + RegisterTools.Get8BitsLowerPart(reg1),
+                _ => "nop",
+            };
         }
 
         private static IList<Mnemonic> EligibleMnemonics()

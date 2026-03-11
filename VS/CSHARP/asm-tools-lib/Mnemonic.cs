@@ -2484,7 +2484,7 @@ namespace AsmTools
         /// <summary>Static class initializer for AsmSourceTools</summary>
         static AsmSourceTools()
         {
-            Mnemonic_cache_ = new Dictionary<string, Mnemonic>();
+            Mnemonic_cache_ = [];
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
             {
                 Mnemonic_cache_.Add(mnemonic.ToString(), mnemonic);
@@ -2493,7 +2493,7 @@ namespace AsmTools
 
         public static string ToCapitals(string str, bool strIsCapitals)
         {
-            if (str == null) throw new ArgumentNullException(nameof(str));
+            ArgumentNullException.ThrowIfNull(str);
 
 #if DEBUG
             if (strIsCapitals && (str != str.ToUpperInvariant()))
@@ -2506,83 +2506,39 @@ namespace AsmTools
 
         private static AttType ParseAttType(char c)
         {
-            switch (c)
+            return c switch
             {
-                case 'B': return AttType.B;
-                case 'S': return AttType.S;
-                case 'W': return AttType.W;
-                case 'L': return AttType.L;
-                case 'Q': return AttType.Q;
-                case 'T': return AttType.T;
-                default: return AttType.NONE;
-            }
+                'B' => AttType.B,
+                'S' => AttType.S,
+                'W' => AttType.W,
+                'L' => AttType.L,
+                'Q' => AttType.Q,
+                'T' => AttType.T,
+                _ => AttType.NONE,
+            };
         }
 
         private static bool IsAttType(char c)
         {
-            switch (c)
+            return c switch
             {
-                case 'B':
-                case 'S':
-                case 'W':
-                case 'L':
-                case 'Q':
-                case 'T': return true;
-                default: return false;
-            }
+                'B' or 'S' or 'W' or 'L' or 'Q' or 'T' => true,
+                _ => false,
+            };
         }
 
         public static bool IsJump(Mnemonic mnemonic)
         {
-            switch (mnemonic)
+            return mnemonic switch
             {
-                case Mnemonic.JMP:
-                case Mnemonic.JE:
-                case Mnemonic.JZ:
-                case Mnemonic.JNE:
-                case Mnemonic.JNZ:
-                case Mnemonic.JA:
-                case Mnemonic.JNBE:
-                case Mnemonic.JAE:
-                case Mnemonic.JNB:
-                case Mnemonic.JB:
-                case Mnemonic.JNAE:
-                case Mnemonic.JBE:
-                case Mnemonic.JNA:
-                case Mnemonic.JG:
-                case Mnemonic.JNLE:
-                case Mnemonic.JGE:
-                case Mnemonic.JNL:
-                case Mnemonic.JL:
-                case Mnemonic.JNGE:
-                case Mnemonic.JLE:
-                case Mnemonic.JNG:
-                case Mnemonic.JC:
-                case Mnemonic.JNC:
-                case Mnemonic.JO:
-                case Mnemonic.JNO:
-                case Mnemonic.JS:
-                case Mnemonic.JNS:
-                case Mnemonic.JPO:
-                case Mnemonic.JNP:
-                case Mnemonic.JPE:
-                case Mnemonic.JP:
-                case Mnemonic.JCXZ:
-                case Mnemonic.JECXZ:
-                case Mnemonic.JRCXZ:
-                case Mnemonic.LOOP:
-                case Mnemonic.LOOPZ:
-                case Mnemonic.LOOPE:
-                case Mnemonic.LOOPNZ:
-                case Mnemonic.LOOPNE:
-                case Mnemonic.CALL: return true;
-                default: return false;
-            }
+                Mnemonic.JMP or Mnemonic.JE or Mnemonic.JZ or Mnemonic.JNE or Mnemonic.JNZ or Mnemonic.JA or Mnemonic.JNBE or Mnemonic.JAE or Mnemonic.JNB or Mnemonic.JB or Mnemonic.JNAE or Mnemonic.JBE or Mnemonic.JNA or Mnemonic.JG or Mnemonic.JNLE or Mnemonic.JGE or Mnemonic.JNL or Mnemonic.JL or Mnemonic.JNGE or Mnemonic.JLE or Mnemonic.JNG or Mnemonic.JC or Mnemonic.JNC or Mnemonic.JO or Mnemonic.JNO or Mnemonic.JS or Mnemonic.JNS or Mnemonic.JPO or Mnemonic.JNP or Mnemonic.JPE or Mnemonic.JP or Mnemonic.JCXZ or Mnemonic.JECXZ or Mnemonic.JRCXZ or Mnemonic.LOOP or Mnemonic.LOOPZ or Mnemonic.LOOPE or Mnemonic.LOOPNZ or Mnemonic.LOOPNE or Mnemonic.CALL => true,
+                _ => false,
+            };
         }
 
         public static (Mnemonic mnemonic, AttType attribute_type) ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
-            if (str == null) throw new ArgumentNullException(nameof(str));
+            ArgumentNullException.ThrowIfNull(str);
 
             int length = str.Length;
             if (length > 1)
@@ -2616,7 +2572,7 @@ namespace AsmTools
 
         public static bool IsMnemonic_Att(string keyword, bool strIsCapitals = false)
         {
-            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            ArgumentNullException.ThrowIfNull(keyword);
 
             int length = keyword.Length;
             if (length < 2)

@@ -230,16 +230,16 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             return [];
         }
 
-        private TextDocumentItem GetTextDocument(string uri)
+        private TextDocumentItem? GetTextDocument(string uri)
         {
-            if (this.textDocuments.TryGetValue(uri, out TextDocumentItem document))
+            if (this.textDocuments.TryGetValue(uri, out TextDocumentItem? document))
             {
                 return document;
             }
             return null;
         }
 
-        private LabelGraph GetLabelGraph(string uri)
+        private LabelGraph? GetLabelGraph(string uri)
         {
             if (this.labelGraphDirty.Remove(uri))
             {
@@ -252,7 +252,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             return null;
         }
 
-        public static VSDiagnosticProjectInformation[] GetVSDiagnosticProjectInformation(VSTextDocumentIdentifier? vsTextDocumentIdentifier)
+        public static VSDiagnosticProjectInformation[]? GetVSDiagnosticProjectInformation(VSTextDocumentIdentifier? vsTextDocumentIdentifier)
         {
             VSDiagnosticProjectInformation? projectAndContext = null;
             if ((vsTextDocumentIdentifier != null) && (vsTextDocumentIdentifier.ProjectContext != null))
@@ -264,7 +264,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     Context = "Win32"
                 };
             }
-            return (projectAndContext == null) ? null : new VSDiagnosticProjectInformation[] { projectAndContext };
+            return (projectAndContext == null) ? null : [projectAndContext];
         }
 
         private void ScheduleDiagnosticMessage(
@@ -288,7 +288,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                 Projects = GetVSDiagnosticProjectInformation(vsTextDocumentIdentifier),
                 //Identifier = $"{lineNumber},{offsetStart} {lineNumber},{offsetEnd}",
-                Tags = new DiagnosticTag[1] { (DiagnosticTag)AsmDiagnosticTag.IntellisenseError }
+                Tags = [(DiagnosticTag)AsmDiagnosticTag.IntellisenseError]
             });
         }
 
@@ -307,7 +307,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             get;
             set;
-        } = Array.Empty<VSProjectContext>();
+        } = [];
 
         public bool UsePublishModelDiagnostic { get; set; } = true;
 
@@ -362,11 +362,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         private void UpdateInternals(string uri)
         {
-            TextDocumentItem document = this.GetTextDocument(uri);
-            if (document != null)
+            if (this.GetTextDocument(uri) is TextDocumentItem document) 
             {
                 this.textDocumentLines.Remove(uri);
-                var lines = document.Text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                var lines = document.Text.Split(separator, StringSplitOptions.None);
                 this.textDocumentLines.Add(uri, lines);
 
                 int fileID = 0; //TODO
@@ -417,7 +416,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             LogInfo("UpdateLabelGraph");
             this.labelGraphs.Remove(uri);
 
-            var textDocument = this.GetTextDocument(uri);
+            TextDocumentItem? textDocument = this.GetTextDocument(uri);
             string filename = new Uri(textDocument.Uri.ToString()).LocalPath;
             string[] lines = this.GetLines(uri);
             bool caseSensitiveLabels = true; //nasm has case sensitive labels
@@ -472,7 +471,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         if (startLineNumbers.Count == 0)
                         {
                             var severity = DiagnosticSeverity.Warning;
-                            VSTextDocumentIdentifier textDocumentIdentifier = null;//TODO
+                            VSTextDocumentIdentifier? textDocumentIdentifier = null;//TODO
 
                             string message = $"keyword {EndKeyword} has no matching {StartKeyword} keyword";
                             Range range = new()
@@ -505,7 +504,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         public void UpdateServerSideTextDocument(string text, int version, string uri)
         {
-            TextDocumentItem document = this.GetTextDocument(uri);
+            TextDocumentItem? document = this.GetTextDocument(uri);
             if (document != null)
             {
                 document.Text = text;
@@ -547,12 +546,12 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnosticsName, parameter);
         }
 
-        public CodeAction GetResolvedCodeAction(CodeAction parameter)
+        public CodeAction? GetResolvedCodeAction(CodeAction parameter)
         {
             // When using System.Text.Json, Data comes as a JsonElement
             if (parameter.Data is System.Text.Json.JsonElement jsonElement)
             {
-                var resolvedCodeAction = System.Text.Json.JsonSerializer.Deserialize<CodeAction>(jsonElement.GetRawText());
+                CodeAction? resolvedCodeAction = System.Text.Json.JsonSerializer.Deserialize<CodeAction>(jsonElement.GetRawText());
                 return resolvedCodeAction;
             }
             return parameter;
@@ -904,7 +903,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
         }
 
-        public SignatureHelp GetTextDocumentSignatureHelp(SignatureHelpParams parameter)
+        public SignatureHelp? GetTextDocumentSignatureHelp(SignatureHelpParams parameter)
         {
             try
             {
@@ -1032,7 +1031,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
             if (!this.parsedDocuments.TryGetValue(uri, out KeywordID[][] keywords))
             {
-                return new SemanticTokens { ResultId = GetDocumentResultId(uri), Data = [] };
+                return new SemanticTokens { ResultId = this.GetDocumentResultId(uri), Data = [] };
             }
 
             var data = new List<int>();
@@ -1077,7 +1076,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 }
             }
 
-            return new SemanticTokens { ResultId = GetDocumentResultId(uri), Data = [.. data] };
+            return new SemanticTokens { ResultId = this.GetDocumentResultId(uri), Data = [.. data] };
         }
 
         /// <summary>
@@ -1087,7 +1086,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         public object GetSemanticTokensDelta(SemanticTokensDeltaParams parameter)
         {
             string uri = parameter.TextDocument.Uri.ToString();
-            string currentResultId = GetDocumentResultId(uri);
+            string currentResultId = this.GetDocumentResultId(uri);
 
             if (currentResultId == parameter.PreviousResultId)
             {
@@ -1095,7 +1094,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
 
             // Document changed since last request — return full tokens
-            return GetSemanticTokens(new SemanticTokensParams { TextDocument = parameter.TextDocument });
+            return this.GetSemanticTokens(new SemanticTokensParams { TextDocument = parameter.TextDocument });
         }
 
         private string GetDocumentResultId(string uri)
@@ -1391,7 +1390,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
         }
 
-        public CompletionList GetTextDocumentCompletion(CompletionParams parameter)
+        public CompletionList? GetTextDocumentCompletion(CompletionParams parameter)
         {
             IEnumerable<CompletionItem> Selected_Completions(bool useCapitals, HashSet<AsmTokenType> selectedTypes, bool addSpecialKeywords)
             {
@@ -1746,7 +1745,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         public CodeLens[] GetCodeLenses(CodeLensParams parameter)
         {
             string uri = parameter.TextDocument.Uri.ToString();
-            LabelGraph labelGraph = this.GetLabelGraph(uri);
+            LabelGraph? labelGraph = this.GetLabelGraph(uri);
             if (labelGraph == null || !labelGraph.Enabled)
             {
                 return [];
@@ -1787,7 +1786,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         /// </summary>
         public AsmCodeLensData[] GetCodeLensData(string uri)
         {
-            LabelGraph labelGraph = this.GetLabelGraph(uri);
+            LabelGraph? labelGraph = this.GetLabelGraph(uri);
             if (labelGraph == null || !labelGraph.Enabled)
             {
                 return [];
@@ -1844,7 +1843,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         /// Handle "Go To Definition (F12)" request.
         /// Returns the location of label definitions.
         /// </summary>
-        public Location GetDefinition(TextDocumentPositionParams parameter)
+        public Location? GetDefinition(TextDocumentPositionParams parameter)
         {
             var uri = parameter.TextDocument.Uri.ToString();
             var lines = this.GetLines(uri);
@@ -1985,7 +1984,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         /// <summary>
         /// Handle hover request. Returns standard Hover with MarkupContent.
         /// </summary>
-        public object GetHover(TextDocumentPositionParams parameter)
+        public object? GetHover(TextDocumentPositionParams parameter)
         {
             if (!this.options.AsmDoc_On)
             {
@@ -2475,7 +2474,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         private static TextWriter LogWriter => UseStdio ? Console.Error : Console.Out;
 
-        public static void LogInfo(string message)
+    private static readonly string[] separator = ["\r\n", "\n"];
+
+    public static void LogInfo(string message)
         {
             if (Instance?.target?.traceSetting == TraceSetting.Verbose)
             {
@@ -2492,7 +2493,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         public static void LogError(string message)
         {
-            LogWriter.WriteLine($"ERROR {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
+            LogWriter.WriteLine($"ERROR {DateTimeOffset.Now:yyyyMMdd hh.mm.ss.ffffff}: {message}");
             Instance?.MakeWindowVisible();
             Instance?.traceSource?.TraceEvent(TraceEventType.Error, 0, message);
         }
@@ -2644,7 +2645,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         //    });
         //}
 
-        private Location GetLocation(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch, Uri uri)
+        private Location? GetLocation(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch, Uri uri)
         {
             if ((characterOffset + wordToMatch.Length) <= lineStr.Length)
             {
@@ -2665,7 +2666,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             return null;
         }
 
-        private Range GetHighlightRange(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch)
+        private Range? GetHighlightRange(string lineStr, int lineOffset, ref int characterOffset, string wordToMatch)
         {
             int wordLength = wordToMatch.Length;
 
@@ -2692,7 +2693,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             return null;
         }
 
-        private Range GetHighlightRangeMultiple(string line, int lineOffset, ref int characterOffset, IEnumerable<string> wordsToMatch)
+        private Range? GetHighlightRangeMultiple(string line, int lineOffset, ref int characterOffset, IEnumerable<string> wordsToMatch)
         {
             foreach (string wordToMatch in wordsToMatch)
             {
@@ -2727,7 +2728,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         }
 
         internal Task SendPartialResultAsync(object token, object value) =>
-            SendMethodNotificationAsync(Methods.ProgressNotificationName, new { token, value });
+            this.SendMethodNotificationAsync(Methods.ProgressNotificationName, new { token, value });
 
         private Task SendMethodNotificationAsync<TIn>(string methodName, TIn param)
         {

@@ -136,244 +136,117 @@ namespace AsmSim
         /// <summary>Get conditional Element</summary>
         public static ConditionalElement GetCe(Mnemonic mnemonic)
         {
-            switch (mnemonic)
+            return mnemonic switch
             {
-                case Mnemonic.JMP:
-                    return ConditionalElement.UNCONDITIONAL;
-                case Mnemonic.JE:
-                case Mnemonic.CMOVE:
-                case Mnemonic.SETE:
-                    return ConditionalElement.E;
-                case Mnemonic.JZ:
-                case Mnemonic.CMOVZ:
-                case Mnemonic.SETZ:
-                    return ConditionalElement.Z;
-                case Mnemonic.JNE:
-                case Mnemonic.CMOVNE:
-                case Mnemonic.SETNE:
-                    return ConditionalElement.NE;
-                case Mnemonic.JNZ:
-                case Mnemonic.CMOVNZ:
-                case Mnemonic.SETNZ:
-                    return ConditionalElement.NZ;
-                case Mnemonic.JA:
-                case Mnemonic.CMOVA:
-                case Mnemonic.SETA:
-                    return ConditionalElement.A;
-                case Mnemonic.JNBE:
-                case Mnemonic.CMOVNBE:
-                case Mnemonic.SETNBE:
-                    return ConditionalElement.NBE;
-                case Mnemonic.JAE:
-                case Mnemonic.CMOVAE:
-                case Mnemonic.SETAE:
-                    return ConditionalElement.AE;
-                case Mnemonic.JNB:
-                case Mnemonic.CMOVNB:
-                case Mnemonic.SETNB:
-                    return ConditionalElement.NB;
-                case Mnemonic.JB:
-                case Mnemonic.CMOVB:
-                case Mnemonic.SETB:
-                    return ConditionalElement.B;
-                case Mnemonic.JNAE:
-                case Mnemonic.CMOVNAE:
-                case Mnemonic.SETNAE:
-                    return ConditionalElement.NAE;
-                case Mnemonic.JBE:
-                case Mnemonic.CMOVBE:
-                case Mnemonic.SETBE:
-                    return ConditionalElement.BE;
-                case Mnemonic.JNA:
-                case Mnemonic.CMOVNA:
-                case Mnemonic.SETNA:
-                    return ConditionalElement.NA;
-                case Mnemonic.JG:
-                case Mnemonic.CMOVG:
-                case Mnemonic.SETG:
-                    return ConditionalElement.G;
-                case Mnemonic.JNLE:
-                case Mnemonic.CMOVNLE:
-                case Mnemonic.SETNLE:
-                    return ConditionalElement.NLE;
-                case Mnemonic.JGE:
-                case Mnemonic.CMOVGE:
-                case Mnemonic.SETGE:
-                    return ConditionalElement.GE;
-                case Mnemonic.JNL:
-                case Mnemonic.CMOVNL:
-                case Mnemonic.SETNL:
-                    return ConditionalElement.NL;
-                case Mnemonic.JL:
-                case Mnemonic.CMOVL:
-                case Mnemonic.SETL:
-                    return ConditionalElement.L;
-                case Mnemonic.JNGE:
-                case Mnemonic.CMOVNGE:
-                case Mnemonic.SETNGE:
-                    return ConditionalElement.NGE;
-                case Mnemonic.JLE:
-                case Mnemonic.CMOVLE:
-                case Mnemonic.SETLE:
-                    return ConditionalElement.LE;
-                case Mnemonic.JNG:
-                case Mnemonic.CMOVNG:
-                case Mnemonic.SETNG:
-                    return ConditionalElement.NG;
-                case Mnemonic.JC:
-                case Mnemonic.CMOVC:
-                case Mnemonic.SETC:
-                    return ConditionalElement.C;
-                case Mnemonic.JNC:
-                case Mnemonic.CMOVNC:
-                case Mnemonic.SETNC:
-                    return ConditionalElement.NC;
-                case Mnemonic.JO:
-                case Mnemonic.CMOVO:
-                case Mnemonic.SETO:
-                    return ConditionalElement.O;
-                case Mnemonic.JNO:
-                case Mnemonic.CMOVNO:
-                case Mnemonic.SETNO:
-                    return ConditionalElement.NO;
-                case Mnemonic.JS:
-                case Mnemonic.CMOVS:
-                case Mnemonic.SETS:
-                    return ConditionalElement.S;
-                case Mnemonic.JNS:
-                case Mnemonic.CMOVNS:
-                case Mnemonic.SETNS:
-                    return ConditionalElement.NS;
-                case Mnemonic.JPO:
-                case Mnemonic.CMOVP:
-                case Mnemonic.SETPO:
-                    return ConditionalElement.PO;
-                case Mnemonic.JNP:
-                case Mnemonic.CMOVPE:
-                case Mnemonic.SETNP:
-                    return ConditionalElement.NP;
-                case Mnemonic.JPE:
-                case Mnemonic.CMOVNP:
-                case Mnemonic.SETPE:
-                    return ConditionalElement.PE;
-                case Mnemonic.JP:
-                case Mnemonic.CMOVPO:
-                case Mnemonic.SETP:
-                    return ConditionalElement.P;
-                default:
-                    return ConditionalElement.NONE;
-            }
+                Mnemonic.JMP => ConditionalElement.UNCONDITIONAL,
+                Mnemonic.JE or Mnemonic.CMOVE or Mnemonic.SETE => ConditionalElement.E,
+                Mnemonic.JZ or Mnemonic.CMOVZ or Mnemonic.SETZ => ConditionalElement.Z,
+                Mnemonic.JNE or Mnemonic.CMOVNE or Mnemonic.SETNE => ConditionalElement.NE,
+                Mnemonic.JNZ or Mnemonic.CMOVNZ or Mnemonic.SETNZ => ConditionalElement.NZ,
+                Mnemonic.JA or Mnemonic.CMOVA or Mnemonic.SETA => ConditionalElement.A,
+                Mnemonic.JNBE or Mnemonic.CMOVNBE or Mnemonic.SETNBE => ConditionalElement.NBE,
+                Mnemonic.JAE or Mnemonic.CMOVAE or Mnemonic.SETAE => ConditionalElement.AE,
+                Mnemonic.JNB or Mnemonic.CMOVNB or Mnemonic.SETNB => ConditionalElement.NB,
+                Mnemonic.JB or Mnemonic.CMOVB or Mnemonic.SETB => ConditionalElement.B,
+                Mnemonic.JNAE or Mnemonic.CMOVNAE or Mnemonic.SETNAE => ConditionalElement.NAE,
+                Mnemonic.JBE or Mnemonic.CMOVBE or Mnemonic.SETBE => ConditionalElement.BE,
+                Mnemonic.JNA or Mnemonic.CMOVNA or Mnemonic.SETNA => ConditionalElement.NA,
+                Mnemonic.JG or Mnemonic.CMOVG or Mnemonic.SETG => ConditionalElement.G,
+                Mnemonic.JNLE or Mnemonic.CMOVNLE or Mnemonic.SETNLE => ConditionalElement.NLE,
+                Mnemonic.JGE or Mnemonic.CMOVGE or Mnemonic.SETGE => ConditionalElement.GE,
+                Mnemonic.JNL or Mnemonic.CMOVNL or Mnemonic.SETNL => ConditionalElement.NL,
+                Mnemonic.JL or Mnemonic.CMOVL or Mnemonic.SETL => ConditionalElement.L,
+                Mnemonic.JNGE or Mnemonic.CMOVNGE or Mnemonic.SETNGE => ConditionalElement.NGE,
+                Mnemonic.JLE or Mnemonic.CMOVLE or Mnemonic.SETLE => ConditionalElement.LE,
+                Mnemonic.JNG or Mnemonic.CMOVNG or Mnemonic.SETNG => ConditionalElement.NG,
+                Mnemonic.JC or Mnemonic.CMOVC or Mnemonic.SETC => ConditionalElement.C,
+                Mnemonic.JNC or Mnemonic.CMOVNC or Mnemonic.SETNC => ConditionalElement.NC,
+                Mnemonic.JO or Mnemonic.CMOVO or Mnemonic.SETO => ConditionalElement.O,
+                Mnemonic.JNO or Mnemonic.CMOVNO or Mnemonic.SETNO => ConditionalElement.NO,
+                Mnemonic.JS or Mnemonic.CMOVS or Mnemonic.SETS => ConditionalElement.S,
+                Mnemonic.JNS or Mnemonic.CMOVNS or Mnemonic.SETNS => ConditionalElement.NS,
+                Mnemonic.JPO or Mnemonic.CMOVP or Mnemonic.SETPO => ConditionalElement.PO,
+                Mnemonic.JNP or Mnemonic.CMOVPE or Mnemonic.SETNP => ConditionalElement.NP,
+                Mnemonic.JPE or Mnemonic.CMOVNP or Mnemonic.SETPE => ConditionalElement.PE,
+                Mnemonic.JP or Mnemonic.CMOVPO or Mnemonic.SETP => ConditionalElement.P,
+                _ => ConditionalElement.NONE,
+            };
             //unreachable
             throw new Exception();
         }
 
         public static Flags FlagsUsed(ConditionalElement ce)
         {
-            switch (ce)
+            return ce switch
             {
-                case ConditionalElement.NONE: return Flags.NONE;
-                case ConditionalElement.UNCONDITIONAL: return Flags.NONE;
-                case ConditionalElement.A: return Flags.CF | Flags.ZF;
-                case ConditionalElement.AE: return Flags.CF;
-                case ConditionalElement.B: return Flags.CF;
-                case ConditionalElement.BE: return Flags.CF | Flags.ZF;
-                case ConditionalElement.C: return Flags.CF;
-                case ConditionalElement.E: return Flags.ZF;
-                case ConditionalElement.G: return Flags.ZF | Flags.SF | Flags.OF;
-                case ConditionalElement.GE: return Flags.SF | Flags.OF;
-                case ConditionalElement.L: return Flags.SF | Flags.OF;
-                case ConditionalElement.LE: return Flags.SF | Flags.OF | Flags.ZF;
-                case ConditionalElement.NA: return Flags.CF | Flags.ZF;
-                case ConditionalElement.NAE: return Flags.CF;
-                case ConditionalElement.NB: return Flags.CF;
-                case ConditionalElement.NBE: return Flags.CF | Flags.ZF;
-                case ConditionalElement.NC: return Flags.CF;
-                case ConditionalElement.NE: return Flags.ZF;
-                case ConditionalElement.NG: return Flags.SF | Flags.OF | Flags.ZF;
-                case ConditionalElement.NGE: return Flags.SF | Flags.OF;
-                case ConditionalElement.NL: return Flags.SF | Flags.OF;
-                case ConditionalElement.NLE: return Flags.ZF | Flags.SF | Flags.OF;
-                case ConditionalElement.NO: return Flags.OF;
-                case ConditionalElement.NP: return Flags.PF;
-                case ConditionalElement.NS: return Flags.SF;
-                case ConditionalElement.NZ: return Flags.ZF;
-                case ConditionalElement.O: return Flags.OF;
-                case ConditionalElement.P: return Flags.PF;
-                case ConditionalElement.PE: return Flags.PF;
-                case ConditionalElement.PO: return Flags.PF;
-                case ConditionalElement.S: return Flags.SF;
-                case ConditionalElement.Z: return Flags.ZF;
-
-                case ConditionalElement.CXZ: return Flags.NONE;
-                case ConditionalElement.ECXZ: return Flags.NONE;
-                case ConditionalElement.RCXZ: return Flags.NONE;
-                default:
-                    // unreachable
-                    throw new Exception();
-            }
+                ConditionalElement.NONE => Flags.NONE,
+                ConditionalElement.UNCONDITIONAL => Flags.NONE,
+                ConditionalElement.A => Flags.CF | Flags.ZF,
+                ConditionalElement.AE => Flags.CF,
+                ConditionalElement.B => Flags.CF,
+                ConditionalElement.BE => Flags.CF | Flags.ZF,
+                ConditionalElement.C => Flags.CF,
+                ConditionalElement.E => Flags.ZF,
+                ConditionalElement.G => Flags.ZF | Flags.SF | Flags.OF,
+                ConditionalElement.GE => Flags.SF | Flags.OF,
+                ConditionalElement.L => Flags.SF | Flags.OF,
+                ConditionalElement.LE => Flags.SF | Flags.OF | Flags.ZF,
+                ConditionalElement.NA => Flags.CF | Flags.ZF,
+                ConditionalElement.NAE => Flags.CF,
+                ConditionalElement.NB => Flags.CF,
+                ConditionalElement.NBE => Flags.CF | Flags.ZF,
+                ConditionalElement.NC => Flags.CF,
+                ConditionalElement.NE => Flags.ZF,
+                ConditionalElement.NG => Flags.SF | Flags.OF | Flags.ZF,
+                ConditionalElement.NGE => Flags.SF | Flags.OF,
+                ConditionalElement.NL => Flags.SF | Flags.OF,
+                ConditionalElement.NLE => Flags.ZF | Flags.SF | Flags.OF,
+                ConditionalElement.NO => Flags.OF,
+                ConditionalElement.NP => Flags.PF,
+                ConditionalElement.NS => Flags.SF,
+                ConditionalElement.NZ => Flags.ZF,
+                ConditionalElement.O => Flags.OF,
+                ConditionalElement.P => Flags.PF,
+                ConditionalElement.PE => Flags.PF,
+                ConditionalElement.PO => Flags.PF,
+                ConditionalElement.S => Flags.SF,
+                ConditionalElement.Z => Flags.ZF,
+                ConditionalElement.CXZ => Flags.NONE,
+                ConditionalElement.ECXZ => Flags.NONE,
+                ConditionalElement.RCXZ => Flags.NONE,
+                _ => throw new Exception(),// unreachable
+            };
         }
 
         public static BoolExpr ConditionalTaken(ConditionalElement ce, string key, Context ctx)
         {
             ArgumentNullException.ThrowIfNull(ctx);
 
-            switch (ce)
+            return ce switch
             {
-                case ConditionalElement.NONE: return ctx.MkFalse();
-                case ConditionalElement.UNCONDITIONAL: return ctx.MkTrue();
-
-                case ConditionalElement.C:
-                case ConditionalElement.B:
-                case ConditionalElement.NAE: return CF();
-
-                case ConditionalElement.NC:
-                case ConditionalElement.AE:
-                case ConditionalElement.NB: return ctx.MkNot(CF());
-
-                case ConditionalElement.Z:
-                case ConditionalElement.E: return ZF();
-
-                case ConditionalElement.NZ:
-                case ConditionalElement.NE: return ctx.MkNot(ZF());
-
-                case ConditionalElement.S: return SF();
-                case ConditionalElement.NS: return ctx.MkNot(SF());
-
-                case ConditionalElement.P:
-                case ConditionalElement.PE: return PF();
-
-                case ConditionalElement.PO:
-                case ConditionalElement.NP: return ctx.MkNot(PF());
-
-                case ConditionalElement.O: return OF();
-                case ConditionalElement.NO: return ctx.MkNot(OF());
-
-                case ConditionalElement.A:
-                case ConditionalElement.NBE: return ctx.MkAnd(ctx.MkNot(CF()), ctx.MkNot(ZF()));
-
-                case ConditionalElement.BE:
-                case ConditionalElement.NA: return ctx.MkOr(CF(), ZF());
-
-                case ConditionalElement.G:
-                case ConditionalElement.NLE: return ctx.MkAnd(ctx.MkNot(ZF()), ctx.MkEq(SF(), OF()));
-
-                case ConditionalElement.GE:
-                case ConditionalElement.NL: return ctx.MkEq(SF(), OF());
-
-                case ConditionalElement.LE:
-                case ConditionalElement.NG: return ctx.MkOr(ctx.MkXor(SF(), OF()), ZF());
-
-                case ConditionalElement.L:
-                case ConditionalElement.NGE: return ctx.MkXor(SF(), OF());
-
-                case ConditionalElement.CXZ: return ctx.MkEq(Tools.Create_Key(Rn.CX, key, ctx), ctx.MkBV(0, 16));
-                case ConditionalElement.ECXZ: return ctx.MkEq(Tools.Create_Key(Rn.ECX, key, ctx), ctx.MkBV(0, 32));
-                case ConditionalElement.RCXZ: return ctx.MkEq(Tools.Create_Key(Rn.RCX, key, ctx), ctx.MkBV(0, 64));
-                default:
-                    // unreachable
-                    throw new Exception();
-            }
-
+                ConditionalElement.NONE => ctx.MkFalse(),
+                ConditionalElement.UNCONDITIONAL => ctx.MkTrue(),
+                ConditionalElement.C or ConditionalElement.B or ConditionalElement.NAE => CF(),
+                ConditionalElement.NC or ConditionalElement.AE or ConditionalElement.NB => ctx.MkNot(CF()),
+                ConditionalElement.Z or ConditionalElement.E => ZF(),
+                ConditionalElement.NZ or ConditionalElement.NE => ctx.MkNot(ZF()),
+                ConditionalElement.S => SF(),
+                ConditionalElement.NS => ctx.MkNot(SF()),
+                ConditionalElement.P or ConditionalElement.PE => PF(),
+                ConditionalElement.PO or ConditionalElement.NP => ctx.MkNot(PF()),
+                ConditionalElement.O => OF(),
+                ConditionalElement.NO => ctx.MkNot(OF()),
+                ConditionalElement.A or ConditionalElement.NBE => ctx.MkAnd(ctx.MkNot(CF()), ctx.MkNot(ZF())),
+                ConditionalElement.BE or ConditionalElement.NA => ctx.MkOr(CF(), ZF()),
+                ConditionalElement.G or ConditionalElement.NLE => ctx.MkAnd(ctx.MkNot(ZF()), ctx.MkEq(SF(), OF())),
+                ConditionalElement.GE or ConditionalElement.NL => ctx.MkEq(SF(), OF()),
+                ConditionalElement.LE or ConditionalElement.NG => ctx.MkOr(ctx.MkXor(SF(), OF()), ZF()),
+                ConditionalElement.L or ConditionalElement.NGE => ctx.MkXor(SF(), OF()),
+                ConditionalElement.CXZ => ctx.MkEq(Tools.Create_Key(Rn.CX, key, ctx), ctx.MkBV(0, 16)),
+                ConditionalElement.ECXZ => ctx.MkEq(Tools.Create_Key(Rn.ECX, key, ctx), ctx.MkBV(0, 32)),
+                ConditionalElement.RCXZ => ctx.MkEq(Tools.Create_Key(Rn.RCX, key, ctx), ctx.MkBV(0, 64)),
+                _ => throw new Exception(),// unreachable
+            };
             BoolExpr CF() { return Tools.Create_Key(Flags.CF, key, ctx); }
             BoolExpr ZF() { return Tools.Create_Key(Flags.ZF, key, ctx); }
             BoolExpr SF() { return Tools.Create_Key(Flags.SF, key, ctx); }

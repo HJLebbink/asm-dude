@@ -94,19 +94,19 @@ namespace AsmTools
 
         public static Flags Parse(string str, bool strIsCapitals)
         {
-            if (str == null) throw new ArgumentNullException(nameof(str));
+            ArgumentNullException.ThrowIfNull(str);
 
-            switch (AsmSourceTools.ToCapitals(str, strIsCapitals))
+            return AsmSourceTools.ToCapitals(str, strIsCapitals) switch
             {
-                case "CF": return Flags.CF;
-                case "PF": return Flags.PF;
-                case "AF": return Flags.AF;
-                case "ZF": return Flags.ZF;
-                case "SF": return Flags.SF;
-                case "OF": return Flags.OF;
-                case "DF": return Flags.DF;
-                default: return Flags.NONE;
-            }
+                "CF" => Flags.CF,
+                "PF" => Flags.PF,
+                "AF" => Flags.AF,
+                "ZF" => Flags.ZF,
+                "SF" => Flags.SF,
+                "OF" => Flags.OF,
+                "DF" => Flags.DF,
+                _ => Flags.NONE,
+            };
         }
 
         public static string ToString(Flags flags)

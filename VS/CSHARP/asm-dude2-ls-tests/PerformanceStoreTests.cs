@@ -38,7 +38,7 @@ public class PerformanceStoreTests
     {
         var testDir = Directory.GetCurrentDirectory();
         var resourceDir = Path.Combine(testDir, "..", "..", "..", "..", "asm-dude2-ls-lib", "Resources");
-        _performancePath = Path.Combine(resourceDir, "Performance");
+        this._performancePath = Path.Combine(resourceDir, "Performance");
     }
 
     #region Constructor Tests
@@ -54,7 +54,7 @@ public class PerformanceStoreTests
         };
 
         // Act
-        var store = new PerformanceStore(_performancePath, options);
+        var store = new PerformanceStore(this._performancePath, options);
 
         // Assert
         store.Should().NotBeNull();
@@ -72,7 +72,7 @@ public class PerformanceStoreTests
         };
 
         // Act
-        var store = new PerformanceStore(_performancePath, options);
+        var store = new PerformanceStore(this._performancePath, options);
 
         // Assert
         store.Should().NotBeNull();
@@ -93,7 +93,7 @@ public class PerformanceStoreTests
             PerformanceInfo_On = true,
             PerformanceInfo_SandyBridge_On = true
         };
-        var store = new PerformanceStore(_performancePath, options);
+        var store = new PerformanceStore(this._performancePath, options);
 
         // Act
         var performance = store.GetPerformance(Mnemonic.MOV, MicroArch.SandyBridge);
@@ -117,7 +117,7 @@ public class PerformanceStoreTests
             PerformanceInfo_On = true,
             PerformanceInfo_SandyBridge_On = true
         };
-        var store = new PerformanceStore(_performancePath, options);
+        var store = new PerformanceStore(this._performancePath, options);
 
         // Act
         var performance = store.GetPerformance(Mnemonic.NONE, MicroArch.SandyBridge);
@@ -136,7 +136,7 @@ public class PerformanceStoreTests
             PerformanceInfo_SandyBridge_On = true,
             PerformanceInfo_Haswell_On = true
         };
-        var store = new PerformanceStore(_performancePath, options);
+        var store = new PerformanceStore(this._performancePath, options);
 
         // Act
         var performance = store.GetPerformance(Mnemonic.ADDPS, MicroArch.SandyBridge | MicroArch.Haswell);
@@ -155,7 +155,7 @@ public class PerformanceStoreTests
             PerformanceInfo_On = true,
             PerformanceInfo_Haswell_On = true
         };
-        var store = new PerformanceStore(_performancePath, options);
+        var store = new PerformanceStore(this._performancePath, options);
 
         // Act
         var performance = store.GetPerformance(Mnemonic.ADD, MicroArch.Haswell);
@@ -211,7 +211,7 @@ public class PerformanceStoreTests
             PerformanceInfo_On = true,
             PerformanceInfo_Skylake_On = true
         };
-        var store = new PerformanceStore(_performancePath, options);
+        var store = new PerformanceStore(this._performancePath, options);
 
         // Act
         var movPerf = store.GetPerformance(Mnemonic.MOV, MicroArch.Skylake);
@@ -238,7 +238,7 @@ public class PerformanceStoreTests
             PerformanceInfo_On = true,
             PerformanceInfo_SandyBridge_On = true
         };
-        var store = new PerformanceStore(_performancePath, options);
+        var store = new PerformanceStore(this._performancePath, options);
 
         // Act
         var result = store.ToString();

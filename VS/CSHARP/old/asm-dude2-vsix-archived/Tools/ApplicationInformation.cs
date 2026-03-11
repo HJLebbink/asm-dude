@@ -78,7 +78,7 @@ namespace AsmDude2.Tools
             if (vsixBuildInfo == string.Empty)
             {
                 var d = GetBuildDate(Assembly.GetExecutingAssembly());
-                d.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(d).Hours);
+                d.AddHours(TimeZoneInfo.Local.GetUtcOffset(d).Hours);
                 vsixBuildInfo = d.ToUniversalTime().ToString(AsmDudeToolsStatic.CultureUI);
             }
             return vsixBuildInfo;

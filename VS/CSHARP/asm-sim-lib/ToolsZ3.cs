@@ -537,16 +537,16 @@ using System.Diagnostics;
 
         public static char ToStringBin(Tv tv)
         {
-            switch (tv)
+            return tv switch
             {
-                case Tv.UNDEFINED: return 'U';
-                case Tv.UNKNOWN: return '?';
-                case Tv.ONE: return '1';
-                case Tv.ZERO: return '0';
-                case Tv.INCONSISTENT: return 'X';
-                case Tv.UNDETERMINED: return '-';
-                default: return 'Y';
-            }
+                Tv.UNDEFINED => 'U',
+                Tv.UNKNOWN => '?',
+                Tv.ONE => '1',
+                Tv.ZERO => '0',
+                Tv.INCONSISTENT => 'X',
+                Tv.UNDETERMINED => '-',
+                _ => 'Y',
+            };
         }
 
         public static char BitToCharHex(Tv b0, Tv b1, Tv b2, Tv b3)
@@ -797,28 +797,16 @@ using System.Diagnostics;
             Tv[] result = new Tv[nBits];
             for (int i = 0; i < nBits; ++i)
             {
-                switch (charArray[i])
+                result[i] = charArray[i] switch
                 {
-                    case 'U':
-                        result[i] = Tv.UNDEFINED;
-                        break;
-                    case '?':
-                        result[i] = Tv.UNKNOWN;
-                        break;
-                    case '0':
-                        result[i] = Tv.ZERO;
-                        break;
-                    case '1':
-                        result[i] = Tv.ONE;
-                        break;
-                    case 'X':
-                        result[i] = Tv.INCONSISTENT;
-                        break;
-                    case '-':
-                        result[i] = Tv.UNDETERMINED;
-                        break;
-                    default: throw new Exception();
-                }
+                    'U' => Tv.UNDEFINED,
+                    '?' => Tv.UNKNOWN,
+                    '0' => Tv.ZERO,
+                    '1' => Tv.ONE,
+                    'X' => Tv.INCONSISTENT,
+                    '-' => Tv.UNDETERMINED,
+                    _ => throw new Exception(),
+                };
             }
             return result;
         }

@@ -47,24 +47,24 @@ namespace AsmTools
     {
         public static MicroArch ParseMicroArch(string str, bool strIsCapitals)
         {
-            if (str == null) throw new ArgumentNullException(nameof(str));
+            ArgumentNullException.ThrowIfNull(str);
 
-            switch (ToCapitals(str, strIsCapitals))
+            return ToCapitals(str, strIsCapitals) switch
             {
-                case "SANDYBRIDGE": return MicroArch.SandyBridge;
-                case "IVYBRIDGE": return MicroArch.IvyBridge;
-                case "HASWELL": return MicroArch.Haswell;
-                case "BROADWELL": return MicroArch.Broadwell;
-                case "SKYLAKE": return MicroArch.Skylake;
-                case "SKYLAKEX": return MicroArch.SkylakeX;
-                case "KABYLAKE": return MicroArch.Kabylake;
-                case "CANNONLAKE": return MicroArch.Cannonlake;
-                case "ICELAKE": return MicroArch.Icelake;
-                case "TIGERLAKE": return MicroArch.Tigerlake;
-                case "KNIGHTSCORNER": return MicroArch.KnightsCorner;
-                case "KNIGHTSLANDING": return MicroArch.KnightsLanding;
-                default: return MicroArch.NONE;
-            }
+                "SANDYBRIDGE" => MicroArch.SandyBridge,
+                "IVYBRIDGE" => MicroArch.IvyBridge,
+                "HASWELL" => MicroArch.Haswell,
+                "BROADWELL" => MicroArch.Broadwell,
+                "SKYLAKE" => MicroArch.Skylake,
+                "SKYLAKEX" => MicroArch.SkylakeX,
+                "KABYLAKE" => MicroArch.Kabylake,
+                "CANNONLAKE" => MicroArch.Cannonlake,
+                "ICELAKE" => MicroArch.Icelake,
+                "TIGERLAKE" => MicroArch.Tigerlake,
+                "KNIGHTSCORNER" => MicroArch.KnightsCorner,
+                "KNIGHTSLANDING" => MicroArch.KnightsLanding,
+                _ => MicroArch.NONE,
+            };
         }
     }
 }

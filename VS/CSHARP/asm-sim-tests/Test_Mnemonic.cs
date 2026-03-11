@@ -4150,7 +4150,7 @@ namespace unit_tests_asm_z3
             { // forward
                 State state = this.CreateState(tools);
 
-                (State state1a, State state1b) = Runner.Step_Forward(line1, state);
+                (State? state1a, State? state1b) = Runner.Step_Forward(line1, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("State1A: After \"" + line1 + "\", we know:\n" + state1a);

@@ -66,14 +66,14 @@ namespace AsmDude2LS
 
         private sealed class DocCache
         {
-            internal readonly Dictionary<int, string?> lineStringsAfter = new();
-            internal readonly Dictionary<int, string?> lineStringsBefore = new();
-            internal readonly List<AsmSimState> ownedStates = new();
-            internal readonly List<SimDiagnostic> diagnostics = new();
+            internal readonly Dictionary<int, string?> lineStringsAfter = [];
+            internal readonly Dictionary<int, string?> lineStringsBefore = [];
+            internal readonly List<AsmSimState> ownedStates = [];
+            internal readonly List<SimDiagnostic> diagnostics = [];
         }
 
-        private readonly Dictionary<Uri, DocCache> cache_ = new();
-        private readonly Dictionary<Uri, CancellationTokenSource> pendingTasks_ = new();
+        private readonly Dictionary<Uri, DocCache> cache_ = [];
+        private readonly Dictionary<Uri, CancellationTokenSource> pendingTasks_ = [];
         private readonly object lockObj_ = new();
 
         internal LspAsmSimulator(ILogger logger)
@@ -148,7 +148,7 @@ namespace AsmDude2LS
                     return entry.diagnostics;
                 }
             }
-            return Array.Empty<SimDiagnostic>();
+            return [];
         }
 
         // ── Private helpers ────────────────────────────────────────────────────

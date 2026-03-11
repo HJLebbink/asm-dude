@@ -39,14 +39,14 @@ namespace AsmTools
             {
                 return NumerationEnum.UNKNOWN;
             }
-            switch (ToCapitals(str, strIsCapitals).Trim())
+            return ToCapitals(str, strIsCapitals).Trim() switch
             {
-                case "HEX": return NumerationEnum.HEX;
-                case "BIN": return NumerationEnum.BIN;
-                case "DEC": return NumerationEnum.DEC;
-                case "OCT": return NumerationEnum.OCT;
-                default: return NumerationEnum.UNKNOWN;
-            }
+                "HEX" => NumerationEnum.HEX,
+                "BIN" => NumerationEnum.BIN,
+                "DEC" => NumerationEnum.DEC,
+                "OCT" => NumerationEnum.OCT,
+                _ => NumerationEnum.UNKNOWN,
+            };
         }
     }
 }

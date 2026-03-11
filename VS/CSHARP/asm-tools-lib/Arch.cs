@@ -241,8 +241,8 @@ namespace AsmTools
     {
         public static Arch ParseArch(string str, bool strIsCapitals, bool warn)
         {
-            if (str == null) throw new ArgumentNullException(nameof(str));
-            
+            ArgumentNullException.ThrowIfNull(str);
+
             string str2 = AsmSourceTools.ToCapitals(str, strIsCapitals).Replace("_", string.Empty);
             switch (str2)
             {
@@ -370,93 +370,89 @@ namespace AsmTools
 
         public static string ArchDocumentation(Arch arch)
         {
-            switch (arch)
+            return arch switch
             {
-                case Arch.ARCH_NONE: return string.Empty;
-                case Arch.ARCH_8086: return string.Empty;
-                case Arch.ARCH_186: return string.Empty;
-                case Arch.ARCH_286: return string.Empty;
-                case Arch.ARCH_386: return string.Empty;
-                case Arch.ARCH_486: return string.Empty;
-                case Arch.ARCH_PENT: return "Instruction set of the Pentium, 1994 (also known as i585)";
-                case Arch.ARCH_P6: return "Instruction set of the Pentium 6, 1995 (also knows as i686)";
-                case Arch.ARCH_MMX: return string.Empty;
-                case Arch.ARCH_SSE: return string.Empty;
-                case Arch.ARCH_SSE2: return string.Empty;
-                case Arch.ARCH_SSE3: return string.Empty;
-                case Arch.ARCH_SSSE3: return string.Empty;
-                case Arch.ARCH_SSE4_1: return string.Empty;
-                case Arch.ARCH_SSE4_2: return string.Empty;
-                case Arch.ARCH_SSE4A: return "Instruction set SSE4A, AMD";
-                case Arch.ARCH_SSE5: return "Instruction set SSE5, AMD";
-                case Arch.ARCH_AVX: return string.Empty;
-                case Arch.ARCH_AVX2: return string.Empty;
-                case Arch.ARCH_AVX512_F: return "AVX512-F - Foundation";
-                case Arch.ARCH_AVX512_CD: return "AVX512-CD - Conflict Detection";
-                case Arch.ARCH_AVX512_ER: return "AVX512-ER - Exponential and Reciprocal";
-                case Arch.ARCH_AVX512_PF: return "AVX512-PF - Prefetch";
-                case Arch.ARCH_AVX512_BW: return "AVX512-BW - Byte and Word";
-                case Arch.ARCH_AVX512_DQ: return "AVX512-DQ - Doubleword and QuadWord";
-                case Arch.ARCH_AVX512_VL: return "AVX512-VL - Vector Length Extensions";
-                case Arch.ARCH_AVX512_IFMA: return "AVX512-IFMA - Integer Fused Multiply Add";
-                case Arch.ARCH_AVX512_VBMI: return "AVX512-VBMI - Vector Byte Manipulation Instructions";
-                case Arch.ARCH_AVX512_VPOPCNTDQ: return "AVX512-VPOPCNTDQ - Vector Population Count instructions for Dwords and Qwords";
-                case Arch.ARCH_AVX512_4VNNIW: return "AVX512-4VNNIW - Vector Neural Network Instructions Word variable precision";
-                case Arch.ARCH_AVX512_4FMAPS: return "AVX512-4FMAPS - Fused Multiply Accumulation Packed Single precision";
-                case Arch.ARCH_AVX512_VBMI2: return "AVX512-VBMI2 - Vector Byte Manipulation Instructions 2";
-                case Arch.ARCH_AVX512_VNNI: return "AVX512-VNNI - Vector Neural Network Instructions";
-                case Arch.ARCH_AVX512_BITALG: return "AVX512-BITALG - Bit Algorithms";
-                case Arch.ARCH_AVX512_GFNI: return " AVX512-GFNI - Galois Field New Instructions";
-                case Arch.ARCH_AVX512_VAES: return "AVX512-VPCLMULQDQ - EVEX-encoded Advanced Encryption Standard";
-                case Arch.ARCH_AVX512_VPCLMULQDQ: return "AVX512-VPCLMULQDQ";
-                case Arch.ARCH_AVX512_BF16: return "AVX512-BF16 - Brain Float 16 extension (Bfloat16)";
-                case Arch.ARCH_AVX512_VP2INTERSECT: return "AVX512-VP2INTERSECT - ";
-
-                case Arch.ARCH_ADX: return "Multi-Precision Add-Carry Instruction Extension";
-                case Arch.ARCH_AES: return "Advanced Encryption Standard Extension";
-                case Arch.ARCH_VMX: return "Virtual Machine Extension";
-                case Arch.ARCH_BMI1: return "Bit Manipulation Instruction Set 1";
-                case Arch.ARCH_BMI2: return "Bit Manipulation Instruction Set 2";
-                case Arch.ARCH_F16C: return "Half Precision Floating Point Conversion Instructions";
-                case Arch.ARCH_FMA: return "Fused Multiply-Add Instructions";
-                case Arch.ARCH_FSGSBASE: return string.Empty;
-                case Arch.ARCH_HLE: return "Hardware Lock Elision Instructions";
-                case Arch.ARCH_INVPCID: return "Invalidate Translation Lookaside Buffers (TLBs)";
-                case Arch.ARCH_SHA: return "Secure Hash Algorithm Extensions";
-                case Arch.ARCH_RTM: return "Transactional Synchronization Extensions";
-                case Arch.ARCH_MPX: return "Memory Protection Extensions";
-                case Arch.ARCH_PCLMULQDQ: return "Carry-Less Multiplication Instructions";
-                case Arch.ARCH_LZCNT: return "Leading zero count";
-                case Arch.ARCH_PREFETCHWT1: return string.Empty;
-                case Arch.ARCH_PRFCHW: return string.Empty;
-                case Arch.ARCH_RDPID: return "Read processor ID";
-                case Arch.ARCH_RDRAND: return "Read random number";
-                case Arch.ARCH_RDSEED: return "Reed random seed";
-                case Arch.ARCH_XSAVEOPT: return "Save Processor Extended States Optimized";
-                case Arch.ARCH_X64: return "64-bit Mode Instructions";
-                case Arch.ARCH_IA64: return "Intel Architecture 64";
-                case Arch.ARCH_UNDOC: return "Undocumented Instructions";
-                case Arch.ARCH_AMD: return "AMD";
-                case Arch.ARCH_TBM: return "Trailing Bit Manipulation (AMD)";
-                case Arch.ARCH_3DNOW: return "3DNow (AMD)";
-                case Arch.ARCH_CYRIX: return "Cyrix Instructions Set";
-                case Arch.ARCH_CYRIXM: return "Cyrix M Instruction Set";
-
-                case Arch.ARCH_CLDEMOTE: return string.Empty;
-                case Arch.ARCH_MOVDIR64B: return string.Empty;
-                case Arch.ARCH_MOVDIRI: return string.Empty;
-                case Arch.ARCH_PCONFIG: return string.Empty;
-                case Arch.ARCH_WAITPKG: return string.Empty;
-                case Arch.ARCH_ENQCMD: return "Enqueue Stores";
-
-                default:
-                    return string.Empty;
-            }
+                Arch.ARCH_NONE => string.Empty,
+                Arch.ARCH_8086 => string.Empty,
+                Arch.ARCH_186 => string.Empty,
+                Arch.ARCH_286 => string.Empty,
+                Arch.ARCH_386 => string.Empty,
+                Arch.ARCH_486 => string.Empty,
+                Arch.ARCH_PENT => "Instruction set of the Pentium, 1994 (also known as i585)",
+                Arch.ARCH_P6 => "Instruction set of the Pentium 6, 1995 (also knows as i686)",
+                Arch.ARCH_MMX => string.Empty,
+                Arch.ARCH_SSE => string.Empty,
+                Arch.ARCH_SSE2 => string.Empty,
+                Arch.ARCH_SSE3 => string.Empty,
+                Arch.ARCH_SSSE3 => string.Empty,
+                Arch.ARCH_SSE4_1 => string.Empty,
+                Arch.ARCH_SSE4_2 => string.Empty,
+                Arch.ARCH_SSE4A => "Instruction set SSE4A, AMD",
+                Arch.ARCH_SSE5 => "Instruction set SSE5, AMD",
+                Arch.ARCH_AVX => string.Empty,
+                Arch.ARCH_AVX2 => string.Empty,
+                Arch.ARCH_AVX512_F => "AVX512-F - Foundation",
+                Arch.ARCH_AVX512_CD => "AVX512-CD - Conflict Detection",
+                Arch.ARCH_AVX512_ER => "AVX512-ER - Exponential and Reciprocal",
+                Arch.ARCH_AVX512_PF => "AVX512-PF - Prefetch",
+                Arch.ARCH_AVX512_BW => "AVX512-BW - Byte and Word",
+                Arch.ARCH_AVX512_DQ => "AVX512-DQ - Doubleword and QuadWord",
+                Arch.ARCH_AVX512_VL => "AVX512-VL - Vector Length Extensions",
+                Arch.ARCH_AVX512_IFMA => "AVX512-IFMA - Integer Fused Multiply Add",
+                Arch.ARCH_AVX512_VBMI => "AVX512-VBMI - Vector Byte Manipulation Instructions",
+                Arch.ARCH_AVX512_VPOPCNTDQ => "AVX512-VPOPCNTDQ - Vector Population Count instructions for Dwords and Qwords",
+                Arch.ARCH_AVX512_4VNNIW => "AVX512-4VNNIW - Vector Neural Network Instructions Word variable precision",
+                Arch.ARCH_AVX512_4FMAPS => "AVX512-4FMAPS - Fused Multiply Accumulation Packed Single precision",
+                Arch.ARCH_AVX512_VBMI2 => "AVX512-VBMI2 - Vector Byte Manipulation Instructions 2",
+                Arch.ARCH_AVX512_VNNI => "AVX512-VNNI - Vector Neural Network Instructions",
+                Arch.ARCH_AVX512_BITALG => "AVX512-BITALG - Bit Algorithms",
+                Arch.ARCH_AVX512_GFNI => " AVX512-GFNI - Galois Field New Instructions",
+                Arch.ARCH_AVX512_VAES => "AVX512-VPCLMULQDQ - EVEX-encoded Advanced Encryption Standard",
+                Arch.ARCH_AVX512_VPCLMULQDQ => "AVX512-VPCLMULQDQ",
+                Arch.ARCH_AVX512_BF16 => "AVX512-BF16 - Brain Float 16 extension (Bfloat16)",
+                Arch.ARCH_AVX512_VP2INTERSECT => "AVX512-VP2INTERSECT - ",
+                Arch.ARCH_ADX => "Multi-Precision Add-Carry Instruction Extension",
+                Arch.ARCH_AES => "Advanced Encryption Standard Extension",
+                Arch.ARCH_VMX => "Virtual Machine Extension",
+                Arch.ARCH_BMI1 => "Bit Manipulation Instruction Set 1",
+                Arch.ARCH_BMI2 => "Bit Manipulation Instruction Set 2",
+                Arch.ARCH_F16C => "Half Precision Floating Point Conversion Instructions",
+                Arch.ARCH_FMA => "Fused Multiply-Add Instructions",
+                Arch.ARCH_FSGSBASE => string.Empty,
+                Arch.ARCH_HLE => "Hardware Lock Elision Instructions",
+                Arch.ARCH_INVPCID => "Invalidate Translation Lookaside Buffers (TLBs)",
+                Arch.ARCH_SHA => "Secure Hash Algorithm Extensions",
+                Arch.ARCH_RTM => "Transactional Synchronization Extensions",
+                Arch.ARCH_MPX => "Memory Protection Extensions",
+                Arch.ARCH_PCLMULQDQ => "Carry-Less Multiplication Instructions",
+                Arch.ARCH_LZCNT => "Leading zero count",
+                Arch.ARCH_PREFETCHWT1 => string.Empty,
+                Arch.ARCH_PRFCHW => string.Empty,
+                Arch.ARCH_RDPID => "Read processor ID",
+                Arch.ARCH_RDRAND => "Read random number",
+                Arch.ARCH_RDSEED => "Reed random seed",
+                Arch.ARCH_XSAVEOPT => "Save Processor Extended States Optimized",
+                Arch.ARCH_X64 => "64-bit Mode Instructions",
+                Arch.ARCH_IA64 => "Intel Architecture 64",
+                Arch.ARCH_UNDOC => "Undocumented Instructions",
+                Arch.ARCH_AMD => "AMD",
+                Arch.ARCH_TBM => "Trailing Bit Manipulation (AMD)",
+                Arch.ARCH_3DNOW => "3DNow (AMD)",
+                Arch.ARCH_CYRIX => "Cyrix Instructions Set",
+                Arch.ARCH_CYRIXM => "Cyrix M Instruction Set",
+                Arch.ARCH_CLDEMOTE => string.Empty,
+                Arch.ARCH_MOVDIR64B => string.Empty,
+                Arch.ARCH_MOVDIRI => string.Empty,
+                Arch.ARCH_PCONFIG => string.Empty,
+                Arch.ARCH_WAITPKG => string.Empty,
+                Arch.ARCH_ENQCMD => "Enqueue Stores",
+                _ => string.Empty,
+            };
         }
 
         public static string ToString(IEnumerable<Arch> archs)
         {
-            if (archs == null) throw new ArgumentNullException(nameof(archs));
+            ArgumentNullException.ThrowIfNull(archs);
 
             bool empty = true;
             StringBuilder sb = new StringBuilder();

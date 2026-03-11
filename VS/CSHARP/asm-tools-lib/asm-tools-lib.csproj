@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net10.0-windows;net48</TargetFrameworks>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <RootNamespace>AsmTools</RootNamespace>
-    <ImplicitUsings Condition="'$(TargetFramework)' != 'net48'">enable</ImplicitUsings>
-    <Nullable Condition="'$(TargetFramework)' != 'net48'">enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <NoWarn>CS1668</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- Using prerelease to match Microsoft.CodeAnalysis.LanguageServer.Protocol version in asm-dude2-ls-lib -->
+    <!-- Used by ExpressionEvaluator.cs -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.6.0-2.26151.2" />
   </ItemGroup>
 

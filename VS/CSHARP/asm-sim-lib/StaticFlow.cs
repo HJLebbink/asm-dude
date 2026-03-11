@@ -66,14 +66,14 @@ using System.Diagnostics;
             int lineNumberBegin,
             int lineNumberEnd)
         {
-            ISet<Rn> regs = new HashSet<Rn>();
+            HashSet<Rn> regs = [];
             Flags flags = Flags.NONE;
             bool mem = false;
             (string, string, string) dummyKeys = (string.Empty, string.Empty, string.Empty);
             for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
             {
                 (Mnemonic mnemonic, string[] args) content = this.Get_Line(lineNumber);
-                using Mnemonics.OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, this.tools_);
+                using Mnemonics.OpcodeBase? opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, this.tools_);
                 if (opcodeBase != null)
                 {
                     flags |= opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic;
@@ -278,7 +278,7 @@ using System.Diagnostics;
 
         public ISet<int> FutureLineNumbers(int lineNumber)
         {
-            ISet<int> result = new HashSet<int>();
+            HashSet<int> result = [];
             FutureLineNumbers_Local(lineNumber);
             return result;
 

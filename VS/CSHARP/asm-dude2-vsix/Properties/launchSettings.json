@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "asm-dude2-vsix": {
+      "commandName": "Executable",
+      "executablePath": "$(DevEnvDir)devenv.exe",
+      "commandLineArgs": "/rootSuffix Exp",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}

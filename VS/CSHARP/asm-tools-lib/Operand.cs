@@ -41,7 +41,7 @@ namespace AsmTools
         /// <summary>constructor</summary>
         public Operand(string token, bool isCapitals, AsmParameters p = null)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
+            ArgumentNullException.ThrowIfNull(token);
 
             token = AsmSourceTools.ToCapitals(token, isCapitals);
             this.str_ = token;

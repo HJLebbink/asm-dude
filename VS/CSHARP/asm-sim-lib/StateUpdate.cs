@@ -289,30 +289,26 @@ namespace AsmSim
 
         private BoolExpr Get_Raw_Private(Rn reg, bool undef)
         {
-            switch (reg)
+            return reg switch
             {
-                case Rn.RAX: return undef ? this.rax_U_ : this.rax_;
-                case Rn.RBX: return undef ? this.rbx_U_ : this.rbx_;
-                case Rn.RCX: return undef ? this.rcx_U_ : this.rcx_;
-                case Rn.RDX: return undef ? this.rdx_U_ : this.rdx_;
-
-                case Rn.RSI: return undef ? this.rsi_U_ : this.rsi_;
-                case Rn.RDI: return undef ? this.rdi_U_ : this.rdi_;
-                case Rn.RBP: return undef ? this.rbp_U_ : this.rbp_;
-                case Rn.RSP: return undef ? this.rsp_U_ : this.rsp_;
-
-                case Rn.R8: return undef ? this.r8_U_ : this.r8_;
-                case Rn.R9: return undef ? this.r9_U_ : this.r9_;
-                case Rn.R10: return undef ? this.r10_U_ : this.r10_;
-                case Rn.R11: return undef ? this.r11_U_ : this.r11_;
-
-                case Rn.R12: return undef ? this.r12_U_ : this.r12_;
-                case Rn.R13: return undef ? this.r13_U_ : this.r13_;
-                case Rn.R14: return undef ? this.r14_U_ : this.r14_;
-                case Rn.R15: return undef ? this.r15_U_ : this.r15_;
-
-                default: throw new Exception();
-            }
+                Rn.RAX => undef ? this.rax_U_ : this.rax_,
+                Rn.RBX => undef ? this.rbx_U_ : this.rbx_,
+                Rn.RCX => undef ? this.rcx_U_ : this.rcx_,
+                Rn.RDX => undef ? this.rdx_U_ : this.rdx_,
+                Rn.RSI => undef ? this.rsi_U_ : this.rsi_,
+                Rn.RDI => undef ? this.rdi_U_ : this.rdi_,
+                Rn.RBP => undef ? this.rbp_U_ : this.rbp_,
+                Rn.RSP => undef ? this.rsp_U_ : this.rsp_,
+                Rn.R8 => undef ? this.r8_U_ : this.r8_,
+                Rn.R9 => undef ? this.r9_U_ : this.r9_,
+                Rn.R10 => undef ? this.r10_U_ : this.r10_,
+                Rn.R11 => undef ? this.r11_U_ : this.r11_,
+                Rn.R12 => undef ? this.r12_U_ : this.r12_,
+                Rn.R13 => undef ? this.r13_U_ : this.r13_,
+                Rn.R14 => undef ? this.r14_U_ : this.r14_,
+                Rn.R15 => undef ? this.r15_U_ : this.r15_,
+                _ => throw new Exception(),
+            };
         }
 
         private BoolExpr Get_Private(Flags flag, bool undef)
@@ -338,17 +334,17 @@ namespace AsmSim
 
         private BoolExpr Get_Raw_Private(Flags flag, bool undef)
         {
-            switch (flag)
+            return flag switch
             {
-                case Flags.CF: return undef ? this.cf_U_ : this.cf_;
-                case Flags.PF: return undef ? this.pf_U_ : this.pf_;
-                case Flags.AF: return undef ? this.af_U_ : this.af_;
-                case Flags.ZF: return undef ? this.zf_U_ : this.zf_;
-                case Flags.SF: return undef ? this.sf_U_ : this.sf_;
-                case Flags.OF: return undef ? this.of_U_ : this.of_;
-                case Flags.DF: return undef ? this.df_U_ : this.df_;
-                default: throw new Exception();
-            }
+                Flags.CF => undef ? this.cf_U_ : this.cf_,
+                Flags.PF => undef ? this.pf_U_ : this.pf_,
+                Flags.AF => undef ? this.af_U_ : this.af_,
+                Flags.ZF => undef ? this.zf_U_ : this.zf_,
+                Flags.SF => undef ? this.sf_U_ : this.sf_,
+                Flags.OF => undef ? this.of_U_ : this.of_,
+                Flags.DF => undef ? this.df_U_ : this.df_,
+                _ => throw new Exception(),
+            };
         }
         #endregion
 

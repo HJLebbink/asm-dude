@@ -393,7 +393,7 @@ namespace AsmTools
 
         public HashSet<Arch> Get_Arch_Switched_On()
         {
-            HashSet<Arch> set = new HashSet<Arch>();
+            HashSet<Arch> set = [];
             foreach (Arch arch in Enum.GetValues(typeof(Arch)))
             {
                 if (this.Is_Arch_Switched_On(arch))
@@ -406,165 +406,87 @@ namespace AsmTools
 
         public bool Is_Arch_Switched_On(Arch arch)
         {
-            switch (arch)
+            return arch switch
             {
-                case Arch.ARCH_NONE:
-                    return true;
-                case Arch.ARCH_8086:
-                    return this.ARCH_8086;
-                case Arch.ARCH_186:
-                    return this.ARCH_186;
-                case Arch.ARCH_286:
-                    return this.ARCH_286;
-                case Arch.ARCH_386:
-                    return this.ARCH_386;
-                case Arch.ARCH_486:
-                    return this.ARCH_486;
-                case Arch.ARCH_PENT:
-                    return this.ARCH_PENT;
-                case Arch.ARCH_P6:
-                    return this.ARCH_P6;
-                case Arch.ARCH_MMX:
-                    return this.ARCH_MMX;
-                case Arch.ARCH_SSE:
-                    return this.ARCH_SSE;
-                case Arch.ARCH_SSE2:
-                    return this.ARCH_SSE2;
-                case Arch.ARCH_SSE3:
-                    return this.ARCH_SSE3;
-                case Arch.ARCH_SSSE3:
-                    return this.ARCH_SSSE3;
-                case Arch.ARCH_SSE4_1:
-                    return this.ARCH_SSE4_1;
-                case Arch.ARCH_SSE4_2:
-                    return this.ARCH_SSE4_2;
-                case Arch.ARCH_SSE4A:
-                    return this.ARCH_SSE4A;
-                case Arch.ARCH_SSE5:
-                    return this.ARCH_SSE5;
-                case Arch.ARCH_AVX:
-                    return this.ARCH_AVX;
-                case Arch.ARCH_AVX2:
-                    return this.ARCH_AVX2;
-                case Arch.ARCH_AVX512_F:
-                    return this.ARCH_AVX512_F;
-                case Arch.ARCH_AVX512_CD:
-                    return this.ARCH_AVX512_CD;
-                case Arch.ARCH_AVX512_ER:
-                    return this.ARCH_AVX512_ER;
-                case Arch.ARCH_AVX512_PF:
-                    return this.ARCH_AVX512_PF;
-                case Arch.ARCH_AVX512_BW:
-                    return this.ARCH_AVX512_BW;
-                case Arch.ARCH_AVX512_DQ:
-                    return this.ARCH_AVX512_DQ;
-                case Arch.ARCH_AVX512_VL:
-                    return this.ARCH_AVX512_VL;
-                case Arch.ARCH_AVX512_IFMA:
-                    return this.ARCH_AVX512_IFMA;
-                case Arch.ARCH_AVX512_VBMI:
-                    return this.ARCH_AVX512_VBMI;
-                case Arch.ARCH_AVX512_VPOPCNTDQ:
-                    return this.ARCH_AVX512_VPOPCNTDQ;
-                case Arch.ARCH_AVX512_4VNNIW:
-                    return this.ARCH_AVX512_4VNNIW;
-                case Arch.ARCH_AVX512_4FMAPS:
-                    return this.ARCH_AVX512_4FMAPS;
-                case Arch.ARCH_AVX512_VBMI2:
-                    return this.ARCH_AVX512_VBMI2;
-                case Arch.ARCH_AVX512_VNNI:
-                    return this.ARCH_AVX512_VNNI;
-                case Arch.ARCH_AVX512_BITALG:
-                    return this.ARCH_AVX512_BITALG;
-                case Arch.ARCH_AVX512_GFNI:
-                    return this.ARCH_AVX512_GFNI;
-                case Arch.ARCH_AVX512_VAES:
-                    return this.ARCH_AVX512_VAES;
-                case Arch.ARCH_AVX512_VPCLMULQDQ:
-                    return this.ARCH_AVX512_VPCLMULQDQ;
-                case Arch.ARCH_AVX512_BF16:
-                    return this.ARCH_AVX512_BF16;
-                case Arch.ARCH_AVX512_VP2INTERSECT:
-                    return this.ARCH_AVX512_VP2INTERSECT;
-                case Arch.ARCH_ADX:
-                    return this.ARCH_ADX;
-                case Arch.ARCH_AES:
-                    return this.ARCH_AES;
-                case Arch.ARCH_VMX:
-                    return this.ARCH_VMX;
-                case Arch.ARCH_BMI1:
-                    return this.ARCH_BMI1;
-                case Arch.ARCH_BMI2:
-                    return this.ARCH_BMI2;
-                case Arch.ARCH_F16C:
-                    return this.ARCH_F16C;
-                case Arch.ARCH_FMA:
-                    return this.ARCH_FMA;
-                case Arch.ARCH_FSGSBASE:
-                    return this.ARCH_FSGSBASE;
-                case Arch.ARCH_HLE:
-                    return this.ARCH_HLE;
-                case Arch.ARCH_INVPCID:
-                    return this.ARCH_INVPCID;
-                case Arch.ARCH_SHA:
-                    return this.ARCH_SHA;
-                case Arch.ARCH_RTM:
-                    return this.ARCH_RTM;
-                case Arch.ARCH_MPX:
-                    return this.ARCH_MPX;
-                case Arch.ARCH_PCLMULQDQ:
-                    return this.ARCH_PCLMULQDQ;
-                case Arch.ARCH_LZCNT:
-                    return this.ARCH_LZCNT;
-                case Arch.ARCH_PREFETCHWT1:
-                    return this.ARCH_PREFETCHWT1;
-                case Arch.ARCH_PRFCHW:
-                    return this.ARCH_PRFCHW;
-                case Arch.ARCH_RDPID:
-                    return this.ARCH_RDPID;
-                case Arch.ARCH_RDRAND:
-                    return this.ARCH_RDRAND;
-                case Arch.ARCH_RDSEED:
-                    return this.ARCH_RDSEED;
-                case Arch.ARCH_XSAVEOPT:
-                    return this.ARCH_XSAVEOPT;
-                case Arch.ARCH_SGX1:
-                    return this.ARCH_SGX1;
-                case Arch.ARCH_SGX2:
-                    return this.ARCH_SGX2;
-                case Arch.ARCH_SMX:
-                    return this.ARCH_SMX;
-                case Arch.ARCH_CLDEMOTE:
-                    return this.ARCH_CLDEMOTE;
-                case Arch.ARCH_MOVDIR64B:
-                    return this.ARCH_MOVDIR64B;
-                case Arch.ARCH_MOVDIRI:
-                    return this.ARCH_MOVDIRI;
-                case Arch.ARCH_PCONFIG:
-                    return this.ARCH_PCONFIG;
-                case Arch.ARCH_WAITPKG:
-                    return this.ARCH_WAITPKG;
-                case Arch.ARCH_ENQCMD:
-                    return this.ARCH_ENQCMD;
-                case Arch.ARCH_X64:
-                    return this.ARCH_X64;
-                case Arch.ARCH_IA64:
-                    return this.ARCH_IA64;
-                case Arch.ARCH_UNDOC:
-                    return this.ARCH_UNDOC;
-                case Arch.ARCH_AMD:
-                    return this.ARCH_AMD;
-                case Arch.ARCH_TBM:
-                    return this.ARCH_TBM;
-                case Arch.ARCH_3DNOW:
-                    return this.ARCH_3DNOW;
-                case Arch.ARCH_CYRIX:
-                    return this.ARCH_CYRIX;
-                case Arch.ARCH_CYRIXM:
-                    return this.ARCH_CYRIXM;
-                default:
-                    return false; // TODO return error;
-            }
+                Arch.ARCH_NONE => true,
+                Arch.ARCH_8086 => this.ARCH_8086,
+                Arch.ARCH_186 => this.ARCH_186,
+                Arch.ARCH_286 => this.ARCH_286,
+                Arch.ARCH_386 => this.ARCH_386,
+                Arch.ARCH_486 => this.ARCH_486,
+                Arch.ARCH_PENT => this.ARCH_PENT,
+                Arch.ARCH_P6 => this.ARCH_P6,
+                Arch.ARCH_MMX => this.ARCH_MMX,
+                Arch.ARCH_SSE => this.ARCH_SSE,
+                Arch.ARCH_SSE2 => this.ARCH_SSE2,
+                Arch.ARCH_SSE3 => this.ARCH_SSE3,
+                Arch.ARCH_SSSE3 => this.ARCH_SSSE3,
+                Arch.ARCH_SSE4_1 => this.ARCH_SSE4_1,
+                Arch.ARCH_SSE4_2 => this.ARCH_SSE4_2,
+                Arch.ARCH_SSE4A => this.ARCH_SSE4A,
+                Arch.ARCH_SSE5 => this.ARCH_SSE5,
+                Arch.ARCH_AVX => this.ARCH_AVX,
+                Arch.ARCH_AVX2 => this.ARCH_AVX2,
+                Arch.ARCH_AVX512_F => this.ARCH_AVX512_F,
+                Arch.ARCH_AVX512_CD => this.ARCH_AVX512_CD,
+                Arch.ARCH_AVX512_ER => this.ARCH_AVX512_ER,
+                Arch.ARCH_AVX512_PF => this.ARCH_AVX512_PF,
+                Arch.ARCH_AVX512_BW => this.ARCH_AVX512_BW,
+                Arch.ARCH_AVX512_DQ => this.ARCH_AVX512_DQ,
+                Arch.ARCH_AVX512_VL => this.ARCH_AVX512_VL,
+                Arch.ARCH_AVX512_IFMA => this.ARCH_AVX512_IFMA,
+                Arch.ARCH_AVX512_VBMI => this.ARCH_AVX512_VBMI,
+                Arch.ARCH_AVX512_VPOPCNTDQ => this.ARCH_AVX512_VPOPCNTDQ,
+                Arch.ARCH_AVX512_4VNNIW => this.ARCH_AVX512_4VNNIW,
+                Arch.ARCH_AVX512_4FMAPS => this.ARCH_AVX512_4FMAPS,
+                Arch.ARCH_AVX512_VBMI2 => this.ARCH_AVX512_VBMI2,
+                Arch.ARCH_AVX512_VNNI => this.ARCH_AVX512_VNNI,
+                Arch.ARCH_AVX512_BITALG => this.ARCH_AVX512_BITALG,
+                Arch.ARCH_AVX512_GFNI => this.ARCH_AVX512_GFNI,
+                Arch.ARCH_AVX512_VAES => this.ARCH_AVX512_VAES,
+                Arch.ARCH_AVX512_VPCLMULQDQ => this.ARCH_AVX512_VPCLMULQDQ,
+                Arch.ARCH_AVX512_BF16 => this.ARCH_AVX512_BF16,
+                Arch.ARCH_AVX512_VP2INTERSECT => this.ARCH_AVX512_VP2INTERSECT,
+                Arch.ARCH_ADX => this.ARCH_ADX,
+                Arch.ARCH_AES => this.ARCH_AES,
+                Arch.ARCH_VMX => this.ARCH_VMX,
+                Arch.ARCH_BMI1 => this.ARCH_BMI1,
+                Arch.ARCH_BMI2 => this.ARCH_BMI2,
+                Arch.ARCH_F16C => this.ARCH_F16C,
+                Arch.ARCH_FMA => this.ARCH_FMA,
+                Arch.ARCH_FSGSBASE => this.ARCH_FSGSBASE,
+                Arch.ARCH_HLE => this.ARCH_HLE,
+                Arch.ARCH_INVPCID => this.ARCH_INVPCID,
+                Arch.ARCH_SHA => this.ARCH_SHA,
+                Arch.ARCH_RTM => this.ARCH_RTM,
+                Arch.ARCH_MPX => this.ARCH_MPX,
+                Arch.ARCH_PCLMULQDQ => this.ARCH_PCLMULQDQ,
+                Arch.ARCH_LZCNT => this.ARCH_LZCNT,
+                Arch.ARCH_PREFETCHWT1 => this.ARCH_PREFETCHWT1,
+                Arch.ARCH_PRFCHW => this.ARCH_PRFCHW,
+                Arch.ARCH_RDPID => this.ARCH_RDPID,
+                Arch.ARCH_RDRAND => this.ARCH_RDRAND,
+                Arch.ARCH_RDSEED => this.ARCH_RDSEED,
+                Arch.ARCH_XSAVEOPT => this.ARCH_XSAVEOPT,
+                Arch.ARCH_SGX1 => this.ARCH_SGX1,
+                Arch.ARCH_SGX2 => this.ARCH_SGX2,
+                Arch.ARCH_SMX => this.ARCH_SMX,
+                Arch.ARCH_CLDEMOTE => this.ARCH_CLDEMOTE,
+                Arch.ARCH_MOVDIR64B => this.ARCH_MOVDIR64B,
+                Arch.ARCH_MOVDIRI => this.ARCH_MOVDIRI,
+                Arch.ARCH_PCONFIG => this.ARCH_PCONFIG,
+                Arch.ARCH_WAITPKG => this.ARCH_WAITPKG,
+                Arch.ARCH_ENQCMD => this.ARCH_ENQCMD,
+                Arch.ARCH_X64 => this.ARCH_X64,
+                Arch.ARCH_IA64 => this.ARCH_IA64,
+                Arch.ARCH_UNDOC => this.ARCH_UNDOC,
+                Arch.ARCH_AMD => this.ARCH_AMD,
+                Arch.ARCH_TBM => this.ARCH_TBM,
+                Arch.ARCH_3DNOW => this.ARCH_3DNOW,
+                Arch.ARCH_CYRIX => this.ARCH_CYRIX,
+                Arch.ARCH_CYRIXM => this.ARCH_CYRIXM,
+                _ => false,// TODO return error;
+            };
         }
 
         public int MaxFileLines

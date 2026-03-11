@@ -45,7 +45,7 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     {
         try
         {
-            _client = await LspProcessTestClient.StartAsync();
+            this._client = await LspProcessTestClient.StartAsync();
         }
         catch (Exception ex)
         {
@@ -56,9 +56,9 @@ public class LspProcessIntegrationTests : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        if (_client != null)
+        if (this._client != null)
         {
-            await _client.DisposeAsync();
+            await this._client.DisposeAsync();
         }
     }
 
@@ -68,7 +68,7 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Initialize_ShouldReturnCapabilities()
     {
         // Act
-        var result = await _client!.InitializeAsync();
+        var result = await this._client!.InitializeAsync();
 
         // Assert
         result.Should().NotBeNull();
@@ -88,10 +88,10 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Shutdown_ShouldComplete()
     {
         // Arrange
-        await _client!.InitializeAsync();
+        await this._client!.InitializeAsync();
 
         // Act
-        await _client.ShutdownAsync();
+        await this._client.ShutdownAsync();
 
         // Assert - If we get here without exception, shutdown succeeded
     }
@@ -104,11 +104,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Hover_OnMnemonic_ShouldReturnDescription()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         // Act
-        var result = await _client.HoverAsync("file:///test.asm", line: 0, character: 1);
+        var result = await this._client.HoverAsync("file:///test.asm", line: 0, character: 1);
 
         // Assert
         result.Should().NotBeNull("hover on MOV should return documentation");
@@ -120,11 +120,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Hover_OnRegister_ShouldReturnDescription()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         // Act
-        var result = await _client.HoverAsync("file:///test.asm", line: 0, character: 5);
+        var result = await this._client.HoverAsync("file:///test.asm", line: 0, character: 5);
 
         // Assert
         result.Should().NotBeNull("hover on RAX should return register documentation");
@@ -134,11 +134,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Hover_OnWhitespace_ShouldReturnNull()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         // Act
-        var result = await _client.HoverAsync("file:///test.asm", line: 0, character: 3);
+        var result = await this._client.HoverAsync("file:///test.asm", line: 0, character: 3);
 
         // Assert - whitespace should return null
         result.Should().BeNull("hover on whitespace should return null");
@@ -152,11 +152,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Completion_OnPartialMnemonic_ShouldReturnSuggestions()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mo");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mo");
 
         // Act
-        var result = await _client.CompletionAsync("file:///test.asm", line: 0, character: 2);
+        var result = await this._client.CompletionAsync("file:///test.asm", line: 0, character: 2);
 
         // Assert
         result.Should().NotBeNull();
@@ -178,11 +178,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Completion_AfterMnemonic_ShouldReturnOperandSuggestions()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov ");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov ");
 
         // Act
-        var result = await _client.CompletionAsync("file:///test.asm", line: 0, character: 4);
+        var result = await this._client.CompletionAsync("file:///test.asm", line: 0, character: 4);
 
         // Assert
         result.Should().NotBeNull("should get operand completion suggestions after mnemonic");
@@ -196,11 +196,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task InlayHints_OnDocument_ShouldReturnHints()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov rax, 0x10\nadd rbx, 255");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov rax, 0x10\nadd rbx, 255");
 
         // Act
-        var result = await _client.InlayHintsAsync("file:///test.asm", 0, 0, 2, 20);
+        var result = await this._client.InlayHintsAsync("file:///test.asm", 0, 0, 2, 20);
 
         // Assert
         result.Should().NotBeNull();
@@ -212,11 +212,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task InlayHints_EmptyDocument_ShouldReturnEmpty()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "");
 
         // Act
-        var result = await _client.InlayHintsAsync("file:///test.asm", 0, 0, 1, 0);
+        var result = await this._client.InlayHintsAsync("file:///test.asm", 0, 0, 1, 0);
 
         // Assert
         result.Should().NotBeNull();
@@ -231,11 +231,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task SemanticTokens_WithCode_ShouldReturnTokenData()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         // Act
-        var result = await _client.SemanticTokensAsync("file:///test.asm");
+        var result = await this._client.SemanticTokensAsync("file:///test.asm");
 
         // Assert
         result.Should().NotBeNull();
@@ -251,11 +251,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task SemanticTokens_EmptyDocument_ShouldReturnEmptyData()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "");
 
         // Act
-        var result = await _client.SemanticTokensAsync("file:///test.asm");
+        var result = await this._client.SemanticTokensAsync("file:///test.asm");
 
         // Assert
         result.Should().NotBeNull();
@@ -268,12 +268,12 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task SemanticTokens_WithLabels_ShouldReturnLabelTokens()
     {
         // Arrange
-        await _client!.InitializeAsync();
+        await this._client!.InitializeAsync();
         var code = "loop_start:\n    mov rax, rbx\n    jmp loop_start";
-        await _client.OpenDocumentAsync("file:///test.asm", code);
+        await this._client.OpenDocumentAsync("file:///test.asm", code);
 
         // Act
-        var result = await _client.SemanticTokensAsync("file:///test.asm");
+        var result = await this._client.SemanticTokensAsync("file:///test.asm");
 
         // Assert
         result.Should().NotBeNull();
@@ -292,11 +292,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task SignatureHelp_AfterMnemonic_ShouldReturnSignatures()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov ");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov ");
 
         // Act
-        var result = await _client.SignatureHelpAsync("file:///test.asm", line: 0, character: 4);
+        var result = await this._client.SignatureHelpAsync("file:///test.asm", line: 0, character: 4);
 
         // Assert
         result.Should().NotBeNull("MOV should have signature help");
@@ -313,12 +313,12 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Definition_OnLabelReference_ShouldReturnDefinition()
     {
         // Arrange
-        await _client!.InitializeAsync();
+        await this._client!.InitializeAsync();
         var code = "my_label:\n    mov rax, rbx\n    jmp my_label";
-        await _client.OpenDocumentAsync("file:///test.asm", code);
+        await this._client.OpenDocumentAsync("file:///test.asm", code);
 
         // Act
-        var result = await _client.DefinitionAsync("file:///test.asm", line: 2, character: 8);
+        var result = await this._client.DefinitionAsync("file:///test.asm", line: 2, character: 8);
 
         // Assert
         result.Should().NotBeNull("clicking on label reference should go to definition");
@@ -328,11 +328,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task Definition_OnMnemonic_ShouldReturnNull()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         // Act
-        var result = await _client.DefinitionAsync("file:///test.asm", line: 0, character: 1);
+        var result = await this._client.DefinitionAsync("file:///test.asm", line: 0, character: 1);
 
         // Assert - mnemonics don't have definitions
         result.Should().BeNull("mnemonics don't have definitions");
@@ -346,12 +346,12 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task References_OnLabel_ShouldFindAllOccurrences()
     {
         // Arrange
-        await _client!.InitializeAsync();
+        await this._client!.InitializeAsync();
         var code = "my_label:\n    mov rax, rbx\n    jmp my_label\n    call my_label";
-        await _client.OpenDocumentAsync("file:///test.asm", code);
+        await this._client.OpenDocumentAsync("file:///test.asm", code);
 
         // Act
-        var result = await _client.ReferencesAsync("file:///test.asm", line: 0, character: 2);
+        var result = await this._client.ReferencesAsync("file:///test.asm", line: 0, character: 2);
 
         // Assert
         result.Should().NotBeNull("label should have references");
@@ -368,12 +368,12 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task FoldingRanges_WithRegions_ShouldReturnRanges()
     {
         // Arrange
-        await _client!.InitializeAsync();
+        await this._client!.InitializeAsync();
         var code = "#region Test\nmov rax, rbx\nadd rcx, rdx\n#endregion";
-        await _client.OpenDocumentAsync("file:///test.asm", code);
+        await this._client.OpenDocumentAsync("file:///test.asm", code);
 
         // Act
-        var result = await _client.FoldingRangesAsync("file:///test.asm");
+        var result = await this._client.FoldingRangesAsync("file:///test.asm");
 
         // Assert
         result.Should().NotBeNull();
@@ -384,11 +384,11 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task FoldingRanges_WithoutRegions_ShouldReturnEmpty()
     {
         // Arrange
-        await _client!.InitializeAsync();
-        await _client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx\nadd rcx, rdx");
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx\nadd rcx, rdx");
 
         // Act
-        var result = await _client.FoldingRangesAsync("file:///test.asm");
+        var result = await this._client.FoldingRangesAsync("file:///test.asm");
 
         // Assert
         result.Should().NotBeNull();
@@ -403,23 +403,23 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     public async Task DocumentLifecycle_OpenCloseOpen_ShouldWork()
     {
         // Arrange
-        await _client!.InitializeAsync();
+        await this._client!.InitializeAsync();
 
         // Act - Open
-        await _client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
-        var hover1 = await _client.HoverAsync("file:///test.asm", 0, 1);
+        await this._client.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        var hover1 = await this._client.HoverAsync("file:///test.asm", 0, 1);
         hover1.Should().NotBeNull("first open should work");
 
         // Act - Close
-        await _client.CloseDocumentAsync("file:///test.asm");
+        await this._client.CloseDocumentAsync("file:///test.asm");
 
         // After close, hover should return null (document not found)
-        var hover2 = await _client.HoverAsync("file:///test.asm", 0, 1);
+        var hover2 = await this._client.HoverAsync("file:///test.asm", 0, 1);
         hover2.Should().BeNull("closed document should not have hover");
 
         // Act - Reopen
-        await _client.OpenDocumentAsync("file:///test.asm", "add rbx, rcx");
-        var hover3 = await _client.HoverAsync("file:///test.asm", 0, 1);
+        await this._client.OpenDocumentAsync("file:///test.asm", "add rbx, rcx");
+        var hover3 = await this._client.HoverAsync("file:///test.asm", 0, 1);
         hover3.Should().NotBeNull("reopened document should have hover");
     }
 

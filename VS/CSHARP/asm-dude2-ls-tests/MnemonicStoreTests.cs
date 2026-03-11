@@ -41,8 +41,8 @@ public class MnemonicStoreTests
     {
         var testDir = Directory.GetCurrentDirectory();
         var resourceDir = Path.Combine(testDir, "..", "..", "..", "..", "asm-dude2-ls-lib", "Resources");
-        _regularDataPath = Path.Combine(resourceDir, "signature-may2019.txt");
-        _handcraftedDataPath = Path.Combine(resourceDir, "signature-hand-1.txt");
+        this._regularDataPath = Path.Combine(resourceDir, "signature-may2019.txt");
+        this._handcraftedDataPath = Path.Combine(resourceDir, "signature-hand-1.txt");
 
         var options = new AsmLanguageServerOptions
         {
@@ -54,7 +54,7 @@ public class MnemonicStoreTests
             ARCH_AVX512_F = true
         };
 
-        _store = new MnemonicStore(_regularDataPath, _handcraftedDataPath, options);
+        this._store = new MnemonicStore(this._regularDataPath, this._handcraftedDataPath, options);
     }
 
     #region Basic Functionality Tests
@@ -65,9 +65,9 @@ public class MnemonicStoreTests
         // Arrange & Act done in constructor
 
         // Assert
-        _store.Should().NotBeNull();
-        _store.HasElement(Mnemonic.MOV).Should().BeTrue("MOV is a fundamental instruction");
-        _store.HasElement(Mnemonic.ADD).Should().BeTrue("ADD is a fundamental instruction");
+        this._store.Should().NotBeNull();
+        this._store.HasElement(Mnemonic.MOV).Should().BeTrue("MOV is a fundamental instruction");
+        this._store.HasElement(Mnemonic.ADD).Should().BeTrue("ADD is a fundamental instruction");
     }
 
     #endregion
@@ -93,7 +93,7 @@ public class MnemonicStoreTests
         // Act & Assert
         foreach (var mnemonic in commonInstructions)
         {
-            _store.HasElement(mnemonic).Should().BeTrue($"{mnemonic} should be in the store");
+            this._store.HasElement(mnemonic).Should().BeTrue($"{mnemonic} should be in the store");
         }
     }
 
@@ -101,7 +101,7 @@ public class MnemonicStoreTests
     public void HasElement_WithNoneInstruction_ShouldReturnFalse()
     {
         // Act
-        var result = _store.HasElement(Mnemonic.NONE);
+        var result = this._store.HasElement(Mnemonic.NONE);
 
         // Assert
         result.Should().BeFalse("NONE is not a real instruction");
@@ -121,7 +121,7 @@ public class MnemonicStoreTests
         // Act & Assert
         foreach (var mnemonic in sseInstructions)
         {
-            _store.HasElement(mnemonic).Should().BeTrue($"{mnemonic} should be in the store (SSE instruction)");
+            this._store.HasElement(mnemonic).Should().BeTrue($"{mnemonic} should be in the store (SSE instruction)");
         }
     }
 
@@ -139,7 +139,7 @@ public class MnemonicStoreTests
         // Act & Assert
         foreach (var mnemonic in avxInstructions)
         {
-            _store.HasElement(mnemonic).Should().BeTrue($"{mnemonic} should be in the store (AVX instruction)");
+            this._store.HasElement(mnemonic).Should().BeTrue($"{mnemonic} should be in the store (AVX instruction)");
         }
     }
 
@@ -151,7 +151,7 @@ public class MnemonicStoreTests
     public void GetSignatures_WithMOV_ShouldReturnMultipleSignatures()
     {
         // Act
-        var signatures = _store.GetSignatures(Mnemonic.MOV);
+        var signatures = this._store.GetSignatures(Mnemonic.MOV);
 
         // Assert
         signatures.Should().NotBeEmpty("MOV has multiple variants");
@@ -162,7 +162,7 @@ public class MnemonicStoreTests
     public void GetSignatures_WithNonExistentMnemonic_ShouldReturnEmpty()
     {
         // Act
-        var signatures = _store.GetSignatures(Mnemonic.NONE);
+        var signatures = this._store.GetSignatures(Mnemonic.NONE);
 
         // Assert
         signatures.Should().BeEmpty("non-existent mnemonic should return empty collection");
@@ -172,7 +172,7 @@ public class MnemonicStoreTests
     public void GetSignatures_WithSimpleInstruction_ShouldReturnValidSignatures()
     {
         // Act
-        var signatures = _store.GetSignatures(Mnemonic.NOP);
+        var signatures = this._store.GetSignatures(Mnemonic.NOP);
 
         // Assert
         signatures.Should().NotBeEmpty("NOP should have at least one signature");
@@ -191,7 +191,7 @@ public class MnemonicStoreTests
     public void GetArch_WithMOV_ShouldReturnX86Architecture()
     {
         // Act
-        var archs = _store.GetArch(Mnemonic.MOV);
+        var archs = this._store.GetArch(Mnemonic.MOV);
 
         // Assert
         archs.Should().NotBeEmpty("MOV should have architecture information");
@@ -202,7 +202,7 @@ public class MnemonicStoreTests
     public void GetArch_WithAVXInstruction_ShouldReturnAVXArchitecture()
     {
         // Act
-        var archs = _store.GetArch(Mnemonic.VMOVAPS);
+        var archs = this._store.GetArch(Mnemonic.VMOVAPS);
 
         // Assert
         archs.Should().NotBeEmpty("VMOVAPS should have architecture information");
@@ -213,7 +213,7 @@ public class MnemonicStoreTests
     public void GetArch_WithNonExistentMnemonic_ShouldReturnEmpty()
     {
         // Act
-        var archs = _store.GetArch(Mnemonic.NONE);
+        var archs = this._store.GetArch(Mnemonic.NONE);
 
         // Assert
         archs.Should().BeEmpty("non-existent mnemonic should return empty collection");
@@ -227,7 +227,7 @@ public class MnemonicStoreTests
     public void GetHtmlRef_WithMOV_ShouldReturnNonEmptyReference()
     {
         // Act
-        var htmlRef = _store.GetHtmlRef(Mnemonic.MOV);
+        var htmlRef = this._store.GetHtmlRef(Mnemonic.MOV);
 
         // Assert
         htmlRef.Should().NotBeNullOrEmpty("MOV should have HTML reference");
@@ -242,7 +242,7 @@ public class MnemonicStoreTests
         // Act & Assert
         foreach (var mnemonic in instructions)
         {
-            var htmlRef = _store.GetHtmlRef(mnemonic);
+            var htmlRef = this._store.GetHtmlRef(mnemonic);
             htmlRef.Should().NotBeNullOrEmpty($"{mnemonic} should have HTML reference");
         }
     }
@@ -251,7 +251,7 @@ public class MnemonicStoreTests
     public void GetHtmlRef_WithNonExistentMnemonic_ShouldReturnEmptyString()
     {
         // Act
-        var htmlRef = _store.GetHtmlRef(Mnemonic.NONE);
+        var htmlRef = this._store.GetHtmlRef(Mnemonic.NONE);
 
         // Assert
         htmlRef.Should().BeEmpty("non-existent mnemonic should return empty string");
@@ -265,7 +265,7 @@ public class MnemonicStoreTests
     public void GetDescription_WithMOV_ShouldReturnNonEmptyDescription()
     {
         // Act
-        var description = _store.GetDescription(Mnemonic.MOV);
+        var description = this._store.GetDescription(Mnemonic.MOV);
 
         // Assert
         description.Should().NotBeNullOrEmpty("MOV should have a description");
@@ -281,7 +281,7 @@ public class MnemonicStoreTests
         // Act & Assert
         foreach (var mnemonic in instructions)
         {
-            var description = _store.GetDescription(mnemonic);
+            var description = this._store.GetDescription(mnemonic);
             description.Should().NotBeNullOrEmpty($"{mnemonic} should have a description");
         }
     }
@@ -290,7 +290,7 @@ public class MnemonicStoreTests
     public void GetDescription_WithNonExistentMnemonic_ShouldReturnEmptyString()
     {
         // Act
-        var description = _store.GetDescription(Mnemonic.NONE);
+        var description = this._store.GetDescription(Mnemonic.NONE);
 
         // Assert
         description.Should().BeEmpty("non-existent mnemonic should return empty string");
@@ -304,7 +304,7 @@ public class MnemonicStoreTests
     public void IsMnemonicSwitchedOn_WithBasicInstruction_ShouldReturnTrue()
     {
         // Act
-        var result = _store.IsMnemonicSwitchedOn(Mnemonic.MOV);
+        var result = this._store.IsMnemonicSwitchedOn(Mnemonic.MOV);
 
         // Assert
         result.Should().BeTrue("MOV should be switched on with basic architecture enabled");
@@ -314,7 +314,7 @@ public class MnemonicStoreTests
     public void Get_Allowed_Mnemonics_ShouldReturnNonEmptySet()
     {
         // Act
-        var allowed = _store.Get_Allowed_Mnemonics();
+        var allowed = this._store.Get_Allowed_Mnemonics();
 
         // Assert
         allowed.Should().NotBeEmpty("there should be allowed mnemonics");
@@ -329,7 +329,7 @@ public class MnemonicStoreTests
     public void IsRegisterSwitchedOn_WithCommonRegister_ShouldReturnTrue()
     {
         // Act
-        var result = _store.IsRegisterSwitchedOn(Rn.RAX);
+        var result = this._store.IsRegisterSwitchedOn(Rn.RAX);
 
         // Assert
         result.Should().BeTrue("RAX should be switched on with x64 architecture enabled");
@@ -339,7 +339,7 @@ public class MnemonicStoreTests
     public void Get_Allowed_Registers_ShouldReturnNonEmptySet()
     {
         // Act
-        var allowed = _store.Get_Allowed_Registers();
+        var allowed = this._store.Get_Allowed_Registers();
 
         // Assert
         allowed.Should().NotBeEmpty("there should be allowed registers");
@@ -358,11 +358,11 @@ public class MnemonicStoreTests
         var mnemonic = Mnemonic.ADD;
 
         // Act
-        var hasElement = _store.HasElement(mnemonic);
-        var signatures = _store.GetSignatures(mnemonic);
-        var archs = _store.GetArch(mnemonic);
-        var htmlRef = _store.GetHtmlRef(mnemonic);
-        var description = _store.GetDescription(mnemonic);
+        var hasElement = this._store.HasElement(mnemonic);
+        var signatures = this._store.GetSignatures(mnemonic);
+        var archs = this._store.GetArch(mnemonic);
+        var htmlRef = this._store.GetHtmlRef(mnemonic);
+        var description = this._store.GetDescription(mnemonic);
 
         // Assert - ADD should have complete information
         hasElement.Should().BeTrue();
@@ -385,7 +385,7 @@ public class MnemonicStoreTests
             ARCH_AVX2 = false,
             ARCH_AVX512_F = false
         };
-        var limitedStore = new MnemonicStore(_regularDataPath, _handcraftedDataPath, limitedOptions);
+        var limitedStore = new MnemonicStore(this._regularDataPath, this._handcraftedDataPath, limitedOptions);
 
         // Act
         var basicInstruction = limitedStore.HasElement(Mnemonic.MOV);
@@ -400,18 +400,18 @@ public class MnemonicStoreTests
     public void ToString_ShouldNotThrow()
     {
         // Act
-        Func<string> act = () => _store.ToString();
+        Func<string> act = () => this._store.ToString();
 
         // Assert
         try
         {
-            var result = _store.ToString();
+            var result = this._store.ToString();
             result.Should().NotBeNull();
         }
         catch (KeyNotFoundException)
         {
             // This is acceptable if some mnemonics lack htmlRef entries
-            _store.HasElement(Mnemonic.MOV).Should().BeTrue("store should still be functional");
+            this._store.HasElement(Mnemonic.MOV).Should().BeTrue("store should still be functional");
         }
     }
 

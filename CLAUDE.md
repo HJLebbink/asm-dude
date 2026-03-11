@@ -32,40 +32,68 @@ AsmDude2 is a Visual Studio 2022/2026 extension that provides assembly language 
 
 ### Active Extension
 
-**asm-dude2-vsix** (.NET Framework 4.8)
-   - Uses VSSDK and `ILanguageClient`
-   - ✅ Updated to latest stable packages (VS 2022/2026 compatible)
-   - ✅ Targets Visual Studio [17.0,19.0) - supports VS 2022 & 2026
+**asm-dude2-vsix** (.NET 10.0-windows) — **Modern out-of-process extension**
+   - ✅ Uses VisualStudio.Extensibility SDK v17.14.40608
+   - ✅ LSP-based architecture (launches separate asm-dude2-ls process)
+   - ✅ Targets Visual Studio 2022 & 2026
+   - ✅ Fully debuggable with F5 (launches experimental instance via launchSettings.json)
+   - Bundles LSP server (asm-dude2-ls) in `Server/` subdirectory of VSIX package
 
 **Archived Projects** (moved to `VS\CSHARP\old\`)
+   - `asm-dude2-vsix`: Legacy .NET Framework 4.8 in-process extension (VSSDK/MEF) — archived
    - `asm-dude2-ext`: Failed VisualStudio.Extensibility migration attempt
    - `asm-irony`: Experimental parser (not used)
    - See `VS\CSHARP\old\README.md` for details
 
 ### Core Components
 
-1. **Language Server (asm-dude2-ls)**: LSP server (.NET 10.0 LTS)
-   - Entry point: `VS\CSHARP\asm-dude2-ls\` (executable)
-   - Core implementation: `VS\CSHARP\asm-dude2-ls-lib\` (library)
+#### Language Server Architecture (Two-Project Pattern)
+
+The LSP server is split into two projects following the **library + executable pattern**:
+
+**asm-dude2-ls-lib** (Library - `VS/CSHARP/asm-dude2-ls-lib/`)
+- Contains all LSP protocol implementation (`LanguageServer.cs`, `LanguageServerTarget.cs`, etc.)
+- Hosts all resource files (AsmDudeData.xml, instruction signatures, performance data)
+- Declares all dependencies (LSP protocol, logging, Z3 simulator)
+- Uses `InternalsVisibleTo` to expose internals to tests and fuzzer:
+  - `asm-dude2-ls-tests` (unit tests via xUnit)
+  - `asm-fuzz` (fuzzing via QuickCheck)
+- Platform-independent (no process/service hosting code)
+
+**asm-dude2-ls** (Executable - `VS/CSHARP/asm-dude2-ls/`)
+- Thin entry point that bootstraps the library as a .NET Hosted Service
+- Configures dependency injection and logging via `Host.CreateApplicationBuilder()`
+- Handles stdio flag for test/CLI usage: `--stdio` redirects LSP protocol to stdin/stdout (instead of named pipes)
+- Minimal code: Program.cs calls `Worker` hosted service (which uses asm-dude2-ls-lib)
+- Launched by asm-dude2-vsix via named pipes (`asmdude2-output`, `asmdude2-input`)
+
+**Why two projects?**
+1. **Testability**: Tests reference the library directly, not the executable; avoids subprocess spawning in unit tests
+2. **Reusability**: Fuzzer and other tools can consume the library without launching a service
+3. **Separation of concerns**: Protocol logic (library) vs. service hosting (executable)
+4. **Debuggability**: Tests can debug the library code without navigating through service lifecycle
+
+---
+
+1. **Language Server (asm-dude2-ls / asm-dude2-ls-lib)**: LSP server (.NET 10.0 LTS)
    - Main class: `LanguageServer.cs` manages LSP communication via StreamJsonRpc
    - Features: syntax highlighting, code completion, signature help, hover info, folding ranges
    - **Semantic Tokens**: Rich syntax highlighting via `textDocument/semanticTokens/full`
-   - **LSP Types**: Uses `Microsoft.VisualStudio.LanguageServer.Protocol` 18.5.1 (public API, no hacks needed)
+   - **LSP Types**: Uses `Microsoft.VisualStudio.LanguageServer.Protocol` 18.5.3 (public API, no hacks needed)
    - **VS-specific Types**: Uses `VSTypes.cs` and `VSInternalTypes.cs` for Visual Studio extensions
 
-2. **VS Extension (asm-dude2-vsix)**: Lightweight Visual Studio 2022 extension (.NET Framework 4.8)
+2. **VS Extension (asm-dude2-vsix)**: Modern Visual Studio 2022/2026 extension (.NET 10.0-windows)
    - Location: `VS\CSHARP\asm-dude2-vsix\`
-   - Launches and communicates with the LSP server
-   - Build process bundles the LSP server into the VSIX package (see `IncludeLanguageServers` target)
+   - Launches asm-dude2-ls.exe and communicates via named pipes (`asmdude2-output`, `asmdude2-input`)
+   - Build process bundles the LSP server into the VSIX package via post-build 7z command
+   - Provides document type configuration and language server provider for .asm files
 
 ### Supporting Libraries
 
-- **asm-tools-lib**: Core assembly language parsing and analysis (.NET 10.0 LTS)
+- **asm-tools-lib**: Core assembly language parsing and analysis (.NET 10.0-windows)
   - Defines fundamental types: `Mnemonic`, `Register`, `Operand`, `KeywordID`
   - Contains instruction data and architecture definitions
-  - Shared by both LSP server and simulator
-
-- **asm-tools-lib-net48**: .NET Framework 4.8 version for VSIX compatibility
+  - Single-targeted for .NET 10.0-windows (dropped net48 support)
 
 - **asm-sim-lib**: Assembly instruction simulator using Z3 solver (.NET 10.0 LTS)
 
@@ -84,19 +112,18 @@ Build in Visual Studio or press F5 to launch experimental VS instance with exten
 
 Build specific projects:
 ```
-# Modern LSP Server (asm-dude3)
-dotnet build VS\CSHARP\asm-dude3\asm-dude3-server\asm-dude3-server.csproj
+# LSP Server (library)
+dotnet build VS\CSHARP\asm-dude2-ls-lib\asm-dude2-ls-lib.csproj
 
-# Legacy LSP Server (asm-dude2)
+# LSP Server (executable)
 dotnet build VS\CSHARP\asm-dude2-ls\asm-dude2-ls.csproj
 
-# VS Extension (✅ WORKING)
+# VS Extension (✅ MODERN, F5 DEBUGGABLE)
 dotnet build VS\CSHARP\asm-dude2-vsix\asm-dude2-vsix.csproj
 ```
 
 **SDK Requirements**:
-- **.NET 10.0 SDK** (10.0.100 or later) - Required for LSP server and core libraries
-- **.NET Framework 4.8 Developer Pack** - Required for VS extension (included with VS 2022/2026)
+- **.NET 10.0 SDK** (10.0.100 or later) - Required for extension, LSP server, and core libraries
 
 Download .NET 10 from: https://dotnet.microsoft.com/download/dotnet/10.0
 

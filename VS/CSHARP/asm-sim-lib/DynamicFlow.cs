@@ -173,7 +173,7 @@ namespace AsmSim
             }
         }
 
-        public State Create_States_Before(int lineNumber, int index)
+        public State? Create_States_Before(int lineNumber, int index)
         {
             int counter = 0;
             if (this.lineNumber_2_Key_.TryGetValue(lineNumber, out string key))
@@ -196,7 +196,7 @@ namespace AsmSim
             }
         }
 
-        public State Create_States_After(int lineNumber, int index)
+        public State? Create_States_After(int lineNumber, int index)
         {
             int counter = 0;
             if (this.lineNumber_2_Key_.TryGetValue(lineNumber, out string key))
@@ -211,7 +211,7 @@ namespace AsmSim
             return null;
         }
 
-        public State Create_State_After(string key)
+        public State? Create_State_After(string key)
         {
             if (!this.graph_.ContainsVertex(key))
             {
@@ -221,7 +221,7 @@ namespace AsmSim
             return this.Create_State_Private(key, true);
         }
 
-        public State Create_State_Before(string key)
+        public State? Create_State_Before(string key)
         {
             if (!this.graph_.ContainsVertex(key))
             {

@@ -39,8 +39,8 @@ public class LanguageServerTests
 
     public LanguageServerTests()
     {
-        _server = new LanguageServer();
-        _options = new AsmLanguageServerOptions
+        this._server = new LanguageServer();
+        this._options = new AsmLanguageServerOptions
         {
             ARCH_8086 = true,
             ARCH_X64 = true,
@@ -60,8 +60,8 @@ public class LanguageServerTests
             IntelliSense_Label_Analysis_On = true,
             Global_MaxFileLines = 10000
         };
-        _server.Initialize(_options);
-        _server.Initialized();
+        this._server.Initialize(this._options);
+        this._server.Initialized();
     }
 
     #region Initialize Tests
@@ -90,7 +90,7 @@ public class LanguageServerTests
     {
         // Arrange
         var server = new LanguageServer();
-        server.Initialize(_options);
+        server.Initialize(this._options);
 
         // Act
         server.Initialized();
@@ -119,7 +119,7 @@ public class LanguageServerTests
         };
 
         // Act
-        _server.OnTextDocumentOpened(openParams);
+        this._server.OnTextDocumentOpened(openParams);
 
         // Assert - document should be tracked (no exception)
     }
@@ -138,7 +138,7 @@ public class LanguageServerTests
                 Text = "mov rax, rbx"
             }
         };
-        _server.OnTextDocumentOpened(openParams);
+        this._server.OnTextDocumentOpened(openParams);
 
         var closeParams = new DidCloseTextDocumentParams
         {
@@ -149,7 +149,7 @@ public class LanguageServerTests
         };
 
         // Act
-        _server.OnTextDocumentClosed(closeParams);
+        this._server.OnTextDocumentClosed(closeParams);
 
         // Assert - no exception means success
     }
@@ -168,10 +168,10 @@ public class LanguageServerTests
                 Text = "mov rax, rbx"
             }
         };
-        _server.OnTextDocumentOpened(openParams);
+        this._server.OnTextDocumentOpened(openParams);
 
         // Act
-        _server.UpdateServerSideTextDocument("add rcx, rdx", 2, "file:///test.asm");
+        this._server.UpdateServerSideTextDocument("add rcx, rdx", 2, "file:///test.asm");
 
         // Assert - no exception means success
     }
@@ -180,10 +180,10 @@ public class LanguageServerTests
 
     #region Completion Tests
 
-    private CompletionList GetCompletions(string asmLine, int character)
+    private CompletionList? GetCompletions(string asmLine, int character)
     {
         var uri = $"file:///test_completion_{asmLine.GetHashCode():x}.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -193,7 +193,7 @@ public class LanguageServerTests
                 Text = asmLine
             }
         });
-        return _server.GetTextDocumentCompletion(new CompletionParams
+        return this._server.GetTextDocumentCompletion(new CompletionParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
             Position = new Position { Line = 0, Character = character }
@@ -203,7 +203,7 @@ public class LanguageServerTests
     [Fact]
     public void Completion_AfterMnemonic_ReturnsOperands()
     {
-        var result = GetCompletions("add ", 4);
+        var result = this.GetCompletions("add ", 4);
         result.Should().NotBeNull();
         result.Items.Should().NotBeEmpty();
         result.Items.Length.Should().BeGreaterThan(10, "should return many register completions");
@@ -212,7 +212,7 @@ public class LanguageServerTests
     [Fact]
     public void Completion_FilterTextMatchesInsertText()
     {
-        var result = GetCompletions("add ", 4);
+        var result = this.GetCompletions("add ", 4);
         result.Items.Should().AllSatisfy(item =>
         {
             item.FilterText.Should().Be(item.InsertText,
@@ -223,7 +223,7 @@ public class LanguageServerTests
     [Fact]
     public void Completion_FilterTextNeverContainsArchTags()
     {
-        var result = GetCompletions("v", 1);
+        var result = this.GetCompletions("v", 1);
         result.Items.Should().NotBeEmpty();
         result.Items.Should().AllSatisfy(item =>
         {
@@ -235,7 +235,7 @@ public class LanguageServerTests
     [Fact]
     public void Completion_ShortPrefix_FiltersServerSide()
     {
-        var result = GetCompletions("VMOVAPS Z", 9);
+        var result = this.GetCompletions("VMOVAPS Z", 9);
         result.Should().NotBeNull();
         result.Items.Should().NotBeEmpty("ZMM registers should be available");
         result.Items.Should().OnlyContain(
@@ -252,7 +252,7 @@ public class LanguageServerTests
     {
         // Arrange
         var uri = "file:///test.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
         });
@@ -263,7 +263,7 @@ public class LanguageServerTests
         };
 
         // Act
-        var result = _server.GetHover(hoverParams);
+        var result = this._server.GetHover(hoverParams);
 
         // Assert
         result.Should().NotBeNull("hover on MOV should return documentation");
@@ -315,13 +315,13 @@ public class LanguageServerTests
     {
         // Arrange – _server has no AsmDoc_Url set (see constructor)
         var uri = "file:///test.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
         });
 
         // Act
-        var result = _server.GetHover(new TextDocumentPositionParams
+        var result = this._server.GetHover(new TextDocumentPositionParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
             Position = new Position { Line = 0, Character = 1 }
@@ -349,7 +349,7 @@ public class LanguageServerTests
                 Text = "mov rax, rbx"
             }
         };
-        _server.OnTextDocumentOpened(openParams);
+        this._server.OnTextDocumentOpened(openParams);
 
         var hoverParams = new TextDocumentPositionParams
         {
@@ -358,7 +358,7 @@ public class LanguageServerTests
         };
 
         // Act
-        var result = _server.GetHover(hoverParams);
+        var result = this._server.GetHover(hoverParams);
 
         // Assert
         result.Should().NotBeNull("hover on RAX should return register documentation");
@@ -383,7 +383,7 @@ public class LanguageServerTests
                 Text = "mov "
             }
         };
-        _server.OnTextDocumentOpened(openParams);
+        this._server.OnTextDocumentOpened(openParams);
 
         var sigHelpParams = new SignatureHelpParams
         {
@@ -397,7 +397,7 @@ public class LanguageServerTests
         };
 
         // Act
-        var result = _server.GetTextDocumentSignatureHelp(sigHelpParams);
+        var result = this._server.GetTextDocumentSignatureHelp(sigHelpParams);
 
         // Assert
         result.Should().NotBeNull("signature help for MOV should return signatures");
@@ -431,7 +431,7 @@ add rcx, rdx
                 Text = textWithRegions
             }
         };
-        _server.OnTextDocumentOpened(openParams);
+        this._server.OnTextDocumentOpened(openParams);
 
         var foldingParams = new FoldingRangeParams
         {
@@ -439,7 +439,7 @@ add rcx, rdx
         };
 
         // Act
-        var result = _server.GetFoldingRanges(foldingParams);
+        var result = this._server.GetFoldingRanges(foldingParams);
 
         // Assert
         result.Should().NotBeNull();
@@ -458,12 +458,12 @@ add rcx, rdx
 mov rax, rbx
 #endregion";
 
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = text }
         });
 
-        var result = _server.GetFoldingRanges(new FoldingRangeParams
+        var result = this._server.GetFoldingRanges(new FoldingRangeParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -483,12 +483,12 @@ mov rax, rbx
 add rcx, rdx
 #endregion";
 
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = text }
         });
 
-        var result = _server.GetFoldingRanges(new FoldingRangeParams
+        var result = this._server.GetFoldingRanges(new FoldingRangeParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -510,13 +510,13 @@ add rcx, rdx
     {
         // Arrange
         var uri = "file:///test_semantic.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
         });
 
         // Act
-        var result = _server.GetSemanticTokens(new SemanticTokensParams
+        var result = this._server.GetSemanticTokens(new SemanticTokensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -533,13 +533,13 @@ add rcx, rdx
     {
         // Arrange — ResultId is required for the delta protocol to work (prevents VS polling every 2s)
         var uri = "file:///test_semantic_resultid.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
         });
 
         // Act
-        var result = _server.GetSemanticTokens(new SemanticTokensParams
+        var result = this._server.GetSemanticTokens(new SemanticTokensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -555,18 +555,18 @@ add rcx, rdx
         // Arrange — this is the key test that would have caught the 2-second polling problem:
         // after a full request, a delta with the same resultId must return zero edits
         var uri = "file:///test_delta_unchanged.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
         });
 
-        var full = _server.GetSemanticTokens(new SemanticTokensParams
+        var full = this._server.GetSemanticTokens(new SemanticTokensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
 
         // Act — request delta with the resultId just returned
-        var delta = _server.GetSemanticTokensDelta(new SemanticTokensDeltaParams
+        var delta = this._server.GetSemanticTokensDelta(new SemanticTokensDeltaParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
             PreviousResultId = full.ResultId!
@@ -584,19 +584,19 @@ add rcx, rdx
     {
         // Arrange
         var uri = "file:///test_delta_changed.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
         });
 
-        var full = _server.GetSemanticTokens(new SemanticTokensParams
+        var full = this._server.GetSemanticTokens(new SemanticTokensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
 
         // Act — update the document then request delta
-        _server.UpdateServerSideTextDocument("add rcx, rdx\nnop", 2, uri);
-        var delta = _server.GetSemanticTokensDelta(new SemanticTokensDeltaParams
+        this._server.UpdateServerSideTextDocument("add rcx, rdx\nnop", 2, uri);
+        var delta = this._server.GetSemanticTokensDelta(new SemanticTokensDeltaParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
             PreviousResultId = full.ResultId!
@@ -614,13 +614,13 @@ add rcx, rdx
     {
         // Arrange
         var uri = "file:///test_empty_semantic.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "" }
         });
 
         // Act
-        var result = _server.GetSemanticTokens(new SemanticTokensParams
+        var result = this._server.GetSemanticTokens(new SemanticTokensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -640,7 +640,7 @@ add rcx, rdx
     {
         // Arrange
         var server = new LanguageServer();
-        server.Initialize(_options);
+        server.Initialize(this._options);
         server.Initialized();
 
         // Act
@@ -713,7 +713,7 @@ add rcx, rdx
     public void CodeLens_Serialization_ProducesValidJson()
     {
         var uri = "file:///test_codelens_json.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -724,7 +724,7 @@ add rcx, rdx
             }
         });
 
-        var lenses = _server.GetCodeLenses(new CodeLensParams
+        var lenses = this._server.GetCodeLenses(new CodeLensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -744,7 +744,7 @@ add rcx, rdx
         data.GetInt32().Should().Be(1);
 
         // Serialize the resolved lens
-        var resolved = _server.ResolveCodeLens(lenses[0]);
+        var resolved = this._server.ResolveCodeLens(lenses[0]);
         var resolvedJson = System.Text.Json.JsonSerializer.Serialize(resolved);
         var resolvedDoc = System.Text.Json.JsonDocument.Parse(resolvedJson);
         var resolvedLens = resolvedDoc.RootElement;
@@ -758,7 +758,7 @@ add rcx, rdx
     public void CodeLens_LabelWithReferences_ShowsReferenceCount()
     {
         var uri = "file:///test_codelens.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -769,7 +769,7 @@ add rcx, rdx
             }
         });
 
-        var lenses = _server.GetCodeLenses(new CodeLensParams
+        var lenses = this._server.GetCodeLenses(new CodeLensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -778,7 +778,7 @@ add rcx, rdx
         lenses.Should().HaveCount(1);
         lenses[0].Data.Should().BeEquivalentTo(2);
 
-        var resolved = _server.ResolveCodeLens(lenses[0]);
+        var resolved = this._server.ResolveCodeLens(lenses[0]);
         resolved.Command.Should().NotBeNull();
         resolved.Command.Title.Should().Be("2 references");
     }
@@ -787,7 +787,7 @@ add rcx, rdx
     public void CodeLens_LabelWithNoReferences_ShowsZero()
     {
         var uri = "file:///test_codelens_zero.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -798,7 +798,7 @@ add rcx, rdx
             }
         });
 
-        var lenses = _server.GetCodeLenses(new CodeLensParams
+        var lenses = this._server.GetCodeLenses(new CodeLensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -806,7 +806,7 @@ add rcx, rdx
         lenses.Should().NotBeNull();
         lenses.Should().HaveCount(1);
 
-        var resolved = _server.ResolveCodeLens(lenses[0]);
+        var resolved = this._server.ResolveCodeLens(lenses[0]);
         resolved.Command.Title.Should().Be("0 references");
     }
 
@@ -814,7 +814,7 @@ add rcx, rdx
     public void CodeLens_MultipleLabels_ReturnsLensForEach()
     {
         var uri = "file:///test_codelens_multi.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -825,7 +825,7 @@ add rcx, rdx
             }
         });
 
-        var lenses = _server.GetCodeLenses(new CodeLensParams
+        var lenses = this._server.GetCodeLenses(new CodeLensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
@@ -833,7 +833,7 @@ add rcx, rdx
         lenses.Should().NotBeNull();
         lenses.Should().HaveCount(2);
 
-        var titles = lenses.Select(l => _server.ResolveCodeLens(l).Command.Title).ToList();
+        var titles = lenses.Select(l => this._server.ResolveCodeLens(l).Command.Title).ToList();
         titles.Should().Contain("1 reference");
     }
 
@@ -848,7 +848,7 @@ add rcx, rdx
         // line 0: my_label:
         // line 1:     jmp my_label
         var uri = "file:///test_codelensdata_one.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -860,7 +860,7 @@ add rcx, rdx
         });
 
         // Act
-        var result = _server.GetCodeLensData(uri);
+        var result = this._server.GetCodeLensData(uri);
 
         // Assert
         result.Should().HaveCount(1);
@@ -875,7 +875,7 @@ add rcx, rdx
     {
         // Arrange
         var uri = "file:///test_codelensdata_zero.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -887,7 +887,7 @@ add rcx, rdx
         });
 
         // Act
-        var result = _server.GetCodeLensData(uri);
+        var result = this._server.GetCodeLensData(uri);
 
         // Assert
         result.Should().HaveCount(1);
@@ -906,7 +906,7 @@ add rcx, rdx
         // line 3:     jne loop_start
         // line 4:     jz  loop_start
         var uri = "file:///test_codelensdata_multi_refs.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -918,7 +918,7 @@ add rcx, rdx
         });
 
         // Act
-        var result = _server.GetCodeLensData(uri);
+        var result = this._server.GetCodeLensData(uri);
 
         // Assert
         result.Should().HaveCount(1);
@@ -937,7 +937,7 @@ add rcx, rdx
         // line 2: end:
         // line 3:     jmp start
         var uri = "file:///test_codelensdata_twolabels.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -949,7 +949,7 @@ add rcx, rdx
         });
 
         // Act
-        var result = _server.GetCodeLensData(uri);
+        var result = this._server.GetCodeLensData(uri);
 
         // Assert
         result.Should().HaveCount(2);
@@ -969,7 +969,7 @@ add rcx, rdx
     public void GetCodeLensData_UnknownUri_ReturnsEmptyArray()
     {
         // Act
-        var result = _server.GetCodeLensData("file:///does_not_exist.asm");
+        var result = this._server.GetCodeLensData("file:///does_not_exist.asm");
 
         // Assert
         result.Should().BeEmpty();
@@ -982,7 +982,7 @@ add rcx, rdx
         // line 0: my_func:
         // line 1:     call my_func
         var uri = "file:///test_codelensdata_call.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -994,7 +994,7 @@ add rcx, rdx
         });
 
         // Act
-        var result = _server.GetCodeLensData(uri);
+        var result = this._server.GetCodeLensData(uri);
 
         // Assert
         result.Should().HaveCount(1);
@@ -1007,7 +1007,7 @@ add rcx, rdx
     {
         // GetCodeLensData and GetCodeLenses must agree on which line the label is defined
         var uri = "file:///test_codelensdata_consistency.asm";
-        _server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem
             {
@@ -1018,11 +1018,11 @@ add rcx, rdx
             }
         });
 
-        var lensesResult = _server.GetCodeLenses(new CodeLensParams
+        var lensesResult = this._server.GetCodeLenses(new CodeLensParams
         {
             TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
         });
-        var dataResult = _server.GetCodeLensData(uri);
+        var dataResult = this._server.GetCodeLensData(uri);
 
         lensesResult.Should().HaveCount(1);
         dataResult.Should().HaveCount(1);

@@ -52,18 +52,18 @@ public class LspIntegrationTests : IDisposable
 
     public LspIntegrationTests()
     {
-        _cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // Test timeout
+        this._cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // Test timeout
 
         // Create a pair of connected full-duplex streams
         // What client writes, server reads; what server writes, client reads
         var streams = FullDuplexStream.CreatePair();
-        _clientStream = streams.Item1;
-        _serverStream = streams.Item2;
+        this._clientStream = streams.Item1;
+        this._serverStream = streams.Item2;
 
         // Create a fresh server for this test (bypasses singleton used by production code)
-        _server = LanguageServer.CreateForTest(
-            sender: _serverStream,  // Server sends to client
-            reader: _serverStream   // Server reads from client
+        this._server = LanguageServer.CreateForTest(
+            sender: this._serverStream,  // Server sends to client
+            reader: this._serverStream   // Server reads from client
         );
 
         // Create the client JSON-RPC connection with System.Text.Json formatter
@@ -71,18 +71,18 @@ public class LspIntegrationTests : IDisposable
         var formatter = new SystemTextJsonFormatter();
         formatter.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         formatter.JsonSerializerOptions.IncludeFields = true;
-        var clientHandler = new HeaderDelimitedMessageHandler(_clientStream, formatter);
-        _clientRpc = new JsonRpc(clientHandler);
-        _clientRpc.StartListening();
+        var clientHandler = new HeaderDelimitedMessageHandler(this._clientStream, formatter);
+        this._clientRpc = new JsonRpc(clientHandler);
+        this._clientRpc.StartListening();
     }
 
     public void Dispose()
     {
-        _clientRpc?.Dispose();
-        _server?.Dispose();
-        _clientStream?.Dispose();
-        _serverStream?.Dispose();
-        _cts?.Dispose();
+        this._clientRpc?.Dispose();
+        this._server?.Dispose();
+        this._clientStream?.Dispose();
+        this._serverStream?.Dispose();
+        this._cts?.Dispose();
     }
 
     #region Initialize / Initialized Flow Tests
@@ -104,10 +104,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act - Request initialization with JsonElement return type (System.Text.Json compatible)
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
             Methods.InitializeName,
             initParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert - Verify we got a response with capabilities
@@ -128,10 +128,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<InitializeResult>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<InitializeResult>(
             Methods.InitializeName,
             initParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -156,14 +156,14 @@ public class LspIntegrationTests : IDisposable
             InitializationOptions = CreateDefaultOptions()
         };
 
-        var initResult = await _clientRpc.InvokeWithParameterObjectAsync<InitializeResult>(
+        var initResult = await this._clientRpc.InvokeWithParameterObjectAsync<InitializeResult>(
             Methods.InitializeName,
             initParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Act - Initialized (notification, no response expected)
-        await _clientRpc.NotifyWithParameterObjectAsync(Methods.InitializedName, new { });
+        await this._clientRpc.NotifyWithParameterObjectAsync(Methods.InitializedName, new { });
 
         // Assert
         initResult.Should().NotBeNull();
@@ -178,7 +178,7 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentDidOpen_ShouldBeAccepted()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
 
         var openParams = new DidOpenTextDocumentParams
         {
@@ -192,7 +192,7 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act - Send notification (no response expected)
-        await _clientRpc.NotifyWithParameterObjectAsync(
+        await this._clientRpc.NotifyWithParameterObjectAsync(
             Methods.TextDocumentDidOpenName,
             openParams
         );
@@ -207,10 +207,10 @@ public class LspIntegrationTests : IDisposable
             Position = new Position { Line = 0, Character = 1 }
         };
 
-        var hoverResult = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var hoverResult = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentHoverName,
             hoverParams,
-            _cts.Token
+            this._cts.Token
         );
 
         hoverResult.Should().NotBeNull("document should be open and hover should work");
@@ -220,8 +220,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentDidChange_ShouldUpdateDocument()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var changeParams = new DidChangeTextDocumentParams
         {
@@ -240,7 +240,7 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        await _clientRpc.NotifyWithParameterObjectAsync(
+        await this._clientRpc.NotifyWithParameterObjectAsync(
             Methods.TextDocumentDidChangeName,
             changeParams
         );
@@ -255,10 +255,10 @@ public class LspIntegrationTests : IDisposable
             Position = new Position { Line = 0, Character = 1 }
         };
 
-        var hoverResult = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var hoverResult = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentHoverName,
             hoverParams,
-            _cts.Token
+            this._cts.Token
         );
 
         hoverResult.Should().NotBeNull();
@@ -268,8 +268,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentDidClose_ShouldRemoveDocument()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var closeParams = new DidCloseTextDocumentParams
         {
@@ -277,7 +277,7 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        await _clientRpc.NotifyWithParameterObjectAsync(
+        await this._clientRpc.NotifyWithParameterObjectAsync(
             Methods.TextDocumentDidCloseName,
             closeParams
         );
@@ -291,10 +291,10 @@ public class LspIntegrationTests : IDisposable
             Position = new Position { Line = 0, Character = 1 }
         };
 
-        var hoverResult = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var hoverResult = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentHoverName,
             hoverParams,
-            _cts.Token
+            this._cts.Token
         );
 
         hoverResult.Should().BeNull("document should be closed and hover should return null");
@@ -308,8 +308,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentCompletion_WithMnemonic_ShouldReturnCompletions()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mo");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mo");
 
         var completionParams = new CompletionParams
         {
@@ -318,10 +318,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<CompletionList>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<CompletionList>(
             Methods.TextDocumentCompletionName,
             completionParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -333,8 +333,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentCompletion_WithRegister_ShouldReturnRegisterCompletions()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov ra");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov ra");
 
         var completionParams = new CompletionParams
         {
@@ -343,10 +343,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<CompletionList>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<CompletionList>(
             Methods.TextDocumentCompletionName,
             completionParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -362,8 +362,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentHover_OnMnemonic_ShouldReturnDescription()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var hoverParams = new TextDocumentPositionParams
         {
@@ -372,10 +372,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentHoverName,
             hoverParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -386,8 +386,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentHover_OnRegister_ShouldReturnDescription()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var hoverParams = new TextDocumentPositionParams
         {
@@ -396,10 +396,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentHoverName,
             hoverParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -410,8 +410,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentHover_OnWhitespace_ShouldReturnNull()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var hoverParams = new TextDocumentPositionParams
         {
@@ -420,10 +420,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentHoverName,
             hoverParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -438,8 +438,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentSignatureHelp_AfterMnemonic_ShouldReturnSignatures()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov ");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov ");
 
         var sigHelpParams = new SignatureHelpParams
         {
@@ -453,10 +453,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<SignatureHelp>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<SignatureHelp>(
             Methods.TextDocumentSignatureHelpName,
             sigHelpParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -468,8 +468,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentSignatureHelp_WithOperands_ShouldUpdateActiveParameter()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, ");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, ");
 
         var sigHelpParams = new SignatureHelpParams
         {
@@ -484,10 +484,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<SignatureHelp>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<SignatureHelp>(
             Methods.TextDocumentSignatureHelpName,
             sigHelpParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -503,9 +503,9 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentFoldingRange_WithRegions_ShouldReturnFoldingRanges()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var textWithRegions = "#region Test\nmov rax, rbx\nadd rcx, rdx\n#endregion";
-        await OpenDocumentAsync("file:///test.asm", textWithRegions);
+        await this.OpenDocumentAsync("file:///test.asm", textWithRegions);
 
         var foldingParams = new FoldingRangeParams
         {
@@ -513,10 +513,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<FoldingRange[]>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<FoldingRange[]>(
             Methods.TextDocumentFoldingRangeName,
             foldingParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -528,8 +528,8 @@ public class LspIntegrationTests : IDisposable
     public async Task TextDocumentFoldingRange_WithoutRegions_ShouldReturnEmptyArray()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx\nadd rcx, rdx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx\nadd rcx, rdx");
 
         var foldingParams = new FoldingRangeParams
         {
@@ -537,10 +537,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<FoldingRange[]>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<FoldingRange[]>(
             Methods.TextDocumentFoldingRangeName,
             foldingParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -556,10 +556,10 @@ public class LspIntegrationTests : IDisposable
     public async Task Shutdown_ShouldComplete()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
 
         // Act
-        var result = await _clientRpc.InvokeAsync<object>(Methods.ShutdownName, _cts.Token);
+        var result = await this._clientRpc.InvokeAsync<object>(Methods.ShutdownName, this._cts.Token);
 
         // Assert - Shutdown should complete without error (returns null)
         result.Should().BeNull();
@@ -569,13 +569,13 @@ public class LspIntegrationTests : IDisposable
     public async Task ShutdownAndExit_FullFlow_ShouldComplete()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
 
         // Act - Shutdown
-        await _clientRpc.InvokeAsync<object>(Methods.ShutdownName, _cts.Token);
+        await this._clientRpc.InvokeAsync<object>(Methods.ShutdownName, this._cts.Token);
 
         // Act - Exit (notification)
-        await _clientRpc.NotifyAsync(Methods.ExitName);
+        await this._clientRpc.NotifyAsync(Methods.ExitName);
 
         // Assert - Server should have exited cleanly (no exception)
         await Task.Delay(100); // Give server time to process exit
@@ -589,8 +589,8 @@ public class LspIntegrationTests : IDisposable
     public async Task SemanticTokens_WithMnemonicAndRegisters_ShouldReturnTokens()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var semanticTokensParams = new SemanticTokensParams
         {
@@ -598,10 +598,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<SemanticTokens>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<SemanticTokens>(
             Methods.TextDocumentSemanticTokensFullName,
             semanticTokensParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -615,9 +615,9 @@ public class LspIntegrationTests : IDisposable
     public async Task SemanticTokens_WithLabels_ShouldReturnLabelTokens()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "loop_start:\n    mov rax, rbx\n    jmp loop_start";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var semanticTokensParams = new SemanticTokensParams
         {
@@ -625,10 +625,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<SemanticTokens>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<SemanticTokens>(
             Methods.TextDocumentSemanticTokensFullName,
             semanticTokensParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -642,8 +642,8 @@ public class LspIntegrationTests : IDisposable
     public async Task SemanticTokens_WithConstants_ShouldReturnNumberTokens()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, 0x10");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, 0x10");
 
         var semanticTokensParams = new SemanticTokensParams
         {
@@ -651,10 +651,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<SemanticTokens>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<SemanticTokens>(
             Methods.TextDocumentSemanticTokensFullName,
             semanticTokensParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -666,8 +666,8 @@ public class LspIntegrationTests : IDisposable
     public async Task SemanticTokens_EmptyDocument_ShouldReturnEmptyData()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "");
 
         var semanticTokensParams = new SemanticTokensParams
         {
@@ -675,10 +675,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<SemanticTokens>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<SemanticTokens>(
             Methods.TextDocumentSemanticTokensFullName,
             semanticTokensParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -694,9 +694,9 @@ public class LspIntegrationTests : IDisposable
     public async Task DocumentHighlight_OnRegister_ShouldHighlightRelatedRegisters()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "mov rax, rbx\nadd eax, 10";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var highlightParams = new DocumentHighlightParams
         {
@@ -705,10 +705,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<DocumentHighlight[]>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<DocumentHighlight[]>(
             Methods.TextDocumentDocumentHighlightName,
             highlightParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -722,9 +722,9 @@ public class LspIntegrationTests : IDisposable
     public async Task DocumentHighlight_OnLabel_ShouldHighlightAllOccurrences()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "test_label:\n    mov rax, rbx\n    jmp test_label";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var highlightParams = new DocumentHighlightParams
         {
@@ -733,10 +733,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<DocumentHighlight[]>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<DocumentHighlight[]>(
             Methods.TextDocumentDocumentHighlightName,
             highlightParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -749,8 +749,8 @@ public class LspIntegrationTests : IDisposable
     public async Task DocumentHighlight_OnWhitespace_ShouldReturnEmpty()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var highlightParams = new DocumentHighlightParams
         {
@@ -759,10 +759,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<DocumentHighlight[]>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<DocumentHighlight[]>(
             Methods.TextDocumentDocumentHighlightName,
             highlightParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -778,9 +778,9 @@ public class LspIntegrationTests : IDisposable
     public async Task References_OnLabelDefinition_ShouldFindAllReferences()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "my_label:\n    mov rax, rbx\n    jmp my_label\n    call my_label";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var referencesParams = new ReferenceParams
         {
@@ -790,10 +790,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<Location[]>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<Location[]>(
             Methods.TextDocumentReferencesName,
             referencesParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -806,9 +806,9 @@ public class LspIntegrationTests : IDisposable
     public async Task References_OnLabelReference_ShouldFindDefinitionAndReferences()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "my_label:\n    mov rax, rbx\n    jmp my_label";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var referencesParams = new ReferenceParams
         {
@@ -818,10 +818,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<Location[]>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<Location[]>(
             Methods.TextDocumentReferencesName,
             referencesParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -833,8 +833,8 @@ public class LspIntegrationTests : IDisposable
     public async Task References_OnNonexistentWord_ShouldReturnEmpty()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var referencesParams = new ReferenceParams
         {
@@ -844,10 +844,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<Location[]>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<Location[]>(
             Methods.TextDocumentReferencesName,
             referencesParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -863,9 +863,9 @@ public class LspIntegrationTests : IDisposable
     public async Task DocumentSymbols_ShouldReturnSymbolsOrEmpty()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "proc_start:\n    mov rax, rbx\nproc_end:\n    ret";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var symbolParams = new DocumentSymbolParams
         {
@@ -873,10 +873,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentDocumentSymbolName,
             symbolParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -894,8 +894,8 @@ public class LspIntegrationTests : IDisposable
     public async Task CodeActions_ShouldReturnAvailableActions()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var codeActionParams = new CodeActionParams
         {
@@ -912,10 +912,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentCodeActionName,
             codeActionParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -931,9 +931,9 @@ public class LspIntegrationTests : IDisposable
     public async Task Rename_Label_ShouldReturnWorkspaceEdit()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "old_name:\n    jmp old_name";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var renameParams = new RenameParams
         {
@@ -947,10 +947,10 @@ public class LspIntegrationTests : IDisposable
         // This test documents the expected behavior
         try
         {
-            var result = await _clientRpc.InvokeWithParameterObjectAsync<WorkspaceEdit>(
+            var result = await this._clientRpc.InvokeWithParameterObjectAsync<WorkspaceEdit>(
                 Methods.TextDocumentRenameName,
                 renameParams,
-                _cts.Token
+                this._cts.Token
             );
 
             // Assert
@@ -972,9 +972,9 @@ public class LspIntegrationTests : IDisposable
     public async Task Definition_OnLabelReference_ShouldReturnLabelDefinition()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "my_label:\n    mov rax, rbx\n    jmp my_label";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var definitionParams = new TextDocumentPositionParams
         {
@@ -983,10 +983,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<Location>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<Location>(
             Methods.TextDocumentDefinitionName,
             definitionParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -999,9 +999,9 @@ public class LspIntegrationTests : IDisposable
     public async Task Definition_OnLabelDefinition_ShouldReturnSameLocation()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
         var code = "my_label:\n    mov rax, rbx";
-        await OpenDocumentAsync("file:///test.asm", code);
+        await this.OpenDocumentAsync("file:///test.asm", code);
 
         var definitionParams = new TextDocumentPositionParams
         {
@@ -1010,10 +1010,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<Location>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<Location>(
             Methods.TextDocumentDefinitionName,
             definitionParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -1025,8 +1025,8 @@ public class LspIntegrationTests : IDisposable
     public async Task Definition_OnMnemonic_ShouldReturnNull()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var definitionParams = new TextDocumentPositionParams
         {
@@ -1035,10 +1035,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<Location>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<Location>(
             Methods.TextDocumentDefinitionName,
             definitionParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -1049,8 +1049,8 @@ public class LspIntegrationTests : IDisposable
     public async Task Definition_OnWhitespace_ShouldReturnNull()
     {
         // Arrange
-        await InitializeServerAsync();
-        await OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
+        await this.InitializeServerAsync();
+        await this.OpenDocumentAsync("file:///test.asm", "mov rax, rbx");
 
         var definitionParams = new TextDocumentPositionParams
         {
@@ -1059,10 +1059,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<Location>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<Location>(
             Methods.TextDocumentDefinitionName,
             definitionParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -1102,7 +1102,7 @@ public class LspIntegrationTests : IDisposable
     public async Task DidChangeConfiguration_ShouldBeAccepted()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
 
         var configParams = new DidChangeConfigurationParams
         {
@@ -1117,7 +1117,7 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act - Send configuration change notification
-        await _clientRpc.NotifyWithParameterObjectAsync(
+        await this._clientRpc.NotifyWithParameterObjectAsync(
             Methods.WorkspaceDidChangeConfigurationName,
             configParams
         );
@@ -1133,10 +1133,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Server should still respond to requests
-        Func<Task> act = async () => await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        Func<Task> act = async () => await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.TextDocumentHoverName,
             hoverParams,
-            _cts.Token
+            this._cts.Token
         );
 
         await act.Should().NotThrowAsync("server should continue working after config change");
@@ -1150,7 +1150,7 @@ public class LspIntegrationTests : IDisposable
     public async Task GetProjectContexts_ShouldReturnContextList()
     {
         // Arrange
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
 
         // Use anonymous object - server parses JToken directly
         var projectContextParams = new
@@ -1159,10 +1159,10 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Act
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             VSMethods.GetProjectContextsName,
             projectContextParams,
-            _cts.Token
+            this._cts.Token
         );
 
         // Assert
@@ -1177,7 +1177,7 @@ public class LspIntegrationTests : IDisposable
     [Fact]
     public async Task CodeLens_OverJsonRpc_ReturnsLensesAndResolves()
     {
-        await InitializeServerAsync();
+        await this.InitializeServerAsync();
 
         // Open document with a label and a jump to it
         var openParams = new
@@ -1190,7 +1190,7 @@ public class LspIntegrationTests : IDisposable
                 text = "my_label:\n    jmp my_label\n"
             }
         };
-        await _clientRpc.NotifyWithParameterObjectAsync(Methods.TextDocumentDidOpenName, openParams);
+        await this._clientRpc.NotifyWithParameterObjectAsync(Methods.TextDocumentDidOpenName, openParams);
         await Task.Delay(100);
 
         // Request codeLens using the exact method name string
@@ -1199,10 +1199,10 @@ public class LspIntegrationTests : IDisposable
             textDocument = new { uri = "file:///test_codelens.asm" }
         };
 
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
             "textDocument/codeLens",
             codeLensParams,
-            _cts.Token
+            this._cts.Token
         );
 
         result.ValueKind.Should().Be(System.Text.Json.JsonValueKind.Array, "codeLens should return an array");
@@ -1215,10 +1215,10 @@ public class LspIntegrationTests : IDisposable
         data.GetInt32().Should().Be(1, "my_label is referenced once by jmp");
 
         // Now resolve the lens
-        var resolveResult = await _clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
+        var resolveResult = await this._clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
             Methods.CodeLensResolveName,
             lens,
-            _cts.Token
+            this._cts.Token
         );
 
         resolveResult.TryGetProperty("command", out var command).Should().BeTrue("resolved lens must have command");
@@ -1236,10 +1236,10 @@ public class LspIntegrationTests : IDisposable
             initializationOptions = CreateDefaultOptions()
         };
 
-        var result = await _clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
+        var result = await this._clientRpc.InvokeWithParameterObjectAsync<System.Text.Json.JsonElement>(
             Methods.InitializeName,
             initParams,
-            _cts.Token
+            this._cts.Token
         );
 
         var capabilities = result.GetProperty("capabilities");
@@ -1266,13 +1266,13 @@ public class LspIntegrationTests : IDisposable
         };
 
         // Use object return type for flexibility
-        await _clientRpc.InvokeWithParameterObjectAsync<object>(
+        await this._clientRpc.InvokeWithParameterObjectAsync<object>(
             Methods.InitializeName,
             initParams,
-            _cts.Token
+            this._cts.Token
         );
 
-        await _clientRpc.NotifyWithParameterObjectAsync(Methods.InitializedName, new { });
+        await this._clientRpc.NotifyWithParameterObjectAsync(Methods.InitializedName, new { });
     }
 
     private async Task OpenDocumentAsync(string uri, string text)
@@ -1288,7 +1288,7 @@ public class LspIntegrationTests : IDisposable
             }
         };
 
-        await _clientRpc.NotifyWithParameterObjectAsync(Methods.TextDocumentDidOpenName, openParams);
+        await this._clientRpc.NotifyWithParameterObjectAsync(Methods.TextDocumentDidOpenName, openParams);
         await Task.Delay(50); // Give server time to process
     }
 

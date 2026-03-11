@@ -226,13 +226,12 @@ namespace AsmSim
 
         private static BoolExpr SetFlag(Flags flag, Tv tv, int lineNumber, Context ctx)
         {
-            BoolExpr value;
-            switch (tv)
+            BoolExpr value = tv switch
             {
-                case Tv.ONE: value = ctx.MkTrue(); break;
-                case Tv.ZERO: value = ctx.MkFalse(); break;
-                default: value = ctx.MkBoolConst(flag + "!" + lineNumber + "U"); break;
-            }
+                Tv.ONE => ctx.MkTrue(),
+                Tv.ZERO => ctx.MkFalse(),
+                _ => ctx.MkBoolConst(flag + "!" + lineNumber + "U"),
+            };
             return ctx.MkEq(GetFlag(flag, lineNumber, ctx), value);
         }
 
@@ -280,14 +279,14 @@ namespace AsmSim
         }
         private static BitVecExpr MakeUnknownConst(Rn reg, Context ctx)
         {
-            switch (RegisterTools.NBits(reg))
+            return RegisterTools.NBits(reg) switch
             {
-                case 64: return ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, 64);
-                case 32: return ctx.MkBV(0xFFFF_FFFF, 32);
-                case 16: return ctx.MkBV(0xFFFF, 16);
-                case 8: return ctx.MkBV(0xFF, 8);
-                default: throw new Exception();
-            }
+                64 => ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, 64),
+                32 => ctx.MkBV(0xFFFF_FFFF, 32),
+                16 => ctx.MkBV(0xFFFF, 16),
+                8 => ctx.MkBV(0xFF, 8),
+                _ => throw new Exception(),
+            };
         }
 
         private static BoolExpr MakeRuleRegResult(Rn selectedReg, IList<Rn> regs, BitVecExpr newState, int lineNumber, Context ctx)

@@ -215,44 +215,41 @@ namespace AsmSim
         #region Getters
         public bool IsRegOn(Rn reg)
         {
-            switch (reg)
+            return reg switch
             {
-                case Rn.RAX: return this.RAX;
-                case Rn.RBX: return this.RBX;
-                case Rn.RCX: return this.RCX;
-                case Rn.RDX: return this.RDX;
-
-                case Rn.RSI: return this.RSI;
-                case Rn.RDI: return this.RDI;
-                case Rn.RBP: return this.RBP;
-                case Rn.RSP: return this.RSP;
-
-                case Rn.R8: return this.R8;
-                case Rn.R9: return this.R9;
-                case Rn.R10: return this.R10;
-                case Rn.R11: return this.R11;
-
-                case Rn.R12: return this.R12;
-                case Rn.R13: return this.R13;
-                case Rn.R14: return this.R14;
-                case Rn.R15: return this.R15;
-                default: return false;
-            }
+                Rn.RAX => this.RAX,
+                Rn.RBX => this.RBX,
+                Rn.RCX => this.RCX,
+                Rn.RDX => this.RDX,
+                Rn.RSI => this.RSI,
+                Rn.RDI => this.RDI,
+                Rn.RBP => this.RBP,
+                Rn.RSP => this.RSP,
+                Rn.R8 => this.R8,
+                Rn.R9 => this.R9,
+                Rn.R10 => this.R10,
+                Rn.R11 => this.R11,
+                Rn.R12 => this.R12,
+                Rn.R13 => this.R13,
+                Rn.R14 => this.R14,
+                Rn.R15 => this.R15,
+                _ => false,
+            };
         }
 
         public bool IsFlagOn(Flags flag)
         {
-            switch (flag)
+            return flag switch
             {
-                case Flags.CF: return this.CF;
-                case Flags.PF: return this.PF;
-                case Flags.AF: return this.AF;
-                case Flags.ZF: return this.ZF;
-                case Flags.SF: return this.SF;
-                case Flags.OF: return this.OF;
-                case Flags.DF: return this.DF;
-                default: return false;
-            }
+                Flags.CF => this.CF,
+                Flags.PF => this.PF,
+                Flags.AF => this.AF,
+                Flags.ZF => this.ZF,
+                Flags.SF => this.SF,
+                Flags.OF => this.OF,
+                Flags.DF => this.DF,
+                _ => false,
+            };
         }
 
         public IEnumerable<Rn> GetRegOn()

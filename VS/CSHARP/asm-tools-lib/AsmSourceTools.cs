@@ -152,7 +152,7 @@ using System.Diagnostics;
         /// <summary>Guess whether the provided buffer has assembly in Masm syntax (return true) or Gas syntax (return false)</summary>
         public static bool Guess_Masm_Syntax(string[] lines)
         {
-            if (lines == null) throw new ArgumentNullException(nameof(lines));
+            ArgumentNullException.ThrowIfNull(lines);
 
             //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Masm_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
             int evidence_masm = 0;
@@ -189,14 +189,14 @@ using System.Diagnostics;
         /// </summary>
         public static (KeywordID[] keywords, string label, Mnemonic mnemonic, string[] args, string remark) ParseLine(string lineStr, int lineNumber, int fileID)
         {
-            if (lineStr == null) throw new ArgumentNullException(nameof(lineStr));
+            ArgumentNullException.ThrowIfNull(lineStr);
 
             // Console.WriteLine("INFO: AsmSourceTools:ParseLine: lineStr=" + lineStr + "; length=" + lineStr.Length);
 
             var k = new List<KeywordID>();
             string label = string.Empty;
             Mnemonic mnemonic = Mnemonic.NONE;
-            string[] args = Array.Empty<string>();
+            string[] args = [];
             string remark = string.Empty;
 
             if (lineStr.Length > 0)
@@ -302,12 +302,12 @@ using System.Diagnostics;
 
         public static List<Operand> MakeOperands(string[] operandStrArray) // TODO consider Array
         {
-            if (operandStrArray == null) throw new ArgumentNullException(nameof(operandStrArray));
+            ArgumentNullException.ThrowIfNull(operandStrArray);
 
             int nOperands = operandStrArray.Length;
             if (nOperands <= 1)
             {
-                return new List<Operand>(0);
+                return [];
             }
             else
             {
@@ -325,7 +325,7 @@ using System.Diagnostics;
         /// </summary>
         public static (int beginPos, int length, AsmTokenType type) Get_First_Keyword(string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             bool started = false;
             int keywordBegin = 0;
@@ -378,7 +378,7 @@ using System.Diagnostics;
         /// </summary>
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> SplitIntoKeywordsType(string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             int keywordBegin = 0;
             bool inStringDef = false;
@@ -458,7 +458,7 @@ using System.Diagnostics;
 
         public static List<string> SplitIntoKeywordsList(string line)
         {
-            List<string> keywords = new List<string>();
+            List<string> keywords = [];
             foreach ((int beginPos, int length, AsmTokenType _) pos in SplitIntoKeywordsType(line))
             {
                 keywords.Add(Keyword(pos, line));
@@ -468,7 +468,7 @@ using System.Diagnostics;
 
         public static string Keyword((int beginPos, int length, AsmTokenType _) pos, string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
             return line.Substring(pos.beginPos, pos.length - pos.beginPos);
         }
 
@@ -493,7 +493,7 @@ using System.Diagnostics;
         /// </summary>
         public static bool IsInRemark(int pos, string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             // check if the lineStr contains a remark character before the current point
             int nChars = line.Length;
@@ -513,7 +513,7 @@ using System.Diagnostics;
         /// </summary>
         public static bool IsRemarkOnly(string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
@@ -541,7 +541,7 @@ using System.Diagnostics;
 
         public static int GetRemarkCharPosition(string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             for (int i = 0; i < line.Length; ++i)
             {
@@ -600,7 +600,7 @@ using System.Diagnostics;
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
         public static (bool valid, ulong value, int nBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
+            ArgumentNullException.ThrowIfNull(token);
 
             if (token.StartsWith("$", StringComparison.Ordinal)) // AT&T syntax constants start with '$'
             {
@@ -644,7 +644,7 @@ using System.Diagnostics;
         public static (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage)
             Parse_Mem_Operand(string token, bool isCapitals = false)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
+            ArgumentNullException.ThrowIfNull(token);
 
             int length = token.Length;
             if (length < 3)
@@ -785,22 +785,22 @@ using System.Diagnostics;
             #region Local Methods
             int ParseScale(string str)
             {
-                if (str == null) throw new ArgumentNullException(nameof(str));
+                ArgumentNullException.ThrowIfNull(str);
 
-                switch (str)
+                return str switch
                 {
-                    case "1": return 1;
-                    case "2": return 2;
-                    case "4": return 4;
-                    case "8": return 8;
-                    default: return -1;
-                }
+                    "1" => 1,
+                    "2" => 2,
+                    "4" => 4,
+                    "8" => 8,
+                    _ => -1,
+                };
             }
 
             /// <summary> Return the number of bits of the provided operand (assumes 64-bits) </summary>
             int Get_Nbits_Mem_Operand(string token2)
             {
-                if (token2 == null) throw new ArgumentNullException(nameof(token2));
+                ArgumentNullException.ThrowIfNull(token2);
 
                 string s = token2.TrimStart();
                 if (s.StartsWith("PTR", StringComparison.Ordinal))
@@ -910,7 +910,7 @@ using System.Diagnostics;
 
         public static string GetKeyword(int pos, string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             (int beginPos, int endPos) = GetKeywordPos(pos, line);
             return line.Substring(beginPos, endPos - beginPos);
@@ -921,7 +921,7 @@ using System.Diagnostics;
         /// </summary>
         public static string GetPreviousKeyword(int begin, int end, string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             Debug.Assert(begin >= 0);
             Debug.Assert(begin <= line.Length);
@@ -1005,7 +1005,7 @@ using System.Diagnostics;
         /// <summary>Return the begin and end of the keyword</summary>
         public static (int beginPos, int endPos) GetKeywordPos(int pos, string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getKeyword; pos={0}; lineStr=\"{1}\"", pos, new string(lineStr)));
             if ((pos < 0) || (pos >= line.Length))
@@ -1039,7 +1039,7 @@ using System.Diagnostics;
 
         public static (bool valid, int beginPos, int endPos) GetLabelDefPos(string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             (bool valid, int beginPos, int endPos) tup = GetLabelDefPos_Regular(line);
             if (tup.valid)
@@ -1108,7 +1108,7 @@ using System.Diagnostics;
 
         private static (bool valid, int beginPos, int endPos) GetLabelDefPos_Masm(string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             string line2 = line.TrimStart();
             int displacement = 0;
@@ -1142,7 +1142,7 @@ using System.Diagnostics;
         /// Valid is true if one such char is found.</summary>
         public static (bool valid, int beginPos, int endPos) GetRemarkPos(string line)
         {
-            if (line == null) throw new ArgumentNullException(nameof(line));
+            ArgumentNullException.ThrowIfNull(line);
 
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
@@ -1184,7 +1184,7 @@ using System.Diagnostics;
                 return prefix + str;
             }
 
-            List<string> lines = new List<string>();
+            List<string> lines = [];
 
             // breaking the string into lines makes it easier to process.
             foreach (string line in str.Split("\n".ToCharArray()))
