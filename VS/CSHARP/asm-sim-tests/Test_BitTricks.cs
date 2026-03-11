@@ -54,7 +54,7 @@ namespace unit_tests_asm_z3
                             Microsoft.Z3.Global.SetParameter(System.String,System.String)
             */
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "true" },          // enable model generation
@@ -108,7 +108,7 @@ namespace unit_tests_asm_z3
                 "           ror al, 1                           " + Environment.NewLine +
                 "           jnc ZCOEF                           ";
 
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
             {
@@ -406,7 +406,7 @@ namespace unit_tests_asm_z3
                 {
                     ulong rax_value = 0x61a4292198602827;
                     ulong rbx_value = 0x8739140220c24080;
-                    StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                    StateUpdate updateState = new("!PREVKEY", "!NEXTKEY", state.Tools);
                     updateState.Set(Rn.RAX, rax_value);
                     updateState.Set(Rn.RBX, rbx_value);
                     state.Update_Forward(updateState);

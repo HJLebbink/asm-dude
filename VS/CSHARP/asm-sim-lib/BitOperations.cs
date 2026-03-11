@@ -71,7 +71,7 @@ using System.Diagnostics;
 
             BitVecExpr ax = ctx.MkZeroExt(1, a);
             BitVecExpr bx = ctx.MkZeroExt(1, b);
-            BitVecExpr carryBV = ctx.MkITE(carry, ctx.MkBV(1, nBits + 1), ctx.MkBV(0, nBits + 1)) as BitVecExpr;
+            BitVecExpr? carryBV = ctx.MkITE(carry, ctx.MkBV(1, nBits + 1), ctx.MkBV(0, nBits + 1)) as BitVecExpr;
             BitVecExpr bx2 = ctx.MkBVAdd(bx, carryBV);
             BitVecExpr rx = ctx.MkBVAdd(ax, bx2);
             BitVecExpr result = ctx.MkExtract(nBits - 1, 0, rx);

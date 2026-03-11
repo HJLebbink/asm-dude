@@ -44,7 +44,7 @@ public class LanguageServerTarget(LanguageServer server)
 
         public event EventHandler? OnInitialized;
 
-        private static AsmLanguageServerOptions CreateDefaultOptions() => new AsmLanguageServerOptions
+        private static AsmLanguageServerOptions CreateDefaultOptions() => new()
         {
             AsmDoc_On = true,
             AsmDoc_Url = "https://github.com/HJLebbink/asm-dude/wiki/",

@@ -834,7 +834,7 @@ namespace AsmTools
                 {
                     return true;
                 }
-                if (line2.Contains(";"))
+                if (line2.Contains(';'))
                 {
                     return true;
                 }

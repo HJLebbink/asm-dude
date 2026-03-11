@@ -134,7 +134,7 @@ namespace AsmDude2LS
                                 //},
                                 Projects = LanguageServer.GetVSDiagnosticProjectInformation(id),
                                 //Identifier = $"{lineNumber},{offsetStart} {lineNumber},{offsetEnd}",
-                                Tags = new DiagnosticTag[1] { (DiagnosticTag)AsmDiagnosticTag.IntellisenseError }
+                                Tags = [(DiagnosticTag)AsmDiagnosticTag.IntellisenseError]
                             });
                         }
                         catch (Exception ex)
@@ -170,7 +170,7 @@ namespace AsmDude2LS
                         //},
                         Projects = LanguageServer.GetVSDiagnosticProjectInformation(id),
                         //Identifier = $"{lineNumber},{offsetStart} {lineNumber},{offsetEnd}",
-                        Tags = new DiagnosticTag[1] { (DiagnosticTag)AsmDiagnosticTag.IntellisenseError }
+                        Tags = [(DiagnosticTag)AsmDiagnosticTag.IntellisenseError]
                     });
                 }
                 catch (Exception ex)

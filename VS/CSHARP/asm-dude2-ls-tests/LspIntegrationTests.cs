@@ -230,13 +230,13 @@ public class LspIntegrationTests : IDisposable
                 Uri = new Uri("file:///test.asm"),
                 Version = 2
             },
-            ContentChanges = new TextDocumentContentChangeEvent[]
-            {
+            ContentChanges =
+            [
                 new TextDocumentContentChangeEvent
                 {
                     Text = "add rcx, rdx\nsub rdi, rsi"
                 }
-            }
+            ]
         };
 
         // Act

@@ -357,7 +357,7 @@ namespace AsmTools
         public MicroArch Get_MicroArch_Switched_On()
         {
             MicroArch result = MicroArch.NONE;
-            foreach (MicroArch microArch in Enum.GetValues(typeof(MicroArch)))
+            foreach (MicroArch microArch in Enum.GetValues<MicroArch>())
             {
                 if (this.Is_MicroArch_Switched_On(microArch))
                 {
@@ -394,7 +394,7 @@ namespace AsmTools
         public HashSet<Arch> Get_Arch_Switched_On()
         {
             HashSet<Arch> set = [];
-            foreach (Arch arch in Enum.GetValues(typeof(Arch)))
+            foreach (Arch arch in Enum.GetValues<Arch>())
             {
                 if (this.Is_Arch_Switched_On(arch))
                 {

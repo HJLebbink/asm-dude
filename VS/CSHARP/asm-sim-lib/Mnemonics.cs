@@ -282,12 +282,12 @@ namespace AsmSim
                 }
             }
 
-            protected static bool ToMemReadWrite(Operand op1)
+            protected static bool ToMemReadWrite(Operand? op1)
             {
                 return (op1 == null) ? false : op1.IsMem;
             }
 
-            protected static bool ToMemReadWrite(Operand op1, Operand op2)
+            protected static bool ToMemReadWrite(Operand? op1, Operand? op2)
             {
                 return ((op1 == null) ? false : op1.IsMem) || ((op2 == null) ? false : op2.IsMem);
             }
@@ -321,7 +321,7 @@ namespace AsmSim
                 }
             }
 
-            protected static IEnumerable<Rn> ReadRegs(Operand op1, bool op1_IsWrite, Operand op2, bool op2_IsWrite)
+            protected static IEnumerable<Rn> ReadRegs(Operand? op1, bool op1_IsWrite, Operand? op2, bool op2_IsWrite)
             {
                 foreach (Rn r in ReadRegs(op1, op1_IsWrite))
                 {
@@ -373,7 +373,7 @@ namespace AsmSim
                 }
             }
 
-            protected static IEnumerable<Rn> WriteRegs(Operand op1, Operand op2, Operand op3)
+            protected static IEnumerable<Rn> WriteRegs(Operand? op1, Operand? op2, Operand? op3)
             {
                 foreach (Rn r in WriteRegs(op1))
                 {

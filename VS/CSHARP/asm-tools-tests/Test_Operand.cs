@@ -35,7 +35,7 @@ namespace unit_tests_asm_tools
         [TestMethod]
         public void Test_Operand_Register_1()
         {
-            foreach (Rn reg in Enum.GetValues(typeof(Rn)))
+            foreach (Rn reg in Enum.GetValues<Rn>())
             {
                 if (reg == Rn.NOREG)
                 {
@@ -43,7 +43,7 @@ namespace unit_tests_asm_tools
                 }
 
                 string regStr = reg.ToString();
-                Operand op = new Operand(regStr, true);
+                Operand op = new(regStr, true);
                 Assert.IsFalse(op.IsMem, "regStr=" + regStr);
                 Assert.IsFalse(op.IsImm, "regStr=" + regStr);
                 Assert.IsTrue(op.IsReg, "regStr=" + regStr);
@@ -57,7 +57,7 @@ namespace unit_tests_asm_tools
         [TestMethod]
         public void Test_Operand_Constant_hex_1()
         {
-            Operand op = new Operand("0x80_80_80_80_80_80_80_80", false);
+            Operand op = new("0x80_80_80_80_80_80_80_80", false);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(0x8080808080808080ul, op.Imm);
             Assert.AreEqual(64, op.NBits);
@@ -66,7 +66,7 @@ namespace unit_tests_asm_tools
         [TestMethod]
         public void Test_Operand_Constant_hex_2()
         {
-            Operand op = new Operand("0x80_80_80_80", false);
+            Operand op = new("0x80_80_80_80", false);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(0x80808080ul, op.Imm);
             Assert.AreEqual(32, op.NBits);
@@ -75,7 +75,7 @@ namespace unit_tests_asm_tools
         [TestMethod]
         public void Test_Operand_Constant_hex_3()
         {
-            Operand op = new Operand("0x80808080", false);
+            Operand op = new("0x80808080", false);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(0x80808080ul, op.Imm);
             Assert.AreEqual(32, op.NBits);
@@ -85,7 +85,7 @@ namespace unit_tests_asm_tools
         public void Test_Operand_Constant_SignExtend_1()
         { // sign extend 8-bits zero
             ulong value = 0;
-            Operand op = new Operand(value + string.Empty, false);
+            Operand op = new(value + string.Empty, false);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(0ul, op.Imm);
             Assert.AreEqual(8, op.NBits);
@@ -107,7 +107,7 @@ namespace unit_tests_asm_tools
         public void Test_Operand_Constant_SignExtend_2()
         {
             // sign extend 8-bit negative number
-            Operand op = new Operand("0xFF", false);
+            Operand op = new("0xFF", false);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(0xFFul, op.Imm);
             Assert.AreEqual(8, op.NBits);
@@ -128,7 +128,7 @@ namespace unit_tests_asm_tools
         [TestMethod]
         public void Test_Operand_Constant_SignExtend_3()
         { // sign extend 16-bit positive number
-            Operand op = new Operand("0x1FFF", false);
+            Operand op = new("0x1FFF", false);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(0x1FFFul, op.Imm);
             Assert.AreEqual(16, op.NBits);
@@ -148,7 +148,7 @@ namespace unit_tests_asm_tools
             long signedValue = -10;
             ulong unsignedValue = (ulong)signedValue;
 
-            Operand op = new Operand(signedValue.ToString(Culture), true);
+            Operand op = new(signedValue.ToString(Culture), true);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(unsignedValue, op.Imm);
             Assert.AreEqual(8, op.NBits);
@@ -160,7 +160,7 @@ namespace unit_tests_asm_tools
             long signedValue = -128;
             ulong unsignedValue = (ulong)signedValue;
 
-            Operand op = new Operand(signedValue.ToString(Culture), true);
+            Operand op = new(signedValue.ToString(Culture), true);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(unsignedValue, op.Imm);
             Assert.AreEqual(8, op.NBits);
@@ -172,7 +172,7 @@ namespace unit_tests_asm_tools
             long signedValue = -256;
             ulong unsignedValue = (ulong)signedValue;
 
-            Operand op = new Operand(signedValue.ToString(Culture), true);
+            Operand op = new(signedValue.ToString(Culture), true);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(unsignedValue, op.Imm);
             Assert.AreEqual(16, op.NBits);
@@ -184,7 +184,7 @@ namespace unit_tests_asm_tools
             long signedValue = -0x4FFF;
             ulong unsignedValue = (ulong)signedValue;
 
-            Operand op = new Operand(signedValue.ToString(Culture), true);
+            Operand op = new(signedValue.ToString(Culture), true);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(unsignedValue, op.Imm);
             Assert.AreEqual(16, op.NBits);
@@ -196,7 +196,7 @@ namespace unit_tests_asm_tools
             long signedValue = -0x4FFF_0000;
             ulong unsignedValue = (ulong)signedValue;
 
-            Operand op = new Operand(signedValue.ToString(Culture), true);
+            Operand op = new(signedValue.ToString(Culture), true);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(unsignedValue, op.Imm);
             Assert.AreEqual(32, op.NBits);
@@ -208,7 +208,7 @@ namespace unit_tests_asm_tools
             long signedValue = -0x4FFF_0000_0000_0000;
             ulong unsignedValue = (ulong)signedValue;
 
-            Operand op = new Operand(signedValue.ToString(Culture), true);
+            Operand op = new(signedValue.ToString(Culture), true);
             Assert.IsTrue(op.IsImm);
             Assert.AreEqual(unsignedValue, op.Imm);
             Assert.AreEqual(64, op.NBits);

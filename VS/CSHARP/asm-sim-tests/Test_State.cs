@@ -37,7 +37,7 @@ namespace unit_tests_asm_z3
 
         private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },          // enable model generation
@@ -65,26 +65,24 @@ namespace unit_tests_asm_z3
             string line1 = "mov ptr qword [rax], 10";
             string line2 = "mov ptr qword [rax], 10";
 
-            using (State state1 = this.CreateState(tools))
+            using State state1 = this.CreateState(tools);
+            State state2 = Runner.SimpleStep_Forward(line1, state1);
+            if (LogToDisplay)
             {
-                State state2 = Runner.SimpleStep_Forward(line1, state1);
-                if (LogToDisplay)
-                {
-                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state2);
-                }
-
-                string key1 = state2.HeadKey;
-
-                State state3 = Runner.SimpleStep_Forward(line2, state2);
-                if (LogToDisplay)
-                {
-                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state3);
-                }
-
-                string key2 = state3.HeadKey;
-
-                AsmTestTools.IsTrue(state3.Is_Redundant_Mem(key1, key2));
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state2);
             }
+
+            string key1 = state2.HeadKey;
+
+            State state3 = Runner.SimpleStep_Forward(line2, state2);
+            if (LogToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state3);
+            }
+
+            string key2 = state3.HeadKey;
+
+            AsmTestTools.IsTrue(state3.Is_Redundant_Mem(key1, key2));
         }
 
         [TestMethod]

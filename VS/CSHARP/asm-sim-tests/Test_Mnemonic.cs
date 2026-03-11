@@ -60,7 +60,7 @@ namespace unit_tests_asm_z3
                             Microsoft.Z3.Global.SetParameter(System.String,System.String)
             */
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -86,39 +86,39 @@ namespace unit_tests_asm_z3
             (string, string, string) keys = ("dummy1", "dummy2", "dummy3");
 
             {
-                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rax", "rbx" }, keys, tools);
-                SortedSet<Rn> read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, ["rax", "rbx"], keys, tools);
+                SortedSet<Rn> read = new(opcode.RegsReadStatic);
                 Console.WriteLine("read = " + string.Join(",", read));
                 Assert.AreEqual(1, read.Count);
                 Assert.IsTrue(read.Contains(Rn.RBX));
 
-                SortedSet<Rn> write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                SortedSet<Rn> write = new(opcode.RegsWriteStatic);
                 Console.WriteLine("write = " + string.Join(",", write));
                 Assert.AreEqual(1, write.Count);
                 Assert.IsTrue(write.Contains(Rn.RAX));
             }
             {
-                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "ptr qword [rax + rcx]", "rbx" }, keys, tools);
-                SortedSet<Rn> read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, ["ptr qword [rax + rcx]", "rbx"], keys, tools);
+                SortedSet<Rn> read = new(opcode.RegsReadStatic);
                 Console.WriteLine("read = " + string.Join(",", read));
                 Assert.AreEqual(3, read.Count);
                 Assert.IsTrue(read.Contains(Rn.RAX));
                 Assert.IsTrue(read.Contains(Rn.RBX));
                 Assert.IsTrue(read.Contains(Rn.RCX));
 
-                SortedSet<Rn> write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                SortedSet<Rn> write = new(opcode.RegsWriteStatic);
                 Console.WriteLine("write = " + string.Join(",", write));
                 Assert.AreEqual(0, write.Count);
             }
             {
-                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]" }, keys, tools);
-                SortedSet<Rn> read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, ["rbx", "ptr qword [rax + rcx]"], keys, tools);
+                SortedSet<Rn> read = new(opcode.RegsReadStatic);
                 Console.WriteLine("read = " + string.Join(",", read));
                 Assert.AreEqual(2, read.Count);
                 Assert.IsTrue(read.Contains(Rn.RAX));
                 Assert.IsTrue(read.Contains(Rn.RCX));
 
-                SortedSet<Rn> write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                SortedSet<Rn> write = new(opcode.RegsWriteStatic);
                 Console.WriteLine("write = " + string.Join(",", write));
                 Assert.AreEqual(1, write.Count);
                 Assert.IsTrue(write.Contains(Rn.RBX));
@@ -1215,7 +1215,7 @@ namespace unit_tests_asm_z3
             State state = this.CreateState(tools);
             _ = state.Ctx;
             {
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                StateUpdate updateState = new("!PREVKEY", "!NEXTKEY", state.Tools);
                 updateState.Set(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_0000000U");
                 updateState.Set(Rn.RBX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010");
                 state.Update_Forward(updateState);
@@ -1331,7 +1331,7 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 _ = state.Ctx;
 
-                StateUpdate updateState = new StateUpdate(state.TailKey, Tools.CreateKey(state.Tools.Rand), tools);
+                StateUpdate updateState = new(state.TailKey, Tools.CreateKey(state.Tools.Rand), tools);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("Intially, we know:\n" + state);
@@ -1362,7 +1362,7 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 _ = state.Ctx;
 
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools);
+                StateUpdate updateState = new("!PREVKEY", "!NEXTKEY", tools);
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
                 state.Update_Forward(updateState);
@@ -1387,7 +1387,7 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 _ = state.Ctx;
 
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools);
+                StateUpdate updateState = new("!PREVKEY", "!NEXTKEY", tools);
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
                 state.Update_Forward(updateState);
@@ -1420,7 +1420,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RBX = true;
 
             int nExperiments = 5;
-            Random rand = new Random((int)DateTime.Now.Ticks);
+            Random rand = new((int)DateTime.Now.Ticks);
             {
                 uint nBits = 64;
                 for (int i = 0; i < nExperiments; ++i)
@@ -1432,7 +1432,7 @@ namespace unit_tests_asm_z3
                     State state = this.CreateState(tools);
                     _ = state.Ctx;
 
-                    StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                    StateUpdate updateState = new("!PREVKEY", "!NEXTKEY", state.Tools);
                     updateState.Set(Rn.RAX, rax_value);
                     updateState.Set(Rn.RBX, rbx_value);
                     state.Update_Forward(updateState);
@@ -1465,7 +1465,7 @@ namespace unit_tests_asm_z3
                     State state = this.CreateState(tools);
                     _ = state.Ctx;
 
-                    StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                    StateUpdate updateState = new("!PREVKEY", "!NEXTKEY", state.Tools);
                     updateState.Set(Rn.AX, ax_value);
                     updateState.Set(Rn.BX, bx_value);
                     state.Update_Forward(updateState);
@@ -1592,7 +1592,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
 
-            Random rand = new Random((int)DateTime.Now.Ticks);
+            Random rand = new((int)DateTime.Now.Ticks);
 
             for (int i = 0; i < 1; ++i)
             {
@@ -1633,7 +1633,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
 
-            Random rand = new Random((int)DateTime.Now.Ticks);
+            Random rand = new((int)DateTime.Now.Ticks);
 
             for (int i = 0; i < 1; ++i)
             {
@@ -3891,7 +3891,7 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 _ = state.Ctx;
 
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                StateUpdate updateState = new("!PREVKEY", "!NEXTKEY", state.Tools);
                 updateState.Set(Rn.RAX, "0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_00U0");
                 state.Update_Forward(updateState);
 
@@ -3946,7 +3946,7 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 _ = state.Ctx;
 
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                StateUpdate updateState = new("!PREVKEY", "!NEXTKEY", state.Tools);
                 updateState.Set(Rn.EAX, "????_????_????_????_????_????_????_UU??");
                 state.Update_Forward(updateState);
 

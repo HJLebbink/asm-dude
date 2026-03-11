@@ -52,7 +52,7 @@ namespace unit_tests_asm_z3
 
         private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -83,7 +83,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0       ; line 0        " + Environment.NewLine +
                 "           mov     rbx,        10      ; line 1        " + Environment.NewLine +
                 "           mov     rbx,        rax     ; line 2        ";
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
             {
@@ -191,7 +191,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0       ; line 0        " + Environment.NewLine +
                 "           mov     rbx,        10      ; line 1        " + Environment.NewLine +
                 "           mov     rbx,        rax     ; line 2        ";
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
             {

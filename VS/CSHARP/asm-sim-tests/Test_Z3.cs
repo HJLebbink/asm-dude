@@ -260,7 +260,7 @@ namespace unit_tests_asm_z3
         {
             #region Definitions
             uint nBits = 8;
-            Context ctx = new Context();
+            Context ctx = new();
 
             BitVecExpr bv_0 = ctx.MkBV(0, nBits);
             BitVecExpr bv_10 = ctx.MkBV(10, nBits);
@@ -314,7 +314,7 @@ namespace unit_tests_asm_z3
         {
             #region Definitions
             uint nBits = 8;
-            Context ctx = new Context();
+            Context ctx = new();
 
             BitVecExpr bv_0 = ctx.MkBV(0, nBits);
             BitVecExpr bv_16 = ctx.MkBV(16, nBits);
@@ -376,7 +376,7 @@ namespace unit_tests_asm_z3
         {
             #region Definitions
             uint nBits = 8;
-            Context ctx = new Context();
+            Context ctx = new();
             _ = ctx.MkBV(0, nBits);
             BitVecExpr bv_16 = ctx.MkBV(16, nBits);
             _ = ctx.MkBV(32, nBits);
@@ -429,7 +429,7 @@ namespace unit_tests_asm_z3
         {
             #region Definitions
             uint nBits = 8;
-            Context ctx = new Context();
+            Context ctx = new();
             _ = ctx.MkBV(0, nBits);
             BitVecExpr bv_16 = ctx.MkBV(16, nBits);
             BitVecExpr bv_32 = ctx.MkBV(32, nBits);
@@ -489,7 +489,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Z3_MemWithImplies()
         {
-            Context ctx = new Context();
+            Context ctx = new();
 
             BitVecExpr bv_0 = ctx.MkBV(0, 64);
             BitVecExpr bv_10 = ctx.MkBV(10, 64);
@@ -533,173 +533,171 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Z3_GoalsAndProbes()
         {
-            using (Context ctx = new Context())
+            using Context ctx = new();
+            Solver solver = ctx.MkSolver();
+
+            #region Print all Probes
+            if (false)
             {
-                Solver solver = ctx.MkSolver();
-
-                #region Print all Probes
-                if (false)
+                for (int i = 0; i < ctx.ProbeNames.Length; ++i)
                 {
-                    for (int i = 0; i < ctx.ProbeNames.Length; ++i)
-                    {
-                        Console.WriteLine(i + ": probe " + ctx.ProbeNames[i] + "; " + ctx.ProbeDescription(ctx.ProbeNames[i]));
-                    }
-                    /*
-                    0: probe is-quasi-pb; true if the goal is quasi-pb.
-                    1: probe is-unbounded; true if the goal contains integer/real constants that do not have lower/upper bounds.
-                    2: probe is-pb; true if the goal is a pseudo-boolean problem.
-                    3: probe arith-max-deg; max polynomial total degree of an arithmetic atom.
-                    4: probe arith-avg-deg; avg polynomial total degree of an arithmetic atom.
-                    5: probe arith-max-bw; max coefficient bit width.
-                    6: probe arith-avg-bw; avg coefficient bit width.
-                    7: probe is-qflia; true if the goal is in QF_LIA.
-                    8: probe is-qfauflia; true if the goal is in QF_AUFLIA.
-                    9: probe is-qflra; true if the goal is in QF_LRA.
-                    10: probe is-qflira; true if the goal is in QF_LIRA.
-                    11: probe is-ilp; true if the goal is ILP.
-                    12: probe is-qfnia; true if the goal is in QF_NIA (quantifier-free nonlinear integer arithmetic).
-                    13: probe is-qfnra; true if the goal is in QF_NRA (quantifier-free nonlinear real arithmetic).
-                    14: probe is-nia; true if the goal is in NIA (nonlinear integer arithmetic, formula may have quantifiers).
-                    15: probe is-nra; true if the goal is in NRA (nonlinear real arithmetic, formula may have quantifiers).
-                    16: probe is-nira; true if the goal is in NIRA (nonlinear integer and real arithmetic, formula may have quantifiers).
-                    17: probe is-lia; true if the goal is in LIA (linear integer arithmetic, formula may have quantifiers).
-                    18: probe is-lra; true if the goal is in LRA (linear real arithmetic, formula may have quantifiers).
-                    19: probe is-lira; true if the goal is in LIRA (linear integer and real arithmetic, formula may have quantifiers).
-                    20: probe is-qfufnra; true if the goal is QF_UFNRA (quantifier-free nonlinear real arithmetic with other theories).
-                    21: probe memory; ammount of used memory in megabytes.
-                    22: probe depth; depth of the input goal.
-                    23: probe size; number of assertions in the given goal.
-                    24: probe num-exprs; number of expressions/terms in the given goal.
-                    25: probe num-consts; number of non Boolean constants in the given goal.
-                    26: probe num-bool-consts; number of Boolean constants in the given goal.
-                    27: probe num-arith-consts; number of arithmetic constants in the given goal.
-                    28: probe num-bv-consts; number of bit-vector constants in the given goal.
-                    29: probe produce-proofs; true if proof generation is enabled for the given goal.
-                    30: probe produce-model; true if model generation is enabled for the given goal.
-                    31: probe produce-unsat-cores; true if unsat-core generation is enabled for the given goal.
-                    32: probe has-patterns; true if the goal contains quantifiers with patterns.
-                    33: probe is-propositional; true if the goal is in propositional logic.
-                    34: probe is-qfbv; true if the goal is in QF_BV.
-                    35: probe is-qfaufbv; true if the goal is in QF_AUFBV.
-                    36: probe is-qfbv-eq; true if the goal is in a fragment of QF_BV which uses only =, extract, concat.
-                    37: probe is-qffp; true if the goal is in QF_FP (floats).
-                    38: probe is-qffpbv; true if the goal is in QF_FPBV (floats+bit-vectors).
-                     */
+                    Console.WriteLine(i + ": probe " + ctx.ProbeNames[i] + "; " + ctx.ProbeDescription(ctx.ProbeNames[i]));
                 }
-                #endregion Print all Probes
-                #region Print all Tactics
-                if (false)
-                {
-                    for (int i = 0; i < ctx.TacticNames.Length; ++i)
-                    {
-                        Console.WriteLine(i + ": tactic " + ctx.TacticNames[i] + "; " + ctx.TacticDescription(ctx.TacticNames[i]));
-                    }
-                    /*
-                    0: tactic qfbv; builtin strategy for solving QF_BV problems.
-                    1: tactic qflia; builtin strategy for solving QF_LIA problems.
-                    2: tactic qflra; builtin strategy for solving QF_LRA problems.
-                    3: tactic qfnia; builtin strategy for solving QF_NIA problems.
-                    4: tactic qfnra; builtin strategy for solving QF_NRA problems.
-                    5: tactic qfufnra; builtin strategy for solving QF_UNFRA problems.
-                    6: tactic add-bounds; add bounds to unbounded variables(under approximation).
-                    7: tactic card2bv; convert pseudo-boolean constraints to bit - vectors.
-                    8: tactic degree-shift; try to reduce degree of polynomials(remark: :mul2power simplification is automatically applied).
-                    9: tactic diff-neq; specialized solver for integer arithmetic problems that contain only atoms of the form(<= k x)(<= x k) and(not(= (-x y) k)), where x and y are constants and k is a numberal, and all constants are bounded.
-                    10: tactic elim01; eliminate 0 - 1 integer variables, replace them by Booleans.
-                    11: tactic eq2bv; convert integer variables used as finite domain elements to bit-vectors.
-                    12: tactic factor; polynomial factorization.
-                    13: tactic fix-dl - var; if goal is in the difference logic fragment, then fix the variable with the most number of occurrences at 0.
-                    14: tactic fm; eliminate variables using fourier - motzkin elimination.
-                    15: tactic lia2card; introduce cardinality constraints from 0 - 1 integer.
-                    16: tactic lia2pb; convert bounded integer variables into a sequence of 0 - 1 variables.
-                    17: tactic nla2bv; convert a nonlinear arithmetic problem into a bit-vector problem, in most cases the resultant goal is an under approximation and is useul for finding models.
-                    18: tactic normalize - bounds; replace a variable x with lower bound k <= x with x' = x - k.
-                    19: tactic pb2bv; convert pseudo-boolean constraints to bit - vectors.
-                    20: tactic propagate-ineqs; propagate ineqs/ bounds, remove subsumed inequalities.
-                    21: tactic purify-arith; eliminate unnecessary operators: -, /, div, mod, rem, is- int, to - int, ^, root - objects.
-                    22: tactic recover-01; recover 0 - 1 variables hidden as Boolean variables.
-                    23: tactic blast-term-ite; blast term if-then -else by hoisting them.
-                    24: tactic cofactor-term-ite; eliminate term if-the -else using cofactors.
-                    25: tactic ctx-simplify; apply contextual simplification rules.
-                    26: tactic der; destructive equality resolution.
-                    27: tactic distribute-forall; distribute forall over conjunctions.
-                    28: tactic elim-term-ite; eliminate term if-then -else by adding fresh auxiliary declarations.
-                    29: tactic elim-uncnstr; eliminate application containing unconstrained variables.
-                    30: tactic snf; put goal in skolem normal form.
-                    31: tactic nnf; put goal in negation normal form.
-                    32: tactic occf; put goal in one constraint per clause normal form (notes: fails if proof generation is enabled; only clauses are considered).
-                    33: tactic pb-preprocess; pre - process pseudo - Boolean constraints a la Davis Putnam.
-                    34: tactic propagate-values; propagate constants.
-                    35: tactic reduce-args; reduce the number of arguments of function applications, when for all occurrences of a function f the i - th is a value.
-                    36: tactic simplify; apply simplification rules.
-                    37: tactic elim-and; convert(and a b) into(not(or(not a)(not b))).
-                    38: tactic solve-eqs; eliminate variables by solving equations.
-                    39: tactic split-clause; split a clause in many subgoals.
-                    40: tactic symmetry-reduce; apply symmetry reduction.
-                    41: tactic tseitin-cnf; convert goal into CNF using tseitin - like encoding(note: quantifiers are ignored).
-                    42: tactic tseitin-cnf-core; convert goal into CNF using tseitin - like encoding(note: quantifiers are ignored).This tactic does not apply required simplifications to the input goal like the tseitin - cnf tactic.
-                    43: tactic skip; do nothing tactic.
-                    44: tactic fail; always fail tactic.
-                    45: tactic fail-if-undecided; fail if goal is undecided.
-                    46: tactic bit-blast; reduce bit-vector expressions into SAT.
-                    47: tactic bv1-blast; reduce bit-vector expressions into bit - vectors of size 1(notes: only equality, extract and concat are supported).
-                    48: tactic reduce-bv-size; try to reduce bit - vector sizes using inequalities.
-                    49: tactic max-bv-sharing; use heuristics to maximize the sharing of bit-vector expressions such as adders and multipliers.
-                    50: tactic nlsat; (try to) solve goal using a nonlinear arithmetic solver.
-                    51: tactic qfnra-nlsat; builtin strategy for solving QF_NRA problems using only nlsat.
-                    52: tactic sat; (try to) solve goal using a SAT solver.
-                    53: tactic sat-preprocess; Apply SAT solver preprocessing procedures(bounded resolution, Boolean constant propagation, 2 - SAT, subsumption, subsumption resolution).
-                    54: tactic ctx-solver-simplify; apply solver-based contextual simplification rules.
-                    55: tactic smt; apply a SAT based SMT solver.
-                    56: tactic unit-subsume-simplify; unit subsumption simplification.
-                    57: tactic aig; simplify Boolean structure using AIGs.
-                    58: tactic horn; apply tactic for horn clauses.
-                    59: tactic horn-simplify; simplify horn clauses.
-                    60: tactic qe-light; apply light-weight quantifier elimination.
-                    61: tactic qe-sat; check satisfiability of quantified formulas using quantifier elimination.
-                    62: tactic qe; apply quantifier elimination.
-                    63: tactic vsubst; checks satsifiability of quantifier-free non - linear constraints using virtual substitution.
-                    64: tactic nl-purify; Decompose goal into pure NL-sat formula and formula over other theories.
-                    65: tactic macro-finder; Identifies and applies macros.
-                    66: tactic quasi-macros; Identifies and applies quasi-macros.
-                    67: tactic bv; builtin strategy for solving BV problems(with quantifiers).
-                    68: tactic ufbv; builtin strategy for solving UFBV problems(with quantifiers).
-                    69: tactic fpa2bv; convert floating point numbers to bit-vectors.
-                    70: tactic qffp; (try to) solve goal using the tactic for QF_FP.
-                    71: tactic qffpbv; (try to) solve goal using the tactic for QF_FPBV(floats+bit-vectors).
-                    72: tactic qfbv-sls; (try to) solve using stochastic local search for QF_BV.
-                    73: tactic subpaving; tactic for testing subpaving module.
-                    */
-                }
-                #endregion Print all Tactics
-
-                BitVecExpr rax = ctx.MkBVConst("rax", 64);
-                BitVecExpr rbx = ctx.MkBVConst("rbx", 64);
-
-                BoolExpr a1 = ctx.MkEq(rax, ctx.MkBV(0, 64));
-                BoolExpr a2 = ctx.MkEq(rbx, rax);
-
-                Goal goal1 = ctx.MkGoal(true, false, false);
-                goal1.Assert(a1, a2);
-                Console.WriteLine("goal1=" + goal1 + "; inconsistent=" + goal1.Inconsistent);
-
-                Tactic tactic1 = ctx.MkTactic("simplify");
-                // Console.WriteLine("tactic1=" + tactic1.ToString());
-                ApplyResult applyResult = tactic1.Apply(goal1);
-
-                Console.WriteLine("applyResult=" + applyResult.ToString() + "; nSubGoals=" + applyResult.NumSubgoals);
-
-                // Console.WriteLine("AsBoolExpr=" + goal1.AsBoolExpr());
-
-                #region Probe Tests
-                if (false)
-                {
-                    Probe probe1 = ctx.MkProbe("is-qfbv");
-                    double d = probe1.Apply(goal1);
-                    Console.WriteLine("d=" + d);
-                }
-                #endregion Probe Tests
+                /*
+                0: probe is-quasi-pb; true if the goal is quasi-pb.
+                1: probe is-unbounded; true if the goal contains integer/real constants that do not have lower/upper bounds.
+                2: probe is-pb; true if the goal is a pseudo-boolean problem.
+                3: probe arith-max-deg; max polynomial total degree of an arithmetic atom.
+                4: probe arith-avg-deg; avg polynomial total degree of an arithmetic atom.
+                5: probe arith-max-bw; max coefficient bit width.
+                6: probe arith-avg-bw; avg coefficient bit width.
+                7: probe is-qflia; true if the goal is in QF_LIA.
+                8: probe is-qfauflia; true if the goal is in QF_AUFLIA.
+                9: probe is-qflra; true if the goal is in QF_LRA.
+                10: probe is-qflira; true if the goal is in QF_LIRA.
+                11: probe is-ilp; true if the goal is ILP.
+                12: probe is-qfnia; true if the goal is in QF_NIA (quantifier-free nonlinear integer arithmetic).
+                13: probe is-qfnra; true if the goal is in QF_NRA (quantifier-free nonlinear real arithmetic).
+                14: probe is-nia; true if the goal is in NIA (nonlinear integer arithmetic, formula may have quantifiers).
+                15: probe is-nra; true if the goal is in NRA (nonlinear real arithmetic, formula may have quantifiers).
+                16: probe is-nira; true if the goal is in NIRA (nonlinear integer and real arithmetic, formula may have quantifiers).
+                17: probe is-lia; true if the goal is in LIA (linear integer arithmetic, formula may have quantifiers).
+                18: probe is-lra; true if the goal is in LRA (linear real arithmetic, formula may have quantifiers).
+                19: probe is-lira; true if the goal is in LIRA (linear integer and real arithmetic, formula may have quantifiers).
+                20: probe is-qfufnra; true if the goal is QF_UFNRA (quantifier-free nonlinear real arithmetic with other theories).
+                21: probe memory; ammount of used memory in megabytes.
+                22: probe depth; depth of the input goal.
+                23: probe size; number of assertions in the given goal.
+                24: probe num-exprs; number of expressions/terms in the given goal.
+                25: probe num-consts; number of non Boolean constants in the given goal.
+                26: probe num-bool-consts; number of Boolean constants in the given goal.
+                27: probe num-arith-consts; number of arithmetic constants in the given goal.
+                28: probe num-bv-consts; number of bit-vector constants in the given goal.
+                29: probe produce-proofs; true if proof generation is enabled for the given goal.
+                30: probe produce-model; true if model generation is enabled for the given goal.
+                31: probe produce-unsat-cores; true if unsat-core generation is enabled for the given goal.
+                32: probe has-patterns; true if the goal contains quantifiers with patterns.
+                33: probe is-propositional; true if the goal is in propositional logic.
+                34: probe is-qfbv; true if the goal is in QF_BV.
+                35: probe is-qfaufbv; true if the goal is in QF_AUFBV.
+                36: probe is-qfbv-eq; true if the goal is in a fragment of QF_BV which uses only =, extract, concat.
+                37: probe is-qffp; true if the goal is in QF_FP (floats).
+                38: probe is-qffpbv; true if the goal is in QF_FPBV (floats+bit-vectors).
+                 */
             }
+            #endregion Print all Probes
+            #region Print all Tactics
+            if (false)
+            {
+                for (int i = 0; i < ctx.TacticNames.Length; ++i)
+                {
+                    Console.WriteLine(i + ": tactic " + ctx.TacticNames[i] + "; " + ctx.TacticDescription(ctx.TacticNames[i]));
+                }
+                /*
+                0: tactic qfbv; builtin strategy for solving QF_BV problems.
+                1: tactic qflia; builtin strategy for solving QF_LIA problems.
+                2: tactic qflra; builtin strategy for solving QF_LRA problems.
+                3: tactic qfnia; builtin strategy for solving QF_NIA problems.
+                4: tactic qfnra; builtin strategy for solving QF_NRA problems.
+                5: tactic qfufnra; builtin strategy for solving QF_UNFRA problems.
+                6: tactic add-bounds; add bounds to unbounded variables(under approximation).
+                7: tactic card2bv; convert pseudo-boolean constraints to bit - vectors.
+                8: tactic degree-shift; try to reduce degree of polynomials(remark: :mul2power simplification is automatically applied).
+                9: tactic diff-neq; specialized solver for integer arithmetic problems that contain only atoms of the form(<= k x)(<= x k) and(not(= (-x y) k)), where x and y are constants and k is a numberal, and all constants are bounded.
+                10: tactic elim01; eliminate 0 - 1 integer variables, replace them by Booleans.
+                11: tactic eq2bv; convert integer variables used as finite domain elements to bit-vectors.
+                12: tactic factor; polynomial factorization.
+                13: tactic fix-dl - var; if goal is in the difference logic fragment, then fix the variable with the most number of occurrences at 0.
+                14: tactic fm; eliminate variables using fourier - motzkin elimination.
+                15: tactic lia2card; introduce cardinality constraints from 0 - 1 integer.
+                16: tactic lia2pb; convert bounded integer variables into a sequence of 0 - 1 variables.
+                17: tactic nla2bv; convert a nonlinear arithmetic problem into a bit-vector problem, in most cases the resultant goal is an under approximation and is useul for finding models.
+                18: tactic normalize - bounds; replace a variable x with lower bound k <= x with x' = x - k.
+                19: tactic pb2bv; convert pseudo-boolean constraints to bit - vectors.
+                20: tactic propagate-ineqs; propagate ineqs/ bounds, remove subsumed inequalities.
+                21: tactic purify-arith; eliminate unnecessary operators: -, /, div, mod, rem, is- int, to - int, ^, root - objects.
+                22: tactic recover-01; recover 0 - 1 variables hidden as Boolean variables.
+                23: tactic blast-term-ite; blast term if-then -else by hoisting them.
+                24: tactic cofactor-term-ite; eliminate term if-the -else using cofactors.
+                25: tactic ctx-simplify; apply contextual simplification rules.
+                26: tactic der; destructive equality resolution.
+                27: tactic distribute-forall; distribute forall over conjunctions.
+                28: tactic elim-term-ite; eliminate term if-then -else by adding fresh auxiliary declarations.
+                29: tactic elim-uncnstr; eliminate application containing unconstrained variables.
+                30: tactic snf; put goal in skolem normal form.
+                31: tactic nnf; put goal in negation normal form.
+                32: tactic occf; put goal in one constraint per clause normal form (notes: fails if proof generation is enabled; only clauses are considered).
+                33: tactic pb-preprocess; pre - process pseudo - Boolean constraints a la Davis Putnam.
+                34: tactic propagate-values; propagate constants.
+                35: tactic reduce-args; reduce the number of arguments of function applications, when for all occurrences of a function f the i - th is a value.
+                36: tactic simplify; apply simplification rules.
+                37: tactic elim-and; convert(and a b) into(not(or(not a)(not b))).
+                38: tactic solve-eqs; eliminate variables by solving equations.
+                39: tactic split-clause; split a clause in many subgoals.
+                40: tactic symmetry-reduce; apply symmetry reduction.
+                41: tactic tseitin-cnf; convert goal into CNF using tseitin - like encoding(note: quantifiers are ignored).
+                42: tactic tseitin-cnf-core; convert goal into CNF using tseitin - like encoding(note: quantifiers are ignored).This tactic does not apply required simplifications to the input goal like the tseitin - cnf tactic.
+                43: tactic skip; do nothing tactic.
+                44: tactic fail; always fail tactic.
+                45: tactic fail-if-undecided; fail if goal is undecided.
+                46: tactic bit-blast; reduce bit-vector expressions into SAT.
+                47: tactic bv1-blast; reduce bit-vector expressions into bit - vectors of size 1(notes: only equality, extract and concat are supported).
+                48: tactic reduce-bv-size; try to reduce bit - vector sizes using inequalities.
+                49: tactic max-bv-sharing; use heuristics to maximize the sharing of bit-vector expressions such as adders and multipliers.
+                50: tactic nlsat; (try to) solve goal using a nonlinear arithmetic solver.
+                51: tactic qfnra-nlsat; builtin strategy for solving QF_NRA problems using only nlsat.
+                52: tactic sat; (try to) solve goal using a SAT solver.
+                53: tactic sat-preprocess; Apply SAT solver preprocessing procedures(bounded resolution, Boolean constant propagation, 2 - SAT, subsumption, subsumption resolution).
+                54: tactic ctx-solver-simplify; apply solver-based contextual simplification rules.
+                55: tactic smt; apply a SAT based SMT solver.
+                56: tactic unit-subsume-simplify; unit subsumption simplification.
+                57: tactic aig; simplify Boolean structure using AIGs.
+                58: tactic horn; apply tactic for horn clauses.
+                59: tactic horn-simplify; simplify horn clauses.
+                60: tactic qe-light; apply light-weight quantifier elimination.
+                61: tactic qe-sat; check satisfiability of quantified formulas using quantifier elimination.
+                62: tactic qe; apply quantifier elimination.
+                63: tactic vsubst; checks satsifiability of quantifier-free non - linear constraints using virtual substitution.
+                64: tactic nl-purify; Decompose goal into pure NL-sat formula and formula over other theories.
+                65: tactic macro-finder; Identifies and applies macros.
+                66: tactic quasi-macros; Identifies and applies quasi-macros.
+                67: tactic bv; builtin strategy for solving BV problems(with quantifiers).
+                68: tactic ufbv; builtin strategy for solving UFBV problems(with quantifiers).
+                69: tactic fpa2bv; convert floating point numbers to bit-vectors.
+                70: tactic qffp; (try to) solve goal using the tactic for QF_FP.
+                71: tactic qffpbv; (try to) solve goal using the tactic for QF_FPBV(floats+bit-vectors).
+                72: tactic qfbv-sls; (try to) solve using stochastic local search for QF_BV.
+                73: tactic subpaving; tactic for testing subpaving module.
+                */
+            }
+            #endregion Print all Tactics
+
+            BitVecExpr rax = ctx.MkBVConst("rax", 64);
+            BitVecExpr rbx = ctx.MkBVConst("rbx", 64);
+
+            BoolExpr a1 = ctx.MkEq(rax, ctx.MkBV(0, 64));
+            BoolExpr a2 = ctx.MkEq(rbx, rax);
+
+            Goal goal1 = ctx.MkGoal(true, false, false);
+            goal1.Assert(a1, a2);
+            Console.WriteLine("goal1=" + goal1 + "; inconsistent=" + goal1.Inconsistent);
+
+            Tactic tactic1 = ctx.MkTactic("simplify");
+            // Console.WriteLine("tactic1=" + tactic1.ToString());
+            ApplyResult applyResult = tactic1.Apply(goal1);
+
+            Console.WriteLine("applyResult=" + applyResult.ToString() + "; nSubGoals=" + applyResult.NumSubgoals);
+
+            // Console.WriteLine("AsBoolExpr=" + goal1.AsBoolExpr());
+
+            #region Probe Tests
+            if (false)
+            {
+                Probe probe1 = ctx.MkProbe("is-qfbv");
+                double d = probe1.Apply(goal1);
+                Console.WriteLine("d=" + d);
+            }
+            #endregion Probe Tests
         }
     }
 }

@@ -55,7 +55,7 @@ namespace AsmSim
         }
 
         /// <summary>Perform one step forward and return the regular branch</summary>
-        public static State SimpleStep_Forward(string line, State state)
+        public static State? SimpleStep_Forward(string line, State state)
         {
             if (state == null)
             {
@@ -68,7 +68,7 @@ namespace AsmSim
                 string nextKey = Tools.CreateKey(tools.Rand);
                 string nextKeyBranch = "DUMMY_NOT_USED";
                 (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmSourceTools.ParseLine(line, -1, -1);
-                using OpcodeBase opcodeBase = InstantiateOpcode(mnemonic, args, (state.HeadKey, nextKey, nextKeyBranch), tools);
+                using OpcodeBase? opcodeBase = InstantiateOpcode(mnemonic, args, (state.HeadKey, nextKey, nextKeyBranch), tools);
                 if (opcodeBase == null)
                 {
                     return null;
@@ -107,7 +107,7 @@ namespace AsmSim
         }
 
         /// <summary>Perform onestep forward and return the state of the regular branch</summary>
-        public static State SimpleStep_Backward(string line, State state)
+        public static State? SimpleStep_Backward(string line, State state)
         {
             ArgumentNullException.ThrowIfNull(state);
 
@@ -115,7 +115,7 @@ namespace AsmSim
             {
                 string prevKey = Tools.CreateKey(state.Tools.Rand);
                 (KeywordID[], string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line, -1, -1);
-                using OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (prevKey, state.TailKey, state.TailKey), state.Tools);
+                using OpcodeBase? opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (prevKey, state.TailKey, state.TailKey), state.Tools);
                 if (opcodeBase == null)
                 {
                     return null;
@@ -161,7 +161,7 @@ namespace AsmSim
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
                 string nextKeyBranch = nextKey + "!BRANCH";
                 (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line, -1, -1);
-                using OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools);
+                using OpcodeBase? opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools);
                 if (opcodeBase == null)
                 {
                     return (regular: null, branch: null);
@@ -207,7 +207,7 @@ namespace AsmSim
             try
             {
                 (Mnemonic mnemonic, string[] args) = sFlow.Get_Line(lineNumber);
-                using OpcodeBase opcodeBase = InstantiateOpcode(mnemonic, args, keys, tools);
+                using OpcodeBase? opcodeBase = InstantiateOpcode(mnemonic, args, keys, tools);
                 if ((opcodeBase == null) || opcodeBase.IsHalted)
                 {
                     StateUpdate resetState = new(keys.prevKey, keys.nextKey, tools)

@@ -47,7 +47,7 @@ namespace unit_tests_asm_z3
                 "           jz      label3               ;line 7       " + Environment.NewLine +
                 "label3:                                 ;line 8       ";
 
-            StaticFlow sFlow = new StaticFlow(new Tools());
+            StaticFlow sFlow = new(new Tools());
             bool removeEmptyLines = false;
             sFlow.Update(programStr, removeEmptyLines);
             if (LogToDisplay)
@@ -66,15 +66,15 @@ namespace unit_tests_asm_z3
             Assert.AreEqual((8, 8), sFlow.Get_Next_LineNumber(7));
             Assert.AreEqual((9, -1), sFlow.Get_Next_LineNumber(8));
 
-            List<(int lineNumber, bool isBranch)> p0 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(0));
-            List<(int lineNumber, bool isBranch)> p1 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(1));
-            List<(int lineNumber, bool isBranch)> p2 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(2));
-            List<(int lineNumber, bool isBranch)> p3 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(3));
-            List<(int lineNumber, bool isBranch)> p4 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(4));
-            List<(int lineNumber, bool isBranch)> p5 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(5));
-            List<(int lineNumber, bool isBranch)> p6 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(6));
-            List<(int lineNumber, bool isBranch)> p7 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(7));
-            List<(int lineNumber, bool isBranch)> p8 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(8));
+            List<(int lineNumber, bool isBranch)> p0 = new(sFlow.Get_Prev_LineNumber(0));
+            List<(int lineNumber, bool isBranch)> p1 = new(sFlow.Get_Prev_LineNumber(1));
+            List<(int lineNumber, bool isBranch)> p2 = new(sFlow.Get_Prev_LineNumber(2));
+            List<(int lineNumber, bool isBranch)> p3 = new(sFlow.Get_Prev_LineNumber(3));
+            List<(int lineNumber, bool isBranch)> p4 = new(sFlow.Get_Prev_LineNumber(4));
+            List<(int lineNumber, bool isBranch)> p5 = new(sFlow.Get_Prev_LineNumber(5));
+            List<(int lineNumber, bool isBranch)> p6 = new(sFlow.Get_Prev_LineNumber(6));
+            List<(int lineNumber, bool isBranch)> p7 = new(sFlow.Get_Prev_LineNumber(7));
+            List<(int lineNumber, bool isBranch)> p8 = new(sFlow.Get_Prev_LineNumber(8));
 
             Assert.AreEqual(0, p0.Count);
             Assert.AreEqual(1, p1.Count);
@@ -112,7 +112,7 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        rax      ;line 6       " + Environment.NewLine +
                 "           jz      label3               ;line 7       " + Environment.NewLine +
                 "label3:                                 ;line 8       ";
-            StaticFlow sFlow = new StaticFlow(new Tools());
+            StaticFlow sFlow = new(new Tools());
             bool removeEmptyLines = true;
             sFlow.Update(programStr, removeEmptyLines);
             if (LogToDisplay)
@@ -146,16 +146,16 @@ namespace unit_tests_asm_z3
             Console.WriteLine("n9 = " + string.Join(",", n9));
             // Console.WriteLine("n10 = " + string.Join(",", n10));
 
-            List<(int lineNumber, bool isBranch)> p0 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(0));
-            List<(int lineNumber, bool isBranch)> p1 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(1));
-            List<(int lineNumber, bool isBranch)> p2 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(2));
-            List<(int lineNumber, bool isBranch)> p3 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(3));
-            List<(int lineNumber, bool isBranch)> p4 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(4));
-            List<(int lineNumber, bool isBranch)> p5 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(5));
-            List<(int lineNumber, bool isBranch)> p6 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(6));
-            List<(int lineNumber, bool isBranch)> p7 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(7));
-            List<(int lineNumber, bool isBranch)> p8 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(8));
-            List<(int lineNumber, bool isBranch)> p9 = new List<(int lineNumber, bool isBranch)>(sFlow.Get_Prev_LineNumber(9));
+            List<(int lineNumber, bool isBranch)> p0 = new(sFlow.Get_Prev_LineNumber(0));
+            List<(int lineNumber, bool isBranch)> p1 = new(sFlow.Get_Prev_LineNumber(1));
+            List<(int lineNumber, bool isBranch)> p2 = new(sFlow.Get_Prev_LineNumber(2));
+            List<(int lineNumber, bool isBranch)> p3 = new(sFlow.Get_Prev_LineNumber(3));
+            List<(int lineNumber, bool isBranch)> p4 = new(sFlow.Get_Prev_LineNumber(4));
+            List<(int lineNumber, bool isBranch)> p5 = new(sFlow.Get_Prev_LineNumber(5));
+            List<(int lineNumber, bool isBranch)> p6 = new(sFlow.Get_Prev_LineNumber(6));
+            List<(int lineNumber, bool isBranch)> p7 = new(sFlow.Get_Prev_LineNumber(7));
+            List<(int lineNumber, bool isBranch)> p8 = new(sFlow.Get_Prev_LineNumber(8));
+            List<(int lineNumber, bool isBranch)> p9 = new(sFlow.Get_Prev_LineNumber(9));
             // var p10 = new List<(int LineNumber, bool IsBranch)>(sFlow.Get_Prev_LineNumber(10));
 
             Console.WriteLine("p0 = " + string.Join(",", p0));
@@ -222,7 +222,7 @@ namespace unit_tests_asm_z3
                 "           dec     rax                ;line 3         " + Environment.NewLine +
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
-            StaticFlow flow = new StaticFlow(new Tools());
+            StaticFlow flow = new(new Tools());
             flow.Update(programStr);
             if (LogToDisplay)
             {
@@ -247,7 +247,7 @@ namespace unit_tests_asm_z3
                "           dec     rax                ;line 3         " + Environment.NewLine +
                "           jnz     label1             ;line 4         " + Environment.NewLine +
                "           mov     rcx,        1      ;line 5         ";
-            StaticFlow flow = new StaticFlow(new Tools());
+            StaticFlow flow = new(new Tools());
             flow.Update(programStr, false);
             if (LogToDisplay)
             {
@@ -273,7 +273,7 @@ namespace unit_tests_asm_z3
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
 
-            StaticFlow flow = new StaticFlow(new Tools());
+            StaticFlow flow = new(new Tools());
             flow.Update(programStr, false);
             if (LogToDisplay)
             {
@@ -302,7 +302,7 @@ namespace unit_tests_asm_z3
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
 
-            StaticFlow flow = new StaticFlow(new Tools());
+            StaticFlow flow = new(new Tools());
             flow.Update(programStr, false);
             if (LogToDisplay)
             {
@@ -326,7 +326,7 @@ namespace unit_tests_asm_z3
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
 
-            StaticFlow flow = new StaticFlow(new Tools());
+            StaticFlow flow = new(new Tools());
             flow.Update(programStr);
             if (LogToDisplay)
             {
@@ -371,7 +371,7 @@ namespace unit_tests_asm_z3
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
 
-            StaticFlow flow = new StaticFlow(new Tools());
+            StaticFlow flow = new(new Tools());
             flow.Update(programStr, false);
             if (LogToDisplay)
             {

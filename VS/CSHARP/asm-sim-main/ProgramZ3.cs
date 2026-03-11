@@ -24,7 +24,6 @@ namespace AsmSim
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
@@ -42,7 +41,7 @@ namespace AsmSim
             DateTime startTime = DateTime.Now;
             Assembly thisAssem = typeof(AsmSimMain).Assembly;
             AssemblyName thisAssemName = thisAssem.GetName();
-            System.Version ver = thisAssemName.Version;
+            System.Version? ver = thisAssemName.Version;
             Console.WriteLine(string.Format(Culture, "Loaded AsmSim version {0}.", ver));
 
             // ExpressionTest();
@@ -496,23 +495,19 @@ namespace AsmSim
 
             BitVecExpr retrieve_mem_method_LOCAL(Context ctx, ArrayExpr mem1, BitVecExpr rax1)
             {
-                Contract.Requires(ctx != null);
-                Contract.Requires(mem1 != null);
-                Contract.Requires(rax1 != null);
+                ArgumentNullException.ThrowIfNull(ctx);
+                ArgumentNullException.ThrowIfNull(mem1);
+                ArgumentNullException.ThrowIfNull(rax1);
 
-                Contract.Assume(ctx != null);
-                Contract.Assume(mem1 != null);
-                Contract.Assume(rax1 != null);
-
-                BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
-                BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
-                BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
-                BitVecExpr y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
-                BitVecExpr y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
-                BitVecExpr y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
-                BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
-                BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
-                BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
+                BitVecExpr? y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
+                BitVecExpr? y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
+                BitVecExpr? y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
+                BitVecExpr? y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
+                BitVecExpr? y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
+                BitVecExpr? y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
+                BitVecExpr? y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
+                BitVecExpr? y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
+                BitVecExpr? y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
                 return y;
             }
 
@@ -843,7 +838,7 @@ namespace AsmSim
             {
                 BitVecExpr address = ctx.MkBVConst("address", 64);
                 // solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkAnd(ctx.MkBVULE(ctx.MkBV(10, 64), address), ctx.MkBVULE(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
-                solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkOr(ctx.MkEq(ctx.MkBV(10, 64), address), ctx.MkEq(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
+                solver.Assert(ctx.MkForall([address, mem0, mem1, rax1, rbx1], ctx.MkImplies(ctx.MkOr(ctx.MkEq(ctx.MkBV(10, 64), address), ctx.MkEq(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
                 solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
                 solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
             }
@@ -908,7 +903,7 @@ namespace AsmSim
 
             (string, string, string) keys = ("dummy1", "dummy2", "dummy3");
 
-            Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]" }, keys, tools);
+            Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, ["rbx", "ptr qword [rax + rcx]"], keys, tools);
             SortedSet<Rn> read = new(opcode.RegsReadStatic);
             SortedSet<Rn> write = new(opcode.RegsWriteStatic);
 
@@ -1406,7 +1401,7 @@ namespace AsmSim
                     FuncDecl myFunc = ctx.MkFuncDecl("MyFunc", ctx.MkIntSort(), ctx.MkBoolSort());
 
                     BoolExpr newState = ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2)));
-                    solver.Assert(ctx.MkQuantifier(true, new Expr[] { i1 }, ctx.MkEq(myFunc.Apply(i1), ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2))))));
+                    solver.Assert(ctx.MkQuantifier(true, [i1], ctx.MkEq(myFunc.Apply(i1), ctx.MkOr(ctx.MkNot(b1), ctx.MkLt(ctx.MkInt(0), i1), ctx.MkAnd(b2, ctx.MkEq(i1, i2))))));
 
                     solver.Assert(b1);
 
@@ -1446,7 +1441,7 @@ namespace AsmSim
 
                 // atleast and atmost one instruction must be executed
                 solver.Assert(ctx.MkAtMost(new BoolExpr[] { switch_XOR_RAX_RAX, switch_INC_RAX }, 1));
-                solver.Assert(ctx.MkOr(new BoolExpr[] { switch_XOR_RAX_RAX, switch_INC_RAX }));
+                solver.Assert(ctx.MkOr([switch_XOR_RAX_RAX, switch_INC_RAX]));
 
                 // after executing we want rax to be 0
                 if (false)
@@ -1458,7 +1453,7 @@ namespace AsmSim
                     BitVecExpr reg_0 = ctx.MkBVConst("reg0", 8);
                     BitVecExpr reg_1 = ctx.MkBVConst("reg1", 8);
 
-                    solver.Assert(ctx.MkNot(ctx.MkQuantifier(true, new Expr[] { reg_0, reg_1 },
+                    solver.Assert(ctx.MkNot(ctx.MkQuantifier(true, [reg_0, reg_1],
                         ctx.MkIff(
                             ctx.MkAnd(
                                 ctx.MkEq(ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)), reg_0),
@@ -1540,7 +1535,7 @@ namespace AsmSim
                 BoolExpr switch_L1_XOR_RBX_RBX = ctx.MkBoolConst("switch_L1_XOR_RBX_RBX");
 
                 solver.Assert(ctx.MkAtMost(new BoolExpr[] { switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX }, 1));
-                solver.Assert(ctx.MkOr(new BoolExpr[] { switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX }));
+                solver.Assert(ctx.MkOr([switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX]));
 
                 BitVecExpr zERO = ctx.MkBV(0, 64);
                 BitVecExpr oNE = ctx.MkBV(1, 64);
@@ -1691,7 +1686,7 @@ namespace AsmSim
 
                 BitVecExpr var = ctx.MkBVConst("var", 64);
                 FuncDecl incFunc64 = ctx.MkFuncDecl("INC_64", ctx.MkBitVecSort(64), ctx.MkBitVecSort(64));
-                solver1.Assert(ctx.MkQuantifier(true, new Expr[] { var }, ctx.MkEq(incFunc64.Apply(var), ctx.MkBVAdd(var, ctx.MkBV(1, 64)))));
+                solver1.Assert(ctx.MkQuantifier(true, [var], ctx.MkEq(incFunc64.Apply(var), ctx.MkBVAdd(var, ctx.MkBV(1, 64)))));
 
                 solver1.Assert(ctx.MkEq(rax0, ctx.MkBV(0, 64)));
                 solver1.Assert(ctx.MkEq(rax1, incFunc64.Apply(rax0)));

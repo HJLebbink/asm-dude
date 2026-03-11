@@ -220,7 +220,7 @@ using System.Diagnostics;
                 }
 
                 (bool valid, int startPos, int endPos) remarkPos = GetRemarkPos(lineStr);
-                KeywordID remarkKeyword = new KeywordID();
+                KeywordID remarkKeyword = new();
                 int codeEndPos = lineStr.Length;
                 if (remarkPos.valid)
                 {
@@ -1234,7 +1234,7 @@ using System.Diagnostics;
 
         public static string ToStringBin(ulong value, int nBits)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             for (int i = nBits - 1; i >= 0; --i)
             {
                 int bit = (int)((value >> i) & 1);

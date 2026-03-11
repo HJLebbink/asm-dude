@@ -34,8 +34,8 @@ namespace intel_doc_2_data
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
-            StringBuilder sb2 = new StringBuilder();
+            StringBuilder sb = new();
+            StringBuilder sb2 = new();
 
             IDictionary<Arch, ISet<Mnemonic>> dictionary = new Dictionary<Arch, ISet<Mnemonic>>();
 
@@ -314,7 +314,7 @@ namespace intel_doc_2_data
             string str_Upper = " " + str2.ToUpper() + " ";
 
             Mnemonic mnemonic = Mnemonic.NONE;
-            foreach (Mnemonic m in Enum.GetValues(typeof(Mnemonic)))
+            foreach (Mnemonic m in Enum.GetValues<Mnemonic>())
             {
                 string mnemonic_str = m.ToString();
                 int pos_mnemonic = str_Upper.IndexOf(" " + mnemonic_str + " ");

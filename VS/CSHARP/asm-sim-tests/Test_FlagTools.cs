@@ -49,7 +49,7 @@ namespace unit_tests_asm_z3
                             Microsoft.Z3.Global.SetParameter(System.String,System.String)
             */
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation

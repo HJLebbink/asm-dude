@@ -121,7 +121,7 @@ namespace AsmTools
                 return "ALL";
             }
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (Flags flag in GetFlags(flags))
             {
                 sb.Append(flag).Append('|');

@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2024 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
-using Microsoft.VisualStudio.Extensibility.LanguageServer;
 
 namespace AsmDude2;
 
@@ -34,9 +32,8 @@ internal static class AsmDocumentTypes
     /// <summary>
     /// Base document type for language server (all files)
     /// </summary>
-    [VisualStudioContribution]
     internal static DocumentTypeConfiguration AsmDocumentType => new("asm")
     {
-        FileExtensions = new[] { ".asm", ".cod", ".inc", ".s" },
+        FileExtensions = [".asm", ".cod", ".inc", ".s"],
     };
 }

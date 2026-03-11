@@ -326,7 +326,7 @@ namespace unit_tests
         [TestMethod]
         public void Test_AsmSourceTools_parseMnemonic()
         {
-            foreach (Mnemonic x in Enum.GetValues(typeof(Mnemonic)))
+            foreach (Mnemonic x in Enum.GetValues<Mnemonic>())
             {
                 Assert.AreEqual(AsmSourceTools.ParseMnemonic(x.ToString(), true), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
@@ -336,7 +336,7 @@ namespace unit_tests
         [TestMethod]
         public void Test_AsmSourceTools_parseArch()
         {
-            foreach (Arch x in Enum.GetValues(typeof(Arch)))
+            foreach (Arch x in Enum.GetValues<Arch>())
             {
                 Assert.AreEqual(ArchTools.ParseArch(ArchTools.ToString(x), true, true), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
@@ -346,9 +346,9 @@ namespace unit_tests
         [TestMethod]
         public void Test_AsmSourceTools_OperandType()
         {
-            foreach (Ot1 x1 in Enum.GetValues(typeof(Ot1)))
+            foreach (Ot1 x1 in Enum.GetValues<Ot1>())
             {
-                foreach (Ot1 x2 in Enum.GetValues(typeof(Ot1)))
+                foreach (Ot1 x2 in Enum.GetValues<Ot1>())
                 {
                     (Ot1, Ot1) t = AsmSourceTools.SplitOt(AsmSourceTools.MergeOt(x1, x2));
                     Assert.AreEqual(t.Item1, x1, string.Empty);
@@ -376,12 +376,12 @@ namespace unit_tests
 
             Random rnd = new((int)DateTime.Now.Ticks);
 
-            Rn[] bases32 = new Rn[] { Rn.EAX, Rn.EBX, Rn.ECX, Rn.EDX, Rn.ESP, Rn.EBP, Rn.ESI, Rn.EDI };
-            Rn[] index32 = new Rn[] { Rn.EAX, Rn.EBX, Rn.ECX, Rn.EDX, Rn.EBP, Rn.ESI, Rn.EDI };
+            Rn[] bases32 = [Rn.EAX, Rn.EBX, Rn.ECX, Rn.EDX, Rn.ESP, Rn.EBP, Rn.ESI, Rn.EDI];
+            Rn[] index32 = [Rn.EAX, Rn.EBX, Rn.ECX, Rn.EDX, Rn.EBP, Rn.ESI, Rn.EDI];
             _ = new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX, Rn.RSP, Rn.RBP, Rn.RSI, Rn.RDI };
             _ = new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX, Rn.RSP, Rn.RBP, Rn.RSI, Rn.RDI };
 
-            int[] scales = new int[] { 1, 2, 4, 8 };
+            int[] scales = [1, 2, 4, 8];
 
             for (int i = 0; i < bases32.Length; ++i)
             {

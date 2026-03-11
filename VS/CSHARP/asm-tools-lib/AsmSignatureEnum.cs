@@ -142,241 +142,241 @@ using System.Diagnostics;
             switch (AsmSourceTools.ToCapitals(str, strIsCapitals).Trim())
             {
                 #region Memory
-                case "M": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
-                case "MEM": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
-                case "M8": return new AsmSignatureEnum[] { AsmSignatureEnum.M8 };
-                case "M16": return new AsmSignatureEnum[] { AsmSignatureEnum.M16 };
-                case "M32": return new AsmSignatureEnum[] { AsmSignatureEnum.M32 };
-                case "M64": return new AsmSignatureEnum[] { AsmSignatureEnum.M64 };
-                case "M80": return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
+                case "M": return [AsmSignatureEnum.MEM];
+                case "MEM": return [AsmSignatureEnum.MEM];
+                case "M8": return [AsmSignatureEnum.M8];
+                case "M16": return [AsmSignatureEnum.M16];
+                case "M32": return [AsmSignatureEnum.M32];
+                case "M64": return [AsmSignatureEnum.M64];
+                case "M80": return [AsmSignatureEnum.M80];
 
-                case "M16&16": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
-                case "M16&32": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
-                case "M16&64": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
-                case "M32&32": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
+                case "M16&16": return [AsmSignatureEnum.MEM];
+                case "M16&32": return [AsmSignatureEnum.MEM];
+                case "M16&64": return [AsmSignatureEnum.MEM];
+                case "M32&32": return [AsmSignatureEnum.MEM];
 
-                case "M16:16": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
-                case "M16:32": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
-                case "M16:64": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
+                case "M16:16": return [AsmSignatureEnum.MEM];
+                case "M16:32": return [AsmSignatureEnum.MEM];
+                case "M16:64": return [AsmSignatureEnum.MEM];
 
-                case "R_M8": return new AsmSignatureEnum[] { AsmSignatureEnum.R8, AsmSignatureEnum.M8 };
-                case "R_M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.M16 };
-                case "R_M32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32 };
-                case "R_M32{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32, AsmSignatureEnum.ER };
-                case "R_M64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64 };
-                case "R_M64{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64, AsmSignatureEnum.ER };
+                case "R_M8": return [AsmSignatureEnum.R8, AsmSignatureEnum.M8];
+                case "R_M16": return [AsmSignatureEnum.R16, AsmSignatureEnum.M16];
+                case "R_M32": return [AsmSignatureEnum.R32, AsmSignatureEnum.M32];
+                case "R_M32{ER}": return [AsmSignatureEnum.R32, AsmSignatureEnum.M32, AsmSignatureEnum.ER];
+                case "R_M64": return [AsmSignatureEnum.R64, AsmSignatureEnum.M64];
+                case "R_M64{ER}": return [AsmSignatureEnum.R64, AsmSignatureEnum.M64, AsmSignatureEnum.ER];
 
-                case "PTR16:16": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
-                case "PTR16:32": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
-                case "PTR16:64": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
+                case "PTR16:16": return [AsmSignatureEnum.IMM];
+                case "PTR16:32": return [AsmSignatureEnum.IMM];
+                case "PTR16:64": return [AsmSignatureEnum.IMM];
 
                 #endregion
 
                 #region Register
-                case "R8": return new AsmSignatureEnum[] { AsmSignatureEnum.R8 };
-                case "R16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16 };
-                case "R32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32 };
-                case "R64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64 };
+                case "R8": return [AsmSignatureEnum.R8];
+                case "R16": return [AsmSignatureEnum.R16];
+                case "R32": return [AsmSignatureEnum.R32];
+                case "R64": return [AsmSignatureEnum.R64];
                 case "R16/R32/R64":
-                case "R16_32_64": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
+                case "R16_32_64": return [AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.R64];
                 case "R32/64":
-                case "R32_64": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
+                case "R32_64": return [AsmSignatureEnum.R32, AsmSignatureEnum.R64];
 
-                case "REG": return new AsmSignatureEnum[] { AsmSignatureEnum.R32 };
-                case "AL": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_AL };
-                case "AX": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_AX };
-                case "EAX": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_EAX };
-                case "RAX": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_RAX };
+                case "REG": return [AsmSignatureEnum.R32];
+                case "AL": return [AsmSignatureEnum.REG_AL];
+                case "AX": return [AsmSignatureEnum.REG_AX];
+                case "EAX": return [AsmSignatureEnum.REG_EAX];
+                case "RAX": return [AsmSignatureEnum.REG_RAX];
 
-                case "CL": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_CL };
-                case "CX": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_CX };
-                case "ECX": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_ECX };
-                case "RCX": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_RCX };
+                case "CL": return [AsmSignatureEnum.REG_CL];
+                case "CX": return [AsmSignatureEnum.REG_CX];
+                case "ECX": return [AsmSignatureEnum.REG_ECX];
+                case "RCX": return [AsmSignatureEnum.REG_RCX];
 
-                case "DX": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_DX };
-                case "EDX": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_EDX };
+                case "DX": return [AsmSignatureEnum.REG_DX];
+                case "EDX": return [AsmSignatureEnum.REG_EDX];
 
-                case "CS": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_CS };
-                case "DS": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_DS };
-                case "ES": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_ES };
-                case "SS": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_SS };
-                case "FS": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_FS };
-                case "GS": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_GS };
+                case "CS": return [AsmSignatureEnum.REG_CS];
+                case "DS": return [AsmSignatureEnum.REG_DS];
+                case "ES": return [AsmSignatureEnum.REG_ES];
+                case "SS": return [AsmSignatureEnum.REG_SS];
+                case "FS": return [AsmSignatureEnum.REG_FS];
+                case "GS": return [AsmSignatureEnum.REG_GS];
 
                 case "REG_SREG":
-                case "SREG": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_SREG };
-                case "CR0–CR7": return new AsmSignatureEnum[] { AsmSignatureEnum.CR0, AsmSignatureEnum.CR1, AsmSignatureEnum.CR2, AsmSignatureEnum.CR3, AsmSignatureEnum.CR4, AsmSignatureEnum.CR5, AsmSignatureEnum.CR6, AsmSignatureEnum.CR7 };
-                case "CR8": return new AsmSignatureEnum[] { AsmSignatureEnum.CR8 };
+                case "SREG": return [AsmSignatureEnum.REG_SREG];
+                case "CR0–CR7": return [AsmSignatureEnum.CR0, AsmSignatureEnum.CR1, AsmSignatureEnum.CR2, AsmSignatureEnum.CR3, AsmSignatureEnum.CR4, AsmSignatureEnum.CR5, AsmSignatureEnum.CR6, AsmSignatureEnum.CR7];
+                case "CR8": return [AsmSignatureEnum.CR8];
                 case "REG_DREG":
-                case "DR0–DR7": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_DREG };
+                case "DR0–DR7": return [AsmSignatureEnum.REG_DREG];
 
                 #endregion
 
                 #region Register or Memory
-                case "R/M8": return new AsmSignatureEnum[] { AsmSignatureEnum.R8, AsmSignatureEnum.M8 };
-                case "R/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.M16 };
-                case "R/M32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32 };
-                case "R/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64 };
-                case "R/M32{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32, AsmSignatureEnum.ER };
-                case "R/M64{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64, AsmSignatureEnum.ER };
+                case "R/M8": return [AsmSignatureEnum.R8, AsmSignatureEnum.M8];
+                case "R/M16": return [AsmSignatureEnum.R16, AsmSignatureEnum.M16];
+                case "R/M32": return [AsmSignatureEnum.R32, AsmSignatureEnum.M32];
+                case "R/M64": return [AsmSignatureEnum.R64, AsmSignatureEnum.M64];
+                case "R/M32{ER}": return [AsmSignatureEnum.R32, AsmSignatureEnum.M32, AsmSignatureEnum.ER];
+                case "R/M64{ER}": return [AsmSignatureEnum.R64, AsmSignatureEnum.M64, AsmSignatureEnum.ER];
 
-                case "REG/M8": return new AsmSignatureEnum[] { AsmSignatureEnum.R8, AsmSignatureEnum.M8 };
-                case "REG/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.M16 };
-                case "REG/M32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32 };
+                case "REG/M8": return [AsmSignatureEnum.R8, AsmSignatureEnum.M8];
+                case "REG/M16": return [AsmSignatureEnum.R16, AsmSignatureEnum.M16];
+                case "REG/M32": return [AsmSignatureEnum.R32, AsmSignatureEnum.M32];
 
-                case "R16/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.M16 };
-                case "R32/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M16 };
-                case "R64/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M16 };
-                case "R32/M32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32 };
-                case "R64/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64 };
-                case "R32/M8": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M8 };
+                case "R16/M16": return [AsmSignatureEnum.R16, AsmSignatureEnum.M16];
+                case "R32/M16": return [AsmSignatureEnum.R32, AsmSignatureEnum.M16];
+                case "R64/M16": return [AsmSignatureEnum.R64, AsmSignatureEnum.M16];
+                case "R32/M32": return [AsmSignatureEnum.R32, AsmSignatureEnum.M32];
+                case "R64/M64": return [AsmSignatureEnum.R64, AsmSignatureEnum.M64];
+                case "R32/M8": return [AsmSignatureEnum.R32, AsmSignatureEnum.M8];
 
-                case "R16/R32/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.M16 };
+                case "R16/R32/M16": return [AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.M16];
                 #endregion
 
                 #region Constants Immediates
-                case "0": return new AsmSignatureEnum[] { AsmSignatureEnum.ZERO };
-                case "1": return new AsmSignatureEnum[] { AsmSignatureEnum.UNITY };
+                case "0": return [AsmSignatureEnum.ZERO];
+                case "1": return [AsmSignatureEnum.UNITY];
 
-                case "MOFFS8": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM8 };
-                case "MOFFS16": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM16 };
-                case "MOFFS32": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM32 };
-                case "MOFFS64": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM64 };
+                case "MOFFS8": return [AsmSignatureEnum.IMM8];
+                case "MOFFS16": return [AsmSignatureEnum.IMM16];
+                case "MOFFS32": return [AsmSignatureEnum.IMM32];
+                case "MOFFS64": return [AsmSignatureEnum.IMM64];
 
-                case "REL8": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM8 };
-                case "REL16": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM16 };
-                case "REL32": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM32 };
-                case "REL64": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM64 };
+                case "REL8": return [AsmSignatureEnum.IMM8];
+                case "REL16": return [AsmSignatureEnum.IMM16];
+                case "REL32": return [AsmSignatureEnum.IMM32];
+                case "REL64": return [AsmSignatureEnum.IMM64];
 
-                case "IMM": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
-                case "IMM8": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM8 };
-                case "IMM16": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM16 };
-                case "IMM32": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM32 };
-                case "IMM64": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM64 };
+                case "IMM": return [AsmSignatureEnum.IMM];
+                case "IMM8": return [AsmSignatureEnum.IMM8];
+                case "IMM16": return [AsmSignatureEnum.IMM16];
+                case "IMM32": return [AsmSignatureEnum.IMM32];
+                case "IMM64": return [AsmSignatureEnum.IMM64];
 
-                case "IMM:IMM": return new AsmSignatureEnum[] { AsmSignatureEnum.imm_imm };
-                case "IMM16:IMM": return new AsmSignatureEnum[] { AsmSignatureEnum.imm16_imm };
-                case "IMM:IMM16": return new AsmSignatureEnum[] { AsmSignatureEnum.imm_imm16 };
-                case "IMM32:IMM": return new AsmSignatureEnum[] { AsmSignatureEnum.imm32_imm };
-                case "IMM:IMM32": return new AsmSignatureEnum[] { AsmSignatureEnum.imm_imm32 };
+                case "IMM:IMM": return [AsmSignatureEnum.imm_imm];
+                case "IMM16:IMM": return [AsmSignatureEnum.imm16_imm];
+                case "IMM:IMM16": return [AsmSignatureEnum.imm_imm16];
+                case "IMM32:IMM": return [AsmSignatureEnum.imm32_imm];
+                case "IMM:IMM32": return [AsmSignatureEnum.imm_imm32];
                 #endregion
 
                 #region FPU
-                case "ST(I)": return new AsmSignatureEnum[] { AsmSignatureEnum.FPUREG };
-                case "ST(0)": return new AsmSignatureEnum[] { AsmSignatureEnum.FPU0 };
-                case "ST": return new AsmSignatureEnum[] { AsmSignatureEnum.FPUREG };
-                case "M32FP": return new AsmSignatureEnum[] { AsmSignatureEnum.M32, AsmSignatureEnum.FPUREG };
-                case "M64FP": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.FPUREG };
-                case "M80FP": return new AsmSignatureEnum[] { AsmSignatureEnum.M80, AsmSignatureEnum.FPUREG };
-                case "M16INT": return new AsmSignatureEnum[] { AsmSignatureEnum.M16 };
-                case "M32INT": return new AsmSignatureEnum[] { AsmSignatureEnum.M32 };
-                case "M64INT": return new AsmSignatureEnum[] { AsmSignatureEnum.M64 };
+                case "ST(I)": return [AsmSignatureEnum.FPUREG];
+                case "ST(0)": return [AsmSignatureEnum.FPU0];
+                case "ST": return [AsmSignatureEnum.FPUREG];
+                case "M32FP": return [AsmSignatureEnum.M32, AsmSignatureEnum.FPUREG];
+                case "M64FP": return [AsmSignatureEnum.M64, AsmSignatureEnum.FPUREG];
+                case "M80FP": return [AsmSignatureEnum.M80, AsmSignatureEnum.FPUREG];
+                case "M16INT": return [AsmSignatureEnum.M16];
+                case "M32INT": return [AsmSignatureEnum.M32];
+                case "M64INT": return [AsmSignatureEnum.M64];
 
-                case "M14": return new AsmSignatureEnum[] { AsmSignatureEnum.M14BYTE };
-                case "28BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M28BYTE };
-                case "M94": return new AsmSignatureEnum[] { AsmSignatureEnum.M94BYTE};
-                case "108BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M108BYTE };
-                case "M2BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M2BYTE };
-                case "M512BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M512BYTE };
-                case "M80BCD": return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
-                case "M80DEC": return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
+                case "M14": return [AsmSignatureEnum.M14BYTE];
+                case "28BYTE": return [AsmSignatureEnum.M28BYTE];
+                case "M94": return [AsmSignatureEnum.M94BYTE];
+                case "108BYTE": return [AsmSignatureEnum.M108BYTE];
+                case "M2BYTE": return [AsmSignatureEnum.M2BYTE];
+                case "M512BYTE": return [AsmSignatureEnum.M512BYTE];
+                case "M80BCD": return [AsmSignatureEnum.M80];
+                case "M80DEC": return [AsmSignatureEnum.M80];
                 #endregion
 
                 #region SIMD
-                case "MM": return new AsmSignatureEnum[] { AsmSignatureEnum.MMXREG };
+                case "MM": return [AsmSignatureEnum.MMXREG];
 
-                case "Z": return new AsmSignatureEnum[] { AsmSignatureEnum.Z };
-                case "K": return new AsmSignatureEnum[] { AsmSignatureEnum.K };
-                case "K+1": return new AsmSignatureEnum[] { AsmSignatureEnum.K };
-                case "K{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.K };
-                case "SAE": return new AsmSignatureEnum[] { AsmSignatureEnum.SAE };
-                case "ER": return new AsmSignatureEnum[] { AsmSignatureEnum.ER };
+                case "Z": return [AsmSignatureEnum.Z];
+                case "K": return [AsmSignatureEnum.K];
+                case "K+1": return [AsmSignatureEnum.K];
+                case "K{K}": return [AsmSignatureEnum.K];
+                case "SAE": return [AsmSignatureEnum.SAE];
+                case "ER": return [AsmSignatureEnum.ER];
 
-                case "K/M8": return new AsmSignatureEnum[] { AsmSignatureEnum.K, AsmSignatureEnum.M8 };
-                case "K/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.K, AsmSignatureEnum.M16 };
-                case "K/M32": return new AsmSignatureEnum[] { AsmSignatureEnum.K, AsmSignatureEnum.M32 };
-                case "K/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.K, AsmSignatureEnum.M64 };
+                case "K/M8": return [AsmSignatureEnum.K, AsmSignatureEnum.M8];
+                case "K/M16": return [AsmSignatureEnum.K, AsmSignatureEnum.M16];
+                case "K/M32": return [AsmSignatureEnum.K, AsmSignatureEnum.M32];
+                case "K/M64": return [AsmSignatureEnum.K, AsmSignatureEnum.M64];
 
-                case "VM32X": return new AsmSignatureEnum[] { AsmSignatureEnum.VM32X };
-                case "VM64X": return new AsmSignatureEnum[] { AsmSignatureEnum.VM64X };
-                case "VM32Y": return new AsmSignatureEnum[] { AsmSignatureEnum.VM32Y };
-                case "VM64Y": return new AsmSignatureEnum[] { AsmSignatureEnum.VM64Y };
-                case "VM32Z": return new AsmSignatureEnum[] { AsmSignatureEnum.VM32Z };
-                case "VM64Z": return new AsmSignatureEnum[] { AsmSignatureEnum.VM64Z };
+                case "VM32X": return [AsmSignatureEnum.VM32X];
+                case "VM64X": return [AsmSignatureEnum.VM64X];
+                case "VM32Y": return [AsmSignatureEnum.VM32Y];
+                case "VM64Y": return [AsmSignatureEnum.VM64Y];
+                case "VM32Z": return [AsmSignatureEnum.VM32Z];
+                case "VM64Z": return [AsmSignatureEnum.VM64Z];
 
-                case "VM32X{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.VM32X, AsmSignatureEnum.K };
-                case "VM64X{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.VM64X, AsmSignatureEnum.K };
-                case "VM32Y{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.VM32Y, AsmSignatureEnum.K };
-                case "VM64Y{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.VM64Y, AsmSignatureEnum.K };
-                case "VM32Z{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.VM32Z, AsmSignatureEnum.K };
-                case "VM64Z{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.VM64Z, AsmSignatureEnum.K };
+                case "VM32X{K}": return [AsmSignatureEnum.VM32X, AsmSignatureEnum.K];
+                case "VM64X{K}": return [AsmSignatureEnum.VM64X, AsmSignatureEnum.K];
+                case "VM32Y{K}": return [AsmSignatureEnum.VM32Y, AsmSignatureEnum.K];
+                case "VM64Y{K}": return [AsmSignatureEnum.VM64Y, AsmSignatureEnum.K];
+                case "VM32Z{K}": return [AsmSignatureEnum.VM32Z, AsmSignatureEnum.K];
+                case "VM64Z{K}": return [AsmSignatureEnum.VM64Z, AsmSignatureEnum.K];
 
-                case "XMM": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG };
-                case "XMM_ZERO": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_XMM0 };
-                case "XMM{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.K };
-                case "XMM{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+                case "XMM": return [AsmSignatureEnum.XMMREG];
+                case "XMM_ZERO": return [AsmSignatureEnum.REG_XMM0];
+                case "XMM{K}": return [AsmSignatureEnum.XMMREG, AsmSignatureEnum.K];
+                case "XMM{K}{Z}": return [AsmSignatureEnum.XMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
                 
-                case "M16{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M16, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+                case "M16{K}{Z}": return [AsmSignatureEnum.M16, AsmSignatureEnum.K, AsmSignatureEnum.Z];
 
-                case "M32{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32, AsmSignatureEnum.K };
-                case "M32{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "M32{ER}": return new AsmSignatureEnum[] {  AsmSignatureEnum.M32, AsmSignatureEnum.ER };
-                case "M32{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32, AsmSignatureEnum.SAE };
-                case "M32BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.M32BCST };
-                case "M32BCST{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32BCST, AsmSignatureEnum.ER };
-                case "M32BCST{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M32BCST, AsmSignatureEnum.SAE };
+                case "M32{K}": return [AsmSignatureEnum.M32, AsmSignatureEnum.K];
+                case "M32{K}{Z}": return [AsmSignatureEnum.M32, AsmSignatureEnum.K, AsmSignatureEnum.Z];
+                case "M32{ER}": return [AsmSignatureEnum.M32, AsmSignatureEnum.ER];
+                case "M32{SAE}": return [AsmSignatureEnum.M32, AsmSignatureEnum.SAE];
+                case "M32BCST": return [AsmSignatureEnum.M32BCST];
+                case "M32BCST{ER}": return [AsmSignatureEnum.M32BCST, AsmSignatureEnum.ER];
+                case "M32BCST{SAE}": return [AsmSignatureEnum.M32BCST, AsmSignatureEnum.SAE];
 
-                case "M64{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.K };
-                case "M64{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "M64{ER}": return new AsmSignatureEnum[] {  AsmSignatureEnum.M64, AsmSignatureEnum.ER };
-                case "M64{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.SAE };
-                case "M64BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.M64BCST };
-                case "M64BCST{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64BCST, AsmSignatureEnum.ER };
-                case "M64BCST{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64BCST, AsmSignatureEnum.SAE };
+                case "M64{K}": return [AsmSignatureEnum.M64, AsmSignatureEnum.K];
+                case "M64{K}{Z}": return [AsmSignatureEnum.M64, AsmSignatureEnum.K, AsmSignatureEnum.Z];
+                case "M64{ER}": return [AsmSignatureEnum.M64, AsmSignatureEnum.ER];
+                case "M64{SAE}": return [AsmSignatureEnum.M64, AsmSignatureEnum.SAE];
+                case "M64BCST": return [AsmSignatureEnum.M64BCST];
+                case "M64BCST{ER}": return [AsmSignatureEnum.M64BCST, AsmSignatureEnum.ER];
+                case "M64BCST{SAE}": return [AsmSignatureEnum.M64BCST, AsmSignatureEnum.SAE];
 
-                case "M128": return new AsmSignatureEnum[] { AsmSignatureEnum.M128 };
-                case "M128{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M128, AsmSignatureEnum.K };
-                case "M128{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M128, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+                case "M128": return [AsmSignatureEnum.M128];
+                case "M128{K}": return [AsmSignatureEnum.M128, AsmSignatureEnum.K];
+                case "M128{K}{Z}": return [AsmSignatureEnum.M128, AsmSignatureEnum.K, AsmSignatureEnum.Z];
 
-                case "M256": return new AsmSignatureEnum[] { AsmSignatureEnum.M256 };
-                case "M256{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M256, AsmSignatureEnum.K };
-                case "M256{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.M256, AsmSignatureEnum.SAE };
-                case "M256{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.M256, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+                case "M256": return [AsmSignatureEnum.M256];
+                case "M256{K}": return [AsmSignatureEnum.M256, AsmSignatureEnum.K];
+                case "M256{SAE}": return [AsmSignatureEnum.M256, AsmSignatureEnum.SAE];
+                case "M256{K}{Z}": return [AsmSignatureEnum.M256, AsmSignatureEnum.K, AsmSignatureEnum.Z];
 
-                case "M512": return new AsmSignatureEnum[] { AsmSignatureEnum.M512 };
-                case "M512{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M512, AsmSignatureEnum.K };
-                case "M512{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+                case "M512": return [AsmSignatureEnum.M512];
+                case "M512{K}": return [AsmSignatureEnum.M512, AsmSignatureEnum.K];
+                case "M512{K}{Z}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
 
-                case "YMM": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG };
-                case "YMM{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.K };
-                case "YMM{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.YMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
+                case "YMM": return [AsmSignatureEnum.YMMREG];
+                case "YMM{K}": return [AsmSignatureEnum.YMMREG, AsmSignatureEnum.K];
+                case "YMM{K}{Z}": return [AsmSignatureEnum.YMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
  
-                case "ZMM": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG };
-                case "ZMM{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K };
-                case "ZMM{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z };
-                case "ZMM{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.ZMMREG, AsmSignatureEnum.SAE };
+                case "ZMM": return [AsmSignatureEnum.ZMMREG];
+                case "ZMM{K}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K];
+                case "ZMM{K}{Z}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
+                case "ZMM{SAE}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.SAE];
               
                 #endregion
 
                 #region Misc
-                case "NEAR": return new AsmSignatureEnum[] { AsmSignatureEnum.NEAR };
-                case "FAR": return new AsmSignatureEnum[] { AsmSignatureEnum.FAR };
-                case "SHORT": return new AsmSignatureEnum[] { AsmSignatureEnum.SHORT_ENUM };
-                case "MEM_OFFS": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM_OFFSET };
+                case "NEAR": return [AsmSignatureEnum.NEAR];
+                case "FAR": return [AsmSignatureEnum.FAR];
+                case "SHORT": return [AsmSignatureEnum.SHORT_ENUM];
+                case "MEM_OFFS": return [AsmSignatureEnum.MEM_OFFSET];
 
-                case "BND": return new AsmSignatureEnum[] { AsmSignatureEnum.BNDREG };
-                case "BND/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.BNDREG, AsmSignatureEnum.M64 };
-                case "BND/M128": return new AsmSignatureEnum[] { AsmSignatureEnum.BNDREG, AsmSignatureEnum.M128 };
-                case "MIB": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
+                case "BND": return [AsmSignatureEnum.BNDREG];
+                case "BND/M64": return [AsmSignatureEnum.BNDREG, AsmSignatureEnum.M64];
+                case "BND/M128": return [AsmSignatureEnum.BNDREG, AsmSignatureEnum.M128];
+                case "MIB": return [AsmSignatureEnum.MEM];
                 case "M14_28":
-                case "M94_108": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
+                case "M94_108": return [AsmSignatureEnum.MEM];
                 #endregion
 
-                case "NONE": return new AsmSignatureEnum[] { AsmSignatureEnum.NONE };
+                case "NONE": return [AsmSignatureEnum.NONE];
 
                 default:
                     Console.WriteLine("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
-                    return new AsmSignatureEnum[] { AsmSignatureEnum.UNKNOWN };
+                    return [AsmSignatureEnum.UNKNOWN];
             }
         }
 
@@ -461,7 +461,7 @@ using System.Diagnostics;
             }
             else
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 for (int i = 0; i < nOperands; ++i)
                 {
                     sb.Append(ToString(list[i]));

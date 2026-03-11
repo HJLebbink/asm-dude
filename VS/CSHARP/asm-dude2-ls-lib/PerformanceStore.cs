@@ -137,7 +137,7 @@ namespace AsmDude2LS
             //Tools.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
             try
             {
-                StreamReader file = new StreamReader(filename);
+                StreamReader file = new(filename);
                 string? line;
                 int lineNumber = 0;
 
@@ -217,7 +217,7 @@ namespace AsmDude2LS
             IDictionary<string, IList<Mnemonic>> translations = new Dictionary<string, IList<Mnemonic>>();
             try
             {
-                StreamReader file = new StreamReader(filename);
+                StreamReader file = new(filename);
                 string? line;
                 while ((line = file.ReadLine()) is not null)
                 {

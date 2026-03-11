@@ -94,7 +94,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     /// Each test should call this to get an isolated server connected to its own streams.
     /// </summary>
     internal static LanguageServer CreateForTest(Stream sender, Stream reader)
-        => new LanguageServer(sender, reader);
+        => new(sender, reader);
 
     private static LanguageServer Instance { get; set; }
 
@@ -626,8 +626,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             #endregion
 
             #region Add Text actions
-            TextEdit[] addTextEdit = new TextEdit[]
-            {
+            TextEdit[] addTextEdit =
+            [
                 new TextEdit
                 {
                     Range = new Range
@@ -637,7 +637,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     },
                     NewText = "Added text!"
                 }
-            };
+            ];
 
             var textEdits = addTextEdit;
 
@@ -648,7 +648,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     DocumentChanges = new TextDocumentEdit[]
                         {
-                            new TextDocumentEdit()
+                            new()
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
@@ -683,14 +683,14 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     DocumentChanges = new TextDocumentEdit[]
                         {
-                            new TextDocumentEdit()
+                            new()
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
                                     Uri = parameter.TextDocument.Uri,
                                 },
-                                Edits = new TextEdit[]
-                                    {
+                                Edits =
+                                    [
                                         new TextEdit
                                         {
                                             Range = new Range
@@ -700,7 +700,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                                             },
                                             NewText = "_"
                                         }
-                                    }
+                                    ]
                             },
                         }
                 },
@@ -714,8 +714,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     Changes = changes,
                 },
-                Diagnostics = new Diagnostic[]
-                {
+                Diagnostics =
+                [
                     new Diagnostic()
                     {
                         Range = new Range
@@ -726,7 +726,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         Message = "Test Error",
                         Severity = DiagnosticSeverity.Error,
                     }
-                },
+                ],
                 Kind = CodeActionKind.QuickFix,
             };
 
@@ -738,7 +738,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     DocumentChanges = new TextDocumentEdit[]
                         {
-                            new TextDocumentEdit()
+                            new()
                             {
                                 TextDocument = new OptionalVersionedTextDocumentIdentifier()
                                 {
@@ -800,8 +800,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                 for (int j = 0; j < lineStr.Length; j++)
                 {
-                    Location location = this.GetLocation(lineStr, i, ref j, referenceWord, new Uri(uri));
-
+                    Location? location = this.GetLocation(lineStr, i, ref j, referenceWord, new Uri(uri));
                     if (location != null)
                     {
                         locations.Add(location);
@@ -1660,7 +1659,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 LogInfo($"LanguageServer:GetDocumentHighlights: progress is null");
                 return [];
             }
-            TextDocumentItem document = this.GetTextDocument(uri);
+            TextDocumentItem? document = this.GetTextDocument(uri);
             if (document == null)
             {
                 LogInfo($"LanguageServer:GetDocumentHighlights: document is null");
@@ -1870,7 +1869,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             LogInfo($"GetDefinition: looking for definition of '{word}'");
 
             // First check if we have a label graph for this document
-            LabelGraph labelGraph = this.GetLabelGraph(uri);
+            LabelGraph? labelGraph = this.GetLabelGraph(uri);
             if (labelGraph != null && labelGraph.Enabled)
             {
                 // Search for the label definition in the label graph

@@ -39,7 +39,7 @@ namespace AsmTools
         public int NBits { get; set; }
 
         /// <summary>constructor</summary>
-        public Operand(string token, bool isCapitals, AsmParameters p = null)
+        public Operand(string token, bool isCapitals, AsmParameters? p = null)
         {
             ArgumentNullException.ThrowIfNull(token);
 
@@ -47,7 +47,7 @@ namespace AsmTools
             this.str_ = token;
 
             // TODO: properly handle optional elements {K}{Z} {AES}{ER}
-            string token2 = token.Contains("{")
+            string token2 = token.Contains('{')
                 ? token.
                     Replace("{K0}", string.Empty).
                     Replace("{K1}", string.Empty).

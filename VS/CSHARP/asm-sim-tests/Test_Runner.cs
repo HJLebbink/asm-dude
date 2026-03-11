@@ -45,7 +45,7 @@ namespace unit_tests_asm_z3
 
         private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -65,7 +65,7 @@ namespace unit_tests_asm_z3
         /// <summary>Returns Forward, Backward State</summary>
         private State Equal_Forward_Backward(string programStr, bool logToDispay2, Tools tools)
         {
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (logToDispay2)
             {
@@ -106,7 +106,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RBX = true;
             tools.Quiet = true;
 
-            Mnemonic[] a = new Mnemonic[] { Mnemonic.AND, Mnemonic.ADD, Mnemonic.OR, Mnemonic.SUB, Mnemonic.XOR, Mnemonic.ADC, Mnemonic.SBB };
+            Mnemonic[] a = [Mnemonic.AND, Mnemonic.ADD, Mnemonic.OR, Mnemonic.SUB, Mnemonic.XOR, Mnemonic.ADC, Mnemonic.SBB];
 
             ulong value_rax = 10;
             ulong value_rbx = 20;
@@ -262,7 +262,7 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -291,7 +291,7 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -319,7 +319,7 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -349,7 +349,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -376,7 +376,7 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -402,7 +402,7 @@ namespace unit_tests_asm_z3
             }
 
             {
-                State state2a = new State(state);
+                State state2a = new(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
                 if (logToDisplay2)
                 {
@@ -413,7 +413,7 @@ namespace unit_tests_asm_z3
                 AsmTestTools.AreEqual(Rn.RAX, 10, state2a); // TODO why is 10 / 20 reversed?
             }
             {
-                State state2b = new State(state);
+                State state2b = new(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
                 if (logToDisplay2)
                 {
@@ -440,7 +440,7 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -475,7 +475,7 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -504,7 +504,7 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -523,7 +523,7 @@ namespace unit_tests_asm_z3
             Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
 
             {
-                State state2a = new State(state);
+                State state2a = new(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
                 if (LogToDisplay)
                 {
@@ -533,7 +533,7 @@ namespace unit_tests_asm_z3
                 AsmTestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
             }
             {
-                State state2b = new State(state);
+                State state2b = new(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
                 if (LogToDisplay)
                 {
@@ -560,7 +560,7 @@ namespace unit_tests_asm_z3
                 "label3:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -580,7 +580,7 @@ namespace unit_tests_asm_z3
 
             Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
             {
-                State state2a = new State(state);
+                State state2a = new(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
                 if (LogToDisplay)
                 {
@@ -591,7 +591,7 @@ namespace unit_tests_asm_z3
                 AsmTestTools.AreEqual(Rn.RAX, 10, state2a);
             }
             {
-                State state2b = new State(state);
+                State state2b = new(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
                 if (LogToDisplay)
                 {
@@ -616,7 +616,7 @@ namespace unit_tests_asm_z3
                 "           mov     rcx,        3               ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
             {
@@ -643,7 +643,7 @@ namespace unit_tests_asm_z3
             {
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
                     AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
@@ -651,7 +651,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
                     AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
@@ -662,7 +662,7 @@ namespace unit_tests_asm_z3
             {
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
                     AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
@@ -670,7 +670,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
                     AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
@@ -681,7 +681,7 @@ namespace unit_tests_asm_z3
             {
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
@@ -690,7 +690,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
@@ -699,7 +699,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
@@ -708,7 +708,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
@@ -732,7 +732,7 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
             {
@@ -760,7 +760,7 @@ namespace unit_tests_asm_z3
             {
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
@@ -768,7 +768,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
@@ -776,7 +776,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
@@ -784,7 +784,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
@@ -792,7 +792,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
@@ -800,7 +800,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
@@ -808,7 +808,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
@@ -816,7 +816,7 @@ namespace unit_tests_asm_z3
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
@@ -838,7 +838,7 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
             {
@@ -865,28 +865,28 @@ namespace unit_tests_asm_z3
             {
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz1, true));
                     state2.Add(new BranchInfo(branch_Condition_jz2, true));
                     AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state2);
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz1, true));
                     state2.Add(new BranchInfo(branch_Condition_jz2, false));
                     AsmTestTools.AreEqual(Rn.RAX, "XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX", state2);
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz1, false));
                     state2.Add(new BranchInfo(branch_Condition_jz2, true));
                     AsmTestTools.AreEqual(Rn.RAX, "XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX", state2);
                 }
                 if (true)
                 {
-                    State state2 = new State(state);
+                    State state2 = new(state);
                     state2.Add(new BranchInfo(branch_Condition_jz1, false));
                     state2.Add(new BranchInfo(branch_Condition_jz2, false));
                     AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
@@ -907,7 +907,7 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
             {
@@ -934,39 +934,31 @@ namespace unit_tests_asm_z3
             {
                 if (true)
                 {
-                    using (State state2 = new State(state))
-                    {
-                        state2.Add(new BranchInfo(branch_Condition_jp, true));
-                        state2.Add(new BranchInfo(branch_Condition_jz, true));
-                        AsmTestTools.AreEqual(Rn.AL, "00000000", state2);
-                    }
+                    using State state2 = new(state);
+                    state2.Add(new BranchInfo(branch_Condition_jp, true));
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    AsmTestTools.AreEqual(Rn.AL, "00000000", state2);
                 }
                 if (true)
                 {
-                    using (State state2 = new State(state))
-                    {
-                        state2.Add(new BranchInfo(branch_Condition_jp, true));
-                        state2.Add(new BranchInfo(branch_Condition_jz, false));
-                        AsmTestTools.AreEqual(Rn.AL, "????????", state2);
-                    }
+                    using State state2 = new(state);
+                    state2.Add(new BranchInfo(branch_Condition_jp, true));
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    AsmTestTools.AreEqual(Rn.AL, "????????", state2);
                 }
                 if (true)
                 {
-                    using (State state2 = new State(state))
-                    {
-                        state2.Add(new BranchInfo(branch_Condition_jp, false));
-                        state2.Add(new BranchInfo(branch_Condition_jz, true));
-                        AsmTestTools.AreEqual(Rn.AL, "XXXXXXXX", state2);
-                    }
+                    using State state2 = new(state);
+                    state2.Add(new BranchInfo(branch_Condition_jp, false));
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    AsmTestTools.AreEqual(Rn.AL, "XXXXXXXX", state2);
                 }
                 if (true)
                 {
-                    using (State state2 = new State(state))
-                    {
-                        state2.Add(new BranchInfo(branch_Condition_jp, false));
-                        state2.Add(new BranchInfo(branch_Condition_jz, false));
-                        AsmTestTools.AreEqual(Rn.AL, "00000010", state2);
-                    }
+                    using State state2 = new(state);
+                    state2.Add(new BranchInfo(branch_Condition_jp, false));
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    AsmTestTools.AreEqual(Rn.AL, "00000010", state2);
                 }
             }
         }
@@ -987,7 +979,7 @@ namespace unit_tests_asm_z3
                 "           mov     qword ptr[rax],  rcx        " + Environment.NewLine +
                 "           mov     rdx,        qword ptr[rax]  ";
 
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.Create_EndState;
@@ -1015,7 +1007,7 @@ namespace unit_tests_asm_z3
                 "           mov     rbx, qword ptr [rax]        " + Environment.NewLine +
                 "           mov     rcx, qword ptr [rbx]        ";
 
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.Create_EndState;
@@ -1044,7 +1036,7 @@ namespace unit_tests_asm_z3
                 "           mov     rbx, qword ptr [rax]        " + Environment.NewLine +
                 "           mov     rcx, qword ptr [rbx]        ";
 
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state0 = dFlow.Create_States_Before(0, 0);
@@ -1084,13 +1076,13 @@ namespace unit_tests_asm_z3
                 "label2:                                        " + Environment.NewLine +
                 "           mov     bl, byte ptr[rax]         ";
 
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.Create_EndState;
 
-            State state3 = new State(state);
-            State state4 = new State(state);
+            State state3 = new(state);
+            State state4 = new(state);
             Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
             state3.Add(new BranchInfo(branch_Condition, true));
             if (LogToDisplay)
@@ -1129,7 +1121,7 @@ namespace unit_tests_asm_z3
                 "           dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (logToDisplay2)
             {
@@ -1172,7 +1164,7 @@ namespace unit_tests_asm_z3
                 "label1:    dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
-            StaticFlow sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (logToDisplay2)
             {

@@ -296,22 +296,20 @@ namespace unit_tests_asm_z3
         {
             ArgumentNullException.ThrowIfNull(state);
 
-            using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
+            using BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2));
+            Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
+            if (tv == Tv.UNDETERMINED)
             {
-                Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
-                if (tv == Tv.UNDETERMINED)
+                Assert.Inconclusive("Could not determine whether " + reg1 + " and " + reg2 + " are equal");
+            }
+            else
+            {
+                if (tv != Tv.ONE)
                 {
-                    Assert.Inconclusive("Could not determine whether " + reg1 + " and " + reg2 + " are equal");
+                    Console.WriteLine("TestTools:AreEqual: state:");
+                    Console.WriteLine(state);
                 }
-                else
-                {
-                    if (tv != Tv.ONE)
-                    {
-                        Console.WriteLine("TestTools:AreEqual: state:");
-                        Console.WriteLine(state);
-                    }
-                    Assert.AreEqual(Tv.ONE, tv);
-                }
+                Assert.AreEqual(Tv.ONE, tv);
             }
         }
 
@@ -323,22 +321,20 @@ namespace unit_tests_asm_z3
         {
             ArgumentNullException.ThrowIfNull(state);
 
-            using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
+            using BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2));
+            Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
+            Console.WriteLine("TestTools:AreUnrelated: tv:" + tv);
+            if (tv == Tv.UNDETERMINED)
             {
-                Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
-                Console.WriteLine("TestTools:AreUnrelated: tv:" + tv);
-                if (tv == Tv.UNDETERMINED)
+                Assert.Inconclusive("Could not determine whether " + reg1 + " and " + reg2 + " are unrelated");
+            }
+            else
+            {
+                if (tv != Tv.UNKNOWN)
                 {
-                    Assert.Inconclusive("Could not determine whether " + reg1 + " and " + reg2 + " are unrelated");
-                }
-                else
-                {
-                    if (tv != Tv.UNKNOWN)
-                    {
-                        Console.WriteLine("TestTools:AreUnrelated: state:");
-                        Console.WriteLine(state);
-                        Assert.Fail();
-                    }
+                    Console.WriteLine("TestTools:AreUnrelated: state:");
+                    Console.WriteLine(state);
+                    Assert.Fail();
                 }
             }
         }

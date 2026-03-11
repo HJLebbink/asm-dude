@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2024 Henk-Jan Lebbink
+// Copyright (c) 2026 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,6 @@ namespace AsmDude2;
 /// <summary>
 /// Language server provider for assembly language files
 /// </summary>
-[VisualStudioContribution]
 internal class AsmLanguageServerProvider : LanguageServerProvider
 {
     private Process? _languageServerProcess;
@@ -51,10 +50,9 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
     /// </summary>
     public override LanguageServerProviderConfiguration LanguageServerProviderConfiguration => new(
         "%AsmDude3.LanguageServerDisplayName%",
-        new[]
-        {
+        [
             DocumentFilter.FromDocumentType(AsmDocumentTypes.AsmDocumentType),
-        });
+        ]);
 
     /// <summary>
     /// Creates the connection to the language server
@@ -88,9 +86,9 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
                 const string stdOutPipeName = "asmdude3-input";
 
                 // Set up pipe security (allow all users)
-                SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
-                PipeAccessRule pipeAccessRule = new PipeAccessRule(everyone, PipeAccessRights.ReadWrite, AccessControlType.Allow);
-                PipeSecurity pipeSecurity = new PipeSecurity();
+                SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
+                PipeAccessRule pipeAccessRule = new(everyone, PipeAccessRights.ReadWrite, AccessControlType.Allow);
+                PipeSecurity pipeSecurity = new();
                 pipeSecurity.AddAccessRule(pipeAccessRule);
 
                 const int bufferSize = 256;
@@ -117,7 +115,7 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
                     pipeSecurity);
 
                 // Start the LSP server process
-                ProcessStartInfo startInfo = new ProcessStartInfo
+                ProcessStartInfo startInfo = new()
                 {
                     FileName = lspPath,
                     WorkingDirectory = Path.GetDirectoryName(lspPath),

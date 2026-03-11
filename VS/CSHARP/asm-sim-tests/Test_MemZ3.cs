@@ -55,7 +55,7 @@ namespace unit_tests_asm_z3
                             Microsoft.Z3.Global.SetParameter(System.String,System.String)
             */
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new()
             {
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -82,7 +82,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_SetGet0()
         {
-            StateConfig stateConfig = new StateConfig();
+            StateConfig stateConfig = new();
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.RBX = true;
@@ -95,7 +95,7 @@ namespace unit_tests_asm_z3
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools, ctx);
             BitVecExpr value1 = state.Create(Rn.RBX);
 
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address1, value1);
                 state.Update_Forward(updateState);
@@ -114,7 +114,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_SetGet1()
         {
-            StateConfig stateConfig = new StateConfig();
+            StateConfig stateConfig = new();
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.R8 = true;
@@ -129,13 +129,13 @@ namespace unit_tests_asm_z3
             BitVecExpr value1a = state.Create(Rn.R8);
             BitVecExpr value2a = state.Create(Rn.R9);
 
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address1, value1a);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value1b = state.Create_Mem(address1, 8);
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address1, value2a);
                 state.Update_Forward(updateState);
@@ -157,7 +157,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq1()
         {
-            StateConfig stateConfig = new StateConfig();
+            StateConfig stateConfig = new();
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.RBX = true;
@@ -168,7 +168,7 @@ namespace unit_tests_asm_z3
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 // updateState.Set(Rn.RAX, 20);
                 updateState.Set(Rn.RBX, 10);
@@ -194,7 +194,7 @@ namespace unit_tests_asm_z3
 
             BitVecExpr value1 = state.Create(Rn.R8);
 
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address1, value1);
                 state.Update_Forward(updateState);
@@ -213,7 +213,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq2()
         {
-            StateConfig stateConfig = new StateConfig();
+            StateConfig stateConfig = new();
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.RBX = true;
@@ -224,7 +224,7 @@ namespace unit_tests_asm_z3
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set(Rn.RBX, 10);
                 updateState.Set(Rn.RCX, 5 + 1);
@@ -245,7 +245,7 @@ namespace unit_tests_asm_z3
             AsmTestTools.AreEqual(Tv.ZERO, equalAddresses);
 
             BitVecExpr value1 = state.Create(Rn.R8);
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address1, value1);
                 state.Update_Forward(updateState);
@@ -267,7 +267,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq3()
         {
-            StateConfig stateConfig = new StateConfig();
+            StateConfig stateConfig = new();
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.RBX = true;
@@ -279,7 +279,7 @@ namespace unit_tests_asm_z3
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set(Rn.RBX, 10);
                 updateState.Set(Rn.RCX, 5);
@@ -287,7 +287,7 @@ namespace unit_tests_asm_z3
             }
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax + 2 * rbx + 10]", state.HeadKey, tools, ctx);
             {
-                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
                 updateState.Set(Rn.RAX, state.Ctx.MkBVAdd(state.Create(Rn.RAX), state.Ctx.MkBV(0, 64)));
                 state.Update_Forward(updateState);
             }
@@ -295,7 +295,7 @@ namespace unit_tests_asm_z3
 
             BitVecExpr value1 = state.Create(Rn.R8B);
             int nBytes = (int)value1.SortSize >> 3;
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address1, value1);
                 state.Update_Forward(updateState);
@@ -314,7 +314,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq4()
         {
-            StateConfig stateConfig = new StateConfig();
+            StateConfig stateConfig = new();
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.RBX = true;
@@ -326,19 +326,19 @@ namespace unit_tests_asm_z3
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set(Rn.RAX, state.Create(Rn.RBX));
                 state.Update_Forward(updateState);
             }
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools, ctx);
             BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rbx]", state.HeadKey, tools, ctx);
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address1, state.Create(Rn.RCX));
                 state.Update_Forward(updateState);
             }
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address2, state.Create(Rn.RDX));
                 state.Update_Forward(updateState);
@@ -358,7 +358,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq5()
         {
-            StateConfig stateConfig = new StateConfig();
+            StateConfig stateConfig = new();
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.RBX = true;
@@ -371,7 +371,7 @@ namespace unit_tests_asm_z3
             Tools tools = state.Tools;
 
             {
-                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
                 updateState.Set(Rn.RAX, state.Create(Rn.RBX));
                 state.Update_Forward(updateState);
             }
@@ -382,13 +382,13 @@ namespace unit_tests_asm_z3
 
             Debug.Assert(value1a.SortSize == value2a.SortSize);
             int nBytes = (int)value1a.SortSize >> 3;
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address1, value1a);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value1b = state.Create_Mem(address1, nBytes);
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set_Mem(address2, value2a);
                 state.Update_Forward(updateState);
@@ -410,7 +410,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq6()
         {
-            StateConfig stateConfig = new StateConfig();
+            StateConfig stateConfig = new();
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.RBX = true;
@@ -437,7 +437,7 @@ namespace unit_tests_asm_z3
             state.Add(new BranchInfo(state.Ctx.MkEq(state.Create(Rn.RAX), state.Create(Rn.RBX)), true));
             // value1 and value2 are now (intuitively) equal; however, the retrieved memory values have not been updated yet to reflect this.
 
-            using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
+            using (StateUpdate updateState = new(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.Set(reg1, value1);
                 updateState.Set(reg2, value2);

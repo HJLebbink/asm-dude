@@ -23,9 +23,8 @@
 namespace AsmDude2LS
 {
     using System;
-    //using System.Collections.Frozen; TODO enable .NET 8
+    using System.Collections.Frozen;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -39,19 +38,12 @@ namespace AsmDude2LS
     {
         private readonly AsmLanguageServerOptions options;
 
-        private readonly Dictionary<Mnemonic, List<AsmSignatureInformation>> data_;
-        private readonly Dictionary<Mnemonic, List<Arch>> arch_;
-        private readonly Dictionary<Mnemonic, string> htmlRef_;
-        private readonly Dictionary<Mnemonic, string> description_;
-        private readonly HashSet<Mnemonic> mnemonics_switched_on_;
-        private readonly HashSet<Rn> register_switched_on_;
-
-        //private readonly FrozenDictionary<Mnemonic, List<AsmSignatureInformation>> data_;
-        //private readonly FrozenDictionary<Mnemonic, List<Arch>> arch_;
-        //private readonly FrozenDictionary<Mnemonic, string> htmlRef_;
-        //private readonly FrozenDictionary<Mnemonic, string> description_;
-        //private readonly FrozenSet<Mnemonic> mnemonics_switched_on_;
-        //private readonly FrozenSet<Rn> register_switched_on_;
+        private readonly FrozenDictionary<Mnemonic, List<AsmSignatureInformation>> data_;
+        private readonly FrozenDictionary<Mnemonic, List<Arch>> arch_;
+        private readonly FrozenDictionary<Mnemonic, string> htmlRef_;
+        private readonly FrozenDictionary<Mnemonic, string> description_;
+        private readonly FrozenSet<Mnemonic> mnemonics_switched_on_;
+        private readonly FrozenSet<Rn> register_switched_on_;
 
         public MnemonicStore(string filename_RegularData, string filename_HandcraftedData, AsmLanguageServerOptions options)
         {
@@ -60,19 +52,12 @@ namespace AsmDude2LS
 
             var (data, arch, htmlRef, description) = this.CalcSignatureInformation(filename_RegularData, filename_HandcraftedData);
 
-            this.data_ = data;
-            this.arch_ = arch;
-            this.htmlRef_ = htmlRef;
-            this.description_ = description;
-            this.mnemonics_switched_on_ = this.CalcMnemonicsSwitchedOn();
-            this.register_switched_on_ = this.CalcRegisterSwitchedOn();
-
-            //this.data_ = FrozenDictionary.ToFrozenDictionary(data);
-            //this.arch_ = FrozenDictionary.ToFrozenDictionary(arch);
-            //this.htmlRef_ = FrozenDictionary.ToFrozenDictionary(htmlRef);
-            //this.description_ = FrozenDictionary.ToFrozenDictionary(description);
-            //this.mnemonics_switched_on_ = FrozenSet.ToFrozenSet(this.CalcMnemonicsSwitchedOn());
-            //this.register_switched_on_ = FrozenSet.ToFrozenSet(this.CalcRegisterSwitchedOn());
+            this.data_ = FrozenDictionary.ToFrozenDictionary(data);
+            this.arch_ = FrozenDictionary.ToFrozenDictionary(arch);
+            this.htmlRef_ = FrozenDictionary.ToFrozenDictionary(htmlRef);
+            this.description_ = FrozenDictionary.ToFrozenDictionary(description);
+            this.mnemonics_switched_on_ = FrozenSet.ToFrozenSet(this.CalcMnemonicsSwitchedOn());
+            this.register_switched_on_ = FrozenSet.ToFrozenSet(this.CalcRegisterSwitchedOn());
         }
 
         public bool HasElement(Mnemonic mnemonic)
@@ -467,7 +452,7 @@ namespace AsmDude2LS
             return this.mnemonics_switched_on_.Contains(mnemonic);
         }
 
-        public HashSet<Mnemonic> Get_Allowed_Mnemonics()
+        public FrozenSet<Mnemonic> Get_Allowed_Mnemonics()
         {
             return this.mnemonics_switched_on_;
         }
@@ -476,8 +461,8 @@ namespace AsmDude2LS
         {
             HashSet<Mnemonic> result = [];
 
-            ISet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
-            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
+            HashSet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
+            foreach (Mnemonic mnemonic in Enum.GetValues<Mnemonic>())
             {
                 foreach (Arch a in this.GetArch(mnemonic))
                 {
@@ -496,7 +481,7 @@ namespace AsmDude2LS
             return this.register_switched_on_.Contains(reg);
         }
 
-        public HashSet<Rn> Get_Allowed_Registers()
+        public FrozenSet<Rn> Get_Allowed_Registers()
         {
             return this.register_switched_on_;
         }
@@ -505,8 +490,8 @@ namespace AsmDude2LS
         {
             HashSet<Rn> result = [];
 
-            ISet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
-            foreach (Rn reg in Enum.GetValues(typeof(Rn)))
+            HashSet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
+            foreach (Rn reg in Enum.GetValues<Rn>())
             {
                 if (reg != Rn.NOREG)
                 {

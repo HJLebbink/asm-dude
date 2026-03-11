@@ -77,7 +77,7 @@ namespace AsmTools
         public override string ToString()
         {
             double totalTime = 0;
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             if (this.On)
             {
                 if (this.totalTimeInSec_.Count == 0)

@@ -2485,7 +2485,7 @@ namespace AsmTools
         static AsmSourceTools()
         {
             Mnemonic_cache_ = [];
-            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
+            foreach (Mnemonic mnemonic in Enum.GetValues<Mnemonic>())
             {
                 Mnemonic_cache_.Add(mnemonic.ToString(), mnemonic);
             }

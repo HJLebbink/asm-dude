@@ -171,7 +171,7 @@ namespace AsmTools
     {
         public static string ToString(Ot1 ot)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (Ot1 value in Enum.GetValues(ot.GetType()))
             {
                 if (ot.HasFlag(value))
@@ -189,7 +189,7 @@ namespace AsmTools
 
         public static string ToString(Ot2 ot2)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (Ot2 value in Enum.GetValues(ot2.GetType()))
             {
                 if (ot2.HasFlag(value))
@@ -207,7 +207,7 @@ namespace AsmTools
 
         public static string ToString(Ot3 ot)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (Ot3 value in Enum.GetValues(ot.GetType()))
             {
                 if (ot.HasFlag(value))

@@ -22,7 +22,6 @@
 
 namespace AsmSim
 {
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using QuikGraph;
@@ -33,8 +32,8 @@ namespace AsmSim
     {
         public static void SaveToDot(StaticFlow sFlow, DynamicFlow dFlow, string filename)
         {
-            Contract.Requires(sFlow != null);
-            Contract.Requires(dFlow != null);
+            ArgumentNullException.ThrowIfNull(sFlow);
+            ArgumentNullException.ThrowIfNull(dFlow);
 
             AdjacencyGraph<string, TaggedEdge<string, string>> displayGraph = new();
 
@@ -75,7 +74,7 @@ namespace AsmSim
 
         private static void VizFormatVertex(object sender, FormatVertexEventArgs<string> e)
         {
-            Contract.Requires(e != null);
+            ArgumentNullException.ThrowIfNull(e);
             e.VertexFormat.Label = e.Vertex.ToString(CultureInfo.InvariantCulture);
         }
 

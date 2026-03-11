@@ -79,7 +79,7 @@ public partial class Worker : BackgroundService
 
     private void OnDisconnected(object? sender, EventArgs e)
     {
-        _logger.LogInformation("OnDisconnected at: {time}", DateTimeOffset.Now);
+        this._logger.LogInformation("OnDisconnected at: {time}", DateTimeOffset.Now);
         this._shutdownRequested = true;
     }
 
@@ -104,7 +104,7 @@ public partial class Worker : BackgroundService
         }
         catch (OperationCanceledException)
         {
-            _logger.LogWarning("AsmDude2 LSP canceled");
+            this._logger.LogWarning("AsmDude2 LSP canceled");
         }
         Environment.Exit(0);
     }

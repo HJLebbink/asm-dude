@@ -222,11 +222,9 @@ namespace AsmTools
                 Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: AsmDudeTools:getXmlData: going to load file \"{0}\"", filename));
                 try
                 {
-                    StringReader stringReader = new StringReader(File.ReadAllText(filename));
-                    using (XmlReader reader = XmlReader.Create(stringReader, new XmlReaderSettings() { XmlResolver = null }))
-                    {
-                        this.xmlData_.Load(reader);
-                    }
+                    StringReader stringReader = new(File.ReadAllText(filename));
+                    using XmlReader reader = XmlReader.Create(stringReader, new XmlReaderSettings() { XmlResolver = null });
+                    this.xmlData_.Load(reader);
                 }
                 catch (FileNotFoundException)
                 {
@@ -245,7 +243,8 @@ namespace AsmTools
                 }
             }
 
-            foreach (XmlNode node in this.xmlData_.SelectNodes("//misc"))
+
+            foreach (XmlNode? node in this.xmlData_.SelectNodes("//misc"))
             {
                 if (node.Attributes != null)
                 {
@@ -396,7 +395,7 @@ namespace AsmTools
         {
             try
             {
-                XmlNode node2 = node.SelectSingleNode("./description");
+                XmlNode? node2 = node.SelectSingleNode("./description");
                 return (node2 == null) ? string.Empty : node2.InnerText.Trim();
             }
             catch (Exception)

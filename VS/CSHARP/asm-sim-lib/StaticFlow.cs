@@ -348,7 +348,7 @@ using System.Diagnostics;
 
             #region Populate IncomingLines
             {
-                string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                string[] lines = programStr.Split([Environment.NewLine], StringSplitOptions.None);
 
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
@@ -629,7 +629,7 @@ using System.Diagnostics;
             ArgumentNullException.ThrowIfNull(text);
 
             IDictionary<string, int> result = new Dictionary<string, int>();
-            string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            string[] lines = text.Split([Environment.NewLine], StringSplitOptions.None);
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string line = lines[lineNumber];

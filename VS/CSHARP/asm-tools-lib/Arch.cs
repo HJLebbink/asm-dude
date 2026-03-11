@@ -455,7 +455,7 @@ namespace AsmTools
             ArgumentNullException.ThrowIfNull(archs);
 
             bool empty = true;
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (Arch arch in archs)
             {
                 sb.Append(ToString(arch));
