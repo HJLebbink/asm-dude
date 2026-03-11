@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,8 +23,8 @@
 namespace AsmSim
 {
     using System;
+using System.Diagnostics;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
     using System.Text;
@@ -156,7 +156,7 @@ namespace AsmSim
 
         public (Mnemonic mnemonic, string[] args) Get_Line(int lineNumber)
         {
-            Contract.Requires(lineNumber >= 0);
+            Debug.Assert(lineNumber >= 0);
             if (lineNumber >= this.Current.Count)
             {
                 Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
@@ -318,7 +318,7 @@ namespace AsmSim
         /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
         public bool Update(string programStr, bool removeEmptyLines = true)
         {
-            Contract.Requires(programStr != null);
+            ArgumentNullException.ThrowIfNull(programStr);
 
             //Console.WriteLine("INFO: CFlow:Update_Lines");
             this.use_Parsed_Code_A_ = !this.use_Parsed_Code_A_;
@@ -336,7 +336,7 @@ namespace AsmSim
                 string newLabel = entry.Key + LINENUMBER_SEPARATOR + entry.Value;
                 //Console.WriteLine("INFO: ControlFlow:getLines: Replacing label " + entry.Key + " with " + newLabel);
                 programStr = programStr.Replace(entry.Key, newLabel);
-                Contract.Assert(programStr != null);
+                Debug.Assert(programStr != null);
             }
             #endregion
 
@@ -626,7 +626,7 @@ namespace AsmSim
         /// <summary>Get all labels with the line number on which it is defined</summary>
         private static IDictionary<string, int> GetLabels(string text)
         {
-            Contract.Requires(text != null);
+            ArgumentNullException.ThrowIfNull(text);
 
             IDictionary<string, int> result = new Dictionary<string, int>();
             string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);

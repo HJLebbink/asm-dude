@@ -153,6 +153,30 @@ https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.js
 
 ---
 
+### Upgrading Z3
+
+Z3 is **not on nuget.org** — it is distributed as `.nupkg` files on GitHub releases only.
+
+**Steps to upgrade to a new Z3 version:**
+
+1. Go to https://github.com/Z3Prover/z3/releases and find the new release.
+2. Download `Microsoft.Z3.<version>.nupkg` (and optionally `.snupkg`) from the release assets.
+3. Place the file(s) in `local-nuget/` at the repo root (replace the old files).
+4. Update the `Microsoft.Z3` version in:
+   - `VS/CSHARP/asm-sim-lib/asm-sim-lib.csproj`
+   - `VS/CSHARP/asm-sim-tests/asm-sim-tests.csproj`
+5. Run `dotnet build VS/AsmDude.sln` — verify 0 errors.
+6. Run simulator tests via `vstest.console.dll` (not `dotnet test` — silent failure on .NET 10 + MSTest 4.1):
+   ```
+   dotnet "C:/Program Files/dotnet/sdk/10.0.100/vstest.console.dll" VS/CSHARP/asm-sim-tests/bin/Debug/net10.0-windows/asm-sim-tests.dll
+   ```
+   Expected: **149 passed, 28 skipped, 0 failed**.
+7. Verify `libz3.dll` appears in `VS/CSHARP/asm-dude2-ls/bin/Debug/net10.0-windows/`.
+
+The NuGet source `local-z3` → `local-nuget/` is already configured in `NuGet.config`.
+
+---
+
 ### Z3 Context Lifecycle Bug in DynamicFlow (Regression)
 
 **Status**: Tests skipped, awaiting architectural fix
@@ -295,12 +319,18 @@ VS-internal hover types (`ClassifiedTextElement`, `ClassifiedTextRun`) with navi
 ## Package Dependencies (Updated for VS 2026)
 
 **Current Packages** (All Stable & Available):
-- `Microsoft.VisualStudio.LanguageServer.Protocol` **18.5.1** (LSP types - public API, vssdk feed)
-- `Microsoft.VisualStudio.LanguageServer.Protocol.Extensions` **18.5.1** (VS-specific LSP extensions)
-- `StreamJsonRpc` **2.25.6** (JSON-RPC communication)
-- `Microsoft.VisualStudio.SDK` **17.14.40265** (Latest for VS 2022/2026)
-- `Microsoft.VSSDK.BuildTools` **17.12.40391** (Latest)
+- `Microsoft.VisualStudio.LanguageServer.Protocol` **18.5.3** (LSP types - public API, vssdk feed)
+- `Microsoft.VisualStudio.LanguageServer.Protocol.Extensions` **18.5.3** (VS-specific LSP extensions)
+- `StreamJsonRpc` **2.25.9** (`asm-dude2-ls-lib` only) / **2.24.84** (`asm-dude2-vsix` only — see note below)
+- `Microsoft.VisualStudio.SDK` **17.14.40265** (VS 2022/2026 — see note below)
+- `Microsoft.VSSDK.BuildTools` **17.14.2120** (VS 2022/2026 — see note below)
 - `Microsoft.Extensions.Logging.Abstractions` **10.0.3** (Logging)
+
+**⚠ DO NOT upgrade `Microsoft.VisualStudio.SDK`, `Microsoft.VSSDK.BuildTools`, or `Microsoft.VisualStudio.Threading.Analyzers` to version 18.x.**
+The plugin must support **both VS 2022 (17.x) and VS 2026 (18.x)**. These three packages at 18.x target VS 2026 only and drop VS 2022 compatibility. Stay on 17.14.x.
+
+**⚠ DO NOT upgrade `StreamJsonRpc` in `asm-dude2-vsix` beyond 2.24.84.**
+The VSIX references StreamJsonRpc with `<ExcludeAssets>runtime</ExcludeAssets>` — it does **not** bundle the DLL but relies on Visual Studio to provide it at runtime. VS 2022 ships StreamJsonRpc 2.24.x; upgrading the reference to 2.25.x causes a `FileNotFoundException` ("StreamJsonRpc Version 2.25.0.0 is not found") when the extension loads. The LSP server (`asm-dude2-ls-lib`) bundles its own copy and may use a newer version independently.
 
 **NuGet Sources**: Requires both nuget.org and vssdk feed (configured in `NuGet.config`):
 ```

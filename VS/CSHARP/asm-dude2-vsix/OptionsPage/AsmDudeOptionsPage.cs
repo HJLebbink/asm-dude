@@ -25,7 +25,6 @@ namespace AsmDude2
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Diagnostics.Contracts;
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Text;
@@ -496,7 +495,7 @@ namespace AsmDude2
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e)
         {
-            Contract.Requires(e != null);
+            if (e == null) throw new ArgumentNullException(nameof(e));
 
             bool changed = false;
             StringBuilder sb = new StringBuilder();

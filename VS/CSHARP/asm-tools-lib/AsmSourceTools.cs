@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,8 +23,8 @@
 namespace AsmTools
 {
     using System;
+using System.Diagnostics;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
     using System.Text;
@@ -152,7 +152,7 @@ namespace AsmTools
         /// <summary>Guess whether the provided buffer has assembly in Masm syntax (return true) or Gas syntax (return false)</summary>
         public static bool Guess_Masm_Syntax(string[] lines)
         {
-            Contract.Requires(lines != null);
+            if (lines == null) throw new ArgumentNullException(nameof(lines));
 
             //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Masm_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
             int evidence_masm = 0;
@@ -189,8 +189,7 @@ namespace AsmTools
         /// </summary>
         public static (KeywordID[] keywords, string label, Mnemonic mnemonic, string[] args, string remark) ParseLine(string lineStr, int lineNumber, int fileID)
         {
-            Contract.Requires(lineStr != null);
-            Contract.Assume(lineStr != null);
+            if (lineStr == null) throw new ArgumentNullException(nameof(lineStr));
 
             // Console.WriteLine("INFO: AsmSourceTools:ParseLine: lineStr=" + lineStr + "; length=" + lineStr.Length);
 
@@ -297,20 +296,13 @@ namespace AsmTools
             // Console.WriteLine(args[1] + ":" + args[1].Length);
 
 
-            Contract.Ensures(label != null);
-            Contract.Ensures(args != null);
-            Contract.Ensures(remark != null);
-            Contract.Assume(label != null);
-            Contract.Assume(args != null);
-            Contract.Assume(remark != null);
 
             return (k.ToArray<KeywordID>(), label, mnemonic, args, remark);
         }
 
         public static List<Operand> MakeOperands(string[] operandStrArray) // TODO consider Array
         {
-            Contract.Requires(operandStrArray != null);
-            Contract.Assume(operandStrArray != null);
+            if (operandStrArray == null) throw new ArgumentNullException(nameof(operandStrArray));
 
             int nOperands = operandStrArray.Length;
             if (nOperands <= 1)
@@ -333,8 +325,7 @@ namespace AsmTools
         /// </summary>
         public static (int beginPos, int length, AsmTokenType type) Get_First_Keyword(string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             bool started = false;
             int keywordBegin = 0;
@@ -387,8 +378,7 @@ namespace AsmTools
         /// </summary>
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> SplitIntoKeywordsType(string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             int keywordBegin = 0;
             bool inStringDef = false;
@@ -478,8 +468,7 @@ namespace AsmTools
 
         public static string Keyword((int beginPos, int length, AsmTokenType _) pos, string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
             return line.Substring(pos.beginPos, pos.length - pos.beginPos);
         }
 
@@ -504,8 +493,7 @@ namespace AsmTools
         /// </summary>
         public static bool IsInRemark(int pos, string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             // check if the lineStr contains a remark character before the current point
             int nChars = line.Length;
@@ -525,8 +513,7 @@ namespace AsmTools
         /// </summary>
         public static bool IsRemarkOnly(string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
@@ -554,8 +541,7 @@ namespace AsmTools
 
         public static int GetRemarkCharPosition(string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             for (int i = 0; i < line.Length; ++i)
             {
@@ -614,8 +600,7 @@ namespace AsmTools
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
         public static (bool valid, ulong value, int nBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
-            Contract.Requires(token != null);
-            Contract.Assume(token != null);
+            if (token == null) throw new ArgumentNullException(nameof(token));
 
             if (token.StartsWith("$", StringComparison.Ordinal)) // AT&T syntax constants start with '$'
             {
@@ -659,8 +644,7 @@ namespace AsmTools
         public static (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage)
             Parse_Mem_Operand(string token, bool isCapitals = false)
         {
-            Contract.Requires(token != null);
-            Contract.Assume(token != null);
+            if (token == null) throw new ArgumentNullException(nameof(token));
 
             int length = token.Length;
             if (length < 3)
@@ -671,7 +655,6 @@ namespace AsmTools
             if (!isCapitals)
             {
                 token = token.ToUpper(CultureInfo.InvariantCulture);
-                Contract.Assume(token != null);
             }
 
             // 1] select everything between []
@@ -802,7 +785,7 @@ namespace AsmTools
             #region Local Methods
             int ParseScale(string str)
             {
-                Contract.Requires(str != null);
+                if (str == null) throw new ArgumentNullException(nameof(str));
 
                 switch (str)
                 {
@@ -817,8 +800,7 @@ namespace AsmTools
             /// <summary> Return the number of bits of the provided operand (assumes 64-bits) </summary>
             int Get_Nbits_Mem_Operand(string token2)
             {
-                Contract.Requires(token2 != null);
-                Contract.Assume(token2 != null);
+                if (token2 == null) throw new ArgumentNullException(nameof(token2));
 
                 string s = token2.TrimStart();
                 if (s.StartsWith("PTR", StringComparison.Ordinal))
@@ -928,8 +910,7 @@ namespace AsmTools
 
         public static string GetKeyword(int pos, string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             (int beginPos, int endPos) = GetKeywordPos(pos, line);
             return line.Substring(beginPos, endPos - beginPos);
@@ -940,12 +921,11 @@ namespace AsmTools
         /// </summary>
         public static string GetPreviousKeyword(int begin, int end, string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
-            Contract.Requires(begin >= 0);
-            Contract.Requires(begin <= line.Length);
-            Contract.Requires(end <= line.Length);
+            Debug.Assert(begin >= 0);
+            Debug.Assert(begin <= line.Length);
+            Debug.Assert(end <= line.Length);
 
             if (end <= 0)
             {
@@ -1025,8 +1005,7 @@ namespace AsmTools
         /// <summary>Return the begin and end of the keyword</summary>
         public static (int beginPos, int endPos) GetKeywordPos(int pos, string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getKeyword; pos={0}; lineStr=\"{1}\"", pos, new string(lineStr)));
             if ((pos < 0) || (pos >= line.Length))
@@ -1060,8 +1039,7 @@ namespace AsmTools
 
         public static (bool valid, int beginPos, int endPos) GetLabelDefPos(string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             (bool valid, int beginPos, int endPos) tup = GetLabelDefPos_Regular(line);
             if (tup.valid)
@@ -1130,8 +1108,7 @@ namespace AsmTools
 
         private static (bool valid, int beginPos, int endPos) GetLabelDefPos_Masm(string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             string line2 = line.TrimStart();
             int displacement = 0;
@@ -1165,8 +1142,7 @@ namespace AsmTools
         /// Valid is true if one such char is found.</summary>
         public static (bool valid, int beginPos, int endPos) GetRemarkPos(string line)
         {
-            Contract.Requires(line != null);
-            Contract.Assume(line != null);
+            if (line == null) throw new ArgumentNullException(nameof(line));
 
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)

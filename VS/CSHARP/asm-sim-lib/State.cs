@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -24,7 +24,6 @@ namespace AsmSim
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Text;
     using AsmTools;
@@ -57,8 +56,8 @@ namespace AsmSim
 
         public bool IsHalted { get; private set; }
 
-        public string HeadKey = null;
-        public string TailKey = null;
+        public string? HeadKey = null;
+        public string? TailKey = null;
 
         private bool frozen_;
         private readonly IDictionary<Rn, Tv[]> cached_Reg_Values_;
@@ -87,7 +86,7 @@ namespace AsmSim
 
         public static Solver MakeSolver(Context ctx, string solverSetting = "qfbv")
         {
-            Contract.Requires(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
 
             Solver s = (string.IsNullOrEmpty(solverSetting))
                 ? ctx.MkSolver()
@@ -111,7 +110,7 @@ namespace AsmSim
         public State(State other)
             : this(other.Tools)
         {
-            Contract.Requires(other != null);
+            ArgumentNullException.ThrowIfNull(other);
             lock (this.ctxLock_)
             {
                 other.Copy(this);
@@ -121,7 +120,7 @@ namespace AsmSim
         /// <summary>Copy this state to the provided other State</summary>
         public void Copy(State other)
         {
-            Contract.Requires(other != null);
+            ArgumentNullException.ThrowIfNull(other);
 
             if (this == other)
             {
@@ -159,8 +158,8 @@ namespace AsmSim
         public State(State state1, State state2, bool merge)
             : this(state1.Tools)
         {
-            Contract.Requires(state1 != null);
-            Contract.Requires(state2 != null);
+            ArgumentNullException.ThrowIfNull(state1);
+            ArgumentNullException.ThrowIfNull(state2);
 
             if (merge)
             {
@@ -349,7 +348,7 @@ namespace AsmSim
 
         public void Assert(IEnumerable<BoolExpr> exprs, bool undef, bool translate)
         {
-            Contract.Requires(exprs != null);
+            ArgumentNullException.ThrowIfNull(exprs);
 
             foreach (BoolExpr v in exprs)
             {

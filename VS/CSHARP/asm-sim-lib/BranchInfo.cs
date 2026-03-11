@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -22,7 +22,6 @@
 
 namespace AsmSim
 {
-    using System.Diagnostics.Contracts;
     using Microsoft.Z3;
 
     public class BranchInfo
@@ -33,8 +32,7 @@ namespace AsmSim
 
         public BranchInfo(BoolExpr condition, bool taken)
         {
-            Contract.Requires(condition != null);
-            Contract.Assert(condition != null);
+            ArgumentNullException.ThrowIfNull(condition);
             this.BranchCondition = condition;
             this.Key = condition.ToString();
             this.BranchTaken = taken;
@@ -47,8 +45,7 @@ namespace AsmSim
 
         public BoolExpr GetData(Context ctx)
         {
-            Contract.Requires(ctx != null);
-            Contract.Assert(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
 
             if (false)
             {

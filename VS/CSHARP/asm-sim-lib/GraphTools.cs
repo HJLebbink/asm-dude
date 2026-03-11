@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -24,7 +24,6 @@ namespace AsmSim
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using QuikGraph;
 
@@ -32,7 +31,7 @@ namespace AsmSim
     {
         public static IEnumerable<string> Get_Branch_Points_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
-            Contract.Requires(graph != null);
+            ArgumentNullException.ThrowIfNull(graph);
 
             HashSet<string> visited = [];
             return Get_Branch_Points_Backwards_LOCAL(vertex);
@@ -70,7 +69,7 @@ namespace AsmSim
         /// <summary>traverse the provided vertex backwards and return the first</summary>
         public static IEnumerable<string> Get_First_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
-            Contract.Requires(graph != null);
+            ArgumentNullException.ThrowIfNull(graph);
 
             HashSet<string> visited = [];
             return Get_Branch_Point_Backwards_LOCAL(vertex);
@@ -109,7 +108,7 @@ namespace AsmSim
 
         public static IEnumerable<string> Get_First_Mutual_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
-            Contract.Requires(graph != null);
+            ArgumentNullException.ThrowIfNull(graph);
 
             if (!graph.ContainsVertex(vertex))
             {

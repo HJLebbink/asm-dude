@@ -82,22 +82,22 @@ namespace AsmDude2LS
 
         public IEnumerable<AsmSignatureInformation> GetSignatures(Mnemonic mnemonic)
         {
-            return this.data_.TryGetValue(mnemonic, out List<AsmSignatureInformation> list) ? list : Enumerable.Empty<AsmSignatureInformation>();
+            return this.data_.TryGetValue(mnemonic, out List<AsmSignatureInformation>? list) ? list : Enumerable.Empty<AsmSignatureInformation>();
         }
 
         public IEnumerable<Arch> GetArch(Mnemonic mnemonic)
         {
-            return this.arch_.TryGetValue(mnemonic, out List<Arch> value) ? value : Enumerable.Empty<Arch>();
+            return this.arch_.TryGetValue(mnemonic, out List<Arch>? value) ? value : Enumerable.Empty<Arch>();
         }
 
         public string GetHtmlRef(Mnemonic mnemonic)
         {
-            return this.htmlRef_.TryGetValue(mnemonic, out string value) ? value : string.Empty;
+            return this.htmlRef_.TryGetValue(mnemonic, out string? value) ? value : string.Empty;
         }
 
         public string GetDescription(Mnemonic mnemonic)
         {
-            return this.description_.TryGetValue(mnemonic, out string value) ? value : string.Empty;
+            return this.description_.TryGetValue(mnemonic, out string? value) ? value : string.Empty;
         }
 
         public override string ToString()
@@ -132,7 +132,11 @@ namespace AsmDude2LS
             List<AsmSignatureEnum> ParseOperands(string str)
             {
                 List<AsmSignatureEnum> result = [];
-                str = str.Replace("R/M", "R_M");
+                str = str.Replace("R/M", "R_M")
+                         .Replace("R32/64", "R32_64")
+                         .Replace("R16/32/64", "R16_32_64")
+                         .Replace("M14/28", "M14_28")
+                         .Replace("M94/108", "M94_108");
                 foreach (string op in str.Split('/'))
                 {
                     result.AddRange(AsmSignatureTools.Parse_Operand_Type_Enum(op, true));
@@ -248,7 +252,7 @@ namespace AsmDude2LS
                 //LanguageServer.LogInfo($"MnemonicStore: Add: {asmSignatureElement.SignatureInformation.Label}; number of elements before {this.data_.Count}");
                 bool result = false;
 
-                if (data.TryGetValue(asmSignatureElement.Mnemonic, out List<AsmSignatureInformation> signatureElementList))
+                if (data.TryGetValue(asmSignatureElement.Mnemonic, out List<AsmSignatureInformation>? signatureElementList))
                 {
                     result = signatureElementList.Remove(asmSignatureElement);
                     signatureElementList.Add(asmSignatureElement);
@@ -272,8 +276,8 @@ namespace AsmDude2LS
                 try
                 {
                     StreamReader file = new(filename);
-                    string line;
-                    while ((line = file.ReadLine()) != null)
+                    string? line;
+                    while ((line = file.ReadLine()) is not null)
                     {
                         if ((line.Length > 0) && (!line.StartsWith(';')))
                         {
@@ -364,8 +368,8 @@ namespace AsmDude2LS
                 try
                 {
                     StreamReader file = new(filename);
-                    string line;
-                    while ((line = file.ReadLine()) != null)
+                    string? line;
+                    while ((line = file.ReadLine()) is not null)
                     {
                         if ((line.Length > 0) && (!line.StartsWith(';')))
                         {

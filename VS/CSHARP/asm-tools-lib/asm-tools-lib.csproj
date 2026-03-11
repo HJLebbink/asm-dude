@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFrameworks>net10.0-windows;net48</TargetFrameworks>
     <RootNamespace>AsmTools</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <ImplicitUsings Condition="'$(TargetFramework)' != 'net48'">enable</ImplicitUsings>
+    <Nullable Condition="'$(TargetFramework)' != 'net48'">enable</Nullable>
     <NoWarn>CS1668</NoWarn>
   </PropertyGroup>
 

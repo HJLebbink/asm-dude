@@ -30,10 +30,10 @@ namespace AsmDude2LS
 {
     public class AsmSignatureInformation
     {
-        public SignatureInformation SignatureInformation;
+        public required SignatureInformation SignatureInformation;
         public Mnemonic Mnemonic;
-        public Arch[] Arch;
-        public IList<IList<AsmSignatureEnum>> Operands;
+        public required Arch[] Arch;
+        public required IList<IList<AsmSignatureEnum>> Operands;
 
         /// <summary>Return true if this Signature Element is allowed with the constraints of the provided operand</summary>
         public bool Is_Allowed(Operand op, int operandIndex)
@@ -61,7 +61,7 @@ namespace AsmDude2LS
         /// <summary>Return true if this Signature Element is allowed in the provided architectures</summary>
         public bool Is_Allowed(HashSet<Arch> selectedArchitectures)
         {
-            System.Diagnostics.Contracts.Contract.Requires(selectedArchitectures != null);
+            ArgumentNullException.ThrowIfNull(selectedArchitectures);
             foreach (Arch a in this.Arch)
             {
                 if (selectedArchitectures.Contains(a))

@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -24,7 +24,6 @@ namespace AsmTools
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Text;
 
@@ -242,8 +241,7 @@ namespace AsmTools
     {
         public static Arch ParseArch(string str, bool strIsCapitals, bool warn)
         {
-            Contract.Requires(str != null);
-            Contract.Assume(str != null);
+            if (str == null) throw new ArgumentNullException(nameof(str));
             
             string str2 = AsmSourceTools.ToCapitals(str, strIsCapitals).Replace("_", string.Empty);
             switch (str2)
@@ -458,8 +456,7 @@ namespace AsmTools
 
         public static string ToString(IEnumerable<Arch> archs)
         {
-            Contract.Requires(archs != null);
-            Contract.Assume(archs != null);
+            if (archs == null) throw new ArgumentNullException(nameof(archs));
 
             bool empty = true;
             StringBuilder sb = new StringBuilder();

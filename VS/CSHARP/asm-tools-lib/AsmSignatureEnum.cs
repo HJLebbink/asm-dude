@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,8 +23,8 @@
 namespace AsmSourceTools
 {
     using System;
+using System.Diagnostics;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
 
@@ -137,8 +137,7 @@ namespace AsmSourceTools
     {
         public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str, bool strIsCapitals)
         {
-            Contract.Requires(str != null);
-            Contract.Assume(str != null);
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             switch (AsmSourceTools.ToCapitals(str, strIsCapitals).Trim())
             {
@@ -178,8 +177,10 @@ namespace AsmSourceTools
                 case "R16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16 };
                 case "R32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32 };
                 case "R64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64 };
-                case "R16/R32/R64": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
-                case "R32/64": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
+                case "R16/R32/R64":
+                case "R16_32_64": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
+                case "R32/64":
+                case "R32_64": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
 
                 case "REG": return new AsmSignatureEnum[] { AsmSignatureEnum.R32 };
                 case "AL": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_AL };
@@ -367,6 +368,8 @@ namespace AsmSourceTools
                 case "BND/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.BNDREG, AsmSignatureEnum.M64 };
                 case "BND/M128": return new AsmSignatureEnum[] { AsmSignatureEnum.BNDREG, AsmSignatureEnum.M128 };
                 case "MIB": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
+                case "M14_28":
+                case "M94_108": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
                 #endregion
 
                 case "NONE": return new AsmSignatureEnum[] { AsmSignatureEnum.NONE };
@@ -451,8 +454,7 @@ namespace AsmSourceTools
 
         public static string ToString(IList<AsmSignatureEnum> list, string concat)
         {
-            Contract.Requires(list != null);
-            Contract.Assume(list != null);
+            if (list == null) throw new ArgumentNullException(nameof(list));
 
             int nOperands = list.Count;
             if (nOperands == 0)
@@ -549,8 +551,7 @@ namespace AsmSourceTools
 
         public static bool Is_Allowed_Operand(Operand op, AsmSignatureEnum operandType)
         {
-            Contract.Requires(op != null);
-            Contract.Assume(op != null);
+            if (op == null) throw new ArgumentNullException(nameof(op));
 
             switch (operandType)
             {
@@ -589,10 +590,10 @@ namespace AsmSourceTools
                 case AsmSignatureEnum.REG_GS: return op.IsReg && op.Rn == Rn.GS;
 
                 case AsmSignatureEnum.IMM: return op.IsImm;
-                case AsmSignatureEnum.IMM8: return op.IsImm && op.NBits == 8;
-                case AsmSignatureEnum.IMM16: return op.IsImm && op.NBits == 16;
-                case AsmSignatureEnum.IMM32: return op.IsImm && op.NBits == 32;
-                case AsmSignatureEnum.IMM64: return op.IsImm && op.NBits == 64;
+                case AsmSignatureEnum.IMM8: return op.IsImm && op.NBits <= 8;
+                case AsmSignatureEnum.IMM16: return op.IsImm && op.NBits <= 16;
+                case AsmSignatureEnum.IMM32: return op.IsImm && op.NBits <= 32;
+                case AsmSignatureEnum.IMM64: return op.IsImm && op.NBits <= 64;
 
                 case AsmSignatureEnum.imm_imm: return true;
                 case AsmSignatureEnum.imm16_imm: return true;
@@ -639,11 +640,9 @@ namespace AsmSourceTools
 
         public static bool Is_Allowed_Misc(string misc, ISet<AsmSignatureEnum> allowedOperands)
         {
-            Contract.Requires(misc != null);
-            Contract.Assume(misc != null);
-            Contract.Requires(misc == misc.ToUpperInvariant());
-            Contract.Requires(allowedOperands != null);
-            Contract.Assume(allowedOperands != null);
+            if (misc == null) throw new ArgumentNullException(nameof(misc));
+            Debug.Assert(misc == misc.ToUpperInvariant(), "misc must be upper-case");
+            if (allowedOperands == null) throw new ArgumentNullException(nameof(allowedOperands));
 
             switch (misc)
             {
@@ -758,8 +757,7 @@ namespace AsmSourceTools
 
         public static bool Is_Allowed_Reg(Rn regName, ISet<AsmSignatureEnum> allowedOperands)
         {
-            Contract.Requires(allowedOperands != null);
-            Contract.Assume(allowedOperands != null);
+            if (allowedOperands == null) throw new ArgumentNullException(nameof(allowedOperands));
 
             RegisterType type = RegisterTools.GetRegisterType(regName);
             switch (type)

@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,7 +23,6 @@
 namespace AsmSim
 {
     using System;
-    using System.Diagnostics.Contracts;
     using AsmSim.Mnemonics;
     using AsmTools;
 
@@ -31,7 +30,7 @@ namespace AsmSim
     {
         public static DynamicFlow Construct_DynamicFlow_Backward(StaticFlow sFlow, Tools tools)
         {
-            Contract.Requires(sFlow != null);
+            ArgumentNullException.ThrowIfNull(sFlow);
             return Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, sFlow.NLines * 2, tools);
         }
 
@@ -44,7 +43,7 @@ namespace AsmSim
 
         public static DynamicFlow Construct_DynamicFlow_Forward(StaticFlow sFlow, Tools tools)
         {
-            Contract.Requires(sFlow != null);
+            ArgumentNullException.ThrowIfNull(sFlow);
             return Construct_DynamicFlow_Forward(sFlow, sFlow.FirstLineNumber, sFlow.NLines * 2, tools);
         }
 
@@ -110,7 +109,7 @@ namespace AsmSim
         /// <summary>Perform onestep forward and return the state of the regular branch</summary>
         public static State SimpleStep_Backward(string line, State state)
         {
-            Contract.Requires(state != null);
+            ArgumentNullException.ThrowIfNull(state);
 
             try
             {
@@ -156,8 +155,7 @@ namespace AsmSim
         /// <summary>Perform one step forward and return states for both branches</summary>
         public static (State? regular, State? branch) Step_Forward(string line, State state)
         {
-            Contract.Requires(state != null);
-            Contract.Assume(state != null);
+            ArgumentNullException.ThrowIfNull(state);
             try
             {
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
@@ -175,14 +173,14 @@ namespace AsmSim
                 }
 
                 opcodeBase.Execute();
-                State stateRegular = null;
+                State? stateRegular = null;
                 if (opcodeBase.Updates.regular != null)
                 {
                     stateRegular = new State(state);
                     stateRegular.Update_Forward(opcodeBase.Updates.regular);
                     opcodeBase.Updates.regular.Dispose();
                 }
-                State stateBranch = null;
+                State? stateBranch = null;
                 if (opcodeBase.Updates.branch != null)
                 {
                     stateBranch = new State(state);
@@ -204,8 +202,7 @@ namespace AsmSim
             (string prevKey, string nextKey, string nextKeyBranch) keys,
             Tools tools)
         {
-            Contract.Requires(sFlow != null);
-            Contract.Assume(sFlow != null);
+            ArgumentNullException.ThrowIfNull(sFlow);
 
             try
             {

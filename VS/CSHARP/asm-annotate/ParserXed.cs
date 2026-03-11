@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Xml;
 
@@ -120,7 +119,7 @@ namespace asm_annotate
     {
         public static string ToCapitals(string str, bool strIsCapitals)
         {
-            Contract.Requires(str != null);
+            ArgumentNullException.ThrowIfNull(str);
 
 #if DEBUG
             if (strIsCapitals && (str != str.ToUpperInvariant()))

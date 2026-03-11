@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -25,7 +25,6 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
     using Microsoft.Z3;
@@ -320,7 +319,7 @@ namespace AsmSim
 
         public void Reset(StaticFlow sFlow, bool forward)
         {
-            Contract.Requires(sFlow != null);
+            ArgumentNullException.ThrowIfNull(sFlow);
 
             lock (this.updateLock_)
             {
@@ -496,7 +495,7 @@ namespace AsmSim
                         if (!this.Has_Edge(prevKey, nextKey, prev.isBranch))
                         {
                             (StateUpdate regular, StateUpdate branch) = Runner.Execute(sFlow, prev.lineNumber, (prevKey, nextKey, nextKey), this.tools_);
-                            StateUpdate update = null;
+                            StateUpdate? update = null;
                             if (prev.isBranch)
                             {
                                 update = branch;
@@ -795,7 +794,7 @@ namespace AsmSim
                         state2.Update_Forward(update2);
                     }
 
-                    BoolExpr bc = null;
+                    BoolExpr? bc = null;
                     {
                         using (Context ctx = new(this.tools_.ContextSettings))
                         {

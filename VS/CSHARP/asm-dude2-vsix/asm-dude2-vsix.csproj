@@ -191,7 +191,7 @@
 	  <AdditionalFiles Remove="C:\Users\henkj\.nuget\packages\microsoft.visualstudio.sdk.analyzers\16.10.10\build\AdditionalFiles\BannedSymbols.txt" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\asm-tools-lib-net48\asm-tools-lib-net48.csproj" />
+	  <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -24,15 +24,14 @@ namespace AsmSim
 
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using Microsoft.Z3;
 
     public static class ToolsFloatingPoint
     {
         public static IEnumerable<FPExpr> BV_2_Doubles(BitVecExpr value, Context ctx)
         {
-            Contract.Requires(value != null);
-            Contract.Requires(ctx != null);
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentNullException.ThrowIfNull(ctx);
 
             uint nBits = value.SortSize;
 
@@ -67,8 +66,8 @@ namespace AsmSim
 
         public static BitVecExpr FP_2_BV(IEnumerable<FPExpr> fps, Context ctx)
         {
-            Contract.Requires(fps != null);
-            Contract.Requires(ctx != null);
+            ArgumentNullException.ThrowIfNull(fps);
+            ArgumentNullException.ThrowIfNull(ctx);
 
             BitVecExpr result = null;
             foreach (FPExpr fp in fps)

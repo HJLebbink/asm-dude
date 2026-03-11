@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -25,7 +25,6 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
 
@@ -54,73 +53,73 @@ namespace AsmSim
         #endregion
 
         #region Flags
-        private BoolExpr cf_ = null;
-        private BoolExpr pf_ = null;
-        private BoolExpr af_ = null;
-        private BoolExpr zf_ = null;
-        private BoolExpr sf_ = null;
-        private BoolExpr of_ = null;
-        private BoolExpr df_ = null;
+        private BoolExpr? cf_ = null;
+        private BoolExpr? pf_ = null;
+        private BoolExpr? af_ = null;
+        private BoolExpr? zf_ = null;
+        private BoolExpr? sf_ = null;
+        private BoolExpr? of_ = null;
+        private BoolExpr? df_ = null;
 
-        private BoolExpr cf_U_ = null;
-        private BoolExpr pf_U_ = null;
-        private BoolExpr af_U_ = null;
-        private BoolExpr zf_U_ = null;
-        private BoolExpr sf_U_ = null;
-        private BoolExpr of_U_ = null;
-        private BoolExpr df_U_ = null;
+        private BoolExpr? cf_U_ = null;
+        private BoolExpr? pf_U_ = null;
+        private BoolExpr? af_U_ = null;
+        private BoolExpr? zf_U_ = null;
+        private BoolExpr? sf_U_ = null;
+        private BoolExpr? of_U_ = null;
+        private BoolExpr? df_U_ = null;
         #endregion
 
         #region Registers
-        private BoolExpr rax_ = null;
-        private BoolExpr rbx_ = null;
-        private BoolExpr rcx_ = null;
-        private BoolExpr rdx_ = null;
+        private BoolExpr? rax_ = null;
+        private BoolExpr? rbx_ = null;
+        private BoolExpr? rcx_ = null;
+        private BoolExpr? rdx_ = null;
 
-        private BoolExpr rsi_ = null;
-        private BoolExpr rdi_ = null;
-        private BoolExpr rbp_ = null;
-        private BoolExpr rsp_ = null;
+        private BoolExpr? rsi_ = null;
+        private BoolExpr? rdi_ = null;
+        private BoolExpr? rbp_ = null;
+        private BoolExpr? rsp_ = null;
 
-        private BoolExpr r8_ = null;
-        private BoolExpr r9_ = null;
-        private BoolExpr r10_ = null;
-        private BoolExpr r11_ = null;
+        private BoolExpr? r8_ = null;
+        private BoolExpr? r9_ = null;
+        private BoolExpr? r10_ = null;
+        private BoolExpr? r11_ = null;
 
-        private BoolExpr r12_ = null;
-        private BoolExpr r13_ = null;
-        private BoolExpr r14_ = null;
-        private BoolExpr r15_ = null;
+        private BoolExpr? r12_ = null;
+        private BoolExpr? r13_ = null;
+        private BoolExpr? r14_ = null;
+        private BoolExpr? r15_ = null;
 
-        private BoolExpr simd_ = null;
+        private BoolExpr? simd_ = null;
 
-        private BoolExpr rax_U_ = null;
-        private BoolExpr rbx_U_ = null;
-        private BoolExpr rcx_U_ = null;
-        private BoolExpr rdx_U_ = null;
+        private BoolExpr? rax_U_ = null;
+        private BoolExpr? rbx_U_ = null;
+        private BoolExpr? rcx_U_ = null;
+        private BoolExpr? rdx_U_ = null;
 
-        private BoolExpr rsi_U_ = null;
-        private BoolExpr rdi_U_ = null;
-        private BoolExpr rbp_U_ = null;
-        private BoolExpr rsp_U_ = null;
+        private BoolExpr? rsi_U_ = null;
+        private BoolExpr? rdi_U_ = null;
+        private BoolExpr? rbp_U_ = null;
+        private BoolExpr? rsp_U_ = null;
 
-        private BoolExpr r8_U_ = null;
-        private BoolExpr r9_U_ = null;
-        private BoolExpr r10_U_ = null;
-        private BoolExpr r11_U_ = null;
+        private BoolExpr? r8_U_ = null;
+        private BoolExpr? r9_U_ = null;
+        private BoolExpr? r10_U_ = null;
+        private BoolExpr? r11_U_ = null;
 
-        private BoolExpr r12_U_ = null;
-        private BoolExpr r13_U_ = null;
-        private BoolExpr r14_U_ = null;
-        private BoolExpr r15_U_ = null;
+        private BoolExpr? r12_U_ = null;
+        private BoolExpr? r13_U_ = null;
+        private BoolExpr? r14_U_ = null;
+        private BoolExpr? r15_U_ = null;
 
-        private BoolExpr simd_U_ = null;
+        private BoolExpr? simd_U_ = null;
         #endregion
 
         #region Memory
-        private BoolExpr mem_Update_ = null;
-        private BoolExpr mem_Update_U_ = null;
-        private ArrayExpr mem_Full_ = null;
+        private BoolExpr? mem_Update_ = null;
+        private BoolExpr? mem_Update_U_ = null;
+        private ArrayExpr? mem_Full_ = null;
         #endregion
 
         #region Constructor
@@ -128,8 +127,7 @@ namespace AsmSim
         /// <summary> Constructor </summary>
         public StateUpdate(string prevKey, string nextKey, Tools tools)
         {
-            Contract.Requires(tools != null);
-            Contract.Assume(tools != null);
+            ArgumentNullException.ThrowIfNull(tools);
 
             this.branch_Condition_ = null;
             this.prevKey_Regular_ = prevKey;
@@ -145,10 +143,8 @@ namespace AsmSim
         /// <summary>Constructor for merging. prevKey_Regular is the key for the regular continue for the provided branchCondition</summary>
         public StateUpdate(BoolExpr branchCondition, string prevKey_Regular, string prevKey_Branch, string nextKey, Tools tools)
         {
-            Contract.Requires(tools != null);
-            Contract.Requires(branchCondition != null);
-            Contract.Assume(tools != null);
-            Contract.Assume(branchCondition != null);
+            ArgumentNullException.ThrowIfNull(tools);
+            ArgumentNullException.ThrowIfNull(branchCondition);
 
             this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
             this.branch_Condition_ = branchCondition.Translate(this.ctx_) as BoolExpr;
@@ -163,8 +159,7 @@ namespace AsmSim
         /// <summary>Update the provided state with this stateUpdate</summary>
         public void Update(State state)
         {
-            Contract.Requires(state != null);
-            Contract.Assume(state != null);
+            ArgumentNullException.ThrowIfNull(state);
 
             lock (this.ctxLock_)
             {
@@ -514,7 +509,7 @@ namespace AsmSim
 
         public void Set_SF_ZF_PF(BitVecExpr value)
         {
-            Contract.Requires(value != null);
+            ArgumentNullException.ThrowIfNull(value);
             this.Empty = false;
 
             lock (this.ctxLock_)
@@ -650,9 +645,8 @@ namespace AsmSim
 
         public void Set(Rn reg, BitVecExpr value, BitVecExpr undef)
         {
-            Contract.Requires(value != null);
-            Contract.Requires(undef != null);
-            Contract.Assume(value != null);
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentNullException.ThrowIfNull(undef);
 
 
             this.Empty = false;
@@ -660,7 +654,6 @@ namespace AsmSim
             lock (this.ctxLock_)
             {
                 Context ctx = this.ctx_;
-                Contract.Assume(ctx != null);
 
 
                 value = value.Translate(ctx) as BitVecExpr;
@@ -743,8 +736,6 @@ namespace AsmSim
                     {
                         bottom = ctx.MkExtract(low - 1, 0, prevKey);
                     }
-
-                    Console.WriteLine(top!.SortSize + "+" + value!.SortSize + "+" + bottom!.SortSize + "=" + prevKey.SortSize);
 
                     BitVecExpr newValue = (top == null) ? value : ctx.MkConcat(top, value);
                     newValue = (bottom == null) ? newValue : ctx.MkConcat(newValue, bottom);
@@ -962,12 +953,9 @@ namespace AsmSim
 
         public void Set_Mem(BitVecExpr address, BitVecExpr value, BitVecExpr undef)
         {
-            Contract.Requires(address != null);
-            Contract.Requires(value != null);
-            Contract.Requires(undef != null);
-            Contract.Assume(address != null);
-            Contract.Assume(value != null);
-            Contract.Assume(undef != null);
+            ArgumentNullException.ThrowIfNull(address);
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentNullException.ThrowIfNull(undef);
 
             this.Empty = false;
 
@@ -1022,8 +1010,7 @@ namespace AsmSim
 
         public void Set(Operand operand, BitVecExpr value, BitVecExpr undef)
         {
-            Contract.Requires(operand != null);
-            Contract.Assume(operand != null);
+            ArgumentNullException.ThrowIfNull(operand);
 
             if (operand.IsReg)
             {

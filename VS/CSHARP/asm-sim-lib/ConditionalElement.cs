@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,7 +23,6 @@
 namespace AsmSim
 {
     using System;
-    using System.Diagnostics.Contracts;
     using AsmTools;
     using Microsoft.Z3;
 
@@ -316,7 +315,7 @@ namespace AsmSim
 
         public static BoolExpr ConditionalTaken(ConditionalElement ce, string key, Context ctx)
         {
-            Contract.Requires(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
 
             switch (ce)
             {

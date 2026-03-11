@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -24,7 +24,6 @@ namespace AsmTools
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
 
     public enum Mnemonic
     {
@@ -2494,8 +2493,7 @@ namespace AsmTools
 
         public static string ToCapitals(string str, bool strIsCapitals)
         {
-            Contract.Requires(str != null);
-            Contract.Assume(str != null);
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
 #if DEBUG
             if (strIsCapitals && (str != str.ToUpperInvariant()))
@@ -2584,8 +2582,7 @@ namespace AsmTools
 
         public static (Mnemonic mnemonic, AttType attribute_type) ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
-            Contract.Requires(str != null);
-            Contract.Assume(str != null);
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             int length = str.Length;
             if (length > 1)
@@ -2619,8 +2616,7 @@ namespace AsmTools
 
         public static bool IsMnemonic_Att(string keyword, bool strIsCapitals = false)
         {
-            Contract.Requires(keyword != null);
-            Contract.Assume(keyword != null);
+            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
 
             int length = keyword.Length;
             if (length < 2)

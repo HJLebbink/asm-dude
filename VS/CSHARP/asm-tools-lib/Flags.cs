@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -24,7 +24,6 @@ namespace AsmTools
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Text;
 
     /// <summary>Flags, CF, PF, AF, ZF, SF, OF, DF, IF</summary>
@@ -95,8 +94,7 @@ namespace AsmTools
 
         public static Flags Parse(string str, bool strIsCapitals)
         {
-            Contract.Requires(str != null);
-            Contract.Assume(str != null);
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             switch (AsmSourceTools.ToCapitals(str, strIsCapitals))
             {

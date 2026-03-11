@@ -32,7 +32,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -79,6 +78,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     private AsmDude2Tools asmDudeTools;
     public MnemonicStore mnemonicStore;
+
+    private readonly LspAsmSimulator asmSimulator_;
     public PerformanceStore performanceStore;
     public AsmLanguageServerOptions options;
 
@@ -137,6 +138,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         this.target.OnInitializeCompletion += this.OnTargetInitializeCompletion;
         this.target.OnInitialized += this.OnTargetInitialized;
+        this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
     }
 
     /// <summary>
@@ -153,6 +155,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.foldingRanges = [];
         this.diagnostics = [];
         this.Symbols = [];
+        this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
     }
 
         #region Tools
@@ -249,9 +252,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             return null;
         }
 
-        public static VSDiagnosticProjectInformation[] GetVSDiagnosticProjectInformation(VSTextDocumentIdentifier vsTextDocumentIdentifier)
+        public static VSDiagnosticProjectInformation[] GetVSDiagnosticProjectInformation(VSTextDocumentIdentifier? vsTextDocumentIdentifier)
         {
-            VSDiagnosticProjectInformation projectAndContext = null;
+            VSDiagnosticProjectInformation? projectAndContext = null;
             if ((vsTextDocumentIdentifier != null) && (vsTextDocumentIdentifier.ProjectContext != null))
             {
                 projectAndContext = new VSDiagnosticProjectInformation
@@ -335,7 +338,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         public void Initialize(AsmLanguageServerOptions options)
         {
-            Contract.Assert(options != null);
+            Debug.Assert(options != null);
             // LogInfo($"Initialize: Options: {jToken}");
             this.options = options;
         }
@@ -379,6 +382,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 this.diagnostics.Clear();
                 this.UpdateFoldingRanges(uri);
                 this.labelGraphDirty.Add(uri);
+                this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), lines,
+                    onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()));
 
                 if (false)
                 {
@@ -512,10 +517,32 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         public void SendDiagnostics(string uri)
         {
+            var simDiags = this.asmSimulator_.GetDiagnostics(new Uri(uri));
+            var allDiags = new List<Diagnostic>(this.diagnostics);
+            foreach (SimDiagnostic sd in simDiags)
+            {
+                DiagnosticSeverity severity = sd.Kind switch
+                {
+                    SimDiagnosticKind.SyntaxError    => DiagnosticSeverity.Error,
+                    SimDiagnosticKind.NotImplemented => DiagnosticSeverity.Information,
+                    _                                => DiagnosticSeverity.Warning,
+                };
+                allDiags.Add(new VSDiagnostic
+                {
+                    Message  = sd.Message,
+                    Severity = severity,
+                    Range = new Range
+                    {
+                        Start = new Position(sd.Line, 0),
+                        End   = new Position(sd.Line, int.MaxValue),
+                    },
+                });
+            }
+
             PublishDiagnosticParams parameter = new()
             {
                 Uri = new Uri(uri),
-                Diagnostics = [.. this.diagnostics],
+                Diagnostics = [.. allDiags],
             };
             _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnosticsName, parameter);
         }
@@ -1973,9 +2000,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 return null;
             }
             string keyword_uppercase = keyword.ToUpperInvariant();
-            string[] hoverContent = null;
+            string[]? hoverContent = null;
+            AsmTokenType tokenType = this.GetAsmTokenType(keyword_uppercase);
 
-            switch (this.GetAsmTokenType(keyword_uppercase))
+            switch (tokenType)
             {
                 case AsmTokenType.Mnemonic: // intentional fall through
                 case AsmTokenType.Jump:
@@ -2038,7 +2066,6 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     }
                 case AsmTokenType.Register:
                     {
-                        // int lineNumber = //AsmTools.Tools.Get_LineNumber(tagSpan);
                         if (keyword_uppercase.StartsWith('%'))
                         {
                             keyword_uppercase = keyword_uppercase[1..]; // remove the preceding % in AT&T syntax
@@ -2057,8 +2084,24 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                                 descr = "\n" + descr;
                             }
                             string full_Descr = AsmTools.AsmSourceTools.Linewrap(archStr + descr, MaxNumberOfCharsInToolTips);
+
+                            // Show simulated register value before and after this line (if known).
+                            var simUri = new Uri(parameter.TextDocument.Uri.ToString());
+                            int simLine = (int)parameter.Position.Line;
+                            string? simBefore = this.asmSimulator_.GetRegisterValueBeforeLine(simUri, simLine, reg);
+                            string? simAfter  = this.asmSimulator_.GetRegisterValueAfterLine(simUri, simLine, reg);
+                            string simSuffix = string.Empty;
+                            if (simBefore != null || simAfter != null)
+                            {
+                                var sb = new System.Text.StringBuilder("\n");
+                                if (simBefore != null) sb.Append($"Before: {simBefore}");
+                                if (simBefore != null && simAfter != null) sb.Append("  →  ");
+                                if (simAfter  != null) sb.Append($"After: {simAfter}");
+                                simSuffix = sb.ToString();
+                            }
+
                             hoverContent = [
-                                $"Register {regStr}: {full_Descr}",
+                                $"Register {regStr}: {full_Descr}{simSuffix}",
                             ];
                         }
                         break;
@@ -2258,6 +2301,24 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
             */
 
+
+            // Append simulator register+flag state if available.
+            // For mnemonic/jump hovers, show state before and after the instruction.
+            // Register hovers already show the specific register's value inline (above).
+            if (tokenType is AsmTokenType.Mnemonic or AsmTokenType.Jump or AsmTokenType.MnemonicOff)
+            {
+                var simUri2 = new Uri(parameter.TextDocument.Uri.ToString());
+                int simLine2 = (int)parameter.Position.Line;
+                string? simBefore2 = this.asmSimulator_.GetRegisterStatesBeforeLine(simUri2, simLine2);
+                string? simAfter2  = this.asmSimulator_.GetRegisterStatesAfterLine(simUri2, simLine2);
+                if (simBefore2 != null || simAfter2 != null)
+                {
+                    var sb2 = new System.Text.StringBuilder();
+                    if (simBefore2 != null) sb2.Append("\nBefore:" + simBefore2);
+                    if (simAfter2  != null) sb2.Append("\nAfter:"  + simAfter2);
+                    hoverContent = [.. (hoverContent ?? []), sb2.ToString()];
+                }
+            }
 
             if (hoverContent != null)
             {

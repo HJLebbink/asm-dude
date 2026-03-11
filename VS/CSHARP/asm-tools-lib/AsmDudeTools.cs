@@ -25,7 +25,6 @@ namespace AsmTools
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using System.Xml;
@@ -72,12 +71,11 @@ namespace AsmTools
 
         public AsmTokenType Get_Token_Type_Att(string keyword)
         {
-            Contract.Requires(keyword != null);
-            Contract.Assume(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpperInvariant());
+            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             int length = keyword.Length;
-            Contract.Requires(length > 0);
+            Debug.Assert(length > 0);
 
             char firstChar = keyword[0];
 
@@ -121,9 +119,8 @@ namespace AsmTools
 
         public AsmTokenType Get_Token_Type_Intel(string keyword)
         {
-            Contract.Requires(keyword != null);
-            Contract.Assume(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpperInvariant());
+            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
@@ -145,9 +142,8 @@ namespace AsmTools
 
         public AssemblerEnum Get_Assembler(string keyword)
         {
-            Contract.Requires(keyword != null);
-            Contract.Assume(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpperInvariant());
+            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.assembler_.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
         }
@@ -157,8 +153,8 @@ namespace AsmTools
         /// </summary>
         public string Get_Description(string keyword)
         {
-            Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpperInvariant());
+            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.description_.TryGetValue(keyword, out string description) ? description : string.Empty;
         }
@@ -174,8 +170,8 @@ namespace AsmTools
         /// </summary>
         public Arch Get_Architecture(string keyword)
         {
-            Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpperInvariant());
+            if (keyword == null) throw new ArgumentNullException(nameof(keyword));
+            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.arch_.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
         }
@@ -359,8 +355,7 @@ namespace AsmTools
 
         private static Arch Retrieve_Arch(XmlNode node)
         {
-            Contract.Requires(node != null);
-            Contract.Assume(node != null);
+            if (node == null) throw new ArgumentNullException(nameof(node));
 
             try
             {

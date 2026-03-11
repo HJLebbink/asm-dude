@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,7 +23,6 @@
 namespace unit_tests_asm_z3
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Numerics;
     using AsmSim;
     using AsmTools;
@@ -41,7 +40,7 @@ namespace unit_tests_asm_z3
 
         public static ulong RandUlong(int nBits, Random rand)
         {
-            Contract.Requires(rand != null);
+            ArgumentNullException.ThrowIfNull(rand);
 
             ulong i1 = (ulong)rand.Next();
             if (nBits < 32)
@@ -204,8 +203,8 @@ namespace unit_tests_asm_z3
         #region AreEqual
         public static void AreEqual(State state1, State state2)
         {
-            Contract.Requires(state1 != null);
-            Contract.Requires(state2 != null);
+            ArgumentNullException.ThrowIfNull(state1);
+            ArgumentNullException.ThrowIfNull(state2);
             Assert.IsNotNull(state1);
             Assert.IsNotNull(state2);
 
@@ -226,7 +225,7 @@ namespace unit_tests_asm_z3
         #region AreEqual Flags
         public static Tv GetTv5(Flags flag, State state)
         {
-            Contract.Requires(state != null);
+            ArgumentNullException.ThrowIfNull(state);
             return state.GetTv(flag);
         }
 
@@ -237,7 +236,7 @@ namespace unit_tests_asm_z3
 
         public static void AreEqual(Flags flags, Tv expected, State state)
         {
-            Contract.Requires(state != null);
+            ArgumentNullException.ThrowIfNull(state);
             foreach (Flags flag in FlagTools.GetFlags(flags))
             {
                 AreEqual(expected, state.GetTv(flag));
@@ -266,8 +265,8 @@ namespace unit_tests_asm_z3
 
         public static void AreEqual(Rn name, Tv[] expectedTvArray, State state)
         {
-            Contract.Requires(state != null);
-            Contract.Requires(expectedTvArray != null);
+            ArgumentNullException.ThrowIfNull(state);
+            ArgumentNullException.ThrowIfNull(expectedTvArray);
 
             Assert.IsNotNull(state);
 
@@ -295,7 +294,7 @@ namespace unit_tests_asm_z3
         /// </summary>
         public static void AreEqual(Rn reg1, Rn reg2, State state)
         {
-            Contract.Requires(state != null);
+            ArgumentNullException.ThrowIfNull(state);
 
             using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
             {
@@ -322,7 +321,7 @@ namespace unit_tests_asm_z3
         /// </summary>
         public static void AreUnrelated(Rn reg1, Rn reg2, State state)
         {
-            Contract.Requires(state != null);
+            ArgumentNullException.ThrowIfNull(state);
 
             using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
             {
@@ -348,7 +347,7 @@ namespace unit_tests_asm_z3
         #region AreEqual Expr
         public static void AreEqual(BitVecExpr expr, ulong expected, State state)
         {
-            Contract.Requires(expr != null);
+            ArgumentNullException.ThrowIfNull(expr);
 
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected, (int)expr.SortSize);
             Assert.IsNotNull(expectedTvArray);
@@ -357,7 +356,7 @@ namespace unit_tests_asm_z3
 
         public static void AreEqual(BitVecExpr expr, string expected, State state)
         {
-            Contract.Requires(expr != null);
+            ArgumentNullException.ThrowIfNull(expr);
 
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected);
             Assert.AreEqual(expr.SortSize, (uint)expectedTvArray.Length);
@@ -366,9 +365,9 @@ namespace unit_tests_asm_z3
 
         public static void AreEqual(BitVecExpr expr, Tv[] expectedTvArray, State state)
         {
-            Contract.Requires(expr != null);
-            Contract.Requires(expectedTvArray != null);
-            Contract.Requires(state != null);
+            ArgumentNullException.ThrowIfNull(expr);
+            ArgumentNullException.ThrowIfNull(expectedTvArray);
+            ArgumentNullException.ThrowIfNull(state);
 
             int nBits = (int)expr.SortSize;
             Assert.AreEqual(nBits, expectedTvArray.Length);
@@ -396,14 +395,14 @@ namespace unit_tests_asm_z3
         #region AreEqual TV
         public static void AreEqual(ulong expected, Tv[] actualArray)
         {
-            Contract.Requires(actualArray != null);
+            ArgumentNullException.ThrowIfNull(actualArray);
             AreEqual(ToolsZ3.GetTvArray(expected, actualArray.Length), actualArray);
         }
 
         public static void AreEqual(Tv[] expectedArray, Tv[] actualArray)
         {
-            Contract.Requires(expectedArray != null);
-            Contract.Requires(actualArray != null);
+            ArgumentNullException.ThrowIfNull(expectedArray);
+            ArgumentNullException.ThrowIfNull(actualArray);
 
             Assert.AreEqual(expectedArray.Length, actualArray.Length);
             for (int i = 0; i < actualArray.Length; ++i)

@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,7 +23,7 @@
 namespace AsmTools
 {
     using System;
-    using System.Diagnostics.Contracts;
+    using System.Diagnostics;
 
     public class Operand
     {
@@ -41,8 +41,7 @@ namespace AsmTools
         /// <summary>constructor</summary>
         public Operand(string token, bool isCapitals, AsmParameters p = null)
         {
-            Contract.Requires(token != null);
-            Contract.Assume(token != null);
+            if (token == null) throw new ArgumentNullException(nameof(token));
 
             token = AsmSourceTools.ToCapitals(token, isCapitals);
             this.str_ = token;
@@ -164,7 +163,7 @@ namespace AsmTools
 
         public override string ToString()
         {
-            Contract.Assert(this.str_ != null);
+            Debug.Assert(this.str_ != null);
             return this.str_;
         }
     }

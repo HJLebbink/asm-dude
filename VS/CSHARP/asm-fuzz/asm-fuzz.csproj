@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="SharpFuzz" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.5.1" />
+    <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.5.3" />
   </ItemGroup>
 
   <ItemGroup>

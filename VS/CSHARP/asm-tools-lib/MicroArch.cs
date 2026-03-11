@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,7 +23,6 @@
 namespace AsmTools
 {
     using System;
-    using System.Diagnostics.Contracts;
 
     [Flags]
     public enum MicroArch
@@ -48,8 +47,7 @@ namespace AsmTools
     {
         public static MicroArch ParseMicroArch(string str, bool strIsCapitals)
         {
-            Contract.Requires(str != null);
-            Contract.Assume(str != null);
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             switch (ToCapitals(str, strIsCapitals))
             {

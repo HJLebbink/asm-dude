@@ -42,7 +42,7 @@ namespace AsmDude2LS
         public string throughput_;
         public string remark_;
 
-        public override readonly bool Equals(object obj)
+        public override readonly bool Equals(object? obj)
         {
             //Check for null and compare run-time types.
             if ((obj == null) || !this.GetType().Equals(obj.GetType()))
@@ -138,10 +138,10 @@ namespace AsmDude2LS
             try
             {
                 StreamReader file = new StreamReader(filename);
-                string line;
+                string? line;
                 int lineNumber = 0;
 
-                while ((line = file.ReadLine()) != null)
+                while ((line = file.ReadLine()) is not null)
                 {
                     if ((line.Trim().Length > 0) && (!line.StartsWith(';')))
                     {
@@ -150,7 +150,7 @@ namespace AsmDude2LS
                         {
                             { // handle instruction
                                 string mnemonicKey = columns[0].Trim();
-                                if (!translations.TryGetValue(mnemonicKey, out IList<Mnemonic> mnemonics))
+                                if (!translations.TryGetValue(mnemonicKey, out IList<Mnemonic>? mnemonics))
                                 {
                                     mnemonics = [];
                                     foreach (string mnemonicStr in mnemonicKey.Split(' '))
@@ -158,7 +158,7 @@ namespace AsmDude2LS
                                         Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr, false);
                                         if (mnemonic == Mnemonic.NONE)
                                         { // check if the mnemonicStr can be translated to a list of mnemonics
-                                            if (translations.TryGetValue(mnemonicStr, out IList<Mnemonic> mnemonics2))
+                                            if (translations.TryGetValue(mnemonicStr, out IList<Mnemonic>? mnemonics2))
                                             {
                                                 foreach (Mnemonic m in mnemonics2)
                                                 {
@@ -218,8 +218,8 @@ namespace AsmDude2LS
             try
             {
                 StreamReader file = new StreamReader(filename);
-                string line;
-                while ((line = file.ReadLine()) != null)
+                string? line;
+                while ((line = file.ReadLine()) is not null)
                 {
                     if ((line.Trim().Length > 0) && (!line.StartsWith(';')))
                     {

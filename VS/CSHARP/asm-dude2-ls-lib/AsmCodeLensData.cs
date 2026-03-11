@@ -24,8 +24,8 @@ namespace AsmDude2LS
 {
     public class AsmCodeLensData
     {
-        public string Label { get; set; }
+        public required string Label { get; set; }
         public int DefinitionLine { get; set; }
-        public int[] ReferenceLines { get; set; }
+        public required int[] ReferenceLines { get; set; }
     }
 }

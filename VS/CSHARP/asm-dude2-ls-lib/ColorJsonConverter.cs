@@ -15,7 +15,7 @@ public class ColorJsonConverter : JsonConverter<Color>
     {
         if (reader.TokenType == JsonTokenType.String)
         {
-            string value = reader.GetString();
+            string? value = reader.GetString();
             if (string.IsNullOrEmpty(value))
             {
                 return Color.Empty;
@@ -41,7 +41,7 @@ public class ColorJsonConverter : JsonConverter<Color>
         if (reader.TokenType == JsonTokenType.StartObject)
         {
             int r = 0, g = 0, b = 0, a = 255;
-            string name = null;
+            string? name = null;
 
             while (reader.Read())
             {
@@ -55,7 +55,7 @@ public class ColorJsonConverter : JsonConverter<Color>
                     continue;
                 }
 
-                string propertyName = reader.GetString();
+                string? propertyName = reader.GetString();
                 reader.Read();
 
                 switch (propertyName?.ToUpperInvariant())
@@ -73,7 +73,7 @@ public class ColorJsonConverter : JsonConverter<Color>
                         a = reader.GetInt32();
                         break;
                     case "NAME":
-                        name = reader.GetString();
+                        name = reader.GetString() ?? name;
                         break;
                     default:
                         reader.Skip();

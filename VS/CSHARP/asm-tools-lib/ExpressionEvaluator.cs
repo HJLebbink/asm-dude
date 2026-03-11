@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -23,7 +23,6 @@
 namespace AsmTools
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
     using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -33,8 +32,7 @@ namespace AsmTools
         /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
         public static (bool valid, ulong value, int nBits) Parse_Constant(string str, bool isCapitals = false)
         {
-            Contract.Requires(str != null);
-            Contract.Assume(str != null);
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             string token2;
             bool isHex = false;
@@ -183,8 +181,7 @@ namespace AsmTools
 
         public static (bool valid, ulong value, int nBits) Evaluate_Constant(string str, bool isCapitals = false)
         {
-            Contract.Requires(str != null);
-            Contract.Assume(str != null);
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             // 1] test whether str has digits, if it has none it is not a constant
             if (!str.Any(char.IsDigit))

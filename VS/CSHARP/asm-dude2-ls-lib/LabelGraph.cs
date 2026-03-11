@@ -25,7 +25,6 @@ namespace AsmDude2LS
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
 
@@ -111,7 +110,7 @@ namespace AsmDude2LS
                     {
                         try
                         {
-                            VSTextDocumentIdentifier id = null;
+                            VSTextDocumentIdentifier? id = null;
                             int lineNumber = labelID.LineNumber;
                             Range range = new()
                             {
@@ -149,7 +148,7 @@ namespace AsmDude2LS
             {
                 try
                 {
-                    VSTextDocumentIdentifier id = null;
+                    VSTextDocumentIdentifier? id = null;
                     int lineNumber = labelID.LineNumber;
                     Range range = new()
                     {
@@ -193,7 +192,7 @@ namespace AsmDude2LS
 
         public string Get_Filename(KeywordID labelID)
         {
-            if (this.filenames_.TryGetValue(labelID.File_Id, out string filename))
+            if (this.filenames_.TryGetValue(labelID.File_Id, out string? filename))
             {
                 return filename;
             }
@@ -301,7 +300,7 @@ namespace AsmDude2LS
                 int startPos = lineStr.IndexOf(label);
                 KeywordID labelID = new(lineNumber, fileID, startPos, startPos + label.Length);
 
-                string extra_Tag_Info = null; // TODO asmTokenTag.Tag.Misc;
+                string? extra_Tag_Info = null; // TODO asmTokenTag.Tag.Misc;
 
                 if ((extra_Tag_Info != null))// TODO && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO, StringComparison.Ordinal))
                 {
@@ -321,7 +320,7 @@ namespace AsmDude2LS
                 if (args.Length > 0)
                 {
                     string labelStr = args[0];
-                    string prefix = null; // TODO asmTokenTag.Tag.Misc 
+                    string? prefix = null; // TODO asmTokenTag.Tag.Misc
                     string full_Qualified_Label = Tools.Make_Full_Qualified_Label(prefix, labelStr, usedAssembler);
 
                     int startPos = lineStr.IndexOf(labelStr);
@@ -371,7 +370,7 @@ namespace AsmDude2LS
             }
             string key2 = (caseSensitiveLabels) ? key : key.ToUpper();
 
-            if (dict.TryGetValue(key2, out List<KeywordID> list))
+            if (dict.TryGetValue(key2, out List<KeywordID>? list))
             {
                 list.Add(id);
             }

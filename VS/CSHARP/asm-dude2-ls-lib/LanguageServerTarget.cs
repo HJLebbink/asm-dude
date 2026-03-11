@@ -40,9 +40,9 @@ public class LanguageServerTarget(LanguageServer server)
     private int version = 1;
     public TraceSetting traceSetting;
 
-    public event EventHandler OnInitializeCompletion;
+    public event EventHandler? OnInitializeCompletion;
 
-        public event EventHandler OnInitialized;
+        public event EventHandler? OnInitialized;
 
         private static AsmLanguageServerOptions CreateDefaultOptions() => new AsmLanguageServerOptions
         {
@@ -322,7 +322,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentCodeLensName, UseSingleObjectParameterDeserialization = true)]
-        public CodeLens[] TextDocumentCodeLens(CodeLensParams parameter)
+        public CodeLens[]? TextDocumentCodeLens(CodeLensParams parameter)
         {
             var result = server.GetCodeLenses(parameter);
             LanguageServer.LogInfo($"TextDocumentCodeLens: uri={parameter.TextDocument.Uri}, lensCount={result?.Length ?? 0}");
@@ -338,7 +338,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.CodeLensResolveName, UseSingleObjectParameterDeserialization = true)]
-        public CodeLens CodeLensResolve(CodeLens parameter)
+        public CodeLens? CodeLensResolve(CodeLens parameter)
         {
             var result = server.ResolveCodeLens(parameter);
             LanguageServer.LogInfo($"CodeLensResolve: title={result?.Command?.Title}");
@@ -346,7 +346,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod("asm/codeLensData", UseSingleObjectParameterDeserialization = true)]
-        public AsmCodeLensData[] GetCodeLensData(CodeLensParams parameter)
+        public AsmCodeLensData[]? GetCodeLensData(CodeLensParams parameter)
         {
             var result = server.GetCodeLensData(parameter.TextDocument.Uri.ToString());
             LanguageServer.LogInfo($"GetCodeLensData: uri={parameter.TextDocument.Uri}, count={result?.Length ?? 0}");
@@ -354,7 +354,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentCompletionName, UseSingleObjectParameterDeserialization = true)]
-        public CompletionList OnTextDocumentCompletion(CompletionParams parameter)
+        public CompletionList? OnTextDocumentCompletion(CompletionParams parameter)
         {
             LanguageServer.LogInfo($"OnTextDocumentCompletion: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
             var result = server.GetTextDocumentCompletion(parameter);
@@ -363,7 +363,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentCompletionResolveName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentCompletionResolve(CompletionItem parameter)
+        public object? TextDocumentCompletionResolve(CompletionItem parameter)
         {
             LanguageServer.LogInfo($"TextDocumentCompletionResolve: NOT IMPLEMENTED. label={parameter.Label}");
             // TODO
@@ -396,7 +396,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
 
         [JsonRpcMethod(Methods.TextDocumentDidSaveName, UseSingleObjectParameterDeserialization = true)]
-        public object TextDocumentDidSave(DidSaveTextDocumentParams parameter)
+        public object? TextDocumentDidSave(DidSaveTextDocumentParams parameter)
         {
             LanguageServer.LogInfo($"TextDocumentDidSave: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
             // TODO
@@ -611,7 +611,7 @@ public class LanguageServerTarget(LanguageServer server)
             if (result is SemanticTokensDelta delta)
             {
                 if ((delta.Edits?.Length ?? 0) > 0)
-                    LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: uri={parameter.TextDocument.Uri}, delta edits={delta.Edits.Length}, resultId={delta.ResultId}");
+                    LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: uri={parameter.TextDocument.Uri}, delta edits={delta.Edits?.Length}, resultId={delta.ResultId}");
             }
             else if (result is SemanticTokens full)
                 LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: uri={parameter.TextDocument.Uri}, full tokens, tokenCount={full.Data?.Length / 5 ?? 0}, resultId={full.ResultId}");

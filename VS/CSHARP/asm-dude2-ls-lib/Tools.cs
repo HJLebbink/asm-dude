@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -22,8 +22,8 @@
 
 namespace AsmDude2LS
 {
+    using System;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.IO;
 
     using AsmTools;
@@ -61,7 +61,7 @@ namespace AsmDude2LS
             }
         }
 
-        public static string Make_Full_Qualified_Label(string prefix, string label2, AssemblerEnum assembler)
+        public static string Make_Full_Qualified_Label(string? prefix, string label2, AssemblerEnum assembler)
         {
             if (assembler.HasFlag(AssemblerEnum.MASM))
             {
@@ -90,7 +90,7 @@ namespace AsmDude2LS
 
         public static string Retrieve_Regular_Label(string label, AssemblerEnum assembler)
         {
-            Contract.Requires(label != null);
+            ArgumentNullException.ThrowIfNull(label);
 
             if (assembler.HasFlag(AssemblerEnum.MASM))
             {

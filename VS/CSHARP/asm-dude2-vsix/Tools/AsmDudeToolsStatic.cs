@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -25,7 +25,6 @@ namespace AsmDude2.Tools
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using System.Reflection;
@@ -52,8 +51,8 @@ namespace AsmDude2.Tools
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
-            Contract.Requires(buffer != null);
-            Contract.Requires(aggregatorFactory != null);
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (aggregatorFactory == null) throw new ArgumentNullException(nameof(aggregatorFactory));
 
             ITagAggregator<AsmTokenTag> sc()
             { // this is the only place where ITagAggregator are created
@@ -177,7 +176,7 @@ namespace AsmDude2.Tools
 
         public static string GetFilename(ITextBuffer buffer, int timeout_ms = 200)
         {
-            Contract.Requires(buffer != null);
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
 
             return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
@@ -197,7 +196,7 @@ namespace AsmDude2.Tools
         /// <summary>Get the full filename (with path) of the provided buffer; returns null if such name does not exist</summary>
         public static async Task<string> GetFilenameAsync(ITextBuffer buffer)
         {
-            Contract.Requires(buffer != null);
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
 
             if (!ThreadHelper.CheckAccess())
             {
@@ -254,7 +253,7 @@ namespace AsmDude2.Tools
         /// </summary>
         public static async Task OutputAsync(string msg)
         {
-            Contract.Requires(msg != null);
+            if (msg == null) throw new ArgumentNullException(nameof(msg));
 
             if (!ThreadHelper.CheckAccess())
             {

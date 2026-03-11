@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -25,7 +25,6 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.Text;
     using Microsoft.Z3;
 
@@ -187,7 +186,7 @@ namespace AsmSim
 
         public void Remove(BranchInfo branchInfo)
         {
-            Contract.Requires(branchInfo != null);
+            ArgumentNullException.ThrowIfNull(branchInfo);
             this.branchInfo_.Remove(branchInfo.Key);
         }
 

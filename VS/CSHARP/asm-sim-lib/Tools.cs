@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2026 Henk-Jan Lebbink
 //
@@ -25,7 +25,6 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using AsmTools;
     using Microsoft.Z3;
 
@@ -43,7 +42,7 @@ namespace AsmSim
 
         public Tools(Tools other)
         {
-            Contract.Requires(other != null);
+            ArgumentNullException.ThrowIfNull(other);
 
             this.ContextSettings = new Dictionary<string, string>(other.ContextSettings);
             this.rand_ = other.Rand; //new Random();
@@ -77,13 +76,13 @@ namespace AsmSim
 
         public static string CreateKey(Random rand)
         {
-            Contract.Requires(rand != null);
+            ArgumentNullException.ThrowIfNull(rand);
             return "!" + ToolsZ3.GetRandomUlong(rand).ToString("X16");
         }
 
         public static string Reg_Name(Rn reg, string key)
         {
-            Contract.Requires(key != null);
+            ArgumentNullException.ThrowIfNull(key);
             return (RegisterTools.Is_SIMD_Register(reg)) ? ("SIMD" + key) : (reg.ToString() + key);
         }
 
@@ -220,8 +219,7 @@ namespace AsmSim
 
         public static BitVecExpr Create_Key(Rn reg, string key, Context ctx)
         {
-            Contract.Requires(ctx != null);
-            Contract.Assume(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
 
             uint nBits = (uint)RegisterTools.NBits(reg);
             if (RegisterTools.Is_SIMD_Register(reg))
@@ -251,52 +249,44 @@ namespace AsmSim
 
         public static BoolExpr Create_Key(Flags flag, string key, Context ctx)
         {
-            Contract.Requires(ctx != null);
-            Contract.Assume(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
             return ctx.MkBoolConst(Flag_Name(flag, key));
         }
 
         public static ArrayExpr Create_Mem_Key(string key, Context ctx)
         {
-            Contract.Requires(ctx != null);
-            Contract.Assume(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
             return ctx.MkArrayConst(Mem_Name(key), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
         }
 
         public static ArrayExpr Create_Mem_Key_Fresh(Random rand, Context ctx)
         {
-            Contract.Requires(ctx != null);
-            Contract.Assume(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
             return ctx.MkArrayConst(Mem_Name_Fresh(rand), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
         }
 
         public static BitVecExpr Create_Reg_Key_Fresh(Rn reg, Random rand, Context ctx)
         {
-            Contract.Requires(ctx != null);
-            Contract.Assume(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
             return ctx.MkBVConst(Reg_Name_Fresh(reg, rand), (uint)RegisterTools.NBits(reg));
         }
 
         public static BoolExpr Create_Flag_Key_Fresh(Flags flag, Random rand, Context ctx)
         {
-            Contract.Requires(ctx != null);
-            Contract.Assume(ctx != null);
+            ArgumentNullException.ThrowIfNull(ctx);
             return ctx.MkBoolConst(Flag_Name_Fresh(flag, rand));
         }
 
         public static BitVecExpr Calc_Effective_Address(string op, string key, Tools tools, Context ctx)
         {
-            Contract.Requires(tools != null);
-            Contract.Assume(tools != null);
+            ArgumentNullException.ThrowIfNull(tools);
             return Calc_Effective_Address(new Operand(op, false, tools.Parameters), key, ctx);
         }
 
         public static BitVecExpr Calc_Effective_Address(Operand op, string key, Context ctx)
         {
-            Contract.Requires(op != null);
-            Contract.Requires(ctx != null);
-            Contract.Assume(op != null);
-            Contract.Assume(ctx != null);
+            ArgumentNullException.ThrowIfNull(op);
+            ArgumentNullException.ThrowIfNull(ctx);
             _ = (uint)op.NBits;
             uint nBitsAddress = 64;
 
@@ -389,8 +379,8 @@ namespace AsmSim
 
         public static BitVecExpr Create_Value_From_Mem(BitVecExpr address, int nBytes, string key, Context ctx)
         {
-            Contract.Requires(ctx != null);
-            Contract.Requires(nBytes > 0, "Number of bytes has to larger than zero. nBytes=" + nBytes);
+            ArgumentNullException.ThrowIfNull(ctx);
+            Debug.Assert(nBytes > 0, "Number of bytes has to larger than zero. nBytes=" + nBytes);
 
             using ArrayExpr mem = Create_Mem_Key(key, ctx);
             BitVecExpr result = ctx.MkSelect(mem, address) as BitVecExpr;
@@ -406,13 +396,11 @@ namespace AsmSim
 
         public static ArrayExpr Set_Value_To_Mem(BitVecExpr value, BitVecExpr address, string key, Context ctx)
         {
-            Contract.Requires(value != null);
-            Contract.Requires(address != null);
-            Contract.Requires(ctx != null);
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentNullException.ThrowIfNull(address);
+            ArgumentNullException.ThrowIfNull(ctx);
 
             BitVecExpr address2 = (address.SortSize < 64) ? ctx.MkZeroExt(64 - address.SortSize, address) : address;
-            Contract.Assume(address2 != null);
-            Contract.Assume(address2.SortSize == 64);
 
             uint nBytes = value.SortSize >> 3;
             ArrayExpr mem = Create_Mem_Key(key, ctx);
@@ -427,7 +415,7 @@ namespace AsmSim
 
         public static State Collapse(IEnumerable<State> previousStates)
         {
-            Contract.Requires(previousStates != null);
+            ArgumentNullException.ThrowIfNull(previousStates);
 
             State result = null;
             int counter = 0;
