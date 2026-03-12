@@ -598,31 +598,22 @@ namespace AsmTools
         }
 
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
-        public static (bool valid, ulong value, int nBits) Evaluate_Constant(string token, bool isCapitals = false)
+        public static (bool valid, ulong value, int nBits) Evaluate_Constant(string? token, bool isCapitals = false)
         {
             ArgumentNullException.ThrowIfNull(token);
 
-            if (token.StartsWith('$')) // AT&T syntax constants start with '$'
+            // AT&T syntax constants start with '$'
+            if (token.Length > 0 && token[0] == '$')
             {
-                token = token.Substring(1);
+                token = token[1..];
             }
 
-            // TODO 01-06-19 fix evaluate_constant
-            // TODO bugfix: there is a issue with .net 1.6.2 and the evaluation code in Evaluate_Constant
-            if (true)
-            {
-                // don't use expression evaluation, just parse it.
-                return ExpressionEvaluator.Parse_Constant(token, isCapitals);
-            }
-            else
-            {
-                // string token2 = token.Replace("_", string.Empty).Replace(".", string.Empty);
-                // return ExpressionEvaluator.Evaluate_Constant(token2, isCapitals);
-            }
+            // don't use expression evaluation, just parse it.
+            return ExpressionEvaluator.Parse_Constant(token, isCapitals);
         }
 
         /// <summary> Check if the provided string is a constant by parsing it. Does not evaluate arithmetic in the string.</summary>
-        public static (bool valid, ulong value, int nBits) Parse_Constant(string token, bool isCapitals = false)
+        public static (bool valid, ulong value, int nBits) Parse_Constant(string? token, bool isCapitals = false)
         {
             return ExpressionEvaluator.Parse_Constant(token, isCapitals);
         }

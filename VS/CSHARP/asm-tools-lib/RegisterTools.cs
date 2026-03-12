@@ -43,35 +43,46 @@ namespace AsmTools
         BOUND,
     }
 
-    public static class RegisterTools
+    public static partial class RegisterTools
     {
-        private static readonly Dictionary<string, Rn> Register_cache_;
+        private static readonly Dictionary<string, Rn> Register_cache_ = [];
 
         /// <summary>Static class initializer for RegisterTools</summary>
         static RegisterTools()
         {
-            Register_cache_ = [];
             foreach (Rn rn in Enum.GetValues<Rn>())
             {
-                Register_cache_.Add(rn.ToString(), rn);
+                Register_cache_[rn.ToString()] = rn;
             }
         }
 
-        public static (bool valid, Rn reg, int nBits) ToRn(string str, bool isCapitals = false)
+        public static (bool valid, Rn reg, int nBits) ToRn(string? str, bool isCapitals = false)
         {
+            if (string.IsNullOrEmpty(str))
+                return (valid: false, reg: Rn.NOREG, nBits: 0);
+            
             Rn rn = ParseRn(str, isCapitals);
             return (rn == Rn.NOREG)
                 ? (valid: false, reg: Rn.NOREG, nBits: 0)
                 : (valid: true, reg: rn, nBits: NBits(rn));
         }
 
-        public static Rn ParseRn(string str, bool strIsCapitals = false)
+        public static Rn ParseRn(string? str, bool strIsCapitals = false)
         {
-            return (Register_cache_.TryGetValue(AsmSourceTools.ToCapitals(str, strIsCapitals), out Rn value)) ? value : Rn.NOREG;
+            if (string.IsNullOrEmpty(str))
+                return Rn.NOREG;
+            
+            string key = AsmSourceTools.ToCapitals(str, strIsCapitals);
+            return Register_cache_.TryGetValue(key, out Rn value) ? value : Rn.NOREG;
         }
-        public static bool IsRn(string str, bool strIsCapitals = false)
+
+        public static bool IsRn(string? str, bool strIsCapitals = false)
         {
-            return Register_cache_.ContainsKey(AsmSourceTools.ToCapitals(str, strIsCapitals));
+            if (string.IsNullOrEmpty(str))
+                return false;
+            
+            string key = AsmSourceTools.ToCapitals(str, strIsCapitals);
+            return Register_cache_.ContainsKey(key);
         }
 
         public static int NBits(Rn rn)

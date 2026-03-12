@@ -25,7 +25,6 @@ namespace AsmTools
     using System;
     using System.Globalization;
     using System.Linq;
-
 #if NET10_0_OR_GREATER
     using Microsoft.CodeAnalysis.CSharp.Scripting;
 #endif
@@ -54,7 +53,7 @@ namespace AsmTools
             }
             str = str.Trim();
 
-            if (str.StartsWith('-'))
+            if (str.StartsWith("-", StringComparison.Ordinal))
             {
                 token2 = str;
                 isDecimal = true;
@@ -62,7 +61,7 @@ namespace AsmTools
             }
 
             // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
-            else if (str.EndsWith('H'))
+            else if (str.EndsWith("H", StringComparison.Ordinal))
             {
                 token2 = str.Substring(0, str.Length - 1);
                 isHex = true;
@@ -77,7 +76,7 @@ namespace AsmTools
                 token2 = str.Substring(2);
                 isOctal = true;
             }
-            else if (str.EndsWith('Q') || str.EndsWith('O'))
+            else if (str.EndsWith("Q", StringComparison.Ordinal) || str.EndsWith("O", StringComparison.Ordinal))
             {
                 token2 = str.Substring(0, str.Length - 1);
                 isOctal = true;
@@ -87,7 +86,7 @@ namespace AsmTools
                 token2 = str.Substring(2);
                 isDecimal = true;
             }
-            else if (str.EndsWith('D'))
+            else if (str.EndsWith("D", StringComparison.Ordinal))
             {
                 token2 = str;
                 isDecimal = true;
@@ -97,7 +96,7 @@ namespace AsmTools
                 token2 = str.Substring(2);
                 isBinary = true;
             }
-            else if (str.EndsWith('Y'))
+            else if (str.EndsWith("Y", StringComparison.Ordinal))
             {
                 token2 = str.Substring(0, str.Length - 1);
                 isBinary = true;
@@ -105,7 +104,7 @@ namespace AsmTools
             else
             {
                 // special case with trailing B: either this B is from a hex number of the Binary
-                if (str.EndsWith('B'))
+                if (str.EndsWith("B", StringComparison.Ordinal))
                 {
                     bool parsedSuccessfully_tmp = ulong.TryParse(str, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out _);
                     if (parsedSuccessfully_tmp)

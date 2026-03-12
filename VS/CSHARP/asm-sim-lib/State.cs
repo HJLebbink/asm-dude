@@ -31,7 +31,7 @@ namespace AsmSim
     using System.Globalization;
     using System.Text;
 
-    public class State : IDisposable
+    public partial class State : IDisposable
     {
         private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
 
@@ -40,36 +40,36 @@ namespace AsmSim
 
         private readonly Tools tools_;
 
-        public Tools Tools { get { return this.tools_; } }
+        public Tools Tools { get; }
 
         private readonly Context ctx_;
 
-        public Context Ctx { get { return this.ctx_; } }
+        public Context Ctx { get; }
 
         public Solver Solver { get; private set; }
 
         public Solver Solver_U { get; private set; }
 
-        private bool solver_Dirty = false;
-        private bool solver_U_Dirty = false;
+        private bool solver_Dirty;
+        private bool solver_U_Dirty;
 
-        private string warningMessage_;
-        private string synstaxErrorMessage_;
+        private string? warningMessage_;
+        private string? synstaxErrorMessage_;
 
         public bool IsHalted { get; private set; }
 
-        public string? HeadKey = null;
-        public string? TailKey = null;
+        public string? HeadKey;
+        public string? TailKey;
 
         private bool frozen_;
-        private readonly IDictionary<Rn, Tv[]> cached_Reg_Values_;
-        private readonly IDictionary<Flags, Tv> cached_Flag_Values_;
+        private readonly Dictionary<Rn, Tv[]> cached_Reg_Values_ = new();
+        private readonly Dictionary<Flags, Tv> cached_Flag_Values_ = new();
 
         private readonly object ctxLock_ = new();
 
-        private BranchInfoStore branchInfoStore_;
+        private BranchInfoStore? branchInfoStore_;
 
-        public BranchInfoStore BranchInfoStore { get { return this.branchInfoStore_; } }
+        public BranchInfoStore BranchInfoStore { get; }
         #endregion
 
         #region Constructors

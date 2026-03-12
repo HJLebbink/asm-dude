@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -6,12 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoWarn>CS1668</NoWarn>
+    <IsPackable>false</IsPackable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Using prerelease to match Microsoft.CodeAnalysis.LanguageServer.Protocol version in asm-dude2-ls-lib -->
-    <!-- Used by ExpressionEvaluator.cs -->
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.6.0-2.26151.2" />
+    <!-- Required for ExpressionEvaluator.cs (script evaluation) -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.12.0" />
   </ItemGroup>
 
 </Project>

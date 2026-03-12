@@ -1,6 +1,6 @@
 # AsmDude3 - Modern Assembly Language Support for Visual Studio
 
-Welcome to **AsmDude3**, the next-generation assembly language extension for Visual Studio 2022 and 2026.
+Welcome to **AsmDude3**, the next-generation assembly language extension for Visual Studio 2022 and later.
 
 ## 📚 Documentation
 
@@ -24,7 +24,7 @@ Welcome to **AsmDude3**, the next-generation assembly language extension for Vis
 AsmDude3 represents a natural evolution from its predecessor, AsmDude. While AsmDude served as a
 single, all-encompassing plugin for VS2015/17/19, providing support for Assembly source code,
 AsmDude3 is built around a Language Server Protocol ([LSP](https://microsoft.github.io/language-server-protocol/))
-and a lightweight Visual Studio extension (for VS 2022/2026), drawing its functionality from this LSP.
+and a lightweight Visual Studio extension (for VS 2022 and later), drawing its functionality from this LSP.
 
 **Key Features**:
 - ✅ **Syntax highlighting** for MASM, NASM Intel, and NASM AT&T
@@ -46,7 +46,7 @@ AsmDude2 offers support for the following architectures: the instruction sets of
 SSE, AVX, AVX2, Xeon-Phi (Knights Corner), and AVX-512 instructions.
 Most of the commonly used Masm directives covered, along with a selection of Nasm directives.
 
-![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-syntax-highlighting.png?raw=true "Syntax highlighting")
+![label-analysis](https://github.com/HJLebbink/asm-dude/blob/main/Images/AsmDude2-syntax-highlighting.png?raw=true "Syntax highlighting")
 
 #### Code Descriptions with Clickable Hyperlinks
 When you hover over a mnemonic, you receive a pop-up with descriptions and **clickable hyperlinks** to online documentation.
@@ -60,14 +60,14 @@ The hover tooltip shows:
 
 Descriptions can be modified by updating the AsmDudeData.xml file, located alongside the installed plugin binaries.
 
-![code-descriptions](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-descriptions.png?raw=true "Code descriptions with clickable hyperlinks")
+![code-descriptions](https://github.com/HJLebbink/asm-dude/blob/main/Images/AsmDude2-descriptions.png?raw=true "Code descriptions with clickable hyperlinks")
 
 #### Code Completion 
 While typing text, the completion lists will be refined to display the relevant 
 language keywords. This applies to all keywords. However, please be aware that code suggestions 
 may not be flawless at this stage; only valid code completions should be proposed.
 
-![code-completion](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-code-completion.png?raw=true "Code Completion")
+![code-completion](https://github.com/HJLebbink/asm-dude/blob/main/Images/AsmDude2-code-completion.png?raw=true "Code Completion")
 
 #### Signature Help
 Signature Help, also referred to as Parameter Info, presents the method's signature in a tooltip when
@@ -75,7 +75,7 @@ a user enters the character marking the start of the parameter list (e.g., in C+
 As the user types a parameter and a parameter separator (usually a comma), 
 the tooltip is refreshed to display the next parameter in bold.
 
-![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude2-signature-help.png?raw=true "Signature Help")
+![label-analysis](https://github.com/HJLebbink/asm-dude/blob/main/Images/AsmDude2-signature-help.png?raw=true "Signature Help")
 
 ## Disassembly Window in VS
 Syntax highlighting in the disassembly window. No QuickInfo tooltips yet (see known issues)
@@ -115,3 +115,17 @@ Studio under the experimental environment.
 ### Known issues
 * LSP client extension [for Visual Studio 2022](https://www.nuget.org/packages/Microsoft.VisualStudio.LanguageServer.Protocol.Extensions) does not honor Markdown. Please help me and vote for (https://stackoverflow.com/questions/77015711/popup-hover-with-markdown-from-a-language-server-protocol-lsp)
 * Debug window does not trigger requests to the LSP. 
+
+## 🛠 For Developers
+
+AsmDude3 is built on .NET 10 and uses:
+- Language Server Protocol (LSP)
+- Roslyn scripting for expression evaluation
+- Z3 SMT solver for symbolic simulation
+- Modern C# 12/13 features (span parsing, file-scoped namespaces, etc.)
+
+See [`CODE_STYLE.md`](CODE_STYLE.md) for coding conventions and style guidelines.
+
+### Code Maintenance Policy
+
+**Commented-out code**: Commented-out code is allowed and encouraged to be kept in the codebase. You (the developer) are responsible for manually cleaning up such code when appropriate — this is not something the AI assistant will do.

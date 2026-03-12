@@ -31,12 +31,12 @@ namespace AsmSim
     using System.Diagnostics.CodeAnalysis;
     using System.Text;
 
-    public class StateUpdate : IDisposable
+    public partial class StateUpdate : IDisposable
     {
         #region Fields
         private readonly Tools tools_;
         private readonly Context ctx_;
-        private string nextKey_;
+        private string? nextKey_;
         private readonly string prevKey_Regular_;
         private readonly string? prevKey_Branch_;
         private readonly BoolExpr? branch_Condition_;
@@ -46,7 +46,7 @@ namespace AsmSim
         /// <summary>Gets or sets a value indicating whether gets if this stateUpdate is an update in which the state is reset.</summary>
         public bool Reset { get; set; }
 
-        private BranchInfo branchInfo_;
+        private BranchInfo? branchInfo_;
 
         private readonly object ctxLock_ = new();
 
@@ -365,8 +365,6 @@ namespace AsmSim
                 {
                     this.nextKey_ = value;
                 }
-
-
                 else if (this.nextKey_ != value)
                 {
                     Context ctx = this.ctx_;
