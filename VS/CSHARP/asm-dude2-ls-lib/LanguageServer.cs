@@ -74,6 +74,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     private readonly int highlightChunkSize = 10; // number of highlights returned before going to sleep for some delay
     private readonly int highlightsDelayMs = 10; // delay between highlight results returned
 
+    private readonly object updateLock = new();
+    private readonly Dictionary<string, CancellationTokenSource> pendingUpdates = [];
+
     private readonly TraceSource traceSource;
 
     private AsmDude2Tools? asmDudeTools;
@@ -173,13 +176,13 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             return (-1, -1);
         }
 
+        ReadOnlySpan<char> lineSpan = lineStr.AsSpan();
         int startPos = 0;
         int endPos = lineLength;
-        char[] lineChars = lineStr.ToCharArray(0, lineLength);
 
         for (int i = position + 1; i < lineLength; ++i)
         {
-            if (AsmTools.AsmSourceTools.IsSeparatorChar(lineChars[i]))
+            if (AsmTools.AsmSourceTools.IsSeparatorChar(lineSpan[i]))
             {
                 endPos = i;
                 break;
@@ -187,7 +190,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         }
         for (int i = position; i >= 0; --i)
         {
-            if (AsmTools.AsmSourceTools.IsSeparatorChar(lineChars[i]))
+            if (AsmTools.AsmSourceTools.IsSeparatorChar(lineSpan[i]))
             {
                 startPos = i + 1;
                 break;
@@ -206,7 +209,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             return (string.Empty, -1, -1);
         }
-        return (lineStr[startPos..endPos], startPos, endPos);
+        // Avoid allocation if span can be used directly (returning as string for API compatibility)
+        return (lineStr.Substring(startPos, length), startPos, endPos);
     }
 
     private static string Truncate(string text, int maxLength = MAX_LENGTH_DESCR_TEXT)
@@ -216,7 +220,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     private char GetChar(string str, int offset)
     {
-        return ((offset < 0) || (offset >= str.Length)) ? ' ' : str.ElementAt(offset);
+        return ((offset < 0) || (offset >= str.Length)) ? ' ' : str.AsSpan()[offset];
     }
 
     #endregion
@@ -364,24 +368,55 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     {
         if (this.GetTextDocument(uri) is TextDocumentItem document)
         {
-            this.textDocumentLines.Remove(uri);
-            var lines = document.Text.Split(separator, StringSplitOptions.None);
-            this.textDocumentLines.Add(uri, lines);
-
-            int fileID = 0; //TODO
-            KeywordID[][] lineData = new KeywordID[lines.Length][];
-            for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
+            var newLines = document.Text.Split(separator, StringSplitOptions.None);
+            
+            string[] oldLines;
+            if (this.textDocumentLines.TryGetValue(uri, out var cachedLines) && cachedLines.SequenceEqual(newLines))
             {
-                (KeywordID[] keywords, _, _, _, _) = AsmTools.AsmSourceTools.ParseLine(lines[lineNumber], lineNumber, fileID);
-                lineData[lineNumber] = keywords;
+                return;
             }
+            else
+            {
+                oldLines = cachedLines ?? [];
+            }
+
+            this.textDocumentLines.Remove(uri);
+            this.textDocumentLines.Add(uri, newLines);
+
+            KeywordID[][] lineData;
+            if (this.parsedDocuments.TryGetValue(uri, out var oldParsed) && oldParsed.Length == newLines.Length)
+            {
+                lineData = new KeywordID[newLines.Length][];
+                for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
+                {
+                    if (lineNumber < oldParsed.Length && oldLines[lineNumber] == newLines[lineNumber] && oldParsed[lineNumber] != null)
+                    {
+                        lineData[lineNumber] = oldParsed[lineNumber];
+                    }
+                    else
+                    {
+                        int fileID = 0;
+                        lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID).keywords;
+                    }
+                }
+            }
+            else
+            {
+                lineData = new KeywordID[newLines.Length][];
+                int fileID = 0;
+                for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
+                {
+                    lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID).keywords;
+                }
+            }
+
             this.parsedDocuments.Remove(uri);
             this.parsedDocuments.Add(uri, lineData);
 
             this.diagnostics.Clear();
             this.UpdateFoldingRanges(uri);
             this.labelGraphDirty.Add(uri);
-            this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), lines,
+            this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
                 onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()));
 
             if (false)
@@ -452,7 +487,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
         {
             string lineStr = lines[lineNumber].ToUpper();
-            int offsetRegion = lineStr.IndexOf(StartKeyword);
+            int offsetRegion = lineStr.AsSpan().IndexOf(StartKeyword);
             if (offsetRegion != -1)
             {
                 startLineNumbers.Push(lineNumber);
@@ -466,7 +501,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
             else
             {
-                int offsetEndRegion = lineStr.IndexOf(EndKeyword);
+                int offsetEndRegion = lineStr.AsSpan().IndexOf(EndKeyword);
                 if (offsetEndRegion != -1)
                 {
                     if (startLineNumbers.Count == 0)
@@ -510,8 +545,32 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         {
             document.Text = text;
             document.Version = version;
-            //TODO only update the lines that have changed
-            this.UpdateInternals(uri);
+
+            // Debounce document updates - cancel pending update and schedule new one
+            lock (this.updateLock)
+            {
+                if (this.pendingUpdates.TryGetValue(uri, out var cts))
+                {
+                    cts.Cancel();
+                    this.pendingUpdates.Remove(uri);
+                }
+
+                var newCts = new CancellationTokenSource();
+                this.pendingUpdates[uri] = newCts;
+
+                // Schedule update after 100ms of inactivity
+                Task.Delay(100, newCts.Token).ContinueWith(_ =>
+                {
+                    if (!newCts.IsCancellationRequested)
+                    {
+                        this.UpdateInternals(uri);
+                        lock (this.updateLock)
+                        {
+                            this.pendingUpdates.Remove(uri);
+                        }
+                    }
+                }, TaskScheduler.Default);
+            }
         }
     }
 
@@ -775,7 +834,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token)
     {
-        LogInfo($"Received: {System.Text.Json.JsonSerializer.Serialize(args)}");
+        if (target.traceSetting == TraceSetting.Verbose)
+        {
+            LogInfo($"Received: {System.Text.Json.JsonSerializer.Serialize(args)}");
+        }
         var uri = args.TextDocument.Uri.ToString();
 
         var lines = this.GetLines(uri);
@@ -812,7 +874,6 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         Debug.WriteLine($"Reporting references of {referenceWord}");
                         this.rpc.TraceSource.TraceEvent(TraceEventType.Information, 0, $"Report: {System.Text.Json.JsonSerializer.Serialize(locationsChunk)}");
                         progress.Report(locationsChunk.ToArray());
-                        Thread.Sleep(delay);  // Wait between chunks
                         locationsChunk.Clear();
                     }
                 }
@@ -830,7 +891,6 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         if (locationsChunk.Count > 0)
         {
             progress.Report([.. locationsChunk]);
-            Thread.Sleep(delay);  // Wait between chunks
         }
 
         return [.. locations];
@@ -915,7 +975,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
             if (!this.options.SignatureHelp_On)
             {
-                LogInfo($"GetTextDocumentSignatureHelp: switched off");
+                if (target.traceSetting == TraceSetting.Verbose)
+                {
+                    LogInfo($"GetTextDocumentSignatureHelp: switched off");
+                }
                 return null;
             }
 
@@ -946,7 +1009,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 return null;
             }
 
-            int mnemonicOffset = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
+            int mnemonicOffset = lineStr.AsSpan().IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
             if (mnemonicOffset == -1)
             {
                 LogError($"GetTextDocumentSignatureHelp: should not happen: investigate");
@@ -1045,10 +1108,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             var lineTokens = keywords[lineNumber];
             if (lineTokens == null) continue;
 
-            // Sort tokens by start position for correct relative encoding
-            var sortedTokens = lineTokens.OrderBy(t => t.Start_Pos).ToList();
+            // Tokens are already sorted by the parser, skip unnecessary sorting
+            // var sortedTokens = lineTokens.OrderBy(t => t.Start_Pos).ToList();
 
-            foreach (var token in sortedTokens)
+            foreach (var token in lineTokens)
             {
                 if (token.Type == AsmTokenType.UNKNOWN) continue;
 
@@ -1176,7 +1239,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             // Add performance hint for mnemonic
             if (showPerformance && mnemonic != Mnemonic.NONE && this.performanceStore != null)
             {
-                int mnemonicStart = lineText.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
+                int mnemonicStart = lineText.AsSpan().IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
                 if (mnemonicStart >= 0)
                 {
                     int mnemonicEnd = mnemonicStart + mnemonic.ToString().Length;
@@ -1209,10 +1272,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 if (trimmedArg.Length == 0) continue;
 
                 // Find the position of this arg in the original line text
-                int argStart = lineText.IndexOf(trimmedArg, searchStart, StringComparison.OrdinalIgnoreCase);
+                int argStart = lineText.AsSpan(searchStart).IndexOf(trimmedArg.AsSpan(), StringComparison.OrdinalIgnoreCase);
                 if (argStart < 0) continue;
                 int argEnd = argStart + trimmedArg.Length;
-                searchStart = argEnd;
+                searchStart = argEnd + searchStart;
 
                 var (valid, value, _) = AsmTools.AsmSourceTools.Evaluate_Constant(trimmedArg);
                 if (!valid) continue;
@@ -1572,7 +1635,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 };
             }
 
-            int mnemonicOffsetStart = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
+            int mnemonicOffsetStart = lineStr.AsSpan().IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
             if (mnemonicOffsetStart == -1)
             {
                 LanguageServer.LogError($"OnTextDocumentCompletion: should not happen: investigate");
@@ -1680,7 +1743,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             LogInfo($"LanguageServer:GetDocumentHighlights: argStrLength too small ({length})");
             return [];
         }
-        string currentHighlightedWord = lineStr2.Substring(startPos, length);
+        string currentHighlightedWord = new string(lineStr2.AsSpan(startPos, length));
         if (string.IsNullOrEmpty(currentHighlightedWord))
         {
             LogInfo($"LanguageServer:GetDocumentHighlights: currentHighlightedWord is not significant ({currentHighlightedWord})");
@@ -1726,7 +1789,6 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     if (chunk.Count == this.highlightChunkSize)
                     {
                         progress.Report([.. chunk]);
-                        Thread.Sleep(this.highlightsDelayMs);  // Wait between chunks
                         chunk.Clear();
                     }
                 }
@@ -1756,16 +1818,21 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         AssemblerEnum usedAssembler = this.options.Used_Assembler;
         List<CodeLens> lenses = [];
 
-        foreach ((string label, List<KeywordID> defList) in labelGraph.Definitions)
+        var definitions = labelGraph.GetFrozenDefinitions();
+        var usages = labelGraph.GetFrozenUsages();
+
+        foreach (var kvp in definitions)
         {
+            string label = kvp.Key;
+            List<KeywordID> defList = kvp.Value;
             KeywordID def = defList[0];
             int lineNumber = def.LineNumber;
 
             int referenceCount = 0;
             // Check both the full qualified label and the regular label
-            if (labelGraph.Usages.TryGetValue(label, out List<KeywordID>? usages))
+            if (usages.TryGetValue(label, out List<KeywordID>? usagesList))
             {
-                referenceCount = usages.Count;
+                referenceCount = usagesList.Count;
             }
 
             lenses.Add(new CodeLens
@@ -1796,15 +1863,20 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         List<AsmCodeLensData> result = [];
 
-        foreach ((string label, List<KeywordID> defList) in labelGraph.Definitions)
+        var definitions = labelGraph.GetFrozenDefinitions();
+        var usagesDict = labelGraph.GetFrozenUsages();
+
+        foreach (var kvp in definitions)
         {
+            string label = kvp.Key;
+            List<KeywordID> defList = kvp.Value;
             KeywordID def = defList[0];
             int defLine = def.LineNumber;
 
             List<int> refLines = [];
-            if (labelGraph.Usages.TryGetValue(label, out List<KeywordID>? usages))
+            if (usagesDict.TryGetValue(label, out List<KeywordID>? usagesList))
             {
-                foreach (KeywordID usage in usages!)
+                foreach (KeywordID usage in usagesList!)
                 {
                     refLines.Add(usage.LineNumber);
                 }
@@ -1894,7 +1966,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                     // Check for "label:" pattern
                     string labelWithColon = word + ":";
-                    labelDefPos = lineStr.IndexOf(labelWithColon, StringComparison.OrdinalIgnoreCase);
+                    labelDefPos = lineStr.AsSpan().IndexOf(labelWithColon.AsSpan(), StringComparison.OrdinalIgnoreCase);
 
                     if (labelDefPos >= 0)
                     {
@@ -1925,7 +1997,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             string labelWithColon = word + ":";
 
             // Use case-insensitive search (most assemblers are case-insensitive for labels)
-            int labelDefPos = lineStr.IndexOf(labelWithColon, StringComparison.OrdinalIgnoreCase);
+            int labelDefPos = lineStr.AsSpan().IndexOf(labelWithColon.AsSpan(), StringComparison.OrdinalIgnoreCase);
 
             if (labelDefPos >= 0)
             {
@@ -2652,8 +2724,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     {
         if ((characterOffset + wordToMatch.Length) <= lineStr.Length)
         {
-            string subString = lineStr.Substring(characterOffset, wordToMatch.Length);
-            if (subString.Equals(wordToMatch, StringComparison.OrdinalIgnoreCase))
+            if (lineStr.AsSpan(characterOffset, wordToMatch.Length).Equals(wordToMatch.AsSpan(), StringComparison.OrdinalIgnoreCase))
             {
                 return new Location
                 {
@@ -2683,8 +2754,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 return null;
             }
 
-            string subString = lineStr.Substring(characterOffset, wordLength);
-            if (subString.Equals(wordToMatch, StringComparison.OrdinalIgnoreCase))
+            if (lineStr.AsSpan(characterOffset, wordLength).Equals(wordToMatch.AsSpan(), StringComparison.OrdinalIgnoreCase))
             {
                 return new Range
                 {

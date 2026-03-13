@@ -84,7 +84,7 @@ using System.Xml;
             #region Test if keyword is a register
             if (firstChar == '%')
             {
-                string keyword2 = keyword.Substring(1);
+                string keyword2 = keyword[1..];
                 Rn reg = RegisterTools.ParseRn(keyword2, true);
                 if (reg != Rn.NOREG)
                 {

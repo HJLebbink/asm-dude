@@ -26,6 +26,7 @@ using AsmTools;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -236,8 +237,29 @@ public sealed class LabelGraph
         }
 
         public Dictionary<string, List<KeywordID>> Definitions => this.defAt_;
+        public FrozenDictionary<string, List<KeywordID>> DefinitionsFrozen => this.defAtFrozen_;
+        public FrozenDictionary<string, List<KeywordID>> UsagesFrozen => this.usagesFrozen_;
 
-        public Dictionary<string, List<KeywordID>> Usages => this.usedAt_;
+        private FrozenDictionary<string, List<KeywordID>>? defAtFrozen_;
+        private FrozenDictionary<string, List<KeywordID>>? usagesFrozen_;
+
+        public FrozenDictionary<string, List<KeywordID>> GetFrozenDefinitions()
+        {
+            if (this.defAtFrozen_ == null)
+            {
+                this.defAtFrozen_ = this.defAt_.ToFrozenDictionary();
+            }
+            return this.defAtFrozen_;
+        }
+
+        public FrozenDictionary<string, List<KeywordID>> GetFrozenUsages()
+        {
+            if (this.usagesFrozen_ == null)
+            {
+                this.usagesFrozen_ = this.usedAt_.ToFrozenDictionary();
+            }
+            return this.usagesFrozen_;
+        }
 
         public SortedDictionary<string, string> Label_Descriptions
         {
@@ -297,7 +319,7 @@ public sealed class LabelGraph
 
             if (label.Length > 0)
             {
-                int startPos = lineStr.IndexOf(label);
+                int startPos = lineStr.AsSpan().IndexOf(label.AsSpan());
                 KeywordID labelID = new(lineNumber, fileID, startPos, startPos + label.Length);
 
                 string? extra_Tag_Info = null; // TODO asmTokenTag.Tag.Misc;
@@ -323,7 +345,7 @@ public sealed class LabelGraph
                     string? prefix = null; // TODO asmTokenTag.Tag.Misc
                     string full_Qualified_Label = Tools.Make_Full_Qualified_Label(prefix, labelStr, usedAssembler);
 
-                    int startPos = lineStr.IndexOf(labelStr);
+                    int startPos = lineStr.AsSpan().IndexOf(labelStr.AsSpan());
                     if (startPos < 0)
                     {
                         LanguageServer.LogError($"LabelGraph:Add_Linenumber: startPos {startPos}");

@@ -43,7 +43,7 @@ using System.Text;
                 {
                     if (asmToken[0].Equals('%'))
                     {
-                        string asmToken2 = asmToken.Substring(1);
+                        string asmToken2 = asmToken[1..];
                         if (RegisterTools.IsRn(asmToken2, true))
                         {
                             return true;
@@ -205,7 +205,7 @@ using System.Text;
                 int codeBeginPos = 0;
                 if (valid)
                 {
-                    label = lineStr.Substring(startPos, endPos - startPos);
+                    label = lineStr[startPos..endPos];
                     codeBeginPos = endPos + 1; // plus one to get rid of the colon
                     if (lineStr.Length > codeBeginPos)
                     {
@@ -224,13 +224,13 @@ using System.Text;
                 int codeEndPos = lineStr.Length;
                 if (remarkPos.valid)
                 {
-                    remark = lineStr.Substring(remarkPos.startPos, remarkPos.endPos - remarkPos.startPos);
+                    remark = lineStr[remarkPos.startPos..remarkPos.endPos];
                     codeEndPos = remarkPos.startPos;
                     remarkKeyword = new KeywordID(lineNumber, fileID, startPos, endPos, AsmTokenType.Remark);
                     // Console.WriteLine("found remark " + remark);
                 }
 
-                string codeStr = lineStr.Substring(codeBeginPos, codeEndPos - codeBeginPos).Trim();
+                string codeStr = lineStr[codeBeginPos..codeEndPos].Trim();
                 // Console.WriteLine("code string \"" + codeStr + "\".");
                 if (codeStr.Length > 0)
                 {
@@ -239,7 +239,7 @@ using System.Text;
 
                     // get the first keyword, check if it is a mnemonic
                     (int startPos, int endPos) keyword1Pos = GetKeywordPos(0, codeStr_uppercase); // find a keyword starting a position 0
-                    string keyword1 = codeStr_uppercase.Substring(keyword1Pos.startPos, keyword1Pos.endPos - keyword1Pos.startPos);
+                    string keyword1 = codeStr_uppercase[keyword1Pos.startPos..keyword1Pos.endPos];
                     if (keyword1.Length > 0)
                     {
                         int startArgPos = keyword1Pos.endPos;
@@ -255,7 +255,7 @@ using System.Text;
                                 {
                                     // find a second keyword starting a position keywordPos.EndPos
                                     (int startPos, int endPos) keyword2Pos = GetKeywordPos(keyword1Pos.endPos + 1, codeStr_uppercase); // find a keyword starting a position 0
-                                    string keyword2 = codeStr_uppercase.Substring(keyword2Pos.startPos, keyword2Pos.endPos - keyword2Pos.startPos);
+                                    string keyword2 = codeStr_uppercase[keyword2Pos.startPos..keyword2Pos.endPos];
                                     if (keyword2.Length > 0)
                                     {
                                         Mnemonic mnemonic2 = ParseMnemonic(keyword2, true);
@@ -277,7 +277,8 @@ using System.Text;
                         int argLength = codeStr.Length - startArgPos;
                         if (argLength > 0)
                         {
-                            args = codeStr.Substring(startArgPos, argLength).Split(',');
+                            string argsStr = codeStr[startArgPos..];
+                            args = argsStr.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             for (int i = 0; i < args.Length; ++i)
                             {
                                 args[i] = args[i].Trim();
@@ -469,7 +470,7 @@ using System.Text;
         public static string Keyword((int beginPos, int length, AsmTokenType _) pos, string line)
         {
             ArgumentNullException.ThrowIfNull(line);
-            return line.Substring(pos.beginPos, pos.length - pos.beginPos);
+            return line[pos.beginPos..pos.length];
         }
 
         public static bool IsSeparatorChar_NoOperator(char c)
@@ -670,7 +671,7 @@ using System.Text;
 
             int nBits = Get_Nbits_Mem_Operand(token);
 
-            token = token.Substring(beginPos, endPos - beginPos).Trim();
+            token = token[beginPos..endPos].Trim();
             length = token.Length;
             if (length == 0)
             {
@@ -687,7 +688,7 @@ using System.Text;
             // 3] remove superfluous initial +
             if (token[0] == '+')
             {
-                token = token.Substring(1, length - 1).Trim();
+                token = token[1..].Trim();
             }
 
             // 4] split based on +
@@ -796,7 +797,7 @@ using System.Text;
                 string s = token2.TrimStart();
                 if (s.StartsWith("PTR", StringComparison.Ordinal))
                 {
-                    s = s.Substring(3, token.Length - 3).TrimStart();
+                    s = s[3..].TrimStart();
                 }
 
                 if (s.StartsWith("BYTE", StringComparison.Ordinal))
@@ -904,7 +905,7 @@ using System.Text;
             ArgumentNullException.ThrowIfNull(line);
 
             (int beginPos, int endPos) = GetKeywordPos(pos, line);
-            return line.Substring(beginPos, endPos - beginPos);
+            return line[beginPos..endPos];
         }
 
         /// <summary>
@@ -983,7 +984,7 @@ using System.Text;
             int length = endPrevious - beginPrevious;
             if (length > 0)
             {
-                string previousKeyword = line.Substring(beginPrevious, length);
+                string previousKeyword = line[beginPrevious..(beginPrevious + length)];
                 // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getPreviousKeyword; previousKeyword={0}", previousKeyword));
                 return previousKeyword;
             }
@@ -1117,7 +1118,7 @@ using System.Text;
                 return (valid: false, beginPos: 0, endPos: 0);
             }
 
-            string line3 = line2.Substring(displacement);
+            string line3 = line2[displacement..];
             (bool valid, int beginPos, int endPos) tup = GetLabelDefPos_Regular(line3);
             if (tup.valid)
             {
@@ -1185,7 +1186,7 @@ using System.Text;
                 {
                     string newLine = GetLine(remainingLine, maxLength - prefix.Length);
                     lines.Add(newLine);
-                    remainingLine = remainingLine.Substring(newLine.Length).Trim();
+                    remainingLine = remainingLine[newLine.Length..].Trim();
                     // Keep iterating as int as we've got words remaining
                     // in the lineStr.
                 }

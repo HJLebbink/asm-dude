@@ -2553,7 +2553,7 @@ public enum Mnemonic
                 AttType attType = ParseAttType(str2[length - 1]);
                 if (attType != AttType.NONE)
                 {
-                    string keyword2 = str2.Substring(0, length - 1);
+                    string keyword2 = str2[..^1];
                     return (ParseMnemonic(keyword2, true), attType);
                 }
             }
@@ -2591,6 +2591,6 @@ public enum Mnemonic
                 return false;
             }
 
-            return IsMnemonic(str2.Substring(0, length - 1), true);
+            return IsMnemonic(str2[..^1], true);
         }
     }

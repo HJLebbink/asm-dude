@@ -47,6 +47,62 @@ public enum RegisterType
     public static partial class RegisterTools
     {
         private static readonly Dictionary<string, Rn> Register_cache_ = [];
+        private static readonly Dictionary<Rn, string[]> RelatedRegisterNewCache = InitializeRelatedRegisterCache();
+
+        /// <summary>Initialize cached related register arrays</summary>
+        private static Dictionary<Rn, string[]> InitializeRelatedRegisterCache()
+        {
+            var cache = new Dictionary<Rn, string[]>();
+            cache[Rn.RAX] = cache[Rn.EAX] = cache[Rn.AX] = cache[Rn.AL] = cache[Rn.AH] = ["RAX", "EAX", "AX", "AH", "AL"];
+            cache[Rn.RBX] = cache[Rn.EBX] = cache[Rn.BX] = cache[Rn.BL] = cache[Rn.BH] = ["RBX", "EBX", "BX", "BH", "BL"];
+            cache[Rn.RCX] = cache[Rn.ECX] = cache[Rn.CX] = cache[Rn.CL] = cache[Rn.CH] = ["RCX", "ECX", "CX", "CH", "CL"];
+            cache[Rn.RDX] = cache[Rn.EDX] = cache[Rn.DX] = cache[Rn.DL] = cache[Rn.DH] = ["RDX", "EDX", "DX", "DH", "DL"];
+            cache[Rn.RSI] = cache[Rn.ESI] = cache[Rn.SI] = cache[Rn.SIL] = ["RSI", "ESI", "SIL", "SI"];
+            cache[Rn.RDI] = cache[Rn.EDI] = cache[Rn.DI] = cache[Rn.DIL] = ["RDI", "EDI", "DIL", "DI"];
+            cache[Rn.RBP] = cache[Rn.EBP] = cache[Rn.BP] = cache[Rn.BPL] = ["RBP", "EBP", "BPL", "BP"];
+            cache[Rn.RSP] = cache[Rn.ESP] = cache[Rn.SP] = cache[Rn.SPL] = ["RSP", "ESP", "SPL", "SP"];
+            cache[Rn.R8] = cache[Rn.R8D] = cache[Rn.R8W] = cache[Rn.R8B] = ["R8D", "R8W", "R8B", "R8"];
+            cache[Rn.R9] = cache[Rn.R9D] = cache[Rn.R9W] = cache[Rn.R9B] = ["R9D", "R9W", "R9B", "R9"];
+            cache[Rn.R10] = cache[Rn.R10D] = cache[Rn.R10W] = cache[Rn.R10B] = ["R10D", "R10W", "R10B", "R10"];
+            cache[Rn.R11] = cache[Rn.R11D] = cache[Rn.R11W] = cache[Rn.R11B] = ["R11D", "R11W", "R11B", "R11"];
+            cache[Rn.R12] = cache[Rn.R12D] = cache[Rn.R12W] = cache[Rn.R12B] = ["R12D", "R12W", "R12B", "R12"];
+            cache[Rn.R13] = cache[Rn.R13D] = cache[Rn.R13W] = cache[Rn.R13B] = ["R13D", "R13W", "R13B", "R13"];
+            cache[Rn.R14] = cache[Rn.R14D] = cache[Rn.R14W] = cache[Rn.R14B] = ["R14D", "R14W", "R14B", "R14"];
+            cache[Rn.R15] = cache[Rn.R15D] = cache[Rn.R15W] = cache[Rn.R15B] = ["R15D", "R15W", "R15B", "R15"];
+            cache[Rn.XMM0] = cache[Rn.YMM0] = cache[Rn.ZMM0] = ["XMM0", "YMM0", "ZMM0"];
+            cache[Rn.XMM1] = cache[Rn.YMM1] = cache[Rn.ZMM1] = ["XMM1", "YMM1", "ZMM1"];
+            cache[Rn.XMM2] = cache[Rn.YMM2] = cache[Rn.ZMM2] = ["XMM2", "YMM2", "ZMM2"];
+            cache[Rn.XMM3] = cache[Rn.YMM3] = cache[Rn.ZMM3] = ["XMM3", "YMM3", "ZMM3"];
+            cache[Rn.XMM4] = cache[Rn.YMM4] = cache[Rn.ZMM4] = ["XMM4", "YMM4", "ZMM4"];
+            cache[Rn.XMM5] = cache[Rn.YMM5] = cache[Rn.ZMM5] = ["XMM5", "YMM5", "ZMM5"];
+            cache[Rn.XMM6] = cache[Rn.YMM6] = cache[Rn.ZMM6] = ["XMM6", "YMM6", "ZMM6"];
+            cache[Rn.XMM7] = cache[Rn.YMM7] = cache[Rn.ZMM7] = ["XMM7", "YMM7", "ZMM7"];
+            cache[Rn.XMM8] = cache[Rn.YMM8] = cache[Rn.ZMM8] = ["XMM8", "YMM8", "ZMM8"];
+            cache[Rn.XMM9] = cache[Rn.YMM9] = cache[Rn.ZMM9] = ["XMM9", "YMM9", "ZMM9"];
+            cache[Rn.XMM10] = cache[Rn.YMM10] = cache[Rn.ZMM10] = ["XMM10", "YMM10", "ZMM10"];
+            cache[Rn.XMM11] = cache[Rn.YMM11] = cache[Rn.ZMM11] = ["XMM11", "YMM11", "ZMM11"];
+            cache[Rn.XMM12] = cache[Rn.YMM12] = cache[Rn.ZMM12] = ["XMM12", "YMM12", "ZMM12"];
+            cache[Rn.XMM13] = cache[Rn.YMM13] = cache[Rn.ZMM13] = ["XMM13", "YMM13", "ZMM13"];
+            cache[Rn.XMM14] = cache[Rn.YMM14] = cache[Rn.ZMM14] = ["XMM14", "YMM14", "ZMM14"];
+            cache[Rn.XMM15] = cache[Rn.YMM15] = cache[Rn.ZMM15] = ["XMM15", "YMM15", "ZMM15"];
+            cache[Rn.XMM16] = cache[Rn.YMM16] = cache[Rn.ZMM16] = ["XMM16", "YMM16", "ZMM16"];
+            cache[Rn.XMM17] = cache[Rn.YMM17] = cache[Rn.ZMM17] = ["XMM17", "YMM17", "ZMM17"];
+            cache[Rn.XMM18] = cache[Rn.YMM18] = cache[Rn.ZMM18] = ["XMM18", "YMM18", "ZMM18"];
+            cache[Rn.XMM19] = cache[Rn.YMM19] = cache[Rn.ZMM19] = ["XMM19", "YMM19", "ZMM19"];
+            cache[Rn.XMM20] = cache[Rn.YMM20] = cache[Rn.ZMM20] = ["XMM20", "YMM20", "ZMM20"];
+            cache[Rn.XMM21] = cache[Rn.YMM21] = cache[Rn.ZMM21] = ["XMM21", "YMM21", "ZMM21"];
+            cache[Rn.XMM22] = cache[Rn.YMM22] = cache[Rn.ZMM22] = ["XMM22", "YMM22", "ZMM22"];
+            cache[Rn.XMM23] = cache[Rn.YMM23] = cache[Rn.ZMM23] = ["XMM23", "YMM23", "ZMM23"];
+            cache[Rn.XMM24] = cache[Rn.YMM24] = cache[Rn.ZMM24] = ["XMM24", "YMM24", "ZMM24"];
+            cache[Rn.XMM25] = cache[Rn.YMM25] = cache[Rn.ZMM25] = ["XMM25", "YMM25", "ZMM25"];
+            cache[Rn.XMM26] = cache[Rn.YMM26] = cache[Rn.ZMM26] = ["XMM26", "YMM26", "ZMM26"];
+            cache[Rn.XMM27] = cache[Rn.YMM27] = cache[Rn.ZMM27] = ["XMM27", "YMM27", "ZMM27"];
+            cache[Rn.XMM28] = cache[Rn.YMM28] = cache[Rn.ZMM28] = ["XMM28", "YMM28", "ZMM28"];
+            cache[Rn.XMM29] = cache[Rn.YMM29] = cache[Rn.ZMM29] = ["XMM29", "YMM29", "ZMM29"];
+            cache[Rn.XMM30] = cache[Rn.YMM30] = cache[Rn.ZMM30] = ["XMM30", "YMM30", "ZMM30"];
+            cache[Rn.XMM31] = cache[Rn.YMM31] = cache[Rn.ZMM31] = ["XMM31", "YMM31", "ZMM31"];
+            return cache;
+        }
 
         /// <summary>Static class initializer for RegisterTools</summary>
         static RegisterTools()
@@ -117,59 +173,12 @@ public enum RegisterType
         public static string[] GetRelatedRegisterNew(Rn reg)
         {
             // NOTE: first return longer string before shorter string, such that the first match can be used.
-            return reg switch
-            {
-                Rn.RAX or Rn.EAX or Rn.AX or Rn.AL or Rn.AH => ["RAX", "EAX", "AX", "AH", "AL"],
-                Rn.RBX or Rn.EBX or Rn.BX or Rn.BL or Rn.BH => ["RBX", "EBX", "BX", "BH", "BL"],
-                Rn.RCX or Rn.ECX or Rn.CX or Rn.CL or Rn.CH => ["RCX", "ECX", "CX", "CH", "CL"],
-                Rn.RDX or Rn.EDX or Rn.DX or Rn.DL or Rn.DH => ["RDX", "EDX", "DX", "DH", "DL"],
-                Rn.RSI or Rn.ESI or Rn.SI or Rn.SIL => ["RSI", "ESI", "SIL", "SI",],
-                Rn.RDI or Rn.EDI or Rn.DI or Rn.DIL => ["RDI", "EDI", "DIL", "DI"],
-                Rn.RBP or Rn.EBP or Rn.BP or Rn.BPL => ["RBP", "EBP", "BPL", "BP"],
-                Rn.RSP or Rn.ESP or Rn.SP or Rn.SPL => ["RSP", "ESP", "SPL", "SP"],
-                Rn.R8 or Rn.R8D or Rn.R8W or Rn.R8B => ["R8D", "R8W", "R8B", "R8"],
-                Rn.R9 or Rn.R9D or Rn.R9W or Rn.R9B => ["R9D", "R9W", "R9B", "R9"],
-                Rn.R10 or Rn.R10D or Rn.R10W or Rn.R10B => ["R10D", "R10W", "R10B", "R10"],
-                Rn.R11 or Rn.R11D or Rn.R11W or Rn.R11B => ["R11D", "R11W", "R11B", "R11"],
-                Rn.R12 or Rn.R12D or Rn.R12W or Rn.R12B => ["R12D", "R12W", "R12B", "R12"],
-                Rn.R13 or Rn.R13D or Rn.R13W or Rn.R13B => ["R13D", "R13W", "R13B", "R13"],
-                Rn.R14 or Rn.R14D or Rn.R14W or Rn.R14B => ["R14D", "R14W", "R14B", "R14"],
-                Rn.R15 or Rn.R15D or Rn.R15W or Rn.R15B => ["R15D", "R15W", "R15B", "R15"],
-                Rn.XMM0 or Rn.YMM0 or Rn.ZMM0 => ["XMM0", "YMM0", "ZMM0"],
-                Rn.XMM1 or Rn.YMM1 or Rn.ZMM1 => ["XMM1", "YMM1", "ZMM1"],
-                Rn.XMM2 or Rn.YMM2 or Rn.ZMM2 => ["XMM2", "YMM2", "ZMM2"],
-                Rn.XMM3 or Rn.YMM3 or Rn.ZMM3 => ["XMM3", "YMM3", "ZMM3"],
-                Rn.XMM4 or Rn.YMM4 or Rn.ZMM4 => ["XMM4", "YMM4", "ZMM4"],
-                Rn.XMM5 or Rn.YMM5 or Rn.ZMM5 => ["XMM5", "YMM5", "ZMM5"],
-                Rn.XMM6 or Rn.YMM6 or Rn.ZMM6 => ["XMM6", "YMM6", "ZMM6"],
-                Rn.XMM7 or Rn.YMM7 or Rn.ZMM7 => ["XMM7", "YMM7", "ZMM7"],
-                Rn.XMM8 or Rn.YMM8 or Rn.ZMM8 => ["XMM8", "YMM8", "ZMM8"],
-                Rn.XMM9 or Rn.YMM9 or Rn.ZMM9 => ["XMM9", "YMM9", "ZMM9"],
-                Rn.XMM10 or Rn.YMM10 or Rn.ZMM10 => ["XMM10", "YMM10", "ZMM10"],
-                Rn.XMM11 or Rn.YMM11 or Rn.ZMM11 => ["XMM11", "YMM11", "ZMM11"],
-                Rn.XMM12 or Rn.YMM12 or Rn.ZMM12 => ["XMM12", "YMM12", "ZMM12"],
-                Rn.XMM13 or Rn.YMM13 or Rn.ZMM13 => ["XMM13", "YMM13", "ZMM13"],
-                Rn.XMM14 or Rn.YMM14 or Rn.ZMM14 => ["XMM14", "YMM14", "ZMM14"],
-                Rn.XMM15 or Rn.YMM15 or Rn.ZMM15 => ["XMM15", "YMM15", "ZMM15"],
-                Rn.XMM16 or Rn.YMM16 or Rn.ZMM16 => ["XMM16", "YMM16", "ZMM16"],
-                Rn.XMM17 or Rn.YMM17 or Rn.ZMM17 => ["XMM17", "YMM17", "ZMM17"],
-                Rn.XMM18 or Rn.YMM18 or Rn.ZMM18 => ["XMM18", "YMM18", "ZMM18"],
-                Rn.XMM19 or Rn.YMM19 or Rn.ZMM19 => ["XMM19", "YMM19", "ZMM19"],
-                Rn.XMM20 or Rn.YMM20 or Rn.ZMM20 => ["XMM20", "YMM20", "ZMM20"],
-                Rn.XMM21 or Rn.YMM21 or Rn.ZMM21 => ["XMM21", "YMM21", "ZMM21"],
-                Rn.XMM22 or Rn.YMM22 or Rn.ZMM22 => ["XMM22", "YMM22", "ZMM22"],
-                Rn.XMM23 or Rn.YMM23 or Rn.ZMM23 => ["XMM23", "YMM23", "ZMM23"],
-                Rn.XMM24 or Rn.YMM24 or Rn.ZMM24 => ["XMM24", "YMM24", "ZMM24"],
-                Rn.XMM25 or Rn.YMM25 or Rn.ZMM25 => ["XMM25", "YMM25", "ZMM25"],
-                Rn.XMM26 or Rn.YMM26 or Rn.ZMM26 => ["XMM26", "YMM26", "ZMM26"],
-                Rn.XMM27 or Rn.YMM27 or Rn.ZMM27 => ["XMM27", "YMM27", "ZMM27"],
-                Rn.XMM28 or Rn.YMM28 or Rn.ZMM28 => ["XMM28", "YMM28", "ZMM28"],
-                Rn.XMM29 or Rn.YMM29 or Rn.ZMM29 => ["XMM29", "YMM29", "ZMM29"],
-                Rn.XMM30 or Rn.YMM30 or Rn.ZMM30 => ["XMM30", "YMM30", "ZMM30"],
-                Rn.XMM31 or Rn.YMM31 or Rn.ZMM31 => ["XMM31", "YMM31", "ZMM31"],
-                _ => [],
-            };
+            return RelatedRegisterNewCache.TryGetValue(reg, out string[]? cached) ? cached : ["UNKNOWN"];
         }
+
+        /// <summary>
+        /// return regular pattern to select the provided register and aliased register names
+        /// </summary>
 
         /// <summary>
         /// return regular pattern to select the provided register and aliased register names
