@@ -20,21 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2LS
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+using AsmTools;
+
+using Microsoft.VisualStudio.LanguageServer.Protocol;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
+
+namespace AsmDude2LS;
+
+public sealed class LabelGraph
 {
-    using AsmTools;
-
-    using Microsoft.VisualStudio.LanguageServer.Protocol;
-
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-
-    using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
-
-    public sealed class LabelGraph
-    {
         #region Fields
         private readonly AsmLanguageServerOptions options;
 
@@ -292,7 +293,7 @@ namespace AsmDude2LS
         {
             AssemblerEnum usedAssembler = this.options.Used_Assembler;
 
-            (object _, string label, Mnemonic mnemonic, string[] args, string _) = AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
+            (object _, string label, Mnemonic mnemonic, string[] args, string _) = AsmSourceToolsAlias.ParseLine(lineStr, lineNumber, fileID);
 
             if (label.Length > 0)
             {
@@ -314,7 +315,7 @@ namespace AsmDude2LS
                 }
                 this.hasDef_.Add(labelID);
             }
-            if (AsmSourceTools.IsJump(mnemonic))
+            if (AsmSourceToolsAlias.IsJump(mnemonic))
             {
                 if (args.Length > 0)
                 {
@@ -432,5 +433,4 @@ namespace AsmDude2LS
         }
 
         #endregion Private Methods
-    }
 }

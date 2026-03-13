@@ -20,12 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2LS
+namespace AsmDude2LS;
+
+public class AsmCodeLensData
 {
-    public class AsmCodeLensData
-    {
-        public required string Label { get; set; }
-        public int DefinitionLine { get; set; }
-        public required int[] ReferenceLines { get; set; }
-    }
+    public required string Label { get; set; }
+    public int DefinitionLine { get; set; }
+    public required int[] ReferenceLines { get; set; }
 }

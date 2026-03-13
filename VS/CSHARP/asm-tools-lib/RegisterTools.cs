@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
-    using System.Collections.Generic;
+namespace AsmTools;
 
-    public enum RegisterType
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+using System;
+using System.Collections.Generic;
+
+public enum RegisterType
     {
         UNKNOWN,
         BIT8,
@@ -72,7 +73,7 @@ namespace AsmTools
             if (string.IsNullOrEmpty(str))
                 return Rn.NOREG;
             
-            string key = AsmSourceTools.ToCapitals(str, strIsCapitals);
+            string key = AsmSourceToolsAlias.ToCapitals(str, strIsCapitals);
             return Register_cache_.TryGetValue(key, out Rn value) ? value : Rn.NOREG;
         }
 
@@ -81,7 +82,7 @@ namespace AsmTools
             if (string.IsNullOrEmpty(str))
                 return false;
             
-            string key = AsmSourceTools.ToCapitals(str, strIsCapitals);
+            string key = AsmSourceToolsAlias.ToCapitals(str, strIsCapitals);
             return Register_cache_.ContainsKey(key);
         }
 
@@ -240,7 +241,7 @@ namespace AsmTools
 
         public static bool IsRegister(string keyword, bool strIsCapitals = false)
         {
-            return Register_cache_.ContainsKey(AsmSourceTools.ToCapitals(keyword, strIsCapitals));
+            return Register_cache_.ContainsKey(AsmSourceToolsAlias.ToCapitals(keyword, strIsCapitals));
         }
 
         public static RegisterType GetRegisterType(Rn rn)
@@ -984,5 +985,4 @@ namespace AsmTools
             };
         }
         #endregion
-    }
 }

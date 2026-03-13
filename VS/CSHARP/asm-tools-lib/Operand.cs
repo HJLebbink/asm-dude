@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
+namespace AsmTools;
 
-    public readonly struct CapitalToken
+using System;
+
+public readonly struct CapitalToken
     {
         public readonly string _data;
 
@@ -177,4 +177,3 @@ namespace AsmTools
             return this.str_._data.ToString();
         }
     }
-}

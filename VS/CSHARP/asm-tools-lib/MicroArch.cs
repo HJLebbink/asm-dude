@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
+namespace AsmTools;
 
-    [Flags]
-    public enum MicroArch
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+using System;
+
+[Flags]
+public enum MicroArch
     {
         NONE = 0,
         SandyBridge = 1 << 0,
@@ -49,7 +50,7 @@ namespace AsmTools
         {
             ArgumentNullException.ThrowIfNull(str);
 
-            return ToCapitals(str, strIsCapitals) switch
+            return AsmSourceToolsAlias.ToCapitals(str, strIsCapitals) switch
             {
                 "SANDYBRIDGE" => MicroArch.SandyBridge,
                 "IVYBRIDGE" => MicroArch.IvyBridge,
@@ -66,5 +67,4 @@ namespace AsmTools
                 _ => MicroArch.NONE,
             };
         }
-    }
 }

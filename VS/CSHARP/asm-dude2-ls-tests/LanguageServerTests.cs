@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+namespace AsmDude2LS.Tests;
+
 using AsmTools;
 
 using FluentAssertions;
@@ -27,8 +29,6 @@ using FluentAssertions;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using Xunit;
-
-namespace AsmDude2LS.Tests;
 
 /// <summary>
 /// Tests for LanguageServer - the main LSP server implementation
@@ -1045,5 +1045,4 @@ add rcx, rdx
     }
 
     #endregion
-
 }

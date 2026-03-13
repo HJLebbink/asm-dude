@@ -20,14 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
-    using System.Xml;
+namespace AsmTools;
+
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Xml;
 
     public sealed class AsmDude2Tools : IDisposable
     {
@@ -101,15 +103,15 @@ namespace AsmTools
             #endregion
             #region Test if keyword is an instruction
             {
-                (Mnemonic mnemonic, _) = AsmSourceTools.ParseMnemonic_Att(keyword, true);
+                (Mnemonic mnemonic, _) = AsmSourceToolsAlias.ParseMnemonic_Att(keyword, true);
                 if (mnemonic != Mnemonic.NONE)
                 {
                     //TODO
                     // return (this.MnemonicSwitchedOn(mnemonic))
-                    //     ? AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
-                    //     : AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
+                    //     ? AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
+                    //     : AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
 
-                    return AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                    return AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
                 }
             }
             #endregion
@@ -122,15 +124,15 @@ namespace AsmTools
             ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
-            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
+            Mnemonic mnemonic = AsmSourceToolsAlias.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
             {
                 //TODO
                 //return (this.MnemonicSwitchedOn(mnemonic))
-                //    ? AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
-                //    : AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
+                //    ? AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
+                //    : AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
 
-                return AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                return AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
             Rn reg = RegisterTools.ParseRn(keyword, true);
             if (reg != Rn.NOREG)
@@ -370,7 +372,7 @@ namespace AsmTools
                         XmlAttribute archAttribute = attColl["tool"];
                         if (archAttribute != null)
                         {
-                            return AsmSourceTools.ParseAssembler(archAttribute.Value, false);
+                            return AsmSourceToolsAlias.ParseAssembler(archAttribute.Value, false);
                         }
                     }
                 }
@@ -420,4 +422,3 @@ namespace AsmTools
         }
         #endregion
     }
-}

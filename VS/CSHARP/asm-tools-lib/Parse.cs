@@ -22,14 +22,17 @@
 
 using System.Globalization;
 
-namespace AsmTools
-{
-    public class Parse
+namespace AsmTools;
+
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+using AsmToolsAlias = AsmTools;
+
+public class Parse
     {
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseNasmIntel(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceTools.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
             int nKeywords = pos.Count;
 
             for (int k = 0; k < nKeywords; k++)
@@ -40,7 +43,7 @@ namespace AsmTools
                     continue;
                 }
 
-                string keyword_uppercase = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                string keyword_uppercase = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                 AsmTokenType keywordType = asmDudeTools.Get_Token_Type_Intel(keyword_uppercase);
                 switch (keywordType)
                 {
@@ -54,7 +57,7 @@ namespace AsmTools
                                 break; // there are no next words
                             }
 
-                            string asmToken2 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                            string asmToken2 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                             switch (asmToken2)
                             {
                                 case "WORD":
@@ -71,7 +74,7 @@ namespace AsmTools
                                             break;
                                         }
 
-                                        string asmToken3 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                                        string asmToken3 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                         if (asmToken3.Equals("PTR", StringComparison.Ordinal))
                                         {
                                             yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
@@ -88,7 +91,7 @@ namespace AsmTools
                                         {
                                             yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Register);
                                         }
-                                        else if (AsmSourceTools.Evaluate_Constant(asmToken2, true).valid)
+                                        else if (AsmSourceToolsAlias.Evaluate_Constant(asmToken2, true).valid)
                                         {
                                             yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                                         }
@@ -104,8 +107,8 @@ namespace AsmTools
                         }
                     case AsmTokenType.UNKNOWN: // keyword_uppercase is not a known keyword, check if it is numerical
                         {
-                            if (AsmSourceTools.Evaluate_Constant(keyword_uppercase, true).valid)
-                            //if (AsmSourceTools.Parse_Constant(keyword_uppercase, true).Valid)
+                            if (AsmSourceToolsAlias.Evaluate_Constant(keyword_uppercase, true).valid)
+                            //if (AsmSourceToolsAlias.Parse_Constant(keyword_uppercase, true).Valid)
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
@@ -121,7 +124,7 @@ namespace AsmTools
                                 if ((k + 1) < nKeywords)
                                 {
                                     k++;
-                                    string nextKeyword = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                                    string nextKeyword = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                     switch (nextKeyword)
                                     {
                                         case "LABEL":
@@ -142,7 +145,7 @@ namespace AsmTools
                                 // do one word look back; see whether we can understand the current unknown word
                                 if (k > 0)
                                 {
-                                    string previousKeyword = AsmSourceTools.Keyword(pos[k - 1], line_uppercase);
+                                    string previousKeyword = AsmSourceToolsAlias.Keyword(pos[k - 1], line_uppercase);
                                     switch (previousKeyword)
                                     {
                                         case "ALIAS":
@@ -191,7 +194,7 @@ namespace AsmTools
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseNasmAtt(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceTools.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
             int nKeywords = pos.Count;
 
             for (int k = 0; k < nKeywords; k++)
@@ -202,7 +205,7 @@ namespace AsmTools
                     continue;
                 }
 
-                string keyword_uppercase = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                string keyword_uppercase = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                 AsmTokenType keywordType = asmDudeTools.Get_Token_Type_Att(keyword_uppercase);
                 switch (keywordType)
                 {
@@ -216,7 +219,7 @@ namespace AsmTools
                                 break; // there are no next words                                 
                             }
 
-                            string asmToken2 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                            string asmToken2 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                             switch (asmToken2)
                             {
                                 case "WORD":
@@ -233,7 +236,7 @@ namespace AsmTools
                                             break;
                                         }
 
-                                        string asmToken3 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                                        string asmToken3 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                         if (asmToken3.Equals("PTR", StringComparison.Ordinal))
                                         {
                                             yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
@@ -251,7 +254,7 @@ namespace AsmTools
                                         {
                                             yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Register);
                                         }
-                                        else if (AsmSourceTools.Evaluate_Constant(asmToken2, true).valid)
+                                        else if (AsmSourceToolsAlias.Evaluate_Constant(asmToken2, true).valid)
                                         {
                                             yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                                         }
@@ -266,7 +269,7 @@ namespace AsmTools
                         }
                     case AsmTokenType.UNKNOWN: // keyword_uppercase is not a known keyword, check if it is numerical
                         {
-                            if (AsmSourceTools.Evaluate_Constant(keyword_uppercase, true).valid)
+                            if (AsmSourceToolsAlias.Evaluate_Constant(keyword_uppercase, true).valid)
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
@@ -286,7 +289,7 @@ namespace AsmTools
                                 if ((k + 1) < nKeywords)
                                 {
                                     k++;
-                                    string nextKeyword = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                                    string nextKeyword = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                     switch (nextKeyword)
                                     {
                                         case "LABEL":
@@ -307,7 +310,7 @@ namespace AsmTools
                                 // do one word look back; see whether we can understand the current unknown word
                                 if (k > 0)
                                 {
-                                    string previousKeyword = AsmSourceTools.Keyword(pos[k - 1], line_uppercase);
+                                    string previousKeyword = AsmSourceToolsAlias.Keyword(pos[k - 1], line_uppercase);
                                     switch (previousKeyword)
                                     {
                                         case "ALIAS":
@@ -357,7 +360,7 @@ namespace AsmTools
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseMasm(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceTools.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
             int nKeywords = pos.Count;
 
             for (int k = 0; k < nKeywords; k++)
@@ -368,7 +371,7 @@ namespace AsmTools
                     continue;
                 }
 
-                string keyword_uppercase = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                string keyword_uppercase = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                 AsmTokenType keywordType = asmDudeTools.Get_Token_Type_Att(keyword_uppercase);
                 switch (keywordType)
                 {
@@ -382,7 +385,7 @@ namespace AsmTools
                                 break;
                             }
 
-                            string asmToken2 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                            string asmToken2 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                             switch (asmToken2)
                             {
                                 case "$":
@@ -407,7 +410,7 @@ namespace AsmTools
                                             break;
                                         }
 
-                                        string asmToken3 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                                        string asmToken3 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                         switch (asmToken3)
                                         {
                                             case "$":
@@ -448,8 +451,8 @@ namespace AsmTools
                         }
                     case AsmTokenType.UNKNOWN: // keyword_uppercase is not a known keyword, check if it is numerical
                         {
-                            if (AsmSourceTools.Evaluate_Constant(keyword_uppercase, true).valid)
-                            //if (AsmTools.AsmSourceTools.Parse_Constant(keyword_uppercase, true).Valid)
+                            if (AsmSourceToolsAlias.Evaluate_Constant(keyword_uppercase, true).valid)
+                            //if (AsmTools.AsmSourceToolsAlias.Parse_Constant(keyword_uppercase, true).Valid)
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
@@ -465,7 +468,7 @@ namespace AsmTools
                                 if ((k + 1) < nKeywords)
                                 {
                                     k++;
-                                    string nextKeyword = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                                    string nextKeyword = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                     switch (nextKeyword)
                                     {
                                         case "PROC":
@@ -495,7 +498,7 @@ namespace AsmTools
                                 // do one word look back; see whether we can understand the current unknown word
                                 if (k > 0)
                                 {
-                                    string previousKeyword = AsmSourceTools.Keyword(pos[k - 1], line_uppercase);
+                                    string previousKeyword = AsmSourceToolsAlias.Keyword(pos[k - 1], line_uppercase);
                                     switch (previousKeyword)
                                     {
                                         case "ALIAS":
@@ -571,7 +574,7 @@ namespace AsmTools
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseDisassembly(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceTools.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
 
             // if the line does not contain a Mnemonic, assume it is a source code line and make it a remark
             if (IsSourceCode(line_uppercase, pos))
@@ -588,7 +591,7 @@ namespace AsmTools
                     continue;
                 }
 
-                string asmToken = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                string asmToken = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                 AsmTokenType keywordType = asmDudeTools.Get_Token_Type_Intel(asmToken);
                 switch (keywordType)
                 {
@@ -602,7 +605,7 @@ namespace AsmTools
                                 break; // there are no next words
                             }
 
-                            string asmToken2 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                            string asmToken2 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                             switch (asmToken2)
                             {
                                 case "WORD":
@@ -619,7 +622,7 @@ namespace AsmTools
                                             break;
                                         }
 
-                                        string asmToken3 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                                        string asmToken3 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                         switch (asmToken3)
                                         {
                                             case "PTR":
@@ -686,7 +689,7 @@ namespace AsmTools
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseAttDisassembly(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceTools.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
 
             // if the line does not contain a Mnemonic, assume it is a source code line and make it a remark
             if (IsSourceCode(line_uppercase, pos))
@@ -703,7 +706,7 @@ namespace AsmTools
                     continue;
                 }
 
-                string asmToken = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                string asmToken = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                 AsmTokenType keywordType = asmDudeTools.Get_Token_Type_Att(asmToken);
                 switch (keywordType)
                 {
@@ -717,7 +720,7 @@ namespace AsmTools
                                 break; // there are no next words
                             }
 
-                            string asmToken2 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                            string asmToken2 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                             switch (asmToken2)
                             {
                                 case "WORD":
@@ -734,7 +737,7 @@ namespace AsmTools
                                             break;
                                         }
 
-                                        string asmToken3 = AsmSourceTools.Keyword(pos[k], line_uppercase);
+                                        string asmToken3 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                         switch (asmToken3)
                                         {
                                             case "PTR":
@@ -753,7 +756,7 @@ namespace AsmTools
                                         {
                                             yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Register);
                                         }
-                                        else if (AsmSourceTools.Evaluate_Constant(asmToken2, true).valid)
+                                        else if (AsmSourceToolsAlias.Evaluate_Constant(asmToken2, true).valid)
                                         {
                                             yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                                         }
@@ -768,7 +771,7 @@ namespace AsmTools
                         }
                     case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                         {
-                            if (AsmSourceTools.Evaluate_Constant(asmToken, true).valid)
+                            if (AsmSourceToolsAlias.Evaluate_Constant(asmToken, true).valid)
                             {
                                 yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
                             }
@@ -843,8 +846,8 @@ namespace AsmTools
             }
             foreach ((int beginPos, int length, AsmTokenType t) v in pos)
             {
-                string asmToken = AsmSourceTools.Keyword(v, line);
-                if (AsmSourceTools.IsMnemonic(asmToken, true))
+                string asmToken = AsmSourceToolsAlias.Keyword(v, line);
+                if (AsmSourceToolsAlias.IsMnemonic(asmToken, true))
                 {
                     return false; // found an assembly instruction, think this is assembly code
                 }
@@ -868,7 +871,6 @@ namespace AsmTools
             }
             return false;
         }
-    }
 }
 
 

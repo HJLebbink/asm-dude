@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
-    using System.Collections.Generic;
+namespace AsmTools;
 
-    public enum Mnemonic
+using System;
+using System.Collections.Generic;
+
+public enum Mnemonic
     {
         NONE,
         /// <summary>Halt the CPU</summary>
@@ -2594,4 +2594,3 @@ namespace AsmTools
             return IsMnemonic(str2.Substring(0, length - 1), true);
         }
     }
-}

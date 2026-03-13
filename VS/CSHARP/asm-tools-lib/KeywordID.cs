@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    public readonly struct KeywordID
+namespace AsmTools;
+
+public readonly struct KeywordID
     {
         private readonly ulong data;
 
@@ -89,4 +89,3 @@ namespace AsmTools
             return $"KeywordID({this.LineNumber}, {this.File_Id}, {this.Start_Pos}, {this.End_Pos}, {this.Type})";
         }
     }
-}

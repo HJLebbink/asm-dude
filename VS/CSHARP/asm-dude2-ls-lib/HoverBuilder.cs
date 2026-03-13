@@ -26,93 +26,92 @@ using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 using System.Collections.Generic;
 
-namespace AsmDude2LS
+namespace AsmDude2LS;
+
+/// <summary>
+/// Builds hover responses with clickable hyperlinks using VSInternalHover
+/// </summary>
+public static class HoverBuilder
 {
     /// <summary>
-    /// Builds hover responses with clickable hyperlinks using VSInternalHover
+    /// Create a hover with clickable hyperlink using VSInternalHover.
+    /// This uses custom types that serialize to VS-compatible JSON.
     /// </summary>
-    public static class HoverBuilder
+    /// <param name="keyword">The mnemonic/keyword text to display as link</param>
+    /// <param name="url">The URL to navigate to when clicked (can be null)</param>
+    /// <param name="description">The description text to show</param>
+    /// <param name="line">Line number (0-based)</param>
+    /// <param name="startChar">Start character position (0-based)</param>
+    /// <param name="endChar">End character position (0-based)</param>
+    /// <returns>VSInternalHover with clickable link if URL provided</returns>
+    public static VSInternalHover CreateHoverWithLink(string keyword, string? url, string description, int line, int startChar, int endChar)
     {
-        /// <summary>
-        /// Create a hover with clickable hyperlink using VSInternalHover.
-        /// This uses custom types that serialize to VS-compatible JSON.
-        /// </summary>
-        /// <param name="keyword">The mnemonic/keyword text to display as link</param>
-        /// <param name="url">The URL to navigate to when clicked (can be null)</param>
-        /// <param name="description">The description text to show</param>
-        /// <param name="line">Line number (0-based)</param>
-        /// <param name="startChar">Start character position (0-based)</param>
-        /// <param name="endChar">End character position (0-based)</param>
-        /// <returns>VSInternalHover with clickable link if URL provided</returns>
-        public static VSInternalHover CreateHoverWithLink(string keyword, string? url, string description, int line, int startChar, int endChar)
+        var runs = new List<ClassifiedTextRun>();
+
+        // Create hyperlink run if URL exists
+        if (!string.IsNullOrEmpty(url))
         {
-            var runs = new List<ClassifiedTextRun>();
-
-            // Create hyperlink run if URL exists
-            if (!string.IsNullOrEmpty(url))
-            {
-                runs.Add(new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, keyword, url));
-            }
-            else
-            {
-                runs.Add(new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, keyword));
-            }
-
-            // Add description
-            if (!string.IsNullOrEmpty(description))
-            {
-                runs.Add(new ClassifiedTextRun(PredefinedClassificationTypeNames.Text, ": " + description));
-            }
-
-            // Create classified text element
-            var textElement = new ClassifiedTextElement([.. runs]);
-
-            // Create container
-            var container = new ContainerElement(ContainerElementStyle.Wrapped, textElement);
-
-            // Create VSInternalHover with both standard Contents and RawContent
-            var hover = new VSInternalHover
-            {
-                // Standard LSP content (for non-VS clients)
-                Contents = new MarkupContent
-                {
-                    Kind = MarkupKind.Markdown,
-                    Value = !string.IsNullOrEmpty(url) ? $"[{keyword}]({url}): {description}" : $"{keyword}: {description}"
-                },
-                // Range of the hovered text
-                Range = new Range
-                {
-                    Start = new Position(line, startChar),
-                    End = new Position(line, endChar)
-                },
-                // VS-specific RawContent with clickable hyperlink
-                RawContent = container
-            };
-
-            return hover;
+            runs.Add(new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, keyword, url));
+        }
+        else
+        {
+            runs.Add(new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, keyword));
         }
 
-        /// <summary>
-        /// Create a standard hover without hyperlink
-        /// </summary>
-        public static Hover CreateStandardHover(string content, int line, int startChar, int endChar)
+        // Add description
+        if (!string.IsNullOrEmpty(description))
         {
-            // Use MarkupContent instead of deprecated MarkedString
-            var markupContent = new MarkupContent
+            runs.Add(new ClassifiedTextRun(PredefinedClassificationTypeNames.Text, ": " + description));
+        }
+
+        // Create classified text element
+        var textElement = new ClassifiedTextElement([.. runs]);
+
+        // Create container
+        var container = new ContainerElement(ContainerElementStyle.Wrapped, textElement);
+
+        // Create VSInternalHover with both standard Contents and RawContent
+        var hover = new VSInternalHover
+        {
+            // Standard LSP content (for non-VS clients)
+            Contents = new MarkupContent
             {
                 Kind = MarkupKind.Markdown,
-                Value = content
-            };
-
-            return new Hover
+                Value = !string.IsNullOrEmpty(url) ? $"[{keyword}]({url}): {description}" : $"{keyword}: {description}"
+            },
+            // Range of the hovered text
+            Range = new Range
             {
-                Contents = markupContent,
-                Range = new Range
-                {
-                    Start = new Position(line, startChar),
-                    End = new Position(line, endChar)
-                }
-            };
-        }
+                Start = new Position(line, startChar),
+                End = new Position(line, endChar)
+            },
+            // VS-specific RawContent with clickable hyperlink
+            RawContent = container
+        };
+
+        return hover;
+    }
+
+    /// <summary>
+    /// Create a standard hover without hyperlink
+    /// </summary>
+    public static Hover CreateStandardHover(string content, int line, int startChar, int endChar)
+    {
+        // Use MarkupContent instead of deprecated MarkedString
+        var markupContent = new MarkupContent
+        {
+            Kind = MarkupKind.Markdown,
+            Value = content
+        };
+
+        return new Hover
+        {
+            Contents = markupContent,
+            Range = new Range
+            {
+                Start = new Position(line, startChar),
+                End = new Position(line, endChar)
+            }
+        };
     }
 }

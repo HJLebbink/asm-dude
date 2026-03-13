@@ -20,14 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmSourceTools
-{
-    using AsmTools;
+namespace AsmSourceTools;
 
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Text;
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+using AsmTools;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 
     public enum AsmSignatureEnum
     {
@@ -975,11 +976,14 @@ namespace AsmSourceTools
                         return true;
                     }
 
-                    break;
-                default:
-                    break;
-            }
-            return false;
-        }
-    }
-}
+                     break;
+                 default:
+                     break;
+             }
+             return false;
+         }
+     }
+
+
+
+

@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
-    using System.ComponentModel;
-    using System.Text;
+namespace AsmTools;
+
+using System;
+using System.ComponentModel;
+using System.Text;
 
     /// <summary>
     /// Operand Type: reg, mem, imm, UNKNOWN
@@ -256,4 +256,3 @@ namespace AsmTools
             return (Ot3)(((byte)ot1) | (((byte)ot2) << 4) | (((byte)ot3) << 8));
         }
     }
-}

@@ -20,13 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
-    using System.Globalization;
-    using System.Linq;
+namespace AsmTools;
+
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+
+using System;
+using System.Globalization;
+using System.Linq;
 #if NET10_0_OR_GREATER
-    using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 #endif
 
     public static class ExpressionEvaluator
@@ -177,7 +179,7 @@ namespace AsmTools
                 parsedSuccessfully = false;
             }
 
-            int nBits = parsedSuccessfully ? AsmSourceTools.NBitsStorageNeeded(value, isNegative) : -1;
+            int nBits = parsedSuccessfully ? AsmSourceToolsAlias.NBitsStorageNeeded(value, isNegative) : -1;
             return (valid: parsedSuccessfully, value, nBits);
         }
 
@@ -209,7 +211,7 @@ namespace AsmTools
                     System.Threading.Tasks.Task<ulong> t = CSharpScript.EvaluateAsync<ulong>(str);
                     ulong value = t.Result;
                     bool isNegative = false;
-                    return (valid: true, value, nBits: AsmSourceTools.NBitsStorageNeeded(value, isNegative));
+                    return (valid: true, value, nBits: AsmSourceToolsAlias.NBitsStorageNeeded(value, isNegative));
                 }
                 catch (Exception)
                 {
@@ -221,4 +223,3 @@ namespace AsmTools
         }
 #endif
     }
-}

@@ -20,18 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2LS
+using AsmTools;
+
+using System;
+using System.Diagnostics;
+using System.IO;
+
+namespace AsmDude2LS;
+
+public static partial class Tools
 {
-    using AsmTools;
-
-    using System;
-    using System.Diagnostics;
-    using System.IO;
-
-    public static partial class Tools
-    {
-
-        public static TraceSource CreateTraceSource()
+    public static TraceSource CreateTraceSource()
         {
             var traceSource = new TraceSource("AsmDude2", SourceLevels.Verbose | SourceLevels.ActivityTracing);
             var traceFileDirectoryPath = Path.Combine(Path.GetTempPath(), "VSLogs", "AsmDude2");
@@ -122,5 +121,4 @@ namespace AsmDude2LS
 
         [System.Text.RegularExpressions.GeneratedRegex(@"\s+")]
         private static partial System.Text.RegularExpressions.Regex MyRegex();
-    }
 }

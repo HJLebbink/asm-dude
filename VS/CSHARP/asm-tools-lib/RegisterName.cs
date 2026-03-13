@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    /// <summary>Register Name Enumeration</summary>
-    public enum Rn
+namespace AsmTools;
+
+/// <summary>Register Name Enumeration</summary>
+public enum Rn
     {
         NOREG,
         RAX, EAX, AX, AL, AH,
@@ -71,4 +71,3 @@ namespace AsmTools
         DR0, DR1, DR2, DR3, DR4, DR5, DR6, DR7,
         BND0, BND1, BND2, BND3,
     }
-}

@@ -22,12 +22,12 @@
 
 using Microsoft.VisualStudio.Extensibility;
 
-namespace AsmDude2
-{
-    /// <summary>
-    /// Extension entry point for AsmDude3
-    /// Provides assembly language support via LSP (Language Server Protocol)
-    /// </summary>
+namespace AsmDude2;
+
+/// <summary>
+/// Extension entry point for AsmDude3
+/// Provides assembly language support via LSP (Language Server Protocol)
+/// </summary>
     [VisualStudioContribution]
     public class Extension : Microsoft.VisualStudio.Extensibility.Extension
     {
@@ -47,5 +47,4 @@ namespace AsmDude2
         {
             base.Dispose(disposing);
         }
-    }
 }

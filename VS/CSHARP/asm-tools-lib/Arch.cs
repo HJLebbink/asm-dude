@@ -20,11 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+namespace AsmTools;
+
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+
+using System;
+using System.Collections.Generic;
+using System.Text;
 
     public enum Arch
     {
@@ -242,7 +244,7 @@ namespace AsmTools
         {
             ArgumentNullException.ThrowIfNull(str);
 
-            string str2 = AsmSourceTools.ToCapitals(str, strIsCapitals).Replace("_", string.Empty);
+            string str2 = AsmSourceToolsAlias.ToCapitals(str, strIsCapitals).Replace("_", string.Empty);
             switch (str2)
             {
                 case "NONE": return Arch.ARCH_NONE;
@@ -559,6 +561,5 @@ namespace AsmTools
                     break;
             }
             return arch.ToString();
-        }
     }
 }

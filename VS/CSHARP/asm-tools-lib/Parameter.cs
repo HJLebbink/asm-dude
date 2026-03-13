@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    public class AsmParameters
+namespace AsmTools;
+
+public class AsmParameters
     {
         public bool assume_initial_known_mem { get; private set; }
 
@@ -41,4 +41,3 @@ namespace AsmTools
             this.Mode_16bit = false;
         }
     }
-}

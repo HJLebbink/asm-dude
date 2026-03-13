@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    public enum NumerationEnum
+namespace AsmTools;
+
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+
+public enum NumerationEnum
     {
         UNKNOWN,
         HEX,
@@ -39,7 +41,7 @@ namespace AsmTools
             {
                 return NumerationEnum.UNKNOWN;
             }
-            return ToCapitals(str, strIsCapitals).Trim() switch
+            return AsmSourceToolsAlias.ToCapitals(str, strIsCapitals).Trim() switch
             {
                 "HEX" => NumerationEnum.HEX,
                 "BIN" => NumerationEnum.BIN,
@@ -47,6 +49,5 @@ namespace AsmTools
                 "OCT" => NumerationEnum.OCT,
                 _ => NumerationEnum.UNKNOWN,
             };
-        }
     }
 }

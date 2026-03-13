@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
+namespace AsmTools;
+
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+
+using System;
 
     [Flags]
     public enum AssemblerEnum
@@ -54,6 +56,5 @@ namespace AsmTools
                 }
             }
             return result;
-        }
     }
 }

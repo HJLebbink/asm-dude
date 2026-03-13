@@ -351,7 +351,7 @@ namespace AsmDude2LS
             try
             {
                 (AsmTools.KeywordID[] _, string _label, Mnemonic mnemonic, string[] args, string _remark)
-                    = AsmSourceTools.ParseLine(line, -1, -1);
+                    = AsmTools.AsmSourceTools.ParseLine(line, -1, -1);
 
                 if (mnemonic == Mnemonic.NONE)
                     return;

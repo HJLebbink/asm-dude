@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+namespace AsmTools;
+
+using System;
+using System.Collections.Generic;
+using System.Text;
 
     /// <summary>Flags, CF, PF, AF, ZF, SF, OF, DF, IF</summary>
     [Flags]
@@ -177,4 +177,3 @@ namespace AsmTools
             yield return Flags.OF;
         }
     }
-}

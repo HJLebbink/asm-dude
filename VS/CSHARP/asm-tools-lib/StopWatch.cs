@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+namespace AsmTools;
 
-    public class StopWatch
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+public class StopWatch
     {
         private readonly IDictionary<string, long> startTimeTicks_;
         private readonly IDictionary<string, double> totalTimeInSec_;
@@ -101,4 +101,3 @@ namespace AsmTools
             return sb.ToString();
         }
     }
-}
