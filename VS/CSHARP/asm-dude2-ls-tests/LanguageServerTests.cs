@@ -367,6 +367,53 @@ public class LanguageServerTests
 
     #endregion
 
+    #region Label Hover Tests
+
+    [Fact]
+    public void GetHover_WithLabelDef_ShouldReturnDefinitionInfo()
+    {
+        // Arrange
+        var uri = "file:///test.asm";
+        var labelDefText = @"loop_start:
+mov rax, rbx";
+        var openParams = new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = labelDefText
+            }
+        };
+        this._server.OnTextDocumentOpened(openParams);
+
+        var hoverParams = new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 5 } // Position on "loop_start"
+        };
+
+        // Act
+        var result = this._server.GetHover(hoverParams);
+
+        // Assert
+        result.Should().NotBeNull("hover on label definition should return info");
+        result.Should().BeOfType<Hover>();
+        var hover = (Hover)result;
+        hover.Contents.Should().NotBeNull();
+        var markup = (MarkupContent)hover.Contents!;
+        markup.Value.Should().Contain("loop_start", "should contain label name");
+        markup.Value.Should().Contain("Defined at line 1", "should contain line number");
+        markup.Value.Should().Contain("loop_start:", "should contain definition line content");
+    }
+
+    // Label reference hover requires more complex testing setup with label graph
+    // This test verifies the basic infrastructure works, but full label reference detection
+    // needs to be tested with the actual LSP integration tests which have proper setup
+
+    #endregion
+
     #region Signature Help Tests
 
     [Fact]

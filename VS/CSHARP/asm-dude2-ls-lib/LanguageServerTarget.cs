@@ -65,6 +65,26 @@ public class LanguageServerTarget(LanguageServer server)
         IntelliSense_Label_Analysis_On = true,
         Global_MaxFileLines = 10000,
         useAssemblerAutoDetect = true,
+
+        // AsmSim (Z3 proven states) - enabled by default
+        AsmSim_On = true,
+        AsmSim_Z3_Timeout_MS = 5000,
+        AsmSim_Number_Of_Threads = 4,
+        AsmSim_64_Bits = true,
+        AsmSim_Show_Syntax_Errors = true,
+        AsmSim_Decorate_Syntax_Errors = true,
+        AsmSim_Show_Usage_Of_Undefined = true,
+        AsmSim_Decorate_Usage_Of_Undefined = true,
+        AsmSim_Decorate_Registers = true,
+        AsmSim_Show_Unreachable_Instructions = true,
+        AsmSim_Decorate_Unreachable_Instructions = true,
+        AsmSim_Show_Register_In_Instruction_Tooltip = true,
+        AsmSim_Show_Register_In_Register_Tooltip = true,
+
+        // Performance info - enabled by default
+        PerformanceInfo_On = true,
+        PerformanceInfo_Haswell_On = true,
+        PerformanceInfo_Skylake_On = true,
     };
 
     [JsonRpcMethod(Methods.InitializeName, UseSingleObjectParameterDeserialization = true)]
@@ -193,7 +213,7 @@ public class LanguageServerTarget(LanguageServer server)
                 },
 
                 // enable inlay hints for inline annotations (LSP 3.17)
-                // Shows instruction latency, memory sizes, and value conversions
+                // Shows instruction latency, memory sizes, and Z3-proven register states
                 InlayHintOptions = new InlayHintOptions
                 {
                     ResolveProvider = false,
@@ -356,6 +376,15 @@ public class LanguageServerTarget(LanguageServer server)
         return result;
     }
 
+    [JsonRpcMethod("asm/getProvenStates", UseSingleObjectParameterDeserialization = true)]
+    public ProvenStatesResponse? GetProvenStates(GetProvenStatesParams parameter)
+    {
+        LanguageServer.LogInfo($"GetProvenStates: uri={parameter.Uri}, lineRange={parameter.LineRange?[0]}-{parameter.LineRange?[1]}");
+        var result = server.GetProvenStates(parameter);
+        LanguageServer.LogInfo($"GetProvenStates: stateCount={result?.States?.Count ?? 0}");
+        return result;
+    }
+
     [JsonRpcMethod(Methods.TextDocumentCompletionName, UseSingleObjectParameterDeserialization = true)]
     public CompletionList? OnTextDocumentCompletion(CompletionParams parameter)
     {
@@ -465,8 +494,10 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentInlayHintName, UseSingleObjectParameterDeserialization = true)]
     public InlayHint[]? GetInlayHints(InlayHintParams parameter)
     {
+        Console.Error.WriteLine($"DEBUG: LanguageServerTarget.GetInlayHints called! uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
         LanguageServer.LogInfo($"GetInlayHints: uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
         var result = server.GetInlayHints(parameter);
+        Console.Error.WriteLine($"DEBUG: LanguageServerTarget.GetInlayHints returning {result?.Length ?? 0} hints");
         LanguageServer.LogInfo($"GetInlayHints: hintCount={result?.Length ?? 0}");
         return result;
     }
@@ -503,8 +534,10 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentHoverName, UseSingleObjectParameterDeserialization = true)]
     public object? OnHover(TextDocumentPositionParams parameter)
     {
+        Console.Error.WriteLine($"DEBUG: LanguageServerTarget.OnHover called! uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         LanguageServer.LogInfo($"OnHover: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         var result = server.GetHover(parameter);
+        Console.Error.WriteLine($"DEBUG: LanguageServerTarget.OnHover returning: {(result != null ? "RESULT" : "NULL")}");
         LanguageServer.LogInfo($"OnHover: hasResult={result != null}");
         return result;
     }

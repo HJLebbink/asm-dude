@@ -83,7 +83,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="18.6.53" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.5.3" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="18.5.3" />
-	<PackageReference Include="StreamJsonRpc" Version="2.25.9" />
+	<PackageReference Include="StreamJsonRpc" Version="2.24.84" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />

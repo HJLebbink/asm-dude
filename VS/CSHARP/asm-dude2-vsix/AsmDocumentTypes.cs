@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
 
 namespace AsmDude2;
@@ -32,6 +33,7 @@ internal static class AsmDocumentTypes
     /// <summary>
     /// Base document type for language server (all files)
     /// </summary>
+    [VisualStudioContribution]
     internal static DocumentTypeConfiguration AsmDocumentType => new("asm")
     {
         FileExtensions = [".asm", ".cod", ".inc", ".s"],

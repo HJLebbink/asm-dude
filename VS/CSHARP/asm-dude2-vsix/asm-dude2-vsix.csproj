@@ -40,6 +40,9 @@
     <LangVersion>14</LangVersion>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
+
+    <!-- VisualStudio.Extensibility auto-deployment settings -->
+    <ExtensionDeploymentRootSuffix>Exp</ExtensionDeploymentRootSuffix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -81,6 +84,16 @@
 
     <!-- Package Server directory into VSIX using 7z -->
     <Exec Command="cd /d &quot;$(OutputPath)&quot; &amp;&amp; 7z a -tzip &quot;AsmDude2.vsix&quot; &quot;Server\*&quot;" ContinueOnError="true" />
+  </Target>
+
+  <!-- Fix extension.json to correct class references -->
+  <Target Name="FixExtensionManifest" AfterTargets="BundleLspServer">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;fix-extension-manifest.ps1&quot; -VsixPath &quot;$(OutputPath)AsmDude2.vsix&quot;" />
+  </Target>
+
+  <!-- Deploy extension to experimental instance in Debug configuration -->
+  <Target Name="DeployToExperimental" AfterTargets="FixExtensionManifest" Condition="'$(Configuration)' == 'Debug'">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;deploy-to-experimental.ps1&quot; -VsixPath &quot;$(OutputPath)AsmDude2.vsix&quot;" />
   </Target>
 
 </Project>

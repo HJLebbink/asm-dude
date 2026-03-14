@@ -36,9 +36,25 @@ namespace AsmDude2;
 /// <summary>
 /// Language server provider for assembly language files
 /// </summary>
-internal class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudioExtensibility extensibility) : LanguageServerProvider(extensionCore, extensibility)
+[VisualStudioContribution]
+public class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudioExtensibility extensibility) : LanguageServerProvider(extensionCore, extensibility)
 {
     private Process? languageServerProcess;
+
+    static AsmLanguageServerProvider()
+    {
+        try
+        {
+            var asm = typeof(AsmLanguageServerProvider).Assembly;
+            var asmLocation = asm.Location;
+            var buildTime = File.GetLastWriteTimeUtc(asmLocation);
+            Debug.WriteLine($"AsmDude2.VSIX LOADED: Assembly={Path.GetFileName(asmLocation)}, BuildTime={buildTime:yyyy-MM-dd HH:mm:ss.fff} UTC");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"AsmDude2.VSIX BUILD INFO ERROR: {ex.Message}");
+        }
+    }
 
     /// <summary>
     /// Configures the language server provider
@@ -52,29 +68,100 @@ internal class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStud
     /// <summary>
     /// Creates the connection to the language server
     /// </summary>
+    private static void LogError(string message)
+    {
+        var logPath = Path.Combine(Path.GetTempPath(), "AsmDude2_LSP_Error.log");
+        try
+        {
+            File.AppendAllText(logPath, $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}] {message}\r\n");
+        }
+        catch { }
+    }
+
     public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
     {
         return Task.Run<IDuplexPipe?>(async () =>
         {
             try
             {
-                // Find the LSP server executable
-                string? extensionDir = Path.GetDirectoryName(typeof(AsmLanguageServerProvider).Assembly.Location);
-                if (extensionDir == null)
+                // Find LSP server - try multiple paths
+                string? lspPath = null;
+
+                // Log diagnostic information
+                LogError("CreateServerConnectionAsync starting");
+                LogError($"AppContext.BaseDirectory = {AppContext.BaseDirectory}");
+                LogError($"Assembly.Location = {typeof(AsmLanguageServerProvider).Assembly.Location}");
+                LogError($"AppDomain.CurrentDomain.BaseDirectory = {AppDomain.CurrentDomain.BaseDirectory}");
+
+                // Try 1: AppContext.BaseDirectory/Server/AsmDude2.LSP.exe
+                string candidate1 = Path.Combine(AppContext.BaseDirectory, "Server", "AsmDude2.LSP.exe");
+                LogError($"Trying path 1: {candidate1}");
+                if (File.Exists(candidate1))
                 {
-                    Debug.WriteLine("AsmDude3: Could not determine extension directory");
+                    lspPath = candidate1;
+                    LogError($"Found LSP server at path 1");
+                }
+                else
+                {
+                    LogError($"Path 1 does not exist");
+                }
+
+                // Try 2: AppDomain.CurrentDomain.BaseDirectory + Server
+                if (lspPath == null)
+                {
+                    string candidate2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Server", "AsmDude2.LSP.exe");
+                    Debug.WriteLine($"AsmDude2: Trying path 2: {candidate2}");
+                    if (File.Exists(candidate2))
+                    {
+                        lspPath = candidate2;
+                        Debug.WriteLine($"AsmDude2: Found LSP server at path 2");
+                    }
+                }
+
+                // Try 3: Assembly location based (if not empty)
+                if (lspPath == null)
+                {
+                    var assemblyPath = typeof(AsmLanguageServerProvider).Assembly.Location;
+                    if (!string.IsNullOrEmpty(assemblyPath))
+                    {
+                        string dir = Path.GetDirectoryName(assemblyPath) ?? "";
+                        string candidate3 = Path.Combine(dir, "Server", "AsmDude2.LSP.exe");
+                        Debug.WriteLine($"AsmDude2: Trying path 3: {candidate3}");
+                        if (File.Exists(candidate3))
+                        {
+                            lspPath = candidate3;
+                            Debug.WriteLine($"AsmDude2: Found LSP server at path 3");
+                        }
+                    }
+                }
+
+                // Try 4: Search in subdirectories (last resort)
+                if (lspPath == null)
+                {
+                    try
+                    {
+                        var exeFiles = Directory.GetFiles(AppContext.BaseDirectory, "AsmDude2.LSP.exe", SearchOption.AllDirectories);
+                        if (exeFiles.Length > 0)
+                        {
+                            lspPath = exeFiles[0];
+                            Debug.WriteLine($"AsmDude2: Found LSP server via directory search: {lspPath}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"AsmDude2: Directory search failed: {ex.Message}");
+                    }
+                }
+
+                if (lspPath == null)
+                {
+                    Debug.WriteLine($"AsmDude2: LSP server NOT FOUND after all attempts");
+                    Debug.WriteLine($"AsmDude2: AppContext.BaseDirectory={AppContext.BaseDirectory}");
+                    Debug.WriteLine($"AsmDude2: AppDomain.CurrentDomain.BaseDirectory={AppDomain.CurrentDomain.BaseDirectory}");
                     return null;
                 }
 
-                string lspPath = Path.Combine(extensionDir, "Server", "AsmDude2.LSP.exe");
-
-                if (!File.Exists(lspPath))
-                {
-                    Debug.WriteLine($"AsmDude3: LSP server not found at {lspPath}");
-                    return null;
-                }
-
-                Debug.WriteLine($"AsmDude3: Starting LSP server from {lspPath}");
+                Debug.WriteLine($"AsmDude2: Starting LSP server from {lspPath}");
 
                 // Create named pipes for communication
                 const string stdInPipeName = "asmdude2-output";
@@ -113,7 +200,7 @@ internal class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStud
                 ProcessStartInfo startInfo = new()
                 {
                     FileName = lspPath,
-                    WorkingDirectory = Path.GetDirectoryName(lspPath),
+                    WorkingDirectory = Path.GetDirectoryName(lspPath) ?? "",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 };
@@ -139,6 +226,8 @@ internal class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStud
             }
             catch (Exception ex)
             {
+                LogError($"ERROR creating server connection: {ex.GetType().Name}: {ex.Message}");
+                LogError($"StackTrace: {ex.StackTrace}");
                 Debug.WriteLine($"AsmDude2: Error creating server connection: {ex}");
                 return null;
             }

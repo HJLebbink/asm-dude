@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using Microsoft.VisualStudio.Extensibility;
+using System;
+using System.IO;
 
 namespace AsmDude2;
 
@@ -31,6 +33,28 @@ namespace AsmDude2;
     [VisualStudioContribution]
     public class Extension : Microsoft.VisualStudio.Extensibility.Extension
     {
+        static Extension()
+        {
+            try
+            {
+                File.AppendAllText(
+                    Path.Combine(Path.GetTempPath(), "AsmDude2_Startup.log"),
+                    $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}] Extension static constructor called\r\n");
+            }
+            catch { }
+        }
+
+        public Extension()
+        {
+            try
+            {
+                File.AppendAllText(
+                    Path.Combine(Path.GetTempPath(), "AsmDude2_Startup.log"),
+                    $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}] Extension instance constructor called\r\n");
+            }
+            catch { }
+        }
+
         /// <inheritdoc/>
         public override ExtensionConfiguration ExtensionConfiguration => new()
         {

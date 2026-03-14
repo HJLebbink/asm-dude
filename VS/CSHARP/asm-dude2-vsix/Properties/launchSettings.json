@@ -2,7 +2,7 @@
   "profiles": {
     "asm-dude2-vsix": {
       "commandName": "Executable",
-      "executablePath": "$(DevEnvDir)devenv.exe",
+      "executablePath": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\Common7\\IDE\\devenv.exe",
       "commandLineArgs": "/rootSuffix Exp",
       "workingDirectory": "$(ProjectDir)"
     }

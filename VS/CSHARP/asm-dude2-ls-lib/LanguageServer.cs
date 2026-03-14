@@ -104,6 +104,16 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     private LanguageServer(Stream sender, Stream reader)
     {
         this.traceSource = Tools.CreateTraceSource();
+
+        // Log build timestamp to verify we're not running stale code
+        try
+        {
+            var asm = typeof(LanguageServer).Assembly;
+            var buildTime = System.IO.File.GetLastWriteTimeUtc(asm.Location);
+            Console.Error.WriteLine($"[LanguageServer INIT] BuildTime={buildTime:yyyy-MM-dd HH:mm:ss.fff} UTC, Assembly={System.IO.Path.GetFileName(asm.Location)}");
+        }
+        catch { }
+
         //LogInfo("LanguageServer: constructor"); // This lineNumber produces a crash
         this.target = new LanguageServerTarget(this);
         this.textDocuments = [];
@@ -366,13 +376,23 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     private void UpdateInternals(string uri)
     {
-        if (this.GetTextDocument(uri) is TextDocumentItem document)
+        Console.Error.WriteLine($"[UpdateInternals] ENTRY: uri={uri}");
+        LogToFile($"[UpdateInternals] ENTRY: uri={uri}");
+        LogInfo($"[UpdateInternals] uri={uri}");
+        var document = this.GetTextDocument(uri);
+        Console.Error.WriteLine($"[UpdateInternals] GetTextDocument returned: {(document != null ? "NOT NULL" : "NULL")}");
+        LogToFile($"[UpdateInternals] GetTextDocument returned: {(document != null ? "NOT NULL" : "NULL")}");
+        if (document is TextDocumentItem)
         {
             var newLines = document.Text.Split(separator, StringSplitOptions.None);
-            
+            LogToFile($"[UpdateInternals] Split into {newLines.Length} lines");
+            LogInfo($"[UpdateInternals] Split into {newLines.Length} lines");
+
             string[] oldLines;
             if (this.textDocumentLines.TryGetValue(uri, out var cachedLines) && cachedLines.SequenceEqual(newLines))
             {
+                LogToFile($"[UpdateInternals] Lines unchanged, returning early");
+                LogInfo($"[UpdateInternals] Lines unchanged, returning early");
                 return;
             }
             else
@@ -416,8 +436,25 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             this.diagnostics.Clear();
             this.UpdateFoldingRanges(uri);
             this.labelGraphDirty.Add(uri);
-            this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
-                onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()));
+            Console.Error.WriteLine($"[UpdateInternals] About to call InvalidateAndSimulate: asmSimulator_={this.asmSimulator_ != null}, lines={newLines.Length}");
+            LogToFile($"[UpdateInternals] About to call InvalidateAndSimulate with {newLines.Length} lines, asmSimulator_={this.asmSimulator_ != null}");
+            LogInfo($"[UpdateInternals] Calling InvalidateAndSimulate with {newLines.Length} lines");
+            try
+            {
+                this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
+                    onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()));
+                Console.Error.WriteLine($"[UpdateInternals] InvalidateAndSimulate returned");
+                LogToFile($"[UpdateInternals] InvalidateAndSimulate returned");
+                LogInfo($"[UpdateInternals] InvalidateAndSimulate returned");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[UpdateInternals] EXCEPTION in InvalidateAndSimulate: {ex.GetType().Name}: {ex.Message}");
+                LogToFile($"[UpdateInternals] EXCEPTION in InvalidateAndSimulate: {ex.GetType().Name}: {ex.Message}");
+                LogToFile($"[UpdateInternals] Stack: {ex.StackTrace}");
+                LogInfo($"[UpdateInternals] EXCEPTION: {ex.Message}");
+                throw;
+            }
 
             if (false)
             {
@@ -426,12 +463,19 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 #pragma warning restore CS0162 // Unreachable code detected
             }
             this.SendDiagnostics(uri);
+            LogToFile($"[UpdateInternals] EXIT SUCCESS");
+        }
+        else
+        {
+            LogToFile($"[UpdateInternals] EXIT - document is null!");
         }
     }
 
     public void OnTextDocumentOpened(DidOpenTextDocumentParams messageParams)
     {
         var uri = messageParams.TextDocument.Uri.ToString();
+        LogToFile($"[OnTextDocumentOpened] uri={uri}, textLength={messageParams.TextDocument.Text?.Length ?? 0}");
+        LogInfo($"[OnTextDocumentOpened] uri={uri}, textLength={messageParams.TextDocument.Text?.Length ?? 0}");
         this.textDocuments.Add(uri, messageParams.TextDocument);
         this.UpdateInternals(uri);
     }
@@ -540,17 +584,20 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     public void UpdateServerSideTextDocument(string text, int version, string uri)
     {
+        LogInfo($"[UpdateServerSideTextDocument] uri={uri}, version={version}, textLength={text.Length}");
         TextDocumentItem? document = this.GetTextDocument(uri);
         if (document != null)
         {
             document.Text = text;
             document.Version = version;
+            LogInfo($"[UpdateServerSideTextDocument] Updated document, scheduling debounced update");
 
             // Debounce document updates - cancel pending update and schedule new one
             lock (this.updateLock)
             {
                 if (this.pendingUpdates.TryGetValue(uri, out var cts))
                 {
+                    LogInfo($"[UpdateServerSideTextDocument] Cancelling previous pending update");
                     cts.Cancel();
                     this.pendingUpdates.Remove(uri);
                 }
@@ -563,11 +610,16 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     if (!newCts.IsCancellationRequested)
                     {
+                        LogInfo($"[UpdateServerSideTextDocument] 100ms debounce timeout reached, calling UpdateInternals");
                         this.UpdateInternals(uri);
                         lock (this.updateLock)
                         {
                             this.pendingUpdates.Remove(uri);
                         }
+                    }
+                    else
+                    {
+                        LogInfo($"[UpdateServerSideTextDocument] Update was cancelled during debounce");
                     }
                 }, TaskScheduler.Default);
             }
@@ -908,7 +960,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             HashSet<Arch> selectedArchitectures2)
     {
 #if DEBUG
-        bool extraLogging = true;
+        bool extraLogging = false;
 #else
             bool extraLogging = false;
 #endif
@@ -968,7 +1020,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         try
         {
 #if DEBUG
-            bool extraLogging = true;
+            bool extraLogging = false;
 #else
                 bool extraLogging = false;
 #endif
@@ -1213,6 +1265,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     public InlayHint[] GetInlayHints(InlayHintParams parameter)
     {
         string uri = parameter.TextDocument.Uri.ToString();
+        LogToFile($"[GetInlayHints] uri={uri}");
 
         if (!this.textDocumentLines.TryGetValue(uri, out string[]? lines))
         {
@@ -1576,7 +1629,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         try
         {
 #if DEBUG
-            bool extraLogging = true;
+            bool extraLogging = false;
 #else
                 bool extraLogging = false;
 #endif
@@ -2061,12 +2114,14 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     /// </summary>
     public object? GetHover(TextDocumentPositionParams parameter)
     {
+        var uri = parameter.TextDocument.Uri.ToString();
+        LogToFile($"[GetHover] uri={uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         if (!this.options.AsmDoc_On)
         {
             LogInfo($"OnHover: switched off");
             return null;
         }
-        var lines = this.GetLines(parameter.TextDocument.Uri.ToString());
+        var lines = this.GetLines(uri);
         if ((int)parameter.Position.Line >= lines.Length) return null;
         var (keyword, startPos, endPos) = GetWord((int)parameter.Position.Character, lines[(int)parameter.Position.Line]);
         if (keyword.Length == 0)
@@ -2425,6 +2480,64 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         return null;
     }
 
+    public ProvenStatesResponse? GetProvenStates(GetProvenStatesParams parameter)
+    {
+        try
+        {
+            var uri = parameter.Uri;
+            int? startLine = parameter.LineRange?[0];
+            int? endLine = parameter.LineRange?[1];
+
+            var lines = this.GetLines(uri);
+            var cacheEntry = this.asmSimulator_.GetCachedEntry(new Uri(uri));
+            if (cacheEntry == null)
+            {
+                LogInfo($"GetProvenStates: no cache entry for {uri}");
+                return new ProvenStatesResponse
+                {
+                    States = [],
+                    TotalLines = lines.Length,
+                    ComputedAt = System.DateTime.UtcNow.ToString("o"),
+                };
+            }
+
+            var states = new List<ProvenLineState>();
+            int limit = Math.Min(lines.Length, LspAsmSimulator.MaxLines);
+            for (int i = 0; i < limit; i++)
+            {
+                if (startLine.HasValue && i < startLine.Value) continue;
+                if (endLine.HasValue && i > endLine.Value) break;
+
+                string? beforeStr = cacheEntry.GetBeforeState(i);
+                string? afterStr = cacheEntry.GetAfterState(i);
+
+                if (beforeStr != null || afterStr != null)
+                {
+                    states.Add(new ProvenLineState
+                    {
+                        Line = i,
+                        BeforeState = beforeStr,
+                        AfterState = afterStr,
+                        ProvenBy = "Z3 SimpleStep",
+                        Confidence = "complete",
+                    });
+                }
+            }
+
+            return new ProvenStatesResponse
+            {
+                States = states,
+                TotalLines = lines.Length,
+                ComputedAt = System.DateTime.UtcNow.ToString("o"),
+            };
+        }
+        catch (Exception ex)
+        {
+            LogInfo($"GetProvenStates exception: {ex.Message}");
+            return null;
+        }
+    }
+
     public void SetDocumentSymbols(IEnumerable<VSSymbolInformation> symbolsInfo)
     {
         this.Symbols = symbolsInfo;
@@ -2564,6 +2677,17 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     {
         LogWriter.WriteLine($"WARNING {DateTimeOffset.Now.ToString("yyyyMMdd hh.mm.ss.ffffff")}: {message}");
         Instance?.traceSource?.TraceEvent(TraceEventType.Warning, 0, message);
+    }
+
+    public static void LogToFile(string message)
+    {
+        try
+        {
+            string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "asmdude-execution.log");
+            string timestamp = System.DateTime.Now.ToString("HH:mm:ss.fff");
+            System.IO.File.AppendAllText(logPath, $"[{timestamp}] {message}\n");
+        }
+        catch { }
     }
 
     public static void LogError(string message)
