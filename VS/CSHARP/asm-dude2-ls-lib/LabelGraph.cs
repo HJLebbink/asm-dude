@@ -71,7 +71,7 @@ public sealed class LabelGraph
                 bool caseSensitiveLabel,
                 AsmLanguageServerOptions options)
         {
-            LanguageServer.LogInfo($"LabelGraph: constructor: creating a label graph for {filename}"); //NOTE first init traceSource!
+            //LanguageServer.LogInfo($"LabelGraph: constructor: creating a label graph for {filename}"); //NOTE first init traceSource!
 
             this.lines = lines;
             this.thisFilename_ = filename;
@@ -326,13 +326,13 @@ public sealed class LabelGraph
 
                 if ((extra_Tag_Info != null))// TODO && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO, StringComparison.Ordinal))
                 {
-                    LanguageServer.LogInfo("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
+                    //LanguageServer.LogInfo("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
                     Add_To_Dictionary(label, labelID, this.caseSensitiveLabel_, this.defAt_PROTO_);
                 }
                 else
                 {
                     string full_Qualified_Label = Tools.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssembler);
-                    LanguageServer.LogInfo("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
+                    //LanguageServer.LogInfo("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
                     Add_To_Dictionary(full_Qualified_Label, labelID, this.caseSensitiveLabel_, this.defAt_);
                 }
                 this.hasDef_.Add(labelID);
@@ -354,7 +354,7 @@ public sealed class LabelGraph
                     {
                         KeywordID labelID = new(lineNumber, fileID, startPos, startPos + labelStr.Length);
                         Add_To_Dictionary(full_Qualified_Label, labelID, this.caseSensitiveLabel_, this.usedAt_);
-                        LanguageServer.LogInfo("LabelGraph:Add_Linenumber: used label \"" + full_Qualified_Label + "\" at line " + lineNumber);
+                        //LanguageServer.LogInfo("LabelGraph:Add_Linenumber: used label \"" + full_Qualified_Label + "\" at line " + lineNumber);
                         this.hasLabel_.Add(labelID);
                     }
                 }
@@ -408,7 +408,7 @@ public sealed class LabelGraph
             {
                 if (includeFilename.Length < 1)
                 {
-                    LanguageServer.LogInfo("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
+                    //LanguageServer.LogInfo("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
                     return;
                 }
                 if (includeFilename.Length > 2)
@@ -426,18 +426,18 @@ public sealed class LabelGraph
 
                 if (!File.Exists(filePath))
                 {
-                    LanguageServer.LogInfo("LabelGraph:Handle_Include: file " + filePath + " does not exist");
+                    //LanguageServer.LogInfo("LabelGraph:Handle_Include: file " + filePath + " does not exist");
                     this.undefined_includes_.Add((include_filename: includeFilename, path: filePath, source_filename: currentFilename, lineNumber: lineNumber));
                 }
                 else
                 {
                     if (this.filenames_.Values.Contains(filePath))
                     {
-                        LanguageServer.LogInfo("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
+                        //LanguageServer.LogInfo("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
                     }
                     else
                     {
-                        LanguageServer.LogInfo("LabelGraph:Handle_Include: including file " + filePath);
+                        //LanguageServer.LogInfo("LabelGraph:Handle_Include: including file " + filePath);
 
                         //ITextDocument doc = this.docFactory_.CreateAndLoadTextDocument(filePath, this.contentType_, true, out bool characterSubstitutionsOccurred);
                         //doc.FileActionOccurred += this.Doc_File_Action_Occurred;
