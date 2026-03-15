@@ -31,9 +31,15 @@ try {
     }
 
     if (-not ($json.services | Where-Object { $_.name -eq 'AsmDude2.ExtensionCommandSet' })) {
-        Write-Host "✅ BUG 2 FIXED: ExtensionCommandSet removed" -ForegroundColor Green
+        Write-Host "✅ BUG 2 FIXED: ExtensionCommandSet removed from services" -ForegroundColor Green
     } else {
         Write-Host "❌ BUG 2 NOT FIXED" -ForegroundColor Red
+    }
+
+    if (-not $json.commandSets) {
+        Write-Host "✅ BUG 4 FIXED: commandSets section removed" -ForegroundColor Green
+    } else {
+        Write-Host "❌ BUG 4 NOT FIXED: commandSets still present" -ForegroundColor Red
     }
 
     Write-Host ""
@@ -47,7 +53,7 @@ try {
     Write-Host "extension.vsixmanifest:" -ForegroundColor Yellow
     Write-Host "  DotnetTargetVersions: $($versionNode.Node.InnerText)"
 
-    if ($versionNode.Node.InnerText -eq 'net10.0-windows') {
+    if ($versionNode.Node.InnerText -eq 'net10.0') {
         Write-Host "✅ BUG 3 FIXED: DotnetTargetVersions correct" -ForegroundColor Green
     } else {
         Write-Host "❌ BUG 3 NOT FIXED" -ForegroundColor Red

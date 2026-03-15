@@ -27,7 +27,7 @@ using System.IO;
 namespace AsmDude2;
 
 /// <summary>
-/// Extension entry point for AsmDude3
+/// Extension entry point for AsmDude2
 /// Provides assembly language support via LSP (Language Server Protocol)
 /// </summary>
     [VisualStudioContribution]
@@ -59,10 +59,10 @@ namespace AsmDude2;
         public override ExtensionConfiguration ExtensionConfiguration => new()
         {
             Metadata = new(
-                    id: "AsmDude3.8f5b1c3a-6d7e-4f8b-9c0d-1e2f3a4b5c6d",
+                    id: "AsmDude2.8f5b1c3a-6d7e-4f8b-9c0d-1e2f3a4b5c6d",
                     version: this.ExtensionAssemblyVersion,
                     publisherName: "Henk-Jan Lebbink",
-                    displayName: "AsmDude3",
+                    displayName: "AsmDude2",
                     description: "Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window"),
         };
 

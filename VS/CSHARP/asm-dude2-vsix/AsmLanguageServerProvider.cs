@@ -60,7 +60,7 @@ public class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudio
     /// Configures the language server provider
     /// </summary>
     public override LanguageServerProviderConfiguration LanguageServerProviderConfiguration => new(
-        "%AsmDude3.LanguageServerDisplayName%",
+        "AsmDude2 Language Server",
         [
             DocumentFilter.FromDocumentType(AsmDocumentTypes.AsmDocumentType),
         ]);
@@ -164,8 +164,8 @@ public class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudio
                 Debug.WriteLine($"AsmDude2: Starting LSP server from {lspPath}");
 
                 // Create named pipes for communication
-                const string stdInPipeName = "asmdude2-output";
-                const string stdOutPipeName = "asmdude2-input";
+                const string stdInPipeName = "output";
+                const string stdOutPipeName = "input";
 
                 // Set up pipe security (allow all users)
                 SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
@@ -180,7 +180,7 @@ public class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudio
                     stdInPipeName,
                     PipeDirection.InOut,
                     4,
-                    PipeTransmissionMode.Message,
+                    PipeTransmissionMode.Byte,
                     System.IO.Pipes.PipeOptions.Asynchronous,
                     bufferSize,
                     bufferSize,
@@ -190,7 +190,7 @@ public class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudio
                     stdOutPipeName,
                     PipeDirection.InOut,
                     4,
-                    PipeTransmissionMode.Message,
+                    PipeTransmissionMode.Byte,
                     System.IO.Pipes.PipeOptions.Asynchronous,
                     bufferSize,
                     bufferSize,
@@ -251,7 +251,7 @@ public class AsmLanguageServerProvider(ExtensionCore extensionCore, VisualStudio
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"AsmDude3: Error disposing language server process: {ex}");
+                Debug.WriteLine($"AsmDude2: Error disposing language server process: {ex}");
             }
         }
 

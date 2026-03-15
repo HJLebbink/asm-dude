@@ -36,6 +36,12 @@ try {
         Write-Host "Removed ExtensionCommandSet service"
     }
 
+    # Remove commandSets entirely (language servers don't need command sets)
+    if ($json.commandSets) {
+        Write-Host "Removing commandSets section"
+        $json.PSObject.Properties.Remove('commandSets')
+    }
+
     # Write back fixed extension.json
     $json | ConvertTo-Json -Depth 10 | Set-Content $jsonPath
 
@@ -51,6 +57,21 @@ try {
         if ($versionNode) {
             Write-Host "  Changing '$($versionNode.Node.InnerText)' to 'net10.0'"
             $versionNode.Node.InnerText = 'net10.0'
+        }
+
+        # Fix InstallationTarget to support both VS 2022 and VS 2026
+        $installTargets = $manifest | Select-Xml -XPath "//x:InstallationTarget" -Namespace $ns
+        foreach ($target in $installTargets) {
+            $versionAttr = $target.Node.Attributes['Version']
+            if ($versionAttr) {
+                $oldVersion = $versionAttr.Value
+                # Change [17.14,) to [17.14,) which should accept both 17.x and 18.x
+                # But we also need to allow version 18+, so change it to [17.0,)
+                if ($oldVersion -match '17\.14') {
+                    Write-Host "  Updating InstallationTarget version from '$oldVersion' to '[17.0,)' to support VS 2022 and VS 2026"
+                    $versionAttr.Value = '[17.0,)'
+                }
+            }
         }
 
         $manifest.Save($manifestPath)

@@ -26,7 +26,7 @@ using Microsoft.VisualStudio.Extensibility.Editor;
 namespace AsmDude2;
 
 /// <summary>
-/// Assembly language document type definitions for AsmDude3
+/// Assembly language document type definitions for AsmDude2
 /// </summary>
 internal static class AsmDocumentTypes
 {

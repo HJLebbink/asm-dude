@@ -9,7 +9,7 @@ if (-not (Test-Path $VsixPath)) {
     exit 1
 }
 
-# Use Local folder (not Roaming) - VS 2026 uses Local\Microsoft\VisualStudio for extension metadata
+# Use Local folder for VS 2026 (version 18)
 $expRoot = "$env:LOCALAPPDATA\Microsoft\VisualStudio\18.0_690edbf8Exp"
 $extPath = "$expRoot\Extensions\HenkJanLebbink.AsmDude2\1.0.0"
 
@@ -23,14 +23,17 @@ if (Test-Path $extPath) {
     Remove-Item $extPath -Recurse -Force
 }
 
+
 # Clear extension metadata caches to force VS to rescan
+# These are inside the Extensions\ subdirectory
 Write-Host "  Clearing extension metadata caches..."
 @(
-    "$expRoot\ExtensionMetadata2.0.mpack",
-    "$expRoot\ExtensionMetadataCache.mpack",
-    "$expRoot\extensions.configurationchanged"
+    "$expRoot\Extensions\ExtensionMetadata2.0.mpack",
+    "$expRoot\Extensions\ExtensionMetadataCache.mpack",
+    "$expRoot\Extensions\extensions.configurationchanged"
 ) | ForEach-Object {
     if (Test-Path $_) {
+        Write-Host "    Deleting $_"
         Remove-Item $_ -Force -ErrorAction SilentlyContinue
     }
 }

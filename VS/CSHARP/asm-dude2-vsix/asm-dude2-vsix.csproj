@@ -41,7 +41,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
 
-    <!-- VisualStudio.Extensibility auto-deployment settings -->
+    <!-- Enable automatic F5 deployment to experimental VS instance -->
     <ExtensionDeploymentRootSuffix>Exp</ExtensionDeploymentRootSuffix>
   </PropertyGroup>
 
@@ -74,26 +74,12 @@
 
   <!-- Bundle the LSP server with the extension -->
   <Target Name="BundleLspServer" AfterTargets="Build">
-    <!-- Copy LSP server files to output -->
     <ItemGroup>
       <ServerFiles Include="..\asm-dude2-ls\bin\$(Configuration)\net10.0-windows\*.*" />
       <ServerResources Include="..\asm-dude2-ls\bin\$(Configuration)\net10.0-windows\Resources\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(ServerFiles)" DestinationFolder="$(OutputPath)Server\" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(ServerResources)" DestinationFiles="@(ServerResources->'$(OutputPath)Server\Resources\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
-
-    <!-- Package Server directory into VSIX using 7z -->
-    <Exec Command="cd /d &quot;$(OutputPath)&quot; &amp;&amp; 7z a -tzip &quot;AsmDude2.vsix&quot; &quot;Server\*&quot;" ContinueOnError="true" />
-  </Target>
-
-  <!-- Fix extension.json to correct class references -->
-  <Target Name="FixExtensionManifest" AfterTargets="BundleLspServer">
-    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;fix-extension-manifest.ps1&quot; -VsixPath &quot;$(OutputPath)AsmDude2.vsix&quot;" />
-  </Target>
-
-  <!-- Deploy extension to experimental instance in Debug configuration -->
-  <Target Name="DeployToExperimental" AfterTargets="FixExtensionManifest" Condition="'$(Configuration)' == 'Debug'">
-    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;deploy-to-experimental.ps1&quot; -VsixPath &quot;$(OutputPath)AsmDude2.vsix&quot;" />
   </Target>
 
 </Project>
