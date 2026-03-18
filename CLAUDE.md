@@ -234,10 +234,47 @@ The NuGet source `local-z3` → `local-nuget/` is already configured in `NuGet.c
 To debug the extension:
 1. Open `VS\AsmDude.sln` in Visual Studio 2022 or 2026
 2. Set `asm-dude2-vsix` as startup project
-3. Press F5 - launches VS experimental instance
-4. Extension will be deployed to the experimental instance
+3. Press F5 — builds, deploys to Exp hive, launches experimental VS instance
+4. Open a `.asm` file in the experimental instance to activate the LSP server
+
+**Prerequisites**: The **"Visual Studio extension development"** workload must be installed (provides the F5 debug launcher for extensibility projects).
 
 Supported Visual Studio versions: **2022 (17.x) and 2026 (18.x)**
+
+### Debugging: Log Locations
+
+When F5 is pressed, two VS instances run plus the LSP server process. Each has its own logs:
+
+#### 1. Experimental VS — Output Window → "Extensions" pane (check first)
+In the **experimental** VS instance (the one that opens), go to View → Output → select "Extensions" or "VisualStudio.Extensibility" from the dropdown. Shows:
+- Extension host loading your VSIX
+- Errors from `CreateServerConnectionAsync`
+- LSP communication issues
+
+#### 2. ServiceHub Extension Host Log (extension won't load at all)
+The OOP extension host process logs here:
+```
+%TEMP%\ServiceHub\logs\*ServiceHub.Host.Extensibility*
+```
+Look for the most recent file. This is where assembly loading errors appear (e.g., wrong .NET target framework).
+
+#### 3. LSP Server Log (extension loaded, LSP misbehaves)
+The LSP server (`AsmDude2.LSP.exe`) writes to `LanguageServer.log` in its working directory. When deployed, this is inside the extension's `Server/` folder:
+```
+%LOCALAPPDATA%\Microsoft\VisualStudio\18.0_<id>Exp\VSExtensions\Henk-Jan Lebbink\AsmDude2\<version>\Server\
+```
+
+#### 4. Activity Log (VS startup/discovery issues)
+```
+%APPDATA%\Microsoft\VisualStudio\18.0_<id>Exp\ActivityLog.xml
+```
+Useful for extension discovery and registration problems, rarely needed for runtime debugging.
+
+#### Not relevant for runtime debugging:
+- **Host VS** (where you press F5): its Output window and logs only show build/deploy status, not extension runtime errors
+- **Build logs**: only relevant for compile and deployment errors
+
+**Check order**: 1 → 2 → 3 → 4
 
 ## Data Files
 

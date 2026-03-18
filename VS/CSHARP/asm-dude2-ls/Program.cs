@@ -14,7 +14,9 @@ try
     // Check for --stdio flag (used for testing and CLI usage)
     Worker.UseStdio = args.Contains("--stdio", StringComparer.OrdinalIgnoreCase);
 
-    var builder = Host.CreateApplicationBuilder(args);
+    // Filter out --stdio before passing to host builder (it's not a host argument)
+    var hostArgs = args.Where(a => !a.Equals("--stdio", StringComparison.OrdinalIgnoreCase)).ToArray();
+    var builder = Host.CreateApplicationBuilder(hostArgs);
     builder.Services.AddHostedService<Worker>();
 
     // In stdio mode, disable console logging completely to avoid interference with LSP protocol
@@ -22,6 +24,10 @@ try
     if (Worker.UseStdio)
     {
         builder.Logging.ClearProviders();
+        // Suppress "Application started. Press Ctrl+C to shut down." messages
+        // from ConsoleLifetime — even though logging is cleared, be explicit
+        builder.Services.Configure<Microsoft.Extensions.Hosting.ConsoleLifetimeOptions>(opts =>
+            opts.SuppressStatusMessages = true);
     }
 
     var host = builder.Build();

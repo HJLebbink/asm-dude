@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>14</LangVersion>
     <ExtensionName>AsmDude2</ExtensionName>
     <ExtensionVersion>3.0.0.0</ExtensionVersion>
     <NoWarn>VSEXTPREVIEW_LSP;VSEXTPREVIEW_SETTINGS</NoWarn>
@@ -11,11 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" PrivateAssets="all" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.14.40608" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility" Version="17.14.2098" />
-    <PackageReference Include="StreamJsonRpc" Version="2.25.9" />
-    <PackageReference Include="Nerdbank.Streams" Version="2.13.16" />
   </ItemGroup>
 
   <ItemGroup>

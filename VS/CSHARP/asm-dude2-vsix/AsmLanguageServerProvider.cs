@@ -1,66 +1,56 @@
-// The MIT License (MIT)
-//
 // Copyright (c) 2026 Henk-Jan Lebbink
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// Licensed under the MIT license.
 
 namespace AsmDude2;
 
 using System.Diagnostics;
+using System.IO;
 using System.IO.Pipelines;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.Extensibility.LanguageServer;
+using Microsoft.VisualStudio.RpcContracts.LanguageServerProvider;
+using Nerdbank.Streams;
 
+#pragma warning disable VSEXTPREVIEW_LSP // Type is for evaluation purposes only and is subject to change or removal in future updates.
 [VisualStudioContribution]
 internal class AsmLanguageServerProvider : LanguageServerProvider
 {
+    private static readonly string DiagLogFile = Path.Combine(Path.GetTempPath(), "AsmDude2-extension-diag.log");
+
     [VisualStudioContribution]
-    internal static DocumentTypeConfiguration AsmDocumentType => new("asm")
+    public static DocumentTypeConfiguration AsmDocumentType => new("asm")
     {
         FileExtensions = [".asm"],
         BaseDocumentType = LanguageServerBaseDocumentType,
     };
 
     [VisualStudioContribution]
-    internal static DocumentTypeConfiguration CodDocumentType => new("cod")
+    public static DocumentTypeConfiguration CodDocumentType => new("cod")
     {
         FileExtensions = [".cod"],
         BaseDocumentType = LanguageServerBaseDocumentType,
     };
 
     [VisualStudioContribution]
-    internal static DocumentTypeConfiguration IncDocumentType => new("inc")
+    public static DocumentTypeConfiguration IncDocumentType => new("inc")
     {
         FileExtensions = [".inc"],
         BaseDocumentType = LanguageServerBaseDocumentType,
     };
 
     [VisualStudioContribution]
-    internal static DocumentTypeConfiguration SDocumentType => new("s")
+    public static DocumentTypeConfiguration SDocumentType => new("s")
     {
         FileExtensions = [".s"],
         BaseDocumentType = LanguageServerBaseDocumentType,
     };
 
-    public override LanguageServerProviderConfiguration LanguageServerProviderConfiguration =>
-        new("AsmDude2 Language Server",
+    public override LanguageServerProviderConfiguration LanguageServerProviderConfiguration => new(
+        "AsmDude2 Language Server",
         [
             DocumentFilter.FromDocumentType(AsmDocumentType),
             DocumentFilter.FromDocumentType(CodDocumentType),
@@ -68,43 +58,82 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
             DocumentFilter.FromDocumentType(SDocumentType),
         ]);
 
-    public override Task<IDuplexPipe?> CreateServerConnectionAsync(
-        CancellationToken cancellationToken)
+    public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
     {
-        string? extensionDir = Path.GetDirectoryName(
-            typeof(AsmLanguageServerProvider).Assembly.Location);
-        if (extensionDir is null)
-            return Task.FromResult<IDuplexPipe?>(null);
+        string extensionDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        string serverExe = Path.Combine(extensionDir, "Server", "AsmDude2.LSP.exe");
 
-        string lspPath = Path.Combine(extensionDir, "Server", "AsmDude2.LSP.exe");
-        if (!File.Exists(lspPath))
-            return Task.FromResult<IDuplexPipe?>(null);
-
-        var info = new ProcessStartInfo
+        try
         {
-            FileName = lspPath,
-            Arguments = "--stdio",
-            WorkingDirectory = Path.GetDirectoryName(lspPath),
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-        };
+            Log($"CreateServerConnectionAsync called");
+            Log($"  Server exe: {serverExe}, exists: {File.Exists(serverExe)}");
 
-        var process = new Process { StartInfo = info };
-        if (process.Start())
+            ProcessStartInfo info = new()
+            {
+                FileName = serverExe,
+                Arguments = "--stdio",
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+#if DEBUG
+                CreateNoWindow = false, // Show LSP server console window for debugging
+#else
+                CreateNoWindow = true,
+#endif
+            };
+
+            // The VS extension host sets DOTNET_ROOT to its private .NET 8 runtime,
+            // which prevents the LSP server (targeting .NET 10) from finding its runtime.
+            // Remove these environment overrides so the server uses the system-wide .NET 10.
+            info.Environment.Remove("DOTNET_ROOT");
+            info.Environment.Remove("DOTNET_ROOT(x86)");
+
+            Log($"  DOTNET_ROOT cleared for child process");
+
+#pragma warning disable CA2000 // The process is disposed after Visual Studio sends the stop command.
+            Process process = new();
+#pragma warning restore CA2000
+            process.StartInfo = info;
+
+            if (process.Start())
+            {
+                Log($"  Process started: PID={process.Id}");
+
+                return Task.FromResult<IDuplexPipe?>(new DuplexPipe(
+                    PipeReader.Create(process.StandardOutput.BaseStream),
+                    PipeWriter.Create(process.StandardInput.BaseStream)));
+            }
+
+            Log($"  ERROR: Process.Start() returned false");
+            return Task.FromResult<IDuplexPipe?>(null);
+        }
+        catch (Exception ex)
         {
-            return Task.FromResult<IDuplexPipe?>(new DuplexPipe(
-                PipeReader.Create(process.StandardOutput.BaseStream),
-                PipeWriter.Create(process.StandardInput.BaseStream)));
+            Log($"  EXCEPTION: {ex}");
+            return Task.FromResult<IDuplexPipe?>(null);
+        }
+    }
+
+    public override Task OnServerInitializationResultAsync(ServerInitializationResult serverInitializationResult, LanguageServerInitializationFailureInfo? initializationFailureInfo, CancellationToken cancellationToken)
+    {
+        Log($"OnServerInitializationResultAsync: Result={serverInitializationResult}");
+        if (initializationFailureInfo != null)
+        {
+            Log($"  FailureInfo: {initializationFailureInfo.StatusMessage}");
+            Log($"  Exception: {initializationFailureInfo.Exception}");
         }
 
-        return Task.FromResult<IDuplexPipe?>(null);
+        if (serverInitializationResult == ServerInitializationResult.Failed)
+        {
+            this.Enabled = false;
+        }
+
+        return base.OnServerInitializationResultAsync(serverInitializationResult, initializationFailureInfo, cancellationToken);
     }
 
-    private sealed class DuplexPipe(PipeReader input, PipeWriter output) : IDuplexPipe
+    private static void Log(string message)
     {
-        public PipeReader Input { get; } = input;
-        public PipeWriter Output { get; } = output;
+        try { File.AppendAllText(DiagLogFile, $"[{DateTime.Now:HH:mm:ss.fff}] {message}\n"); } catch { }
     }
 }
+#pragma warning restore VSEXTPREVIEW_LSP
