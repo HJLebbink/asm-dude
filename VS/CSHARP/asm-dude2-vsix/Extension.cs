@@ -20,55 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.VisualStudio.Extensibility;
-using System;
-using System.IO;
-
 namespace AsmDude2;
 
-/// <summary>
-/// Extension entry point for AsmDude2
-/// Provides assembly language support via LSP (Language Server Protocol)
-/// </summary>
-    [VisualStudioContribution]
-    public class Extension : Microsoft.VisualStudio.Extensibility.Extension
+using Microsoft.VisualStudio.Extensibility;
+
+[VisualStudioContribution]
+public class Extension : Microsoft.VisualStudio.Extensibility.Extension
+{
+    public override ExtensionConfiguration ExtensionConfiguration => new()
     {
-        static Extension()
-        {
-            try
-            {
-                File.AppendAllText(
-                    Path.Combine(Path.GetTempPath(), "AsmDude2_Startup.log"),
-                    $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}] Extension static constructor called\r\n");
-            }
-            catch { }
-        }
-
-        public Extension()
-        {
-            try
-            {
-                File.AppendAllText(
-                    Path.Combine(Path.GetTempPath(), "AsmDude2_Startup.log"),
-                    $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}] Extension instance constructor called\r\n");
-            }
-            catch { }
-        }
-
-        /// <inheritdoc/>
-        public override ExtensionConfiguration ExtensionConfiguration => new()
-        {
-            Metadata = new(
-                    id: "AsmDude2.8f5b1c3a-6d7e-4f8b-9c0d-1e2f3a4b5c6d",
-                    version: this.ExtensionAssemblyVersion,
-                    publisherName: "Henk-Jan Lebbink",
-                    displayName: "AsmDude2",
-                    description: "Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window"),
-        };
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
+        Metadata = new(
+            id: "AsmDude2.8f5b1c3a-6d7e-4f8b-9c0d-1e2f3a4b5c6d",
+            version: this.ExtensionAssemblyVersion,
+            publisherName: "Henk-Jan Lebbink",
+            displayName: "AsmDude2",
+            description: "Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window"),
+    };
 }
