@@ -58,10 +58,10 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
             DocumentFilter.FromDocumentType(SDocumentType),
         ]);
 
-    public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
-    {
-        string extensionDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        string serverExe = Path.Combine(extensionDir, "Server", "AsmDude2.LSP.exe");
+public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
+        {
+            string extensionDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+            string serverExe = Path.Combine(extensionDir, "Server", LanguageServerConstants.ExecutableName);
 
         try
         {

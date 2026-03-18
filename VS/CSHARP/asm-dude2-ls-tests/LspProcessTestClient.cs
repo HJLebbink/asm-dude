@@ -75,12 +75,13 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
         // Find the server executable based on the project path
         var serverDir = Path.GetDirectoryName(serverProjectPath)!;
-        var exePath = Path.Combine(serverDir, "bin", "Release", "net10.0-windows", "AsmDude2.LSP.exe");
+        var exeName = $"{Path.GetFileNameWithoutExtension(serverProjectPath)}.exe";
+        var exePath = Path.Combine(serverDir, "bin", "Release", "net10.0-windows", exeName);
 
         // Fall back to Debug if Release doesn't exist
         if (!File.Exists(exePath))
         {
-            exePath = Path.Combine(serverDir, "bin", "Debug", "net10.0-windows", "AsmDude2.LSP.exe");
+            exePath = Path.Combine(serverDir, "bin", "Debug", "net10.0-windows", exeName);
         }
 
         if (!File.Exists(exePath))

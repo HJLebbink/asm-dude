@@ -42,7 +42,8 @@ Copy-Item $vsixPath $zipPath -Force
 Expand-Archive -Path $zipPath -DestinationPath $tempExt -Force
 Remove-Item $zipPath
 
-$required = @("AsmDude2.dll", ".vsextension\extension.json", "Server\AsmDude2.LSP.exe")
+$lspExeName = "AsmDude2.LSP.exe"
+$required = @("AsmDude2.dll", ".vsextension\extension.json", "Server\$lspExeName")
 foreach ($file in $required) {
     if (Test-Path (Join-Path $tempExt $file)) {
         Write-Host "[OK] $file" -ForegroundColor Green

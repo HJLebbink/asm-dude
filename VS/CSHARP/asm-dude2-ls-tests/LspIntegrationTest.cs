@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AsmDude2LS;
 using Xunit;
 
 namespace AsmDude2.Tests;
@@ -20,7 +21,7 @@ public class LspIntegrationTest
         var lspExePath = Path.Combine(
             Directory.GetCurrentDirectory(),
             "..", "asm-dude2-ls", "bin", "Debug", "net10.0-windows",
-            "AsmDude2.LSP.exe"
+            LanguageServerConstants.ExecutableName
         );
 
         Assert.True(File.Exists(lspExePath), $"LSP server not found at {lspExePath}");

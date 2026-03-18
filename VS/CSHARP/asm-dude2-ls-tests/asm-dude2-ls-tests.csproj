@@ -32,7 +32,7 @@
 		<PackageReference Include="xunit.v3" Version="3.2.2" />
 	</ItemGroup>
 
-	<!-- Reference to the server project -->
+	<!-- References -->
 	<ItemGroup>
 		<ProjectReference Include="..\asm-dude2-ls-lib\asm-dude2-ls-lib.csproj" />
 	</ItemGroup>

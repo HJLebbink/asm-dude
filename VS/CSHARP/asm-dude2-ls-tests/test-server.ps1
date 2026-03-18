@@ -1,7 +1,8 @@
 # Test script to verify LSP server responds to stdin/stdout
 param([int]$Timeout = 10, [string]$Config = "Release")
 
-$serverPath = "C:\Source\Github\asm-dude\VS\CSHARP\asm-dude2-ls\bin\$Config\net10.0-windows\AsmDude2.LSP.exe"
+$lspExeName = "AsmDude2.LSP.exe"
+$serverPath = "C:\Source\Github\asm-dude\VS\CSHARP\asm-dude2-ls\bin\$Config\net10.0-windows\$lspExeName"
 
 Write-Host "Starting server: $serverPath --stdio"
 
