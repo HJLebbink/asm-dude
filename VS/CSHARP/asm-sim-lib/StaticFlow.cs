@@ -354,7 +354,7 @@ namespace AsmSim
 
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
-                    (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) line = AsmSourceTools.ParseLine(lines[lineNumber], -1, -1);
+                    (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) line = AsmSourceTools.ParseLine(lines[lineNumber], -1, -1, AssemblerEnum.UNKNOWN);
                     EvalArgs(ref line.args);
                     current.Add((line.label, line.mnemonic, line.args));
 

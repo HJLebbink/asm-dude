@@ -315,7 +315,7 @@ public sealed class LabelGraph
         {
             AssemblerEnum usedAssembler = this.options.Used_Assembler;
 
-            (object _, string label, Mnemonic mnemonic, string[] args, string _) = AsmSourceToolsAlias.ParseLine(lineStr, lineNumber, fileID);
+            (object _, string label, Mnemonic mnemonic, string[] args, string _) = AsmSourceToolsAlias.ParseLine(lineStr, lineNumber, fileID, AssemblerEnum.UNKNOWN);
 
             if (label.Length > 0)
             {

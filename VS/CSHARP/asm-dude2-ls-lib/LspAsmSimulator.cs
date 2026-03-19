@@ -416,8 +416,8 @@ namespace AsmDude2LS
         {
             try
             {
-                (AsmTools.KeywordID[] _, string _label, Mnemonic mnemonic, string[] args, string _remark)
-                    = AsmTools.AsmSourceTools.ParseLine(line, -1, -1);
+(AsmTools.KeywordID[] _, string _label, Mnemonic mnemonic, string[] args, string _remark)
+                     = AsmTools.AsmSourceTools.ParseLine(line, -1, -1, AssemblerEnum.UNKNOWN);
 
                 if (mnemonic == Mnemonic.NONE)
                     return;

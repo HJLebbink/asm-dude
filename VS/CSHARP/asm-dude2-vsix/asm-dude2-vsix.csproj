@@ -1,5 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!--
+    DO NOT change TargetFramework to net10.0 or higher.
+
+    VS.Extensibility OOP extensions run inside ServiceHub.Host.Extensibility, which is a .NET 8
+    host process shipped with Visual Studio. The extension DLL is loaded into that host — if it
+    targets net10.0, the host fails with:
+      "Could not load file or assembly 'System.Runtime, Version=10.0.0.0'"
+
+    This is a known SDK limitation confirmed by Microsoft (github.com/microsoft/VSExtensibility/issues/544).
+    .NET 10 support for the extension host is planned for a future VS 2026 update.
+
+    The LSP server (asm-dude2-ls) runs as a separate process and CAN target net10.0-windows.
+    C# 14 features ARE available here via LangVersion even on net8.0.
+  -->
   <PropertyGroup>
     <TargetFramework>net8.0-windows8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

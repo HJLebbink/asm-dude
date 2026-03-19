@@ -187,7 +187,7 @@ using System.Text;
         /// <summary>
         /// Parse the provided lineStr. Returns label, mnemonic, args, remarks. Args are in capitals
         /// </summary>
-        public static (KeywordID[] keywords, string label, Mnemonic mnemonic, string[] args, string remark) ParseLine(string lineStr, int lineNumber, int fileID, AssemblerEnum assemblerType)
+        public static (KeywordID[] keywords, string label, Mnemonic mnemonic, string[] args, string remark) ParseLine(string lineStr, int lineNumber, int fileID)
         {
             ArgumentNullException.ThrowIfNull(lineStr);
 
@@ -237,83 +237,52 @@ using System.Text;
                     string codeStr_uppercase = codeStr.ToUpperInvariant();
                     // Console.WriteLine(codeStr + ":" + codeStr.Length);
 
-                    // Process all keywords in the code string for accurate tokenization
-                    var keywordPositions = new List<(int beginPos, int length, AsmTokenType type)>(SplitIntoKeywordsType(codeStr_uppercase));
-                    
-                    // First pass: identify mnemonics and set context
-                    int mnemonicPos = -1;
-                    Mnemonic parsedMnemonic = Mnemonic.NONE;
-                    for (int i = 0; i < keywordPositions.Count; i++)
+                    // get the first keyword, check if it is a mnemonic
+                    (int startPos, int endPos) keyword1Pos = GetKeywordPos(0, codeStr_uppercase); // find a keyword starting a position 0
+                    string keyword1 = codeStr_uppercase[keyword1Pos.startPos..keyword1Pos.endPos];
+                    if (keyword1.Length > 0)
                     {
-                        var pos = keywordPositions[i];
-                        if (pos.type == AsmTokenType.UNKNOWN)
+                        int startArgPos = keyword1Pos.endPos;
+                        mnemonic = ParseMnemonic(keyword1, true);
+                        switch (mnemonic)
                         {
-                            string keyword = codeStr_uppercase[pos.beginPos..(pos.beginPos + pos.length)];
-                            Mnemonic testMnemonic = ParseMnemonic(keyword, true);
-                            if (testMnemonic != Mnemonic.NONE)
-                            {
-                                mnemonicPos = i;
-                                parsedMnemonic = testMnemonic;
-                                break;
-                            }
+                            case Mnemonic.NONE: break;
+                            case Mnemonic.REP:
+                            case Mnemonic.REPE:
+                            case Mnemonic.REPZ:
+                            case Mnemonic.REPNE:
+                            case Mnemonic.REPNZ:
+                                {
+                                    // find a second keyword starting a position keywordPos.EndPos
+                                    (int startPos, int endPos) keyword2Pos = GetKeywordPos(keyword1Pos.endPos + 1, codeStr_uppercase); // find a keyword starting a position 0
+                                    string keyword2 = codeStr_uppercase[keyword2Pos.startPos..keyword2Pos.endPos];
+                                    if (keyword2.Length > 0)
+                                    {
+                                        Mnemonic mnemonic2 = ParseMnemonic(keyword2, true);
+                                        if (mnemonic2 != Mnemonic.NONE)
+                                        {
+                                            startArgPos = keyword2Pos.endPos;
+                                            mnemonic = ParseMnemonic(mnemonic.ToString() + "_" + mnemonic2.ToString(), true);
+                                        }
+                                    }
+                                    break;
+                                }
+                            default: break;
                         }
-                    }
-                    
-                    // Second pass: process each keyword with context awareness
-                    for (int i = 0; i < keywordPositions.Count; i++)
-                    {
-                        var pos = keywordPositions[i];
-                        int globalBeginPos = codeBeginPos + pos.beginPos;
-                        int globalEndPos = codeBeginPos + pos.beginPos + pos.length;
-                        
-                        if (pos.type != AsmTokenType.UNKNOWN)
-                        {
-                            // Already known type from SplitIntoKeywordsType
-                            k.Add(new KeywordID(lineNumber, fileID, globalBeginPos, globalEndPos, pos.type));
-                        }
-                        else
-                        {
-                            // Need to determine the type
-                            string keyword = codeStr_uppercase[pos.beginPos..(pos.beginPos + pos.length)];
-                            AsmTokenType tokenType = DetermineTokenType(
-                                keyword, 
-                                i, 
-                                keywordPositions, 
-                                codeStr_uppercase,
-                                parsedMnemonic,
-                                mnemonicPos,
-                                assemblerType);
-                            
-                            k.Add(new KeywordID(lineNumber, fileID, globalBeginPos, globalEndPos, tokenType));
-                        }
-                    }
-                    
-                    // Set the mnemonic for return value (first mnemonic found)
-                    if (mnemonicPos >= 0 && mnemonicPos < keywordPositions.Count)
-                    {
-                        var mnemonicPosInfo = keywordPositions[mnemonicPos];
-                        string mnemonicKeyword = codeStr_uppercase[mnemonicPosInfo.beginPos..(mnemonicPosInfo.beginPos + mnemonicPosInfo.length)];
-                        mnemonic = ParseMnemonic(mnemonicKeyword, true);
-                    }
-                    
-                    // Extract arguments (simplified - in a real implementation we'd do this more precisely)
-                    if (mnemonic != Mnemonic.NONE)
-                    {
-                        int argStartPos = 0;
-                        if (mnemonicPos >= 0)
-                        {
-                            var mnemonicPosInfo = keywordPositions[mnemonicPos];
-                            argStartPos = codeBeginPos + mnemonicPosInfo.beginPos + mnemonicPosInfo.length;
-                        }
-                        
-                        int argLength = codeStr.Length - argStartPos;
+                        // TODO the start and end positions for a special mnemonic are incorrect
+                        k.Add(new KeywordID(lineNumber, fileID, keyword1Pos.startPos, keyword1Pos.endPos, AsmTokenType.Mnemonic));
+
+                        // find arguments after the last mnemonic
+
+                        int argLength = codeStr.Length - startArgPos;
                         if (argLength > 0)
                         {
-                            string argsStr = codeStr[argStartPos..];
+                            string argsStr = codeStr[startArgPos..];
                             args = argsStr.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                             for (int i = 0; i < args.Length; ++i)
                             {
                                 args[i] = args[i].Trim();
+                                //k.Add() //TODO add keywords
                             }
                         }
                     }
@@ -1271,187 +1240,4 @@ using System.Text;
         }
 
         #endregion Text Wrap
-
-        /// <summary>
-        /// Determines the appropriate AsmTokenType for a keyword based on context and assembler type.
-        /// This replaces the complex logic from the old token taggers.
-        /// </summary>
-        private static AsmTokenType DetermineTokenType(
-            string keyword,
-            int keywordIndex,
-            List<(int beginPos, int length, AsmTokenType type)> keywordPositions,
-            string codeStrUppercase,
-            Mnemonic mnemonic,
-            int mnemonicPos,
-            AssemblerEnum assemblerType)
-        {
-            // Handle MASM-specific constructs
-            if ((assemblerType & AssemblerEnum.MASM) != 0)
-            {
-                switch (keyword)
-                {
-                    // MASM directives (excluding those that are also pseudo-ops)
-                    case "INCLUDE":
-                    case "INCLUDELIB":
-                    case "CODE":
-                    case "DATA":
-                    case "CONST":
-                    case "STACK":
-                    case "MEMORY":
-                    case "STRUC":
-                    case "ENDSTRUC":
-                    case "SEGMENT":
-                    case "ENDS":
-                    case "ASSUME":
-                    case "ORG":
-                    case "EVEN":
-                    case "ALIGN":
-                    case "TYPE":
-                    case "SIZE":
-                    case "LENGTH":
-                    case "THIS":
-                    case "OFFSET":
-                    case "VSIZE":
-                        return AsmTokenType.MasmDirective;
-                        
-                    // MASM pseudo-ops
-                    case "PROC":
-                    case "ENDP":
-                    case "MACRO":
-                    case "ENDM":
-                    case "LOCAL":
-                    case "EXITM":
-                    case "IRP":
-                    case "IRPC":
-                    case "REPT":
-                    case "ENDREPT":
-                        return AsmTokenType.MasmPseudoOp;
-                        
-                    // MASM operators
-                    case "PTR":
-                    case "ABS":
-                    case "NEAR":
-                    case "FAR":
-                    case "SHORT":
-                    case "LONG":
-                        return AsmTokenType.MasmOperator;
-                }
-            }
-            
-            // Handle NASM-specific constructs
-            if ((assemblerType & (AssemblerEnum.NASM_INTEL | AssemblerEnum.NASM_ATT)) != 0)
-            {
-                switch (keyword)
-                {
-                    // NASM directives (excluding those that are also pseudo-ops)
-                    case "SECTION":
-                    case "SEGMENT":
-                    case "ABSOLUTE":
-                    case "EXTERN":
-                    case "GLOBAL":
-                    case "COMMON":
-                    case "CPU":
-                    case "GROUP":
-                    case "DEFALIGN":
-                    case "DEFSTR":
-                    case "TIMES":
-                    case "MACHO":
-                    case "ELF":
-                    case "WIN32":
-                    case "WIN64":
-                    case "OBJ":
-                    case "ASM":
-                    case "BIN":
-                    case "OUT":
-                    case "DEL":
-                    case "LIST":
-                    case "NOLIST":
-                    case "%include":
-                    case "%define":
-                    case "%undef":
-                    case "%ifdef":
-                    case "%ifndef":
-                    case "%else":
-                    case "%elif":
-                    case "%push":
-                    case "%pop":
-                    case "%repl":
-                    case "%ignore":
-                    case "%warning":
-                    case "%error":
-                    case "%fatal":
-                        return AsmTokenType.NasmDirective;
-                        
-                    // NASM pseudo-ops
-                    case "EQU":
-                    case "RES":
-                    case "RESB":
-                    case "RESW":
-                    case "RESD":
-                    case "RESQ":
-                    case "REST":
-                    case "RESZ":
-                        return AsmTokenType.NasmPseudoOp;
-                        
-                    // NASM operators
-                    case "BYTE":
-                    case "WORD":
-                    case "DWORD":
-                    case "QWORD":
-                    case "TWORD":
-                    case "TBYTE":
-                    case "DQWORD":
-                    case "OWORD":
-                    case "XMMWORD":
-                    case "YMMWORD":
-                    case "ZMMWORD":
-                        return AsmTokenType.NasmOperator;
-                }
-            }
-            
-            // Handle REP prefix variations
-            if (mnemonic != Mnemonic.NONE && 
-                (mnemonic == Mnemonic.REP || mnemonic == Mnemonic.REPE || 
-                 mnemonic == Mnemonic.REPZ || mnemonic == Mnemonic.REPNE || 
-                 mnemonic == Mnemonic.REPNZ))
-            {
-                // Check if this is part of a REP prefixed instruction
-                if (mnemonicPos >= 0 && keywordIndex == mnemonicPos + 1)
-                {
-                    // This is the opcode after REP prefix
-                    if (keyword.Length > 0)
-                    {
-                        Mnemonic testMnemonic = ParseMnemonic(keyword, true);
-                        if (testMnemonic != Mnemonic.NONE)
-                        {
-                            return AsmTokenType.Mnemonic;
-                        }
-                    }
-                }
-            }
-            
-            // Default handling for unknown tokens
-            // Check if it's a register
-            if (RegisterTools.IsRn(keyword, true))
-            {
-                return AsmTokenType.Register;
-            }
-            
-            // Check if it's a constant
-            if (Evaluate_Constant(keyword, true).valid)
-            {
-                return AsmTokenType.Constant;
-            }
-            
-            // Check if it's a string literal
-            if (keyword.StartsWith("\"") && keyword.EndsWith("\"") && keyword.Length >= 2)
-            {
-                return AsmTokenType.Constant; // String literals are treated as constants for now
-            }
-            
-            // Check if it's a label (heuristic: not a known keyword, not a register/constant)
-            // In assembly, labels often appear at the start of lines or before colons
-            // But we've already handled label definitions separately, so this is for label references
-            return AsmTokenType.Label;
-        }
     }

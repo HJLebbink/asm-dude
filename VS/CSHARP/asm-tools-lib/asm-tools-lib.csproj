@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <!-- Required for ExpressionEvaluator.cs (script evaluation) -->
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.12.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.3.0" />
   </ItemGroup>
 
 </Project>

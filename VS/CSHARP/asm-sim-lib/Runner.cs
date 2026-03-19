@@ -69,7 +69,7 @@ namespace AsmSim
                 Tools tools = state.Tools;
                 string nextKey = Tools.CreateKey(tools.Rand);
                 string nextKeyBranch = "DUMMY_NOT_USED";
-                (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmSourceTools.ParseLine(line, -1, -1);
+                (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmSourceTools.ParseLine(line, -1, -1, AssemblerEnum.UNKNOWN);
                 using OpcodeBase? opcodeBase = InstantiateOpcode(mnemonic, args, (state.HeadKey, nextKey, nextKeyBranch), tools);
                 if (opcodeBase == null)
                 {
@@ -116,7 +116,7 @@ namespace AsmSim
             try
             {
                 string prevKey = Tools.CreateKey(state.Tools.Rand);
-                (KeywordID[], string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line, -1, -1);
+                (KeywordID[], string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line, -1, -1, AssemblerEnum.UNKNOWN);
                 using OpcodeBase? opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (prevKey, state.TailKey, state.TailKey), state.Tools);
                 if (opcodeBase == null)
                 {
@@ -162,7 +162,7 @@ namespace AsmSim
             {
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
                 string nextKeyBranch = nextKey + "!BRANCH";
-                (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line, -1, -1);
+                (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line, -1, -1, AssemblerEnum.UNKNOWN);
                 using OpcodeBase? opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools);
                 if (opcodeBase == null)
                 {

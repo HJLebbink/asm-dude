@@ -186,20 +186,26 @@ public class LanguageServerTarget(LanguageServer server)
                     Range = false,
                     Legend = new SemanticTokensLegend
                     {
-                        // Token types for assembly language (LSP 3.17)
-                        TokenTypes =
-                        [
-                            "keyword",      // 0: mnemonics (MOV, ADD, etc.)
-                                "variable",     // 1: registers (RAX, EAX, etc.)
-                                "label",        // 2: labels (loop_start:, etc.)
-                                "macro",        // 3: directives (.data, PROC, etc.)
-                                "number",       // 4: immediate values (0x10, 42, etc.)
-                                "operator",     // 5: memory operands ([rax], etc.)
-                                "comment",      // 6: comments (; this is a comment)
-                                "string",       // 7: string literals ("hello")
-                                "function",     // 8: CALL targets
-                                "decorator",    // 9: decorators/attributes (LSP 3.17)
-                            ],
+// Token types for assembly language (LSP 3.17)
+                         TokenTypes =
+                         [
+                             "keyword",      // 0: mnemonics (MOV, ADD, etc.)
+                                 "variable",     // 1: registers (RAX, EAX, etc.)
+                                 "label",        // 2: labels (loop_start:, etc.)
+                                 "macro",        // 3: directives (.data, PROC, etc.)
+                                 "number",       // 4: immediate values (0x10, 42, etc.)
+                                 "operator",     // 5: memory operands ([rax], etc.)
+                                 "comment",      // 6: comments (; this is a comment)
+                                 "string",       // 7: string literals ("hello")
+                                 "function",     // 8: CALL targets
+                                 "decorator",    // 9: decorators/attributes (LSP 3.17)
+                                 "masmDirective",  // 10: MASM-specific directives
+                                 "nasmDirective",  // 11: NASM-specific directives
+                                 "masmOperator",   // 12: MASM-specific operators
+                                 "nasmOperator",   // 13: NASM-specific operators
+                                 "masmPseudoOp",   // 14: MASM-specific pseudo-ops
+                                 "nasmPseudoOp",   // 15: NASM-specific pseudo-ops
+                             ],
                         // Token modifiers for additional classification
                         TokenModifiers =
                         [

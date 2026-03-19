@@ -19,13 +19,13 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.15.0" />
-		<PackageReference Include="coverlet.collector" Version="6.0.2">
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+		<PackageReference Include="coverlet.collector" Version="8.0.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Moq" Version="4.20.72" />
-		<PackageReference Include="FluentAssertions" Version="8.8.0" />
+		<PackageReference Include="FluentAssertions" Version="8.9.0" />
 		<PackageReference Include="Nerdbank.Streams" Version="2.13.16" />
 		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.5.3" />
 		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="18.5.3" />

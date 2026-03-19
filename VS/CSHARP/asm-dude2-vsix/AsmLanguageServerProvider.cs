@@ -78,7 +78,7 @@ public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken
 #if DEBUG
                 CreateNoWindow = false, // Show LSP server console window for debugging
 #else
-                CreateNoWindow = true,
+                CreateNoWindow = false, // TODO: set to true for final release
 #endif
             };
 

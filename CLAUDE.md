@@ -393,6 +393,9 @@ VS-internal hover types (`ClassifiedTextElement`, `ClassifiedTextRun`) with navi
 **⚠ DO NOT upgrade `Microsoft.VisualStudio.SDK`, `Microsoft.VSSDK.BuildTools`, or `Microsoft.VisualStudio.Threading.Analyzers` to version 18.x.**
 The plugin must support **both VS 2022 (17.x) and VS 2026 (18.x)**. These three packages at 18.x target VS 2026 only and drop VS 2022 compatibility. Stay on 17.14.x.
 
+**⚠ DO NOT change `asm-dude2-vsix` TargetFramework to `net10.0` or higher.**
+OOP extensions run inside `ServiceHub.Host.Extensibility`, a .NET 8 host process shipped with VS. Targeting net10.0 causes `FileNotFoundException: System.Runtime, Version=10.0.0.0`. This is a known SDK limitation ([microsoft/VSExtensibility#544](https://github.com/microsoft/VSExtensibility/issues/544)). .NET 10 support for the extension host is planned for a future VS 2026 update. The LSP server (`asm-dude2-ls`) runs as a separate process and targets `net10.0-windows` independently. C# 14 is available in the VSIX via `<LangVersion>14</LangVersion>` even on net8.0.
+
 **⚠ DO NOT upgrade `StreamJsonRpc` in `asm-dude2-vsix` beyond 2.24.84.**
 The VSIX references StreamJsonRpc with `<ExcludeAssets>runtime</ExcludeAssets>` — it does **not** bundle the DLL but relies on Visual Studio to provide it at runtime. VS 2022 ships StreamJsonRpc 2.24.x; upgrading the reference to 2.25.x causes a `FileNotFoundException` ("StreamJsonRpc Version 2.25.0.0 is not found") when the extension loads. The LSP server (`asm-dude2-ls-lib`) bundles its own copy and may use a newer version independently.
 

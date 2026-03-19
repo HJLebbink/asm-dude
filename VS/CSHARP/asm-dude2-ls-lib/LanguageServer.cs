@@ -66,6 +66,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     private readonly Dictionary<string, IEnumerable<FoldingRange>> foldingRanges;
     private readonly Dictionary<string, LabelGraph> labelGraphs;
+    // Store assembler type per document for MASM/NASM-specific highlighting
+    private readonly Dictionary<string, AssemblerEnum> _documentAssemblerTypes = new();
     private readonly HashSet<string> labelGraphDirty;
 
     private readonly int referencesChunkSize = 10;
@@ -374,102 +376,139 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         }
     }
 
-    private void UpdateInternals(string uri)
-    {
-        Console.Error.WriteLine($"[UpdateInternals] ENTRY: uri={uri}");
-        LogToFile($"[UpdateInternals] ENTRY: uri={uri}");
-        LogInfo($"[UpdateInternals] uri={uri}");
-        var document = this.GetTextDocument(uri);
-        Console.Error.WriteLine($"[UpdateInternals] GetTextDocument returned: {(document != null ? "NOT NULL" : "NULL")}");
-        LogToFile($"[UpdateInternals] GetTextDocument returned: {(document != null ? "NOT NULL" : "NULL")}");
-        if (document is TextDocumentItem)
+private void UpdateInternals(string uri)
         {
-            var newLines = document.Text.Split(separator, StringSplitOptions.None);
-            LogToFile($"[UpdateInternals] Split into {newLines.Length} lines");
-            LogInfo($"[UpdateInternals] Split into {newLines.Length} lines");
-
-            string[] oldLines;
-            if (this.textDocumentLines.TryGetValue(uri, out var cachedLines) && cachedLines.SequenceEqual(newLines))
+            Console.Error.WriteLine($"[UpdateInternals] ENTRY: uri={uri}");
+            LogToFile($"[UpdateInternals] ENTRY: uri={uri}");
+            LogInfo($"[UpdateInternals] uri={uri}");
+            var document = this.GetTextDocument(uri);
+            Console.Error.WriteLine($"[UpdateInternals] GetTextDocument returned: {(document != null ? "NOT NULL" : "NULL")}");
+            LogToFile($"[UpdateInternals] GetTextDocument returned: {(document != null ? "NOT NULL" : "NULL")}");
+            if (document is TextDocumentItem)
             {
-                LogToFile($"[UpdateInternals] Lines unchanged, returning early");
-                LogInfo($"[UpdateInternals] Lines unchanged, returning early");
-                return;
-            }
-            else
-            {
-                oldLines = cachedLines ?? [];
-            }
+                var newLines = document.Text.Split(separator, StringSplitOptions.None);
+                LogToFile($"[UpdateInternals] Split into {newLines.Length} lines");
+                LogInfo($"[UpdateInternals] Split into {newLines.Length} lines");
 
-            this.textDocumentLines.Remove(uri);
-            this.textDocumentLines.Add(uri, newLines);
-
-            KeywordID[][] lineData;
-            if (this.parsedDocuments.TryGetValue(uri, out var oldParsed) && oldParsed.Length == newLines.Length)
-            {
-                lineData = new KeywordID[newLines.Length][];
-                for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
+                // Detect assembler type for this document
+                AssemblerEnum assemblerType = AssemblerEnum.UNKNOWN;
+                if (this.options != null && this.options.useAssemblerAutoDetect)
                 {
-                    if (lineNumber < oldParsed.Length && oldLines[lineNumber] == newLines[lineNumber] && oldParsed[lineNumber] != null)
+                    // Simple heuristic: check for MASM/NASM specific directives in first few lines
+                    int linesToCheck = Math.Min(20, newLines.Length);
+                    for (int i = 0; i < linesToCheck; i++)
                     {
-                        lineData[lineNumber] = oldParsed[lineNumber];
-                    }
-                    else
-                    {
-                        int fileID = 0;
-                        lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID).keywords;
+                        string line = newLines[i].Trim().ToUpperInvariant();
+                        if (line.Length == 0) continue;
+                        
+                        // Check for MASM-specific indicators
+                        if (line.StartsWith("PROC") || line.StartsWith("ENDP") || line.StartsWith("MACRO") || 
+                            line.StartsWith("ENDM") || line.StartsWith("SEGMENT") || line.StartsWith("ENDS") ||
+                            line.StartsWith("ASSUME") || line.StartsWith("ORG") || line.Contains(" PTR ") || 
+                            line.StartsWith("EXTERN") || line.StartsWith("EXTRN") || line.StartsWith("PUBLIC"))
+                        {
+                            assemblerType |= AssemblerEnum.MASM;
+                            break;
+                        }
+                        
+                        // Check for NASM-specific indicators
+                        if (line.StartsWith("SECTION") || line.StartsWith("SEGMENT") || line.StartsWith("ABSOLUTE") ||
+                            line.StartsWith("EXTERN") || line.StartsWith("GLOBAL") || line.StartsWith("COMMON") ||
+                            line.StartsWith("CPU") || line.StartsWith("GROUP") || line.Contains(" EQU ") ||
+                            line.StartsWith("RES") || line.StartsWith("TIMES") || line.StartsWith("%include") ||
+                            line.StartsWith("%define") || line.StartsWith("%ifdef") || line.StartsWith("%ifndef"))
+                        {
+                            assemblerType |= (AssemblerEnum.NASM_INTEL | AssemblerEnum.NASM_ATT);
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                lineData = new KeywordID[newLines.Length][];
-                int fileID = 0;
-                for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
+                
+                // Store the detected assembler type for this document
+                this._documentAssemblerTypes[uri] = assemblerType;
+
+                string[] oldLines;
+                if (this.textDocumentLines.TryGetValue(uri, out var cachedLines) && cachedLines.SequenceEqual(newLines))
                 {
-                    lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID).keywords;
+                    LogToFile($"[UpdateInternals] Lines unchanged, returning early");
+                    LogInfo($"[UpdateInternals] Lines unchanged, returning early");
+                    return;
                 }
-            }
+                else
+                {
+                    oldLines = cachedLines ?? [];
+                }
 
-            this.parsedDocuments.Remove(uri);
-            this.parsedDocuments.Add(uri, lineData);
+                this.textDocumentLines.Remove(uri);
+                this.textDocumentLines.Add(uri, newLines);
 
-            this.diagnostics.Clear();
-            this.UpdateFoldingRanges(uri);
-            this.labelGraphDirty.Add(uri);
-            Console.Error.WriteLine($"[UpdateInternals] About to call InvalidateAndSimulate: asmSimulator_={this.asmSimulator_ != null}, lines={newLines.Length}");
-            LogToFile($"[UpdateInternals] About to call InvalidateAndSimulate with {newLines.Length} lines, asmSimulator_={this.asmSimulator_ != null}");
-            LogInfo($"[UpdateInternals] Calling InvalidateAndSimulate with {newLines.Length} lines");
-            try
-            {
-                this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
-                    onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()));
-                Console.Error.WriteLine($"[UpdateInternals] InvalidateAndSimulate returned");
-                LogToFile($"[UpdateInternals] InvalidateAndSimulate returned");
-                LogInfo($"[UpdateInternals] InvalidateAndSimulate returned");
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"[UpdateInternals] EXCEPTION in InvalidateAndSimulate: {ex.GetType().Name}: {ex.Message}");
-                LogToFile($"[UpdateInternals] EXCEPTION in InvalidateAndSimulate: {ex.GetType().Name}: {ex.Message}");
-                LogToFile($"[UpdateInternals] Stack: {ex.StackTrace}");
-                LogInfo($"[UpdateInternals] EXCEPTION: {ex.Message}");
-                throw;
-            }
+                KeywordID[][] lineData;
+                if (this.parsedDocuments.TryGetValue(uri, out var oldParsed) && oldParsed.Length == newLines.Length)
+                {
+                    lineData = new KeywordID[newLines.Length][];
+                    for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
+                    {
+                        if (lineNumber < oldParsed.Length && oldLines[lineNumber] == newLines[lineNumber] && oldParsed[lineNumber] != null)
+                        {
+                            lineData[lineNumber] = oldParsed[lineNumber];
+                        }
+                        else
+                        {
+                            int fileID = 0;
+                            lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID, assemblerType).keywords;
+                        }
+                    }
+                }
+                else
+                {
+                    lineData = new KeywordID[newLines.Length][];
+                    int fileID = 0;
+                    for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
+                    {
+                        lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID, assemblerType).keywords;
+                    }
+                }
 
-            if (false)
-            {
+                this.parsedDocuments.Remove(uri);
+                this.parsedDocuments.Add(uri, lineData);
+
+                this.diagnostics.Clear();
+                this.UpdateFoldingRanges(uri);
+                this.labelGraphDirty.Add(uri);
+                Console.Error.WriteLine($"[UpdateInternals] About to call InvalidateAndSimulate: asmSimulator_={this.asmSimulator_ != null}, lines={newLines.Length}");
+                LogToFile($"[UpdateInternals] About to call InvalidateAndSimulate with {newLines.Length} lines, asmSimulator_={this.asmSimulator_ != null}");
+                LogInfo($"[UpdateInternals] Calling InvalidateAndSimulate with {newLines.Length} lines");
+                try
+                {
+                    this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
+                        onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()));
+                    Console.Error.WriteLine($"[UpdateInternals] InvalidateAndSimulate returned");
+                    LogToFile($"[UpdateInternals] InvalidateAndSimulate returned");
+                    LogInfo($"[UpdateInternals] InvalidateAndSimulate returned");
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"[UpdateInternals] EXCEPTION in InvalidateAndSimulate: {ex.GetType().Name}: {ex.Message}");
+                    LogToFile($"[UpdateInternals] EXCEPTION in InvalidateAndSimulate: {ex.GetType().Name}: {ex.Message}");
+                    LogToFile($"[UpdateInternals] Stack: {ex.StackTrace}");
+                    LogInfo($"[UpdateInternals] EXCEPTION: {ex.Message}");
+                    throw;
+                }
+
+                if (false)
+                {
 #pragma warning disable CS0162 // Unreachable code detected
-                this.UpdateSymbols(uri);
+                    this.UpdateSymbols(uri);
 #pragma warning restore CS0162 // Unreachable code detected
+                }
+                this.SendDiagnostics(uri);
+                LogToFile($"[UpdateInternals] EXIT SUCCESS");
             }
-            this.SendDiagnostics(uri);
-            LogToFile($"[UpdateInternals] EXIT SUCCESS");
+            else
+            {
+                LogToFile($"[UpdateInternals] EXIT - document is null!");
+            }
         }
-        else
-        {
-            LogToFile($"[UpdateInternals] EXIT - document is null!");
-        }
-    }
 
     public void OnTextDocumentOpened(DidOpenTextDocumentParams messageParams)
     {
@@ -1047,7 +1086,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
 
             int fileID = 0; //TODO
-            (object _, string _, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
+            (object _, string _, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, AssemblerEnum.UNKNOWN);
             if (extraLogging) LogInfo($"GetTextDocumentSignatureHelp: lineStr=\"{lineStr}\"; mnemonic={mnemonic}");
 
             if (remark.Length > 0)
@@ -1225,38 +1264,52 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     /// <summary>
     /// Map AsmTokenType to semantic token type index (matching the legend in server capabilities)
     /// </summary>
-    private static int MapTokenType(AsmTokenType type)
-    {
-        return type switch
-        {
-            AsmTokenType.Mnemonic => 0,    // keyword
-            AsmTokenType.MnemonicOff => 0, // keyword (deprecated - will add modifier)
-            AsmTokenType.Register => 1,    // variable
-            AsmTokenType.Label => 2,       // label
-            AsmTokenType.LabelDef => 2,    // label (definition)
-            AsmTokenType.Jump => 8,        // function (jump target)
-            AsmTokenType.Directive => 3,   // macro
-            AsmTokenType.Constant => 4,    // number
-            AsmTokenType.Remark => 6,      // comment
-            AsmTokenType.Misc => 5,        // operator (memory operands, brackets, etc.)
-            _ => -1, // Skip unknown tokens
-        };
-    }
+private static int MapTokenType(AsmTokenType type)
+     {
+         return type switch
+         {
+             AsmTokenType.Mnemonic => 0,    // keyword
+             AsmTokenType.MnemonicOff => 0, // keyword (deprecated - will add modifier)
+             AsmTokenType.Register => 1,    // variable
+             AsmTokenType.Label => 2,       // label
+             AsmTokenType.LabelDef => 2,    // label (definition)
+             AsmTokenType.Jump => 8,        // function (jump target)
+             AsmTokenType.Directive => 3,   // macro
+             AsmTokenType.Constant => 4,    // number
+             AsmTokenType.Remark => 6,      // comment
+             AsmTokenType.Misc => 5,        // operator (memory operands, brackets, etc.)
+             // MASM/NASM-specific token types
+             AsmTokenType.MasmDirective => 10, // masmDirective
+             AsmTokenType.NasmDirective => 11, // nasmDirective
+             AsmTokenType.MasmOperator => 12,  // masmOperator
+             AsmTokenType.NasmOperator => 13,  // nasmOperator
+             AsmTokenType.MasmPseudoOp => 14,  // masmPseudoOp
+             AsmTokenType.NasmPseudoOp => 15,  // nasmPseudoOp
+             _ => -1, // Skip unknown tokens
+         };
+     }
 
     /// <summary>
     /// Get token modifiers based on token type
     /// Modifier flags: 0x1 = declaration, 0x2 = definition, 0x4 = deprecated, 0x8 = readonly
     /// </summary>
-    private static int GetTokenModifiers(AsmTokenType type)
-    {
-        return type switch
-        {
-            AsmTokenType.LabelDef => 0x3,    // declaration + definition
-            AsmTokenType.MnemonicOff => 0x4, // deprecated
-            AsmTokenType.Constant => 0x8,    // readonly
-            _ => 0,
-        };
-    }
+private static int GetTokenModifiers(AsmTokenType type)
+     {
+         return type switch
+         {
+             AsmTokenType.LabelDef => 0x3,    // declaration + definition
+             AsmTokenType.MnemonicOff => 0x4, // deprecated
+             AsmTokenType.Constant => 0x8,    // readonly
+             // MASM/NASM-specific token types (no special modifiers by default)
+             AsmTokenType.MasmDirective => 0,
+             AsmTokenType.NasmDirective => 0,
+             AsmTokenType.MasmOperator => 0,
+             AsmTokenType.NasmOperator => 0,
+             AsmTokenType.MasmPseudoOp => 0,
+             AsmTokenType.NasmPseudoOp => 0,
+             _ => 0,
+         };
+     }
 
     /// <summary>
     /// Get inlay hints for a document range (LSP 3.17).
@@ -1287,7 +1340,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             if (string.IsNullOrWhiteSpace(lineText)) continue;
 
             int fileID = 0;
-            (_, _, Mnemonic mnemonic, string[] args, _) = AsmTools.AsmSourceTools.ParseLine(lineText, lineNumber, fileID);
+            (_, _, Mnemonic mnemonic, string[] args, _) = AsmTools.AsmSourceTools.ParseLine(lineText, lineNumber, fileID, AssemblerEnum.UNKNOWN);
 
             // Add performance hint for mnemonic
             if (showPerformance && mnemonic != Mnemonic.NONE && this.performanceStore != null)
@@ -1652,7 +1705,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             char currentChar = this.GetChar(completeLineStr, pos - 1);
 
             int fileID = 0; //TODO
-            (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
+            (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, AssemblerEnum.UNKNOWN);
             if (extraLogging) LogInfo($"OnTextDocumentCompletion: lineStr=\"{lineStr}\"; mnemonic={mnemonic}; args={string.Join(',', args)}");
 
             // if we are typing in a remark: no code completion please
@@ -2558,7 +2611,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
         {
             string lineStr = lines[lineNumber];
-            (object _, string label, Mnemonic mnemonic, _, _) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID);
+            (object _, string label, Mnemonic mnemonic, _, _) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, AssemblerEnum.UNKNOWN);
             if (label.Length > 0)
             {
                 int pos = lineStr.IndexOf(label);

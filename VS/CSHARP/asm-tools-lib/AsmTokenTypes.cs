@@ -26,6 +26,8 @@ namespace AsmTools;
 /// Types of token used in assembly source files. Mnemonic, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UserDefined1, UserDefined2, UserDefined3, UNKNOWN
 /// </summary>
 public enum AsmTokenType
-    {
-        Mnemonic, MnemonicOff, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UserDefined1, UserDefined2, UserDefined3, UNKNOWN,
-    }
+{
+    Mnemonic, MnemonicOff, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UserDefined1, UserDefined2, UserDefined3, UNKNOWN,
+    // MASM/NASM-specific token types for enhanced syntax highlighting
+    MasmDirective, NasmDirective, MasmOperator, NasmOperator, MasmPseudoOp, NasmPseudoOp
+}
