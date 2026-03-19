@@ -2152,7 +2152,7 @@ private static int GetTokenModifiers(AsmTokenType type)
 
     private string AsHtmlUrl(Mnemonic mnemonic)
     {
-        string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic); // URL for clickable hyperlink
+        string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
         if (htmlRef == null)
         {
             return mnemonic.ToString();
@@ -2160,7 +2160,6 @@ private static int GetTokenModifiers(AsmTokenType type)
         string fullURL = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
         return "<a href=" + fullURL + ">" + mnemonic.ToString() + "</a>";
     }
-
 
     /// <summary>
     /// Handle hover request. Returns standard Hover with MarkupContent.
@@ -2183,6 +2182,7 @@ private static int GetTokenModifiers(AsmTokenType type)
         }
         string keyword_uppercase = keyword.ToUpperInvariant();
         string[]? hoverContent = null;
+        string? hoverKeyword = null; // keyword text for colored mnemonic display
         AsmTokenType tokenType = this.GetAsmTokenType(keyword_uppercase);
 
         switch (tokenType)
@@ -2191,11 +2191,11 @@ private static int GetTokenModifiers(AsmTokenType type)
             case AsmTokenType.Jump:
                 {
                     Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword_uppercase, true);
+                    hoverKeyword = mnemonic.ToString();
 
-                    string mnemonicStr = this.AsHtmlUrl(mnemonic);
-                    string archStr = ":" + ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
+                    string archStr = ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
                     string descr = this.mnemonicStore.GetDescription(mnemonic);
-                    string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonicStr} {archStr} {descr}", MaxNumberOfCharsInToolTips);
+                    string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonic} :[{archStr}] {descr}", MaxNumberOfCharsInToolTips);
                     string performanceStr = "";
 
                     bool performanceInfoAvailable = false;
@@ -2504,31 +2504,27 @@ private static int GetTokenModifiers(AsmTokenType type)
 
         if (hoverContent != null)
         {
-            string combinedContent = string.Join("\n", hoverContent);
+            int line = (int)parameter.Position.Line;
 
-            /*
-                // Prepend a documentation URL if available (plain text — VS does not render markdown in hover)
-                if (!string.IsNullOrEmpty(hoverUrl) && !string.IsNullOrEmpty(hoverKeyword) && !string.IsNullOrEmpty(this.options.AsmDoc_Url))
-                {
-                    string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + hoverUrl;
-                    LogInfo($"GetHover: adding link {fullUrl}");
-                    combinedContent += "\n\nDoc: " + fullUrl;
-                }
-            */
-
-            return new Hover()
+            // All hover responses use VSInternalHover with _vs_rawContent for:
+            // - Monospace font (via "formal language" classification + UseClassificationFont)
+            // - Colored keyword for mnemonics (via "keyword" classification)
+            //
+            // VS LSP client only supports PlainText in standard hover Contents
+            // (advertises contentFormat: ["plaintext"]). Markdown is NOT rendered.
+            // https://developercommunity.visualstudio.com/t/Support-markdown-in-LSP-textDocumenthov/10712890
+            //
+            // Clickable links are NOT possible over LSP — NavigationAction requires an
+            // Action delegate which cannot be serialized over JSON-RPC. Even Roslyn
+            // explicitly sets navigationActionFactory: null in its LSP hover handler.
+            // See: dotnet/roslyn src/LanguageServer/Protocol/Handler/Hover/HoverHandler.cs
+            // See: VSInternalTypes.cs for full documentation of this limitation.
+            if (!string.IsNullOrEmpty(hoverKeyword) && (tokenType is AsmTokenType.Mnemonic or AsmTokenType.Jump))
             {
-                Contents = new MarkupContent
-                {
-                    Kind = MarkupKind.PlainText,
-                    Value = combinedContent
-                },
-                Range = new Range()
-                {
-                    Start = new Position(parameter.Position.Line, startPos),
-                    End = new Position(parameter.Position.Line, endPos),
-                },
-            };
+                return HoverBuilder.CreateMnemonicHover(hoverKeyword, hoverContent, line, startPos, endPos);
+            }
+
+            return HoverBuilder.CreateStackedHover(hoverContent, line, startPos, endPos);
         }
         return null;
     }

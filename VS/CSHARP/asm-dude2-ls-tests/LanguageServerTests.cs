@@ -266,19 +266,20 @@ public class LanguageServerTests
         // Act
         var result = this._server.GetHover(hoverParams);
 
-        // Assert
+        // Assert — all hovers now return VSInternalHover with RawContent for monospace rendering
         result.Should().NotBeNull("hover on MOV should return documentation");
-        result.Should().BeOfType<Hover>("GetHover should return standard Hover, not a custom type");
-        var hover = (Hover)result;
-        hover.Contents.Should().NotBeNull();
-        var markup = hover.Contents.Value.Fourth;
-        markup.Should().NotBeNull("Contents should be MarkupContent");
-        markup.Kind.Should().Be(MarkupKind.PlainText);
-        markup.Value.Should().Contain("MOV", "hover text should mention the mnemonic");
+        result.Should().BeOfType<VSInternalHover>();
+        var hover = (VSInternalHover)result;
+        hover.RawContent.Should().NotBeNull("RawContent should contain classified text elements");
+        var container = hover.RawContent.Should().BeOfType<ContainerElement>().Subject;
+        container.Elements.Should().NotBeEmpty();
+        // First element should contain the keyword "MOV"
+        var firstElement = container.Elements[0].Should().BeOfType<ClassifiedTextElement>().Subject;
+        firstElement.Runs.Should().Contain(r => r.Text == "MOV", "first run should be the mnemonic keyword");
     }
 
     [Fact]
-    public void GetHover_WithMnemonic_WithAsmDocUrl_ShouldContainDocUrl()
+    public void GetHover_WithMnemonic_WithAsmDocUrl_ShouldReturnStyledHover()
     {
         // Arrange – create a fresh server with AsmDoc_Url configured
         var server = new LanguageServer();
@@ -303,16 +304,20 @@ public class LanguageServerTests
             Position = new Position { Line = 0, Character = 1 }
         });
 
-        // Assert
-        result.Should().BeOfType<Hover>();
-        var markup = ((Hover)result).Contents!.Value.Fourth;
-        markup.Should().NotBeNull();
-        markup.Value.Should().Contain("https://github.com/HJLebbink/asm-dude/wiki/",
-            "hover should contain a documentation URL");
+        // Assert — mnemonic hover uses VSInternalHover with colored keyword
+        // Note: clickable links are NOT possible over LSP (NavigationAction requires
+        // an Action delegate, which cannot be serialized over JSON-RPC).
+        result.Should().BeOfType<VSInternalHover>();
+        var hover = (VSInternalHover)result;
+        hover.RawContent.Should().NotBeNull();
+        var container = hover.RawContent.Should().BeOfType<ContainerElement>().Subject;
+        var firstElement = container.Elements[0].Should().BeOfType<ClassifiedTextElement>().Subject;
+        firstElement.Runs[0].ClassificationType.Should().Be("keyword", "mnemonic should use keyword classification");
+        firstElement.Runs[0].Text.Should().Be("MOV");
     }
 
     [Fact]
-    public void GetHover_WithMnemonic_WithoutAsmDocUrl_ShouldNotContainMarkdownLink()
+    public void GetHover_WithMnemonic_WithoutAsmDocUrl_ShouldReturnStyledHover()
     {
         // Arrange – _server has no AsmDoc_Url set (see constructor)
         var uri = "file:///test.asm";
@@ -328,11 +333,13 @@ public class LanguageServerTests
             Position = new Position { Line = 0, Character = 1 }
         });
 
-        // Assert
-        result.Should().BeOfType<Hover>();
-        var markup = ((Hover)result).Contents!.Value.Fourth;
-        markup.Should().NotBeNull();
-        markup.Value.Should().NotStartWith("[", "without AsmDoc_Url there should be no leading markdown link");
+        // Assert — still VSInternalHover with monospace text, just no URL (which isn't clickable anyway)
+        result.Should().BeOfType<VSInternalHover>();
+        var hover = (VSInternalHover)result;
+        hover.RawContent.Should().NotBeNull();
+        var container = hover.RawContent.Should().BeOfType<ContainerElement>().Subject;
+        var firstElement = container.Elements[0].Should().BeOfType<ClassifiedTextElement>().Subject;
+        firstElement.Runs[0].Text.Should().Be("MOV");
     }
 
     [Fact]
