@@ -344,41 +344,30 @@ Misc        → operator (5)
 3. Each `KeywordID` (with `AsmTokenType`) is mapped to LSP semantic token type/modifiers
 4. Returns encoded `uint[]` array with delta-encoded positions and token info
 
-### Clickable Hyperlinks in Hover (asm-dude2-ls-lib)
+### Hover Tooltips (asm-dude2-ls-lib)
 
 **Implementation:** `VS\CSHARP\asm-dude2-ls-lib\`
 
-The LSP server implements clickable hyperlinks in hover tooltips using custom types that serialize to Visual Studio's internal format:
+All hover responses use `VSInternalHover` with `_vs_rawContent` for monospace font and colored text. This uses VS-specific JSON extensions (not standard LSP).
 
 **Key Files:**
-- `VSInternalTypes.cs` - Custom types for VS-specific hover extensions:
-  - `VSInternalHover` - Enhanced hover with `RawContent` property
-  - `ClassifiedTextElement` - Text with classification and navigation
-  - `ClassifiedTextRun` - Individual text run with URL navigation action
-  - `ContainerElement` - Container for organizing hover elements
+- `VSInternalTypes.cs` - Custom types matching VS's internal `ObjectContentConverter` format:
+  - `VSInternalHover` - Hover with `_vs_rawContent` property (Contents must be null when RawContent is set)
+  - `ClassifiedTextElement` - Contains `ClassifiedTextRun[]` with `_vs_type` discriminator
+  - `ClassifiedTextRun` - Text with classification type and style
+  - `ContainerElement` - Layout container (Stacked/Wrapped)
+  - Uses `"formal language"` classification + `UseClassificationFont` for monospace rendering
+- `HoverBuilder.cs` - Factory for hover responses:
+  - `CreateMnemonicHover()` - Colored keyword + monospace description + stacked performance data
+  - `CreateStackedHover()` - All-monospace stacked text (registers, labels, etc.)
+  - `CreateMonospaceHover()` / `CreateKeywordHover()` - Single-element variants
+- `LanguageServer.cs` - Dispatches to HoverBuilder based on token type
 
-- `HoverBuilder.cs` - Factory for creating hover responses:
-  - `CreateHoverWithLink()` - Builds VSInternalHover with clickable links
-  - `CreateStandardHover()` - Fallback for standard LSP hover
+**⚠ Clickable links in hover are NOT possible over LSP:**
+`ClassifiedTextRun.NavigationAction` is an `Action` delegate (C# callback), not a URL string. Delegates cannot be serialized over JSON-RPC. Even Roslyn explicitly sets `navigationActionFactory: null` in its LSP hover handler with the comment: "Build the classified text without navigation actions - they are not serializable." (See: `dotnet/roslyn src/LanguageServer/Protocol/Handler/Hover/HoverHandler.cs`)
 
-- `MnemonicStore.cs` - Provides URLs via `GetHtmlRef()` method
-- `LanguageServer.cs` - Returns `object` (VSInternalHover or Hover) based on URL availability
-
-**How It Works:**
-1. When hovering over a mnemonic (e.g., "MOV"), the server retrieves:
-   - Description from signature files
-   - URL from MnemonicStore.GetHtmlRef()
-   - Performance data from PerformanceStore (if enabled)
-
-2. If URL exists, LanguageServer creates VSInternalHover with:
-   - `Contents` - Standard markdown (LSP compatibility)
-   - `RawContent` - ClassifiedTextElement with clickable link
-   - NavigationAction - URL that opens when clicked
-
-3. Visual Studio recognizes VSInternalHover and renders clickable hyperlink
-
-**Why Custom Types:**
-VS-internal hover types (`ClassifiedTextElement`, `ClassifiedTextRun`) with navigation actions are not part of the standard LSP protocol. These custom types in `VSInternalTypes.cs` serialize to the JSON format VS expects for clickable hyperlinks.
+**Future: Clickable links via hybrid in-proc extension (VS 2026 only):**
+To add clickable links, the VSIX must convert to a hybrid VSSDK+VisualStudio.Extensibility extension with `RequiresInProcessHosting = true`. This enables MEF `IAsyncQuickInfoSource` which can create WPF `ClassifiedTextRun` with real `Action` delegates (`() => Process.Start(url)`). The LSP server already has `AsHtmlUrl()` which embeds URLs as `<a href=URL>NAME</a>` for client-side parsing. See `VS/CSHARP/old/asm-dude2-vsix-archived/QuickInfo/AsmQuickInfoSource.cs` for the old in-process implementation. This requires `net472` TFM for VS 2022 support, or `net8.0` for VS 2026 only.
 
 ## Package Dependencies (Updated for VS 2026)
 

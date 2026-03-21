@@ -2150,6 +2150,16 @@ private static int GetTokenModifiers(AsmTokenType type)
     }
 
 
+    /// <summary>
+    /// Formats a mnemonic as an HTML anchor: <![CDATA[<a href=URL>NAME</a>]]>.
+    /// Currently unused — kept for the future hybrid in-proc VSIX extension where
+    /// an IAsyncQuickInfoSource (MEF) can parse this HTML and create a WPF
+    /// ClassifiedTextRun with a real Action delegate for clickable navigation.
+    ///
+    /// See: VS/CSHARP/old/asm-dude2-vsix-archived/QuickInfo/AsmQuickInfoSource.cs
+    /// for the old in-process implementation that consumed this format.
+    /// See: VSInternalTypes.cs for why clickable links are not possible over LSP.
+    /// </summary>
     private string AsHtmlUrl(Mnemonic mnemonic)
     {
         string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);

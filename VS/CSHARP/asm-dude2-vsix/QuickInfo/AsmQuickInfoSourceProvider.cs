@@ -20,19 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2;
+namespace AsmDude2.QuickInfo;
 
-using Microsoft.VisualStudio.Extensibility;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
 
-[VisualStudioContribution]
-public class Extension : Microsoft.VisualStudio.Extensibility.Extension
+/// <summary>
+/// MEF-exported QuickInfo source provider — ported from
+/// VS/CSHARP/old/asm-dude2-vsix-archived/QuickInfo/AsmQuickInfoSourceProvider.cs
+///
+/// Adds clickable documentation links to hover tooltips.
+/// Runs in-process (RequiresInProcessHosting = true) so MEF exports work.
+/// The LSP hover provides the main content; this adds a clickable link below it.
+/// </summary>
+[Export(typeof(IAsyncQuickInfoSourceProvider))]
+[ContentType("asm")]
+[ContentType("cod")]
+[ContentType("inc")]
+[ContentType("s")]
+[Name("AsmQuickInfoSourceProvider")]
+[Order]
+internal sealed class AsmQuickInfoSourceProvider : IAsyncQuickInfoSourceProvider
 {
-    // In-process hosting enables MEF exports (IAsyncQuickInfoSource for clickable hover links).
-    // VS 2026 only — devenv.exe is .NET 8, so net8.0 works in-proc.
-    // When RequiresInProcessHosting = true, Metadata must be null — metadata comes from
-    // source.extension.vsixmanifest instead.
-    public override ExtensionConfiguration ExtensionConfiguration => new()
+    public IAsyncQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
     {
-        RequiresInProcessHosting = true,
-    };
+        return textBuffer.Properties.GetOrCreateSingletonProperty(
+            () => new AsmQuickInfoSource(textBuffer));
+    }
 }

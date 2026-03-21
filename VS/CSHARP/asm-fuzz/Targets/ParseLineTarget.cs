@@ -15,6 +15,6 @@ public static class ParseLineTarget
         }
 
         string input = Encoding.UTF8.GetString(data);
-        AsmTools.AsmSourceTools.ParseLine(input, 0, 0);
+        AsmTools.AsmSourceTools.ParseLine(input, 0, 0, AsmTools.AssemblerEnum.MASM);
     }
 }

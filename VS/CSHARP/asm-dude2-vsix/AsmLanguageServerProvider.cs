@@ -15,6 +15,24 @@ using Microsoft.VisualStudio.Extensibility.LanguageServer;
 using Microsoft.VisualStudio.RpcContracts.LanguageServerProvider;
 using Nerdbank.Streams;
 
+// ARCHITECTURE NOTE — Hover Tooltips & Clickable Links
+//
+// The LSP server returns hover with _vs_rawContent (ClassifiedTextElement) for monospace font
+// and colored keywords. This works in VS 2022 + 2026.
+//
+// Clickable links in hover are NOT possible over LSP — NavigationAction on ClassifiedTextRun
+// is an Action delegate, not a URL string. Even Roslyn's LSP hover handler explicitly sets
+// navigationActionFactory: null ("not serializable").
+// See: dotnet/roslyn src/LanguageServer/Protocol/Handler/Hover/HoverHandler.cs
+//
+// To add clickable links (future work, VS 2026 only):
+// 1. Convert to hybrid in-proc extension (VssdkCompatibleExtension + RequiresInProcessHosting)
+// 2. Add IAsyncQuickInfoSource via MEF that parses <a href=URL>NAME</a> from LSP hover
+// 3. Create WPF ClassifiedTextRun with Action delegate: () => Process.Start(url)
+// 4. Use LanguageServer.AsHtmlUrl() to embed URLs in hover text
+// See: VS/CSHARP/old/asm-dude2-vsix-archived/QuickInfo/ for the old in-proc implementation
+// See: dotnet/roslyn src/EditorFeatures/Core/IntelliSense/QuickInfo/ for Roslyn's approach
+
 #pragma warning disable VSEXTPREVIEW_LSP // Type is for evaluation purposes only and is subject to change or removal in future updates.
 [VisualStudioContribution]
 internal class AsmLanguageServerProvider : LanguageServerProvider
@@ -65,7 +83,9 @@ public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken
 
         try
         {
-            Log($"CreateServerConnectionAsync called");
+            Log($"CreateServerConnectionAsync called (in-proc hybrid mode)");
+            Log($"  Assembly location: {Assembly.GetExecutingAssembly().Location}");
+            Log($"  Extension dir: {extensionDir}");
             Log($"  Server exe: {serverExe}, exists: {File.Exists(serverExe)}");
 
             ProcessStartInfo info = new()
