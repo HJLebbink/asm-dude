@@ -27,12 +27,13 @@ using Microsoft.VisualStudio.Extensibility;
 [VisualStudioContribution]
 public class Extension : Microsoft.VisualStudio.Extensibility.Extension
 {
-    // In-process hosting enables MEF exports (IAsyncQuickInfoSource for clickable hover links).
-    // VS 2026 only — devenv.exe is .NET 8, so net8.0 works in-proc.
-    // When RequiresInProcessHosting = true, Metadata must be null — metadata comes from
-    // source.extension.vsixmanifest instead.
     public override ExtensionConfiguration ExtensionConfiguration => new()
     {
-        RequiresInProcessHosting = true,
+        Metadata = new(
+            id: "AsmDude2.8f5b1c3a-6d7e-4f8b-9c0d-1e2f3a4b5c6d",
+            version: this.ExtensionAssemblyVersion,
+            publisherName: "Henk-Jan Lebbink",
+            displayName: "AsmDude2",
+            description: "Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window"),
     };
 }

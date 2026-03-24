@@ -88,6 +88,43 @@ public class LanguageServerTarget(LanguageServer server)
     };
 
     [JsonRpcMethod(Methods.InitializeName, UseSingleObjectParameterDeserialization = true)]
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: LSP initialize, server capabilities, initialization options, protocol handshake
+    /// USED IN: LanguageServer initialization, LSP protocol handshake
+    /// SEE ALSO: Initialized, AsmLanguageServerOptions, ServerCapabilities
+
+    /// <summary>
+    /// Handle workspace/initialize request. Server receives this first and returns server capabilities.
+    /// </summary>
+    /// <param name="parameter">InitializeParams with client info, initialization options, and workspace folders.</param>
+    /// <returns>InitializeResult with server capabilities (textDocumentSync, completion, signatureHelp, hover, etc.).</returns>
+    /// <remarks>
+    /// Processes initialization options (AsmLanguageServerOptions) from client:
+    ///   - Enable/disable features (AsmDoc_On, SignatureHelp_On, CodeFolding_On, etc.)
+    ///   - Select architectures (ARCH_8086, ARCH_X64, ARCH_SSE, etc.)
+    ///   - Configure code folding markers (#region, #endregion)
+    /// 
+    /// Returns ServerCapabilities with:
+    ///   - TextDocumentSyncKind.Full (full document sync)
+    ///   - CompletionProvider with backspace trigger
+    ///   - SignatureHelpProvider with space/comma/backspace triggers
+    ///   - HoverProvider enabled
+    ///   - FoldingRangeProvider enabled
+    ///   - SemanticTokensOptions with full delta support
+    ///   - DefinitionProvider enabled (label definitions)
+    ///   - CodeLensProvider enabled
+    /// 
+    /// Note: StreamJsonRpc automatically proxies events as notifications, so OnInitializeCompletion
+    /// is called directly instead of via event to avoid interference with stdio mode.
+    /// </remarks>
+    /// <example>
+    /// Client sends: { method: "initialize", params: { ... } }
+    /// Server returns: { capabilities: { textDocumentSync: 1, completionProvider: { ... }, ... } }
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: LSP initialize, server capabilities, initialization options, protocol handshake
+    /// USED IN: LanguageServer initialization, LSP protocol handshake
+    /// SEE ALSO: Initialized, AsmLanguageServerOptions, ServerCapabilities
     public object Initialize(InitializeParams parameter)
     {
         LanguageServer.LogInfo($"Initialize: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
@@ -238,10 +275,16 @@ public class LanguageServerTarget(LanguageServer server)
                 // Unknown what this does
                 //DocumentSymbolProvider = true,
 
-                //CodeActionProvider = new CodeActionOptions()
-                //{
-                //    ResolveProvider = true
-                //},
+                CodeActionProvider = new CodeActionOptions()
+                {
+                    ResolveProvider = false,
+                    CodeActionKinds = [CodeActionKind.QuickFix],
+                },
+
+                ExecuteCommandProvider = new ExecuteCommandOptions
+                {
+                    Commands = ["asmdude2.openDocumentation"],
+                },
 
                 //ProjectContextProvider = true,
 
@@ -273,10 +316,8 @@ public class LanguageServerTarget(LanguageServer server)
                     WorkDoneProgress = false,
                 },
 
-                //DocumentLinkProvider = new DocumentLinkOptions
-                //{
-                //    ResolveProvider = false,
-                //},
+                // DocumentLink removed: VS never sends the textDocument/documentLink request.
+                // Clickable doc links are handled by the in-proc MEF QuickInfo source instead.
 
                 //// The document on type formatting request is sent from the client to the server to format parts of the document during typing.
                 //DocumentOnTypeFormattingProvider = new DocumentOnTypeFormattingOptions
@@ -309,11 +350,31 @@ public class LanguageServerTarget(LanguageServer server)
         // automatically proxies events as JSON-RPC notifications, which interferes with
         // the response when using stdio mode. The event handler logic is called directly instead.
         server.OnInitializeComplete();
-        LanguageServer.LogInfo($"Initialize: Sent: {System.Text.Json.JsonSerializer.Serialize(result)}");
+        LanguageServer.LogToFile($"[Initialize] capabilities sent: {System.Text.Json.JsonSerializer.Serialize(result)}");
         return result;
     }
 
     [JsonRpcMethod(Methods.InitializedName, UseSingleObjectParameterDeserialization = true)]
+    /// <summary>
+    /// Handle initialized notification. Called after initialize completes, server is ready for requests.
+    /// </summary>
+    /// <param name="parameter">InitializedParams (empty in LSP spec, used for client notification).</param>
+    /// <remarks>
+    /// Server should be fully initialized at this point:
+    ///   - MnemonicStore loaded with instruction data
+    ///   - PerformanceStore loaded with CPU performance data
+    ///   - All options parsed from initialization
+    /// 
+    /// Triggers OnInitialized event for listeners (e.g., VSIX to知道 server is ready).
+    /// </remarks>
+    /// <example>
+    /// LSP client sends: { method: "initialized", params: {} }
+    /// Server calls: server.Initialized() → loads mnemonic/performance data → triggers OnInitialized
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: LSP initialized, lifecycle, event notification, server readiness
+    /// USED IN: LanguageServer initialization flow, LSP protocol handshake
+    /// SEE ALSO: Initialize, OnInitialized, AsmLanguageServerOptions
     public void Initialized(InitializedParams parameter)
     {
         LanguageServer.LogInfo($"Initialized: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
@@ -342,6 +403,29 @@ public class LanguageServerTarget(LanguageServer server)
     }
 
     [JsonRpcMethod(Methods.TextDocumentCodeActionName, UseSingleObjectParameterDeserialization = true)]
+    /// <summary>
+    /// Handle textDocument/codeAction request. Returns code actions for the specified range (quick fixes/lightbulb).
+    /// </summary>
+    /// <param name="parameter">CodeActionParams with document URI, range, and context (e.g., diagnostics).</param>
+    /// <returns>Array of CodeAction objects for VS to display in UI lightbulb menu.</returns>
+    /// <remarks>
+    /// Current implementation returns demo/verification actions:
+    ///   - Create file: demo action for file creation
+    ///   - Rename file: demo action for file renaming
+    ///   - Add text: demo quick fixes with various WorkspaceEdit patterns
+    ///   - Unresolved action: action with Data field (requires resolveCodeAction)
+    /// 
+    /// These are demonstration actions showing LSP compatibility. Real code actions should be
+    /// context-aware (e.g., fix syntax errors, add missing includes).
+    /// </remarks>
+    /// <example>
+    /// User clicks lightbulb → Client sends: { method: "textDocument/codeAction", params: { ... } }
+    /// Server returns: [ { title: "Create file.txt", edit: { ... } }, ... ]
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: code actions, quick fixes, lightbulb, WorkspaceEdit, LSP
+    /// USED IN: LanguageServer.GetCodeActions
+    /// SEE ALSO: CodeAction, WorkspaceEdit, TextDocumentEdit, GetCodeActions
     public object TextDocumentCodeAction(CodeActionParams parameter)
     {
         LanguageServer.LogInfo($"TextDocumentCodeAction: uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
@@ -374,6 +458,24 @@ public class LanguageServerTarget(LanguageServer server)
         return result;
     }
 
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: code lens, label references, assembly analysis, LSP
+    /// USED IN: LanguageServer.GetCodeLensData
+    /// SEE ALSO: AsmCodeLensData, GetCodeLensData
+
+    /// <summary>
+    /// Handle custom asm/codeLensData request. Returns label definitions with reference locations.
+    /// </summary>
+    /// <param name="parameter">CodeLensParams with document URI.</param>
+    /// <returns>Array of AsmCodeLensData with label definitions and reference line numbers.</returns>
+    /// <remarks>
+    /// Used by CodeLens adornments to show "N references" above label definitions.
+    /// Each AsmCodeLensData entry contains Label, DefinitionLine, and ReferenceLines array.
+    /// </remarks>
+    /// <example>
+    /// Client requests: { method: "asm/codeLensData", params: { textDocument: { uri: "..." } } }
+    /// Server returns: [ { label: "my_label", definitionLine: 10, referenceLines: [12, 14] } ]
+    /// </example>
     [JsonRpcMethod("asm/codeLensData", UseSingleObjectParameterDeserialization = true)]
     public AsmCodeLensData[]? GetCodeLensData(CodeLensParams parameter)
     {
@@ -382,6 +484,23 @@ public class LanguageServerTarget(LanguageServer server)
         return result;
     }
 
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: Z3 simulator, proven states, assembly analysis, LSP
+    /// USED IN: LanguageServer.GetProvenStates
+    /// SEE ALSO: ProvenStatesResponse, LspAsmSimulator
+
+    /// <summary>
+    /// Handle custom asm/getProvenStates request. Returns Z3-proven register states for a document range.
+    /// </summary>
+    /// <param name="parameter">GetProvenStatesParams with URI and optional line range.</param>
+    /// <returns>ProvenStatesResponse with States array containing before/after register states.</returns>
+    /// <remarks>
+    /// Each ProvenLineState contains Line number, BeforeState, AfterState, ProvenBy, and Confidence.
+    /// ProvenBy is always "Z3 SimpleStep" and Confidence is "complete" for fully analyzed instructions.
+    /// </remarks>
+    /// <example>
+    /// User clicks "Show Proven States" on line 42 → returns Z3-proven register values.
+    /// </example>
     [JsonRpcMethod("asm/getProvenStates", UseSingleObjectParameterDeserialization = true)]
     public ProvenStatesResponse? GetProvenStates(GetProvenStatesParams parameter)
     {
@@ -464,22 +583,6 @@ public class LanguageServerTarget(LanguageServer server)
         return result;
     }
 
-    [JsonRpcMethod(Methods.TextDocumentDocumentLinkName, UseSingleObjectParameterDeserialization = true)]
-    public object? TextDocumentDocumentLink(DocumentLinkParams parameter)
-    {
-        LanguageServer.LogInfo($"TextDocumentDocumentLink: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
-        // TODO
-        return null;
-    }
-
-    [JsonRpcMethod(Methods.DocumentLinkResolveName, UseSingleObjectParameterDeserialization = true)]
-    public object? DocumentLinkResolve(DocumentLink parameter)
-    {
-        LanguageServer.LogInfo($"DocumentLinkResolve: NOT IMPLEMENTED");
-        // TODO
-        return null;
-    }
-
     [JsonRpcMethod(Methods.TextDocumentDocumentColorName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentDocumentColor(DocumentColorParams parameter)
     {
@@ -489,6 +592,31 @@ public class LanguageServerTarget(LanguageServer server)
     }
 
     [JsonRpcMethod(Methods.TextDocumentSemanticTokensFullName, UseSingleObjectParameterDeserialization = true)]
+    /// <summary>
+    /// Handle textDocument/semanticTokens/full request. Returns full semantic token data for syntax highlighting.
+    /// </summary>
+    /// <param name="parameter">SemanticTokensParams with document URI.</param>
+    /// <returns>SemanticTokens with delta-encoded token data; null if document not found.</returns>
+    /// <remarks>
+    /// Returns complete token data as:
+    ///   - resultId: document version (for delta comparison)
+    ///   - data: [deltaLine, deltaChar, length, tokenType, tokenModifiers] * N tokens
+    /// 
+    /// Token types mapped from AsmTokenType:
+    ///   0: keyword (mnemonics), 1: variable (registers), 2: label (labels),
+    ///   3: macro (directives), 4: number (constants), 5: operator (memory),
+    ///   6: comment (remarks), 7: string, 8: function (jumps), 10-15: MASM/NASM-specific
+    /// 
+    /// VS uses this for rich syntax highlighting with colored tokens.
+    /// </remarks>
+    /// <example>
+    /// Client requests: { method: "textDocument/semanticTokens/full", params: { ... } }
+    /// Server returns: { resultId: "3", data: [0,0,3,0,0, 0,3,3,1,0, ...] }
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: semantic tokens, LSP, syntax highlighting, token mapping, delta encoding
+    /// USED IN: LanguageServer.GetSemanticTokens
+    /// SEE ALSO: GetSemanticTokensFullSemanticTokensParams, GetSemanticTokensDelta
     public SemanticTokens? GetSemanticTokensFull(SemanticTokensParams parameter)
     {
         LanguageServer.LogInfo($"GetSemanticTokensFull: uri={parameter.TextDocument.Uri}");
@@ -497,6 +625,29 @@ public class LanguageServerTarget(LanguageServer server)
         return result;
     }
 
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: inlay hints, performance data, hex conversion, LSP 3.17, inline annotations
+    /// USED IN: LanguageServer.GetInlayHints
+    /// SEE ALSO: InlayHint, GetInlayHintsInlayHint
+
+    /// <summary>
+    /// Handle textDocument/inlayHint request. Returns inline annotations for performance data and number conversions.
+    /// </summary>
+    /// <param name="parameter">InlayHintParams with document URI and range.</param>
+    /// <returns>Array of InlayHint showing performance data (latency) and hex/decimal conversions.</returns>
+    /// <remarks>
+    /// Hints added for:
+    ///   1. Performance: Instruction latency (e.g., "⏱5cy") beside mnemonics when PerformanceInfo_On
+    ///   2. Number conversions: Decimal after hex (e.g., "=10") or hex after decimal (e.g., "=0xA") for constants
+    /// 
+    /// Uses InlayHintKind.Type with PaddingLeft to avoid overlapping existing text.
+    /// </remarks>
+    /// <example>
+    /// For "mov eax, 10h":
+    ///   hint at end: "=16" (decimal after hex)
+    /// For "add rax, rbx" on Skylake:
+    ///   hint after "add": " ⏱1cy" (latency)
+    /// </example>
     [JsonRpcMethod(Methods.TextDocumentInlayHintName, UseSingleObjectParameterDeserialization = true)]
     public InlayHint[]? GetInlayHints(InlayHintParams parameter)
     {
@@ -534,10 +685,35 @@ public class LanguageServerTarget(LanguageServer server)
         return null;
     }
 
-    /// <summary>
-    /// Handle hover request. Returns standard Hover with MarkupContent.
-    /// </summary>
     [JsonRpcMethod(Methods.TextDocumentHoverName, UseSingleObjectParameterDeserialization = true)]
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: hover tooltip, VSInternalHover, classified text, style rendering, LSP
+    /// USED IN: LanguageServer.GetHover
+    /// SEE ALSO: OnHover, VSInternalHover, PredefinedClassificationTypeNames
+
+    /// <summary>
+    /// Handle textDocument/hover request. Returns hover tooltip for the word at cursor position.
+    /// </summary>
+    /// <param name="parameter">TextDocumentPositionParams with document URI and cursor position.</param>
+    /// <returns>VSInternalHover with _vs_rawContent for styled text (monospace/color); null if no hover data.</returns>
+    /// <remarks>
+    /// VS LSP client only supports PlainText in standard hover Contents (no Markdown).
+    /// Uses VS-specific VSInternalHover with ClassifiedTextElement for:
+    ///   - Monospace font via "formal language" + UseClassificationFont
+    ///   - Colored keyword via "keyword" classification for mnemonics
+    ///   - Stacked/wrapped layout via ContainerElement
+    /// 
+    /// Note: Clickable links impossible over LSP (NavigationAction is an unserializable Action delegate).
+    /// See VSInternalTypes.cs for full discussion.
+    /// </remarks>
+    /// <example>
+    /// User hovers over "MOV" → Client sends: { method: "textDocument/hover", params: { ... } }
+    /// Server returns: { _vs_rawContent: { ... ClassifiedTextElement with keyword + monospace text } }
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: hover tooltip, VSInternalHover, classified text, style rendering, LSP
+    /// USED IN: LanguageServer.GetHover
+    /// SEE ALSO: OnHover, VSInternalHover, PredefinedClassificationTypeNames
     public object? OnHover(TextDocumentPositionParams parameter)
     {
         Console.Error.WriteLine($"DEBUG: LanguageServerTarget.OnHover called! uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
@@ -572,30 +748,56 @@ public class LanguageServerTarget(LanguageServer server)
         return null;
     }
 
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: go to definition, label resolution, LSP, label graph, range searching
+    /// USED IN: LanguageServer.GetDefinition
+    /// SEE ALSO: TextDocumentPositionParams, Location, LabelGraph
+
+    /// <summary>
+    /// Handle textDocument/definition request. Returns location of label definitions (LSP "Go To Definition" / F12).
+    /// </summary>
+    /// <param name="parameter">TextDocumentPositionParams with document URI and cursor position.</param>
+    /// <returns>Location of label definition, or null if label not found.</returns>
+    /// <remarks>
+    /// Algorithm:
+    ///   1. Extract word at cursor position
+    ///   2. First check LabelGraph if available (cached label analysis)
+    ///   3. Fallback: scan document for "label:" pattern (case-insensitive)
+    ///   4. Verify word boundary (start of line or after whitespace)
+    /// 
+    /// Most assemblers are case-insensitive for labels, so comparison uses ToUpperInvariant.
+    /// </remarks>
+    /// <example>
+    /// Code: "my_label: mov eax, ebx"
+    /// Cursor at "my_label" → returns Location with range covering "my_label"
+    /// </example>
     [JsonRpcMethod(Methods.TextDocumentDefinitionName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentDefinition(TextDocumentPositionParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentDefinition: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        LanguageServer.LogToFile($"[TextDocumentDefinition] uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         var result = server.GetDefinition(parameter);
-        LanguageServer.LogInfo($"TextDocumentDefinition: hasResult={result != null}");
+        LanguageServer.LogToFile($"[TextDocumentDefinition] hasResult={result != null}");
         return result;
     }
 
-    [JsonRpcMethod(Methods.TextDocumentImplementationName, UseSingleObjectParameterDeserialization = true)]
-    public object? TextDocumentImplementation(TextDocumentPositionParams parameter)
-    {
-        LanguageServer.LogInfo($"TextDocumentImplementation: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
-        return null;
-    }
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: find references, reference analysis, LSP, label graph
+    /// USED IN: LanguageServer.SendReferences
+    /// SEE ALSO: ReferenceParams, OnTextDocumentFindReferences
 
-    [JsonRpcMethod(Methods.TextDocumentTypeDefinitionName, UseSingleObjectParameterDeserialization = true)]
-    public object? TextDocumentTypeDefinition(TextDocumentPositionParams parameter)
-    {
-        LanguageServer.LogInfo($"TextDocumentTypeDefinition: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
-        // TODO
-        return null;
-    }
-
+    /// <summary>
+    /// Handle textDocument/references request. Returns locations where the symbol is referenced (LSP "Find All References" / Shift+F12).
+    /// </summary>
+    /// <param name="parameter">ReferenceParams with document URI and cursor position.</param>
+    /// <param name="token">Cancellation token for long-running reference search.</param>
+    /// <returns>Array of Location objects where the symbol is referenced.</returns>
+    /// <remarks>
+    /// Scans document for occurrences of the symbol at cursor position. Uses word boundary matching
+    /// to ensure only complete symbol matches are returned. Implements chunked results for large files.
+    /// </remarks>
+    /// <example>
+    /// User presses Shift+F12 on "my_label" → returns all lines where label is used.
+    /// </example>
     [JsonRpcMethod(Methods.TextDocumentReferencesName, UseSingleObjectParameterDeserialization = true)]
     public object[]? OnTextDocumentFindReferences(ReferenceParams parameter, CancellationToken token)
     {
@@ -743,8 +945,23 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.WorkspaceExecuteCommandName, UseSingleObjectParameterDeserialization = true)]
     public object? WorkspaceExecuteCommand(ExecuteCommandParams parameter)
     {
-        LanguageServer.LogInfo($"WorkspaceExecuteCommand: NOT IMPLEMENTED. command={parameter.Command}");
-        // TODO
+        LanguageServer.LogToFile($"[WorkspaceExecuteCommand] command={parameter.Command}");
+        if (parameter.Command == "asmdude2.openDocumentation" && parameter.Arguments?.Length > 0)
+        {
+            string? url = parameter.Arguments[0]?.ToString();
+            if (!string.IsNullOrEmpty(url))
+            {
+                LanguageServer.LogToFile($"[WorkspaceExecuteCommand] Opening URL: {url}");
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    LanguageServer.LogToFile($"[WorkspaceExecuteCommand] Failed to open URL: {ex.Message}");
+                }
+            }
+        }
         return null;
     }
 

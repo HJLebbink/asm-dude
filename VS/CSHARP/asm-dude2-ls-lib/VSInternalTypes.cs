@@ -65,10 +65,29 @@ namespace AsmDude2LS;
 //   - VS renders _vs_rawContent instead of standard Contents when present
 // ============================================================================
 
+/// <!-- LLM-ANNOTATION -->
+/// LLM KEYWORDS: hover, tooltip, VSInternalHover, classified text, LSP
+/// USED IN: HoverBuilder, LanguageServer.GetHover, LanguageServerTarget.OnHover
+/// SEE ALSO: ClassifiedTextElement, ClassifiedTextRun, ContainerElement, PredefinedClassificationTypeNames
+
 /// <summary>
-/// VS-internal hover type with RawContent for styled text.
+/// VS-internal hover type with RawContent for styled text rendering.
 /// When RawContent is set, Contents should be null — VS renders both if both are present.
 /// </summary>
+/// <remarks>
+/// CRITICAL: Clickable links are NOT possible over LSP. NavigationAction is an Action delegate
+/// (C# callback), not a URL string. Delegates cannot be serialized over JSON-RPC.
+/// 
+/// To get clickable links, use an in-process MEF extension with IAsyncQuickInfoSource
+/// (requires hybrid VSSDK+VisualStudio.Extensibility architecture with RequiresInProcessHosting).
+/// See: VS/CSHARP/old/asm-dude2-vsix-archived/QuickInfo/AsmQuickInfoSource.cs
+/// 
+/// What works over LSP:
+///   - Classified text via ClassificationTypeName ("formal language", "keyword", etc.)
+///   - Monospace font via UseClassificationFont (0x8) + "formal language"
+///   - Bold/italic/underline via ClassifiedTextRunStyle flags
+///   - Stacked/wrapped layout via ContainerElement
+/// </remarks>
 public sealed class VSInternalHover
 {
     [JsonPropertyName("contents")]
@@ -144,6 +163,8 @@ public sealed class ClassifiedTextRun(
 /// <summary>
 /// Container for multiple elements with a specific layout style.
 /// </summary>
+/// <param name="Style">Container layout style (Stacked, Wrapped, etc.).</param>
+/// <param name="Elements">Child elements (ClassifiedTextElement or other ContainerElement).</param>
 public sealed class ContainerElement(ContainerElementStyle Style, params object[] Elements)
 {
     /// <summary>

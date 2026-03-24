@@ -230,11 +230,21 @@ namespace AsmDude2LS
             Dictionary<Mnemonic, string> htmlRef = [];
             Dictionary<Mnemonic, string> description = [];
 
-            /// <summary>
-            /// Add (and overwrite) return true if an existing signature element is overwritten;
-            /// </summary>
-            /// <param name="asmSignatureElement"></param>
-            bool Add(AsmSignatureInformation asmSignatureElement, ref Dictionary<Mnemonic, List<AsmSignatureInformation>> data)
+        /// <summary>
+        /// Add (and overwrite) return true if an existing signature element is overwritten;
+        /// </summary>
+        /// <param name="asmSignatureElement">AsmSignatureInformation to add or overwrite.</param>
+        /// <param name="data">Dictionary of mnemonic to signature list (passed by ref for update).</param>
+        /// <returns>true if existing signature was overwritten; false if new entry was added.</returns>
+        /// <remarks>
+        /// Helper closure used during data loading to manage signature dictionaries.
+        /// Removes existing signature if present, then adds the new one.
+        /// </remarks>
+        /// <!-- LLM-ANNOTATION -->
+        /// LLM KEYWORDS: signature management, dictionary update, overwrite logic, helper closure
+        /// USED IN: CalcSignatureInformation.LoadRegularData, LoadHandcraftedData
+        /// SEE ALSO: CreateAsmSignatureElement, GetSignatures
+        bool Add(AsmSignatureInformation asmSignatureElement, ref Dictionary<Mnemonic, List<AsmSignatureInformation>> data)
             {
                 //LanguageServer.LogInfo($"MnemonicStore: Add: {asmSignatureElement.SignatureInformation.Label}; number of elements before {this.data_.Count}");
                 bool result = false;
@@ -449,11 +459,44 @@ namespace AsmDude2LS
             return (data, arch, htmlRef, description);
         }
 
+        /// <summary>
+        /// Constrain signature list based on operand types and selected architectures.
+        /// Filters out incompatible signatures before presenting to user.
+        /// </summary>
+        /// <param name="data">All available signatures for a mnemonic.</param>
+        /// <param name="operands2">Current operand list from parser.</param>
+        /// <param name="selectedArchitectures2">Architectures enabled in options.</param>
+        /// <returns>Filtered sequence of compatible signatures.</returns>
+        /// <remarks>
+        /// Constraint logic:
+        ///   1. Remove signatures not supporting selected architectures
+        ///   2. Check each operand against signature operand definitions
+        ///   3. Allow only signatures matching all operand constraints
+        /// 
+        /// Returns via yield return for deferred execution and memory efficiency.
+        /// </remarks>
+        /// <!-- LLM-ANNOTATION -->
+        /// LLM KEYWORDS: signature constraint, architecture filter, operand matching, filtering algorithm
+        /// USED IN: LanguageServer.GetTextDocumentSignatureHelp
+        /// SEE ALSO: LanguageServer.Constrain_Signatures, Is_Allowed
         public bool IsMnemonicSwitchedOn(Mnemonic mnemonic)
         {
             return this.mnemonics_switched_on_.Contains(mnemonic);
         }
 
+        /// <summary>
+        /// Gets all allowed mnemonics based on currently enabled architectures.
+        /// Returns frozen set for thread-safe read access.
+        /// </summary>
+        /// <returns>FrozenSet of mnemonics enabled by selected architectures.</returns>
+        /// <remarks>
+        /// Called during code completion and signature help to filter available instructions.
+        /// Uses mnemonics_switched_on_ dictionary populated during constructor.
+        /// </remarks>
+        /// <!-- LLM-ANNOTATION -->
+        /// LLM KEYWORDS: allowed mnemonics, architecture filter, frozen set, immutable collection
+        /// USED IN: LanguageServer.GetTextDocumentCompletion, LanguageServer.Constrain_Signatures
+        /// SEE ALSO: Get_Allowed_Registers, IsMnemonicSwitchedOn, mnemonics_switched_on_
         public FrozenSet<Mnemonic> Get_Allowed_Mnemonics()
         {
             return this.mnemonics_switched_on_;

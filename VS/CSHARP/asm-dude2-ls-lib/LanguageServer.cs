@@ -79,6 +79,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     private readonly object updateLock = new();
     private readonly Dictionary<string, CancellationTokenSource> pendingUpdates = [];
 
+    // Debounce for mnemonic doc URL opening (Ctrl+Click fires definition twice)
+    private string? _lastDocUrl;
+    private DateTime _lastDocTime = DateTime.MinValue;
+
     private readonly TraceSource traceSource;
 
     private AsmDude2Tools? asmDudeTools;
@@ -366,6 +370,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             string filename_Regular = Path.Combine(path, "signature-may2019.txt");
             string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
             this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.options);
+            this.WriteMnemonicUrlMapping();
         }
         {
             string path_performance = Path.Combine(path, "Performance");
@@ -515,6 +520,7 @@ private void UpdateInternals(string uri)
         var uri = messageParams.TextDocument.Uri.ToString();
         LogToFile($"[OnTextDocumentOpened] uri={uri}, textLength={messageParams.TextDocument.Text?.Length ?? 0}");
         LogInfo($"[OnTextDocumentOpened] uri={uri}, textLength={messageParams.TextDocument.Text?.Length ?? 0}");
+
         this.textDocuments.Add(uri, messageParams.TextDocument);
         this.UpdateInternals(uri);
     }
@@ -710,6 +716,43 @@ private void UpdateInternals(string uri)
 
     public object[] GetCodeActions(CodeActionParams parameter)
     {
+        var uri = parameter.TextDocument.Uri.ToString();
+        var lines = this.GetLines(uri);
+        if (lines == null || lines.Length == 0) return [];
+
+        // Check if cursor is on a mnemonic that has documentation
+        int line = (int)parameter.Range.Start.Line;
+        if (line >= lines.Length) return [];
+
+        var (word, _, _) = GetWord((int)parameter.Range.Start.Character, lines[line]);
+        if (string.IsNullOrEmpty(word)) return [];
+
+        string wordUpper = word.ToUpperInvariant();
+        Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(wordUpper, true);
+        if (mnemonic == Mnemonic.NONE) return [];
+
+        if (!this.options.AsmDoc_On) return [];
+
+        string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
+        if (string.IsNullOrEmpty(htmlRef)) return [];
+
+        string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
+
+        CodeAction openDocsAction = new()
+        {
+            Title = $"Open {mnemonic} Documentation",
+            Kind = CodeActionKind.QuickFix,
+            Command = new Command
+            {
+                Title = $"Open {mnemonic} Documentation",
+                CommandIdentifier = "asmdude2.openDocumentation",
+                Arguments = [fullUrl],
+            },
+        };
+
+        return [openDocsAction];
+
+        /* Disabled demo code actions — kept for reference
         #region File Operation actions
 
         var documentUri = parameter.TextDocument.Uri;
@@ -921,6 +964,7 @@ private void UpdateInternals(string uri)
                 createFileAction,
                 renameFileAction,
             ];
+        */ // end disabled demo code actions
     }
 
     public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token)
@@ -990,9 +1034,29 @@ private void UpdateInternals(string uri)
     /// <summary>
     /// Constrain the list of signatures given: 1) the currently operands provided by the user; and 2) the selected architectures
     /// </summary>
-    /// <param name="data"></param>
-    /// <param name="operands"></param>
-    /// <returns></returns>
+    /// <param name="data">All available signatures for a mnemonic from MnemonicStore.GetSignatures.</param>
+    /// <param name="operands2">Current operand list from parser (parsed instruction arguments).</param>
+    /// <param name="selectedArchitectures2">Architectures enabled in options (ARCH_8086, ARCH_X64, etc.).</param>
+    /// <returns>Filtered sequence of compatible signatures matching operand constraints and architecture support.</returns>
+    /// <remarks>
+    /// Constraint logic applied in order:
+    ///   1. Remove signatures not supporting selected architectures via Is_Allowed(selectedArchitectures2)
+    ///   2. Check each operand against signature operand definitions via Is_Allowed(operand, i)
+    ///   3. Return only signatures matching ALL operand constraints (yield return for deferred execution)
+    /// 
+    /// Yield return allows memory-efficient lazy evaluation—only processes signatures as caller enumerates.
+    ///</remarks>
+    /// <example>
+    /// var signatures = mnemonicStore.GetSignatures(Mnemonic.MOV);
+    /// var operands = MakeOperands(new string[] { "eax", "ebx" });
+    /// var archs = options.Get_Arch_Switched_On();
+    /// var filtered = Constrain_Signatures(signatures, operands, archs);
+    /// // Returns only MOV signatures compatible with EAX/EBX registers and selected architectures
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: signature constraint, architecture filter, operand matching, filtering algorithm
+    /// USED IN: GetTextDocumentSignatureHelp, GetTextDocumentCompletion
+    /// SEE ALSO: MnemonicStore.GetSignatures, AsmSignatureInformation.Is_Allowed, Operand
     private IEnumerable<AsmSignatureInformation> Constrain_Signatures(
             IEnumerable<AsmSignatureInformation> data,
             List<Operand> operands2,
@@ -1054,6 +1118,29 @@ private void UpdateInternals(string uri)
         }
     }
 
+    /// <summary>
+    /// Get signature help for the current position in a document (LSP textDocument/signatureHelp).
+    /// Returns available method signatures with active parameter highlighted.
+    /// </summary>
+    /// <param name="parameter">Signature help request with document URI and cursor position.</param>
+    /// <returns>SignatureHelp with active signature, active parameter, and available signatures; null if disabled or no signatures.</returns>
+    /// <remarks>
+    /// Process:
+    ///   1. Parse line up to cursor to get mnemonic and current arguments
+    ///   2. Get all signatures for mnemonic from MnemonicStore
+    ///   3. Constrain signatures based on 1] selected architectures, 2] provided operands
+    ///   4. Count commas to determine active parameter index
+    /// 
+    /// SignatureHelp is used when typing function/method calls to show parameter hints.
+    /// </remarks>
+    /// <example>
+    /// User types: "mov eax, "
+    /// Returns: { ActiveSignature: 0, ActiveParameter: 1, Signatures: [MOV r16/r32, r/m16/r32, ...] }
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: signature help, parameter hints, LSP, mnemonic parsing, operand constraints
+    /// USED IN: LanguageServerTarget.TextDocumentSignatureHelp
+    /// SEE ALSO: Constrain_Signatures, MnemonicStore.GetSignatures, SignatureHelpParams
     public SignatureHelp? GetTextDocumentSignatureHelp(SignatureHelpParams parameter)
     {
         try
@@ -1180,6 +1267,23 @@ private void UpdateInternals(string uri)
     ///   7: string
     ///   8: function (CALL targets)
     /// </summary>
+    /// <param name="parameter">Semantic tokens parameters with document URI.</param>
+    /// <returns>SemanticTokens with delta-encoded token data for rich syntax highlighting.</returns>
+    /// <remarks>
+    /// The method processes parsed tokens from parsedDocuments and encodes them as:
+    ///   [deltaLine, deltaChar, length, tokenType, tokenModifiers] * N
+    /// where deltas are relative to the previous token for efficient compression.
+    /// Token types map to LSP indices 0-8 via MapTokenType(), with modifiers from GetTokenModifiers().
+    /// </remarks>
+    /// <example>
+    /// Client requests: textDocument/semanticTokens/full
+    /// Server returns: { resultId: "1", data: [0,0,3,0,0, 0,3,3,0,0, ...] }
+    /// // line 0, col 0, len 3, type 0 (keyword), mod 0; then line 0, col 3, len 3, type 0, mod 0
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: semantic tokens, syntax highlighting, LSP, delta encoding, token types
+    /// USED IN: LanguageServerTarget.GetSemanticTokensFull, GetSemanticTokensDelta
+    /// SEE ALSO: MapTokenType, GetTokenModifiers, GetSemanticTokensDelta for delta requests
     public SemanticTokens GetSemanticTokens(SemanticTokensParams parameter)
     {
         string uri = parameter.TextDocument.Uri.ToString();
@@ -1235,9 +1339,23 @@ private void UpdateInternals(string uri)
     }
 
     /// <summary>
-    /// Handle semantic tokens delta request. Returns empty edits when the document hasn't changed,
+    /// Get semantic tokens delta request. Returns empty edits when the document hasn't changed,
     /// or full tokens when it has. This prevents VS from polling every ~2 seconds.
     /// </summary>
+    /// <param name="parameter">Semantic tokens delta parameters with previous result ID.</param>
+    /// <returns>SemanticTokensDelta with empty edits if unchanged, or full SemanticTokens if changed.</returns>
+    /// <remarks>
+    /// Uses document version as result ID. If previousResultId matches current resultId,
+    /// returns empty edits (VS already has up-to-date tokens). Otherwise returns full tokens.
+    /// </remarks>
+    /// <example>
+    /// Document unchanged: { resultId: "5", edits: [] }
+    /// Document changed: { resultId: "6", data: [0,0,3,0,0, ...] }
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: semantic tokens, delta encoding, incremental updates, caching, versioning
+    /// USED IN: LanguageServerTarget.TextDocumentSemanticTokensFullDelta
+    /// SEE ALSO: GetSemanticTokens, GetDocumentResultId
     public object GetSemanticTokensDelta(SemanticTokensDeltaParams parameter)
     {
         string uri = parameter.TextDocument.Uri.ToString();
@@ -1264,6 +1382,29 @@ private void UpdateInternals(string uri)
     /// <summary>
     /// Map AsmTokenType to semantic token type index (matching the legend in server capabilities)
     /// </summary>
+    /// <param name="type">AsmTokenType from parsed document tokens.</param>
+    /// <returns>LSP token type index (0-8 for standard types, 10-15 for MASM/NASM-specific types), or -1 for unknown.</returns>
+    /// <remarks>
+    /// Standard token types:
+    ///   0: keyword (Mnemonic, MnemonicOff - deprecated)
+    ///   1: variable (Register)
+    ///   2: label (Label, LabelDef)
+    ///   3: macro (Directive)
+    ///   4: number (Constant)
+    ///   5: operator (Misc - memory operands)
+    ///   6: comment (Remark)
+    ///   7: string (not used currently)
+    ///   8: function (Jump - CALL targets)
+    /// </remarks>
+    /// <example>
+    /// MapTokenType(AsmTokenType.Mnemonic) → 0
+    /// MapTokenType(AsmTokenType.Register) → 1
+    /// MapTokenType(AsmTokenType.Label) → 2
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: semantic tokens, token type mapping, LSP protocol, type classification
+    /// USED IN: GetSemanticTokens, LanguageServerTarget.GetSemanticTokensFull
+    /// SEE ALSO: GetTokenModifiers, SemanticTokensLegend, AsmTokenType
 private static int MapTokenType(AsmTokenType type)
      {
          return type switch
@@ -1293,6 +1434,25 @@ private static int MapTokenType(AsmTokenType type)
     /// Get token modifiers based on token type
     /// Modifier flags: 0x1 = declaration, 0x2 = definition, 0x4 = deprecated, 0x8 = readonly
     /// </summary>
+    /// <param name="type">AsmTokenType from parsed document tokens.</param>
+    /// <returns>Bitmask of TokenModifier flags (0 if none apply).</returns>
+    /// <remarks>
+    /// Modifier mappings:
+    ///   0x3 (0x1|0x2) = LabelDef: label is both declaration and definition
+    ///   0x4 = MnemonicOff: deprecated instruction
+    ///   0x8 = Constant: immediate value (readonly)
+    /// MASM/NASM-specific types have no special modifiers by default.
+    /// </remarks>
+    /// <example>
+    /// GetTokenModifiers(AsmTokenType.LabelDef) → 0x3
+    /// GetTokenModifiers(AsmTokenType.MnemonicOff) → 0x4
+    /// GetTokenModifiers(AsmTokenType.Constant) → 0x8
+    /// GetTokenModifiers(AsmTokenType.Mnemonic) → 0
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: semantic tokens, token modifiers, LSP protocol, bit flags
+    /// USED IN: GetSemanticTokens
+    /// SEE ALSO: MapTokenType, TokenModifiers
 private static int GetTokenModifiers(AsmTokenType type)
      {
          return type switch
@@ -1315,6 +1475,26 @@ private static int GetTokenModifiers(AsmTokenType type)
     /// Get inlay hints for a document range (LSP 3.17).
     /// Shows instruction latency, memory sizes, and value conversions inline.
     /// </summary>
+    /// <param name="parameter">Inlay hints request with document URI and range.</param>
+    /// <returns>Array of InlayHint showing performance data and hex/decimal conversions.</returns>
+    /// <remarks>
+    /// Hints added for:
+    ///   1. Performance: Instruction latency (e.g., "⏱5cy") beside mnemonics when PerformanceInfo_On
+    ///   2. Number conversions: Decimal after hex (e.g., "=10") or hex after decimal (e.g., "=0xA") for constants
+    /// 
+    /// Uses InlayHintKind.Type with PaddingLeft to avoid overlapping existing text.
+    /// Performance data shows µops, latency, throughput from PerformanceStore.
+    /// </remarks>
+    /// <example>
+    /// For "mov eax, 10h":
+    ///   hint at end: "=16" (decimal after hex)
+    /// For "add rax, rbx" on Skylake:
+    ///   hint after "add": " ⏱1cy" (latency)
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: inlay hints, performance data, hex conversion, LSP 3.17, inline annotations
+    /// USED IN: LanguageServerTarget.GetInlayHints
+    /// SEE ALSO: GetInlayHintsInlayHint
     public InlayHint[] GetInlayHints(InlayHintParams parameter)
     {
         string uri = parameter.TextDocument.Uri.ToString();
@@ -1341,6 +1521,40 @@ private static int GetTokenModifiers(AsmTokenType type)
 
             int fileID = 0;
             (_, _, Mnemonic mnemonic, string[] args, _) = AsmTools.AsmSourceTools.ParseLine(lineText, lineNumber, fileID, AssemblerEnum.UNKNOWN);
+
+            // Add clickable documentation link hint for mnemonic
+            if (mnemonic != Mnemonic.NONE && this.options?.AsmDoc_On == true)
+            {
+                string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
+                if (!string.IsNullOrEmpty(htmlRef))
+                {
+                    int mnemonicIdx = lineText.AsSpan().IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
+                    if (mnemonicIdx >= 0)
+                    {
+                        string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
+                        hints.Add(new InlayHint
+                        {
+                            Position = new Position(lineNumber, mnemonicIdx + mnemonic.ToString().Length),
+                            Label = new InlayHintLabelPart[]
+                            {
+                                new()
+                                {
+                                    Value = "📖",
+                                    ToolTip = $"Open {mnemonic} documentation",
+                                    Command = new Command
+                                    {
+                                        Title = $"Open {mnemonic} Documentation",
+                                        CommandIdentifier = "asmdude2.openDocumentation",
+                                        Arguments = [fullUrl],
+                                    },
+                                },
+                            },
+                            Kind = InlayHintKind.Type,
+                            PaddingLeft = true,
+                        });
+                    }
+                }
+            }
 
             // Add performance hint for mnemonic
             if (showPerformance && mnemonic != Mnemonic.NONE && this.performanceStore != null)
@@ -1959,6 +2173,29 @@ private static int GetTokenModifiers(AsmTokenType type)
     /// Returns label definitions with their reference locations for CodeLens adornments.
     /// Each entry contains the label name, definition line, and the line numbers where the label is referenced.
     /// </summary>
+    /// <param name="uri">Document URI to analyze.</param>
+    /// <returns>Array of AsmCodeLensData with label definitions and reference line numbers.</returns>
+    /// <remarks>
+    /// Used by CodeLens adornments to show "N references" above label definitions.
+    /// Each AsmCodeLensData entry contains:
+    ///   - Label: the label name
+    ///   - DefinitionLine: line number where label is defined (e.g., "my_label:")
+    ///   - ReferenceLines: array of line numbers where label is referenced
+    /// 
+    /// Returns empty array if LabelGraph not enabled or unavailable.
+    /// </remarks>
+    /// <example>
+    /// Code:
+    ///   my_label:    ; definition (line 10)
+    ///   mov eax, 1  ; reference (line 12)
+    ///   jmp my_label; reference (line 14)
+    /// 
+    /// Returns: [ { Label: "my_label", DefinitionLine: 10, ReferenceLines: [12, 14] } ]
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: code lens, label references, assembly analysis, label graph
+    /// USED IN: LanguageServerTarget.GetCodeLensData
+    /// SEE ALSO: GetCodeLensDataAsmCodeLensData, LabelGraph, CodeLens
     public AsmCodeLensData[] GetCodeLensData(string uri)
     {
         LabelGraph? labelGraph = this.GetLabelGraph(uri);
@@ -2020,9 +2257,28 @@ private static int GetTokenModifiers(AsmTokenType type)
     }
 
     /// <summary>
-    /// Handle "Go To Definition (F12)" request.
-    /// Returns the location of label definitions.
+    /// Handle "Go To Definition (F12)" request for assembly labels.
+    /// Returns theLocation of label definitions by searching for "label:" patterns.
     /// </summary>
+    /// <param name="parameter">Definition request with document URI and cursor position.</param>
+    /// <returns>Location of label definition, or null if label not found.</returns>
+    /// <remarks>
+    /// Algorithm:
+    ///   1. Extract word at cursor position
+    ///   2. First check LabelGraph if available (cached label analysis)
+    ///   3. Fallback: scan document for "label:" pattern (case-insensitive)
+    ///   4. Verify word boundary (start of line or after whitespace)
+    /// 
+    /// Most assemblers are case-insensitive for labels, so comparison uses ToUpperInvariant.
+    /// </remarks>
+    /// <example>
+    /// Code: "my_label: mov eax, ebx"
+    /// Cursor at "my_label" → returns Location with range covering "my_label"
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: go to definition, label resolution, LSP, label graph, range searching
+    /// USED IN: LanguageServerTarget.TextDocumentDefinition
+    /// SEE ALSO: GetLabelGraph, LabelGraph, Location
     public Location? GetDefinition(TextDocumentPositionParams parameter)
     {
         var uri = parameter.TextDocument.Uri.ToString();
@@ -2124,8 +2380,94 @@ private static int GetTokenModifiers(AsmTokenType type)
             }
         }
 
+        // No label definition found — check if it's a mnemonic and open documentation
+        string wordUpper = word.ToUpperInvariant();
+        Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(wordUpper, true);
+        if (mnemonic != Mnemonic.NONE && this.options.AsmDoc_On)
+        {
+            string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
+            if (!string.IsNullOrEmpty(htmlRef))
+            {
+                string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
+
+                // Debounce: Ctrl+Click fires textDocument/definition twice (once on hover, once on click).
+                // Skip if same URL was opened within the last 2 seconds.
+                var now = DateTime.UtcNow;
+                if (fullUrl != _lastDocUrl || (now - _lastDocTime).TotalSeconds > 2)
+                {
+                    _lastDocUrl = fullUrl;
+                    _lastDocTime = now;
+                    LogInfo($"GetDefinition: opening documentation for {mnemonic}: {fullUrl}");
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(fullUrl) { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        LogInfo($"GetDefinition: failed to open URL: {ex.Message}");
+                    }
+                }
+                else
+                {
+                    LogInfo($"GetDefinition: debounced duplicate for {mnemonic}");
+                }
+
+                // Write a temp documentation file and return its Location.
+                // This makes "Peek Definition" (Alt+F12) show the docs inline.
+                return CreateMnemonicDocLocation(mnemonic, fullUrl);
+            }
+        }
+
         LogInfo($"GetDefinition: no definition found for '{word}'");
         return null;
+    }
+
+    private Location? CreateMnemonicDocLocation(Mnemonic mnemonic, string fullUrl)
+    {
+        try
+        {
+            string description = this.mnemonicStore?.GetDescription(mnemonic) ?? string.Empty;
+            var signatures = this.mnemonicStore?.GetSignatures(mnemonic);
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"; {mnemonic} — Instruction Documentation");
+            sb.AppendLine($"; URL: {fullUrl}");
+            sb.AppendLine(";");
+            sb.AppendLine($"; Description:");
+            foreach (string line in description.Split('\n'))
+            {
+                sb.AppendLine($";   {line.TrimEnd()}");
+            }
+
+            if (signatures != null)
+            {
+                sb.AppendLine(";");
+                sb.AppendLine("; Signatures:");
+                foreach (var sig in signatures)
+                {
+                    sb.AppendLine($";   {sig.SignatureInformation.Label}");
+                }
+            }
+
+            string tempFile = Path.Combine(Path.GetTempPath(), $"_asmdude_doc_{mnemonic}.asm");
+            File.WriteAllText(tempFile, sb.ToString());
+
+            int lineCount = sb.ToString().Split('\n').Length;
+            return new Location
+            {
+                Uri = new Uri(tempFile),
+                Range = new Range
+                {
+                    Start = new Position(0, 0),
+                    End = new Position(lineCount - 1, 0),
+                },
+            };
+        }
+        catch (Exception ex)
+        {
+            LogInfo($"CreateMnemonicDocLocation: failed: {ex.Message}");
+            return null;
+        }
     }
 
     private AsmTokenType GetAsmTokenType(string keyword_uppercase)
@@ -2172,8 +2514,125 @@ private static int GetTokenModifiers(AsmTokenType type)
     }
 
     /// <summary>
-    /// Handle hover request. Returns standard Hover with MarkupContent.
+    /// Write a JSON mapping file (mnemonic → full doc URL) so the in-proc MEF QuickInfo source
+    /// can create clickable links without needing to call the LSP server.
     /// </summary>
+    private void WriteMnemonicUrlMapping()
+    {
+        try
+        {
+            string baseUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/";
+            var mapping = new Dictionary<string, string>();
+            foreach (Mnemonic m in Enum.GetValues(typeof(Mnemonic)))
+            {
+                if (m == Mnemonic.NONE) continue;
+                string htmlRef = this.mnemonicStore.GetHtmlRef(m);
+                if (!string.IsNullOrEmpty(htmlRef))
+                {
+                    mapping[m.ToString()] = baseUrl + htmlRef;
+                }
+            }
+            string json = System.Text.Json.JsonSerializer.Serialize(mapping);
+            string mappingFile = Path.Combine(Path.GetTempPath(), "_asmdude_mnemonic_urls.json");
+            File.WriteAllText(mappingFile, json);
+            LogToFile($"[WriteMnemonicUrlMapping] Wrote {mapping.Count} entries to {mappingFile}");
+        }
+        catch (Exception ex)
+        {
+            LogToFile($"[WriteMnemonicUrlMapping] Failed: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Returns DocumentLink[] for all mnemonics/jumps that have documentation URLs.
+    /// VS renders these as Ctrl+Clickable underlined text that opens the URL in a browser.
+    /// </summary>
+    public DocumentLink[]? GetDocumentLinks(string uri)
+    {
+        if (!this.options.AsmDoc_On)
+        {
+            return null;
+        }
+
+        if (!this.parsedDocuments.TryGetValue(uri, out KeywordID[][]? keywords))
+        {
+            return null;
+        }
+
+        string[] lines = this.GetLines(uri);
+        var links = new List<DocumentLink>();
+        string baseUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/";
+
+        for (int lineNumber = 0; lineNumber < keywords.Length; lineNumber++)
+        {
+            var lineTokens = keywords[lineNumber];
+            if (lineTokens == null) continue;
+
+            foreach (var token in lineTokens)
+            {
+                if (token.Type is not (AsmTokenType.Mnemonic or AsmTokenType.Jump))
+                {
+                    continue;
+                }
+
+                int tokenLength = token.End_Pos - token.Start_Pos;
+                if (tokenLength <= 0) continue;
+
+                string line = (lineNumber < lines.Length) ? lines[lineNumber] : string.Empty;
+                if (token.Start_Pos >= line.Length) continue;
+                string keyword = line.Substring(token.Start_Pos, Math.Min(tokenLength, line.Length - token.Start_Pos));
+
+                Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword.ToUpperInvariant(), true);
+                if (mnemonic == Mnemonic.NONE) continue;
+
+                string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
+                if (string.IsNullOrEmpty(htmlRef)) continue;
+
+                string fullUrl = baseUrl + htmlRef;
+
+                links.Add(new DocumentLink
+                {
+                    Range = new Range
+                    {
+                        Start = new Position(lineNumber, token.Start_Pos),
+                        End = new Position(lineNumber, token.End_Pos),
+                    },
+                    Target = new Uri(fullUrl),
+                });
+            }
+        }
+
+        LogToFile($"[GetDocumentLinks] uri={uri}, linkCount={links.Count}");
+        return links.Count > 0 ? [.. links] : null;
+    }
+
+    /// <summary>
+    /// Handle hover request. Returns VSInternalHover with styled content for mnemonics, registers, and labels.
+    /// </summary>
+    /// <param name="parameter">Hover request with document URI and cursor position.</param>
+    /// <returns>VSInternalHover with _vs_rawContent for styled text; null if no hover data available.</returns>
+    /// <remarks>
+    /// Hover responses use VS-specific VSInternalHover with _vs_rawContent because:
+    ///   - VS LSP client only supports PlainText in standard Contents (no Markdown rendering)
+    ///   - VS-specific ClassifiedTextElement allows monospace font via "formal language" + UseClassificationFont
+    ///   - Clickable links impossible over LSP (NavigationAction is an unserializable Action delegate)
+    /// 
+    /// Token type handling:
+    ///   - Mnemonic/Jump: colored keyword + stacked monospace description + performance table
+    ///   - Register: monospace "Register RAX: description" + simulated value before/after
+    ///   - Label/labelDef: TODO (currently returns null)
+    ///   - Keyword: monospace keyword description
+    /// 
+    /// See VSInternalTypes.cs for full discussion of VS hover limitations.
+    /// </remarks>
+    /// <example>
+    /// Mnemonic hover: [colored "MOV", monospace "Move data", performance table]
+    /// Register hover: [monospace "Register RAX: 64-bit accumulator", "Before: 0x1234", "After: 0x5678"]
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: hover tooltip, VSInternalHover, classified text, LSP, styled text
+    /// USED IN: LanguageServerTarget.OnHover
+    /// SEE ALSO: HoverBuilder, VSInternalHover, PredefinedClassificationTypeNames
     public object? GetHover(TextDocumentPositionParams parameter)
     {
         var uri = parameter.TextDocument.Uri.ToString();
@@ -2250,10 +2709,19 @@ private static int GetTokenModifiers(AsmTokenType type)
                         }
                     }
 
+                    // Build doc URL hint for hover
+                    string docUrlHint = "";
+                    string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
+                    if (!string.IsNullOrEmpty(htmlRef))
+                    {
+                        docUrlHint = "\nCtrl+Click mnemonic for docs: " + this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
+                    }
+
                     hoverContent = [
                         full_Descr,
-                            (performanceInfoAvailable) ? "\nPerformance:\n" + performanceStr : "",
-                        ];
+                        (performanceInfoAvailable) ? "\nPerformance:\n" + performanceStr : "",
+                        docUrlHint,
+                    ];
                     break;
                 }
             case AsmTokenType.Register:
@@ -2516,19 +2984,8 @@ private static int GetTokenModifiers(AsmTokenType type)
         {
             int line = (int)parameter.Position.Line;
 
-            // All hover responses use VSInternalHover with _vs_rawContent for:
-            // - Monospace font (via "formal language" classification + UseClassificationFont)
-            // - Colored keyword for mnemonics (via "keyword" classification)
-            //
-            // VS LSP client only supports PlainText in standard hover Contents
-            // (advertises contentFormat: ["plaintext"]). Markdown is NOT rendered.
-            // https://developercommunity.visualstudio.com/t/Support-markdown-in-LSP-textDocumenthov/10712890
-            //
-            // Clickable links are NOT possible over LSP — NavigationAction requires an
-            // Action delegate which cannot be serialized over JSON-RPC. Even Roslyn
-            // explicitly sets navigationActionFactory: null in its LSP hover handler.
-            // See: dotnet/roslyn src/LanguageServer/Protocol/Handler/Hover/HoverHandler.cs
-            // See: VSInternalTypes.cs for full documentation of this limitation.
+            // Hover uses _vs_rawContent for styled text (monospace + colored keywords).
+            // For mnemonics, also sets Contents to Markdown with a clickable doc link.
             if (!string.IsNullOrEmpty(hoverKeyword) && (tokenType is AsmTokenType.Mnemonic or AsmTokenType.Jump))
             {
                 return HoverBuilder.CreateMnemonicHover(hoverKeyword, hoverContent, line, startPos, endPos);
@@ -2539,6 +2996,29 @@ private static int GetTokenModifiers(AsmTokenType type)
         return null;
     }
 
+    /// <summary>
+    /// Get proven Z3 simulator states for a range of lines.
+    /// Returns register states proven by Z3 SimpleStep before and after each instruction.
+    /// </summary>
+    /// <param name="parameter">Proven states request with URI and optional line range.</param>
+    /// <returns>ProvenStatesResponse with States array containing before/after register states.</returns>
+    /// <remarks>
+    /// Each ProvenLineState entry contains:
+    ///   - Line: instruction line number
+    ///   - BeforeState: Z3-proven register states before instruction execution
+    ///   - AfterState: Z3-proven register states after instruction execution
+    ///   - ProvenBy: "Z3 SimpleStep" (proven by solver)
+    ///   - Confidence: "complete" (Z3 fully analyzed the instruction)
+    /// 
+    /// Returns empty States array if no cache entry exists for the document.
+    /// </remarks>
+    /// <example>
+    /// User clicks "Show Proven States" on line 42 → returns Z3-proven register values.
+    /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: Z3 simulator, proven states, register simulation, assembly analysis
+    /// USED IN: LanguageServerTarget.GetProvenStates
+    /// SEE ALSO: LspAsmSimulator, ProvenStatesResponse, GetCachedEntry
     public ProvenStatesResponse? GetProvenStates(GetProvenStatesParams parameter)
     {
         try

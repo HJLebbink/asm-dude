@@ -82,7 +82,23 @@ namespace AsmDude2LS
         private readonly AsmLanguageServerOptions options;
         private readonly IList<PerformanceItem> data_;
 
-        public PerformanceStore(string path, AsmLanguageServerOptions options)
+        /// <summary>
+    /// Constructor loads performance data from TSV files for selected microarchitectures.
+    /// </summary>
+    /// <param name="path">Directory containing performance data TSV files (IvyBridge.tsv, Haswell.tsv, etc.).</param>
+    /// <param name="options">AsmLanguageServerOptions with PerformanceInfo_On flag and selected microarchitectures.</param>
+    /// <remarks>
+    /// Loads performance data for each enabled microarchitecture:
+    ///   - IvyBridge.tsv, Haswell.tsv, Broadwell.tsv, Skylake.tsv, SkylakeX.tsv
+    /// 
+    /// If PerformanceInfo_On is false or no microarchitectures selected, data_ remains empty.
+    /// Load_Instruction_Translation() is called first to get instruction name translations.
+    /// </remarks>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: performance data loading, instruction translations, microarchitecture, TSV parsing
+    /// USED IN: LanguageServer.Initialize
+    /// SEE ALSO: GetPerformance, AddData, Load_Instruction_Translation
+    public PerformanceStore(string path, AsmLanguageServerOptions options)
         {
             this.options = options;
             this.data_ = [];
@@ -120,6 +136,27 @@ namespace AsmDude2LS
                 }
             }
         }
+        /// <summary>
+        /// Gets performance data for a specific mnemonic across selected microarchitectures.
+        /// Returns all matching PerformanceItem entries matching both mnemonic and architecture.
+        /// </summary>
+        /// <param name="mnemonic">Instruction mnemonic to query.</param>
+        /// <param name="selectedArchitectures">Microarchitectures to include (flag combination).</param>
+        /// <returns>Sequence of PerformanceItem entries for matching instructions.</returns>
+        /// <remarks>
+        /// Used to show performance data (latency, throughput, µops) in hover_tooltips and inlay hints.
+        /// Iterates data_ list and yields items matching both mnemonic and architecture flags.
+        /// </remarks>
+        /// <example>
+        /// var perf = performanceStore.GetPerformance(Mnemonic.MOV, MicroArch.Haswell | MicroArch.Skylake);
+        /// foreach (var item in perf) {
+        ///     Console.WriteLine($"Haswell latency: {item.latency_}");
+        /// }
+        /// </example>
+        /// <!-- LLM-ANNOTATION -->
+        /// LLM KEYWORDS: performance data, instruction timing, latency, throughput, microarchitecture
+        /// USED IN: LanguageServer.GetHover, LanguageServer.GetInlayHints
+        /// SEE ALSO: PerformanceItem, latency_, throughput_, mu_Ops_Fused_
         public IEnumerable<PerformanceItem> GetPerformance(Mnemonic mnemonic, MicroArch selectedArchitectures)
         {
             foreach (PerformanceItem item in this.data_)

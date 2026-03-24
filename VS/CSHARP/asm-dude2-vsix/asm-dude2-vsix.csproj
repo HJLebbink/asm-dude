@@ -14,14 +14,6 @@
     The LSP server (asm-dude2-ls) runs as a separate process and CAN target net10.0-windows.
     C# 14 features ARE available here via LangVersion even on net8.0.
   -->
-  <!--
-    Hybrid in-proc extension: VisualStudio.Extensibility (LanguageServerProvider) + VSSDK MEF
-    (IAsyncQuickInfoSource for clickable hover links).
-
-    RequiresInProcessHosting = true loads the extension DLL into devenv.exe, enabling MEF exports.
-    VS 2026 only — devenv.exe is .NET 8, so net8.0 works in-proc.
-    VS 2022 is NOT supported (devenv is .NET Framework, can't load net8.0).
-  -->
   <PropertyGroup>
     <TargetFramework>net8.0-windows8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -29,17 +21,13 @@
     <LangVersion>14</LangVersion>
     <ExtensionName>AsmDude2</ExtensionName>
     <ExtensionVersion>3.0.0.0</ExtensionVersion>
-    <NoWarn>VSEXTPREVIEW_LSP;VSEXTPREVIEW_SETTINGS;NU1701;NU1603</NoWarn>
+    <NoWarn>VSEXTPREVIEW_LSP;VSEXTPREVIEW_SETTINGS</NoWarn>
     <ExtensionDeploymentRootSuffix>Exp</ExtensionDeploymentRootSuffix>
-    <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="18.2.38048" PrivateAssets="all" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="18.2.38048" PrivateAssets="all" />
-    <!-- VSSDK packages for MEF editor components (IAsyncQuickInfoSource, ClassifiedTextRun) -->
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="18.6.96" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="18.6.96" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,10 +40,6 @@
       <IncludeInExtension>true</IncludeInExtension>
     </None>
     <None Update="Resources\signature-may2019.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInExtension>true</IncludeInExtension>
-    </None>
-    <None Update="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInExtension>true</IncludeInExtension>
     </None>
