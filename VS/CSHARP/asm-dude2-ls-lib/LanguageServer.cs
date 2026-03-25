@@ -79,9 +79,6 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     private readonly object updateLock = new();
     private readonly Dictionary<string, CancellationTokenSource> pendingUpdates = [];
 
-    // Debounce for mnemonic doc URL opening (Ctrl+Click fires definition twice)
-    private string? _lastDocUrl;
-    private DateTime _lastDocTime = DateTime.MinValue;
 
     private readonly TraceSource traceSource;
 
@@ -370,7 +367,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             string filename_Regular = Path.Combine(path, "signature-may2019.txt");
             string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
             this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.options);
-            this.WriteMnemonicUrlMapping();
+            // WriteMnemonicUrlMapping removed — documentation links now handled by context menu command
         }
         {
             string path_performance = Path.Combine(path, "Performance");
@@ -731,26 +728,7 @@ private void UpdateInternals(string uri)
         Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(wordUpper, true);
         if (mnemonic == Mnemonic.NONE) return [];
 
-        if (!this.options.AsmDoc_On) return [];
-
-        string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
-        if (string.IsNullOrEmpty(htmlRef)) return [];
-
-        string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
-
-        CodeAction openDocsAction = new()
-        {
-            Title = $"Open {mnemonic} Documentation",
-            Kind = CodeActionKind.QuickFix,
-            Command = new Command
-            {
-                Title = $"Open {mnemonic} Documentation",
-                CommandIdentifier = "asmdude2.openDocumentation",
-                Arguments = [fullUrl],
-            },
-        };
-
-        return [openDocsAction];
+        return [];
 
         /* Disabled demo code actions — kept for reference
         #region File Operation actions
@@ -1521,40 +1499,6 @@ private static int GetTokenModifiers(AsmTokenType type)
 
             int fileID = 0;
             (_, _, Mnemonic mnemonic, string[] args, _) = AsmTools.AsmSourceTools.ParseLine(lineText, lineNumber, fileID, AssemblerEnum.UNKNOWN);
-
-            // Add clickable documentation link hint for mnemonic
-            if (mnemonic != Mnemonic.NONE && this.options?.AsmDoc_On == true)
-            {
-                string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
-                if (!string.IsNullOrEmpty(htmlRef))
-                {
-                    int mnemonicIdx = lineText.AsSpan().IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
-                    if (mnemonicIdx >= 0)
-                    {
-                        string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
-                        hints.Add(new InlayHint
-                        {
-                            Position = new Position(lineNumber, mnemonicIdx + mnemonic.ToString().Length),
-                            Label = new InlayHintLabelPart[]
-                            {
-                                new()
-                                {
-                                    Value = "📖",
-                                    ToolTip = $"Open {mnemonic} documentation",
-                                    Command = new Command
-                                    {
-                                        Title = $"Open {mnemonic} Documentation",
-                                        CommandIdentifier = "asmdude2.openDocumentation",
-                                        Arguments = [fullUrl],
-                                    },
-                                },
-                            },
-                            Kind = InlayHintKind.Type,
-                            PaddingLeft = true,
-                        });
-                    }
-                }
-            }
 
             // Add performance hint for mnemonic
             if (showPerformance && mnemonic != Mnemonic.NONE && this.performanceStore != null)
@@ -2380,95 +2324,10 @@ private static int GetTokenModifiers(AsmTokenType type)
             }
         }
 
-        // No label definition found — check if it's a mnemonic and open documentation
-        string wordUpper = word.ToUpperInvariant();
-        Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(wordUpper, true);
-        if (mnemonic != Mnemonic.NONE && this.options.AsmDoc_On)
-        {
-            string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
-            if (!string.IsNullOrEmpty(htmlRef))
-            {
-                string fullUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
-
-                // Debounce: Ctrl+Click fires textDocument/definition twice (once on hover, once on click).
-                // Skip if same URL was opened within the last 2 seconds.
-                var now = DateTime.UtcNow;
-                if (fullUrl != _lastDocUrl || (now - _lastDocTime).TotalSeconds > 2)
-                {
-                    _lastDocUrl = fullUrl;
-                    _lastDocTime = now;
-                    LogInfo($"GetDefinition: opening documentation for {mnemonic}: {fullUrl}");
-                    try
-                    {
-                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(fullUrl) { UseShellExecute = true });
-                    }
-                    catch (Exception ex)
-                    {
-                        LogInfo($"GetDefinition: failed to open URL: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    LogInfo($"GetDefinition: debounced duplicate for {mnemonic}");
-                }
-
-                // Write a temp documentation file and return its Location.
-                // This makes "Peek Definition" (Alt+F12) show the docs inline.
-                return CreateMnemonicDocLocation(mnemonic, fullUrl);
-            }
-        }
-
         LogInfo($"GetDefinition: no definition found for '{word}'");
         return null;
     }
 
-    private Location? CreateMnemonicDocLocation(Mnemonic mnemonic, string fullUrl)
-    {
-        try
-        {
-            string description = this.mnemonicStore?.GetDescription(mnemonic) ?? string.Empty;
-            var signatures = this.mnemonicStore?.GetSignatures(mnemonic);
-
-            var sb = new System.Text.StringBuilder();
-            sb.AppendLine($"; {mnemonic} — Instruction Documentation");
-            sb.AppendLine($"; URL: {fullUrl}");
-            sb.AppendLine(";");
-            sb.AppendLine($"; Description:");
-            foreach (string line in description.Split('\n'))
-            {
-                sb.AppendLine($";   {line.TrimEnd()}");
-            }
-
-            if (signatures != null)
-            {
-                sb.AppendLine(";");
-                sb.AppendLine("; Signatures:");
-                foreach (var sig in signatures)
-                {
-                    sb.AppendLine($";   {sig.SignatureInformation.Label}");
-                }
-            }
-
-            string tempFile = Path.Combine(Path.GetTempPath(), $"_asmdude_doc_{mnemonic}.asm");
-            File.WriteAllText(tempFile, sb.ToString());
-
-            int lineCount = sb.ToString().Split('\n').Length;
-            return new Location
-            {
-                Uri = new Uri(tempFile),
-                Range = new Range
-                {
-                    Start = new Position(0, 0),
-                    End = new Position(lineCount - 1, 0),
-                },
-            };
-        }
-        catch (Exception ex)
-        {
-            LogInfo($"CreateMnemonicDocLocation: failed: {ex.Message}");
-            return null;
-        }
-    }
 
     private AsmTokenType GetAsmTokenType(string keyword_uppercase)
     {
@@ -2492,56 +2351,6 @@ private static int GetTokenModifiers(AsmTokenType type)
     }
 
 
-    /// <summary>
-    /// Formats a mnemonic as an HTML anchor: <![CDATA[<a href=URL>NAME</a>]]>.
-    /// Currently unused — kept for the future hybrid in-proc VSIX extension where
-    /// an IAsyncQuickInfoSource (MEF) can parse this HTML and create a WPF
-    /// ClassifiedTextRun with a real Action delegate for clickable navigation.
-    ///
-    /// See: VS/CSHARP/old/asm-dude2-vsix-archived/QuickInfo/AsmQuickInfoSource.cs
-    /// for the old in-process implementation that consumed this format.
-    /// See: VSInternalTypes.cs for why clickable links are not possible over LSP.
-    /// </summary>
-    private string AsHtmlUrl(Mnemonic mnemonic)
-    {
-        string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
-        if (htmlRef == null)
-        {
-            return mnemonic.ToString();
-        }
-        string fullURL = this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
-        return "<a href=" + fullURL + ">" + mnemonic.ToString() + "</a>";
-    }
-
-    /// <summary>
-    /// Write a JSON mapping file (mnemonic → full doc URL) so the in-proc MEF QuickInfo source
-    /// can create clickable links without needing to call the LSP server.
-    /// </summary>
-    private void WriteMnemonicUrlMapping()
-    {
-        try
-        {
-            string baseUrl = this.options.AsmDoc_Url.TrimEnd('/') + "/";
-            var mapping = new Dictionary<string, string>();
-            foreach (Mnemonic m in Enum.GetValues(typeof(Mnemonic)))
-            {
-                if (m == Mnemonic.NONE) continue;
-                string htmlRef = this.mnemonicStore.GetHtmlRef(m);
-                if (!string.IsNullOrEmpty(htmlRef))
-                {
-                    mapping[m.ToString()] = baseUrl + htmlRef;
-                }
-            }
-            string json = System.Text.Json.JsonSerializer.Serialize(mapping);
-            string mappingFile = Path.Combine(Path.GetTempPath(), "_asmdude_mnemonic_urls.json");
-            File.WriteAllText(mappingFile, json);
-            LogToFile($"[WriteMnemonicUrlMapping] Wrote {mapping.Count} entries to {mappingFile}");
-        }
-        catch (Exception ex)
-        {
-            LogToFile($"[WriteMnemonicUrlMapping] Failed: {ex.Message}");
-        }
-    }
 
     /// <summary>
     /// Returns DocumentLink[] for all mnemonics/jumps that have documentation URLs.
@@ -3484,4 +3293,6 @@ private static int GetTokenModifiers(AsmTokenType type)
         return this.rpc.InvokeWithParameterObjectAsync<TOut>(methodName, param);
     }
 }
+
+
 

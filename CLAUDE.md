@@ -388,6 +388,9 @@ OOP extensions run inside `ServiceHub.Host.Extensibility`, a .NET 8 host process
 **⚠ DO NOT upgrade `StreamJsonRpc` in `asm-dude2-vsix` beyond 2.24.84.**
 The VSIX references StreamJsonRpc with `<ExcludeAssets>runtime</ExcludeAssets>` — it does **not** bundle the DLL but relies on Visual Studio to provide it at runtime. VS 2022 ships StreamJsonRpc 2.24.x; upgrading the reference to 2.25.x causes a `FileNotFoundException` ("StreamJsonRpc Version 2.25.0.0 is not found") when the extension loads. The LSP server (`asm-dude2-ls-lib`) bundles its own copy and may use a newer version independently.
 
+**⚠ The `Microsoft.VisualStudio.Extensibility.Sdk` minor version MUST match the installed Visual Studio minor version.**
+The SDK generates `Microsoft.VisualStudio.RpcContracts` with a matching version at build time. If the SDK minor version is higher than VS (e.g., SDK 18.6 on VS 18.4), VS rejects the extension because it doesn't have the newer RpcContracts. If the SDK version is too old (e.g., SDK 18.2 on VS 18.4), commands may silently fail to register. Check your VS version via Help → About, then use the matching SDK preview from the vssdk feed. Example: VS 2026 **18.4**.2 → SDK **18.4**.38655-Preview.
+
 **NuGet Sources**: Requires both nuget.org and vssdk feed (configured in `NuGet.config`):
 ```
 https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.json

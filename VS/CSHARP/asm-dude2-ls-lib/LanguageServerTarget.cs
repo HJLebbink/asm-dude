@@ -281,11 +281,6 @@ public class LanguageServerTarget(LanguageServer server)
                     CodeActionKinds = [CodeActionKind.QuickFix],
                 },
 
-                ExecuteCommandProvider = new ExecuteCommandOptions
-                {
-                    Commands = ["asmdude2.openDocumentation"],
-                },
-
                 //ProjectContextProvider = true,
 
                 //DocumentColorProvider = new DocumentColorOptions
@@ -305,6 +300,8 @@ public class LanguageServerTarget(LanguageServer server)
                 {
                     WorkDoneProgress = false,
                 },
+
+                //CustomCommands = new CustomCommandsOptions(),
 
                 //TypeDefinitionProvider = true,
 
@@ -940,29 +937,6 @@ public class LanguageServerTarget(LanguageServer server)
     {
         LanguageServer.LogInfo($"OnDidChangeConfiguration");
         server.SendSettings(parameter);
-    }
-
-    [JsonRpcMethod(Methods.WorkspaceExecuteCommandName, UseSingleObjectParameterDeserialization = true)]
-    public object? WorkspaceExecuteCommand(ExecuteCommandParams parameter)
-    {
-        LanguageServer.LogToFile($"[WorkspaceExecuteCommand] command={parameter.Command}");
-        if (parameter.Command == "asmdude2.openDocumentation" && parameter.Arguments?.Length > 0)
-        {
-            string? url = parameter.Arguments[0]?.ToString();
-            if (!string.IsNullOrEmpty(url))
-            {
-                LanguageServer.LogToFile($"[WorkspaceExecuteCommand] Opening URL: {url}");
-                try
-                {
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
-                }
-                catch (Exception ex)
-                {
-                    LanguageServer.LogToFile($"[WorkspaceExecuteCommand] Failed to open URL: {ex.Message}");
-                }
-            }
-        }
-        return null;
     }
 
     [JsonRpcMethod(Methods.WorkspaceSymbolName, UseSingleObjectParameterDeserialization = true)]
