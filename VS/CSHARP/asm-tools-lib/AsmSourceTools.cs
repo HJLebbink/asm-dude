@@ -238,7 +238,7 @@ using System.Text;
                     // Console.WriteLine(codeStr + ":" + codeStr.Length);
 
                     // Process all keywords in the code string for accurate tokenization
-                    var keywordPositions = new List<(int beginPos, int length, AsmTokenType type)>(SplitIntoKeywordsType(codeStr_uppercase));
+                    var keywordPositions = new List<(int beginPos, int endPos, AsmTokenType type)>(SplitIntoKeywordsType(codeStr_uppercase));
                     
                     // First pass: identify mnemonics and set context
                     int mnemonicPos = -1;
@@ -248,7 +248,7 @@ using System.Text;
                         var pos = keywordPositions[i];
                         if (pos.type == AsmTokenType.UNKNOWN)
                         {
-                            string keyword = codeStr_uppercase[pos.beginPos..(pos.beginPos + pos.length)];
+                            string keyword = codeStr_uppercase[pos.beginPos..pos.endPos];
                             Mnemonic testMnemonic = ParseMnemonic(keyword, true);
                             if (testMnemonic != Mnemonic.NONE)
                             {
@@ -264,7 +264,7 @@ using System.Text;
                     {
                         var pos = keywordPositions[i];
                         int globalBeginPos = codeBeginPos + pos.beginPos;
-                        int globalEndPos = codeBeginPos + pos.beginPos + pos.length;
+                        int globalEndPos = codeBeginPos + pos.endPos;
                         
                         if (pos.type != AsmTokenType.UNKNOWN)
                         {
@@ -274,7 +274,7 @@ using System.Text;
                         else
                         {
                             // Need to determine the type
-                            string keyword = codeStr_uppercase[pos.beginPos..(pos.beginPos + pos.length)];
+                            string keyword = codeStr_uppercase[pos.beginPos..pos.endPos];
                             AsmTokenType tokenType = DetermineTokenType(
                                 keyword, 
                                 i, 
@@ -292,29 +292,18 @@ using System.Text;
                     if (mnemonicPos >= 0 && mnemonicPos < keywordPositions.Count)
                     {
                         var mnemonicPosInfo = keywordPositions[mnemonicPos];
-                        string mnemonicKeyword = codeStr_uppercase[mnemonicPosInfo.beginPos..(mnemonicPosInfo.beginPos + mnemonicPosInfo.length)];
+                        string mnemonicKeyword = codeStr_uppercase[mnemonicPosInfo.beginPos..mnemonicPosInfo.endPos];
                         mnemonic = ParseMnemonic(mnemonicKeyword, true);
                     }
                     
                     // Extract arguments (simplified - in a real implementation we'd do this more precisely)
-                    if (mnemonic != Mnemonic.NONE)
+                    if (mnemonic != Mnemonic.NONE && mnemonicPos >= 0)
                     {
-                        int argStartPos = 0;
-                        if (mnemonicPos >= 0)
-                        {
-                            var mnemonicPosInfo = keywordPositions[mnemonicPos];
-                            argStartPos = codeBeginPos + mnemonicPosInfo.beginPos + mnemonicPosInfo.length;
-                        }
-                        
-                        int argLength = codeStr.Length - argStartPos;
-                        if (argLength > 0)
+                        int argStartPos = keywordPositions[mnemonicPos].endPos;
+                        if (argStartPos < codeStr.Length)
                         {
                             string argsStr = codeStr[argStartPos..];
                             args = argsStr.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            for (int i = 0; i < args.Length; ++i)
-                            {
-                                args[i] = args[i].Trim();
-                            }
                         }
                     }
                 }
@@ -408,7 +397,7 @@ using System.Text;
         /// <summary>
         /// split the provided lineStr into keywords, and if the type is already known return the type.
         /// </summary>
-        public static IEnumerable<(int beginPos, int length, AsmTokenType type)> SplitIntoKeywordsType(string line)
+        public static IEnumerable<(int beginPos, int endPos, AsmTokenType type)> SplitIntoKeywordsType(string line)
         {
             ArgumentNullException.ThrowIfNull(line);
 
@@ -491,17 +480,17 @@ using System.Text;
         public static List<string> SplitIntoKeywordsList(string line)
         {
             List<string> keywords = [];
-            foreach ((int beginPos, int length, AsmTokenType _) pos in SplitIntoKeywordsType(line))
+            foreach ((int beginPos, int endPos, AsmTokenType _) pos in SplitIntoKeywordsType(line))
             {
                 keywords.Add(Keyword(pos, line));
             }
             return keywords;
         }
 
-        public static string Keyword((int beginPos, int length, AsmTokenType _) pos, string line)
+        public static string Keyword((int beginPos, int endPos, AsmTokenType _) pos, string line)
         {
             ArgumentNullException.ThrowIfNull(line);
-            return line[pos.beginPos..pos.length];
+            return line[pos.beginPos..pos.endPos];
         }
 
         public static bool IsSeparatorChar_NoOperator(char c)

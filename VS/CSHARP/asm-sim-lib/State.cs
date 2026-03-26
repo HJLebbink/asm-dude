@@ -40,11 +40,11 @@ namespace AsmSim
 
         private readonly Tools tools_;
 
-        public Tools Tools { get; }
+        public Tools Tools => this.tools_;
 
         private readonly Context ctx_;
 
-        public Context Ctx { get; }
+        public Context Ctx => this.ctx_;
 
         public Solver Solver { get; private set; }
 
@@ -69,7 +69,7 @@ namespace AsmSim
 
         private BranchInfoStore? branchInfoStore_;
 
-        public BranchInfoStore BranchInfoStore { get; }
+        public BranchInfoStore BranchInfoStore => this.branchInfoStore_!;
         #endregion
 
         #region Constructors

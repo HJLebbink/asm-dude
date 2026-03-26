@@ -14,27 +14,27 @@ using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Commands;
 using Microsoft.VisualStudio.Extensibility.Editor;
 
+/// <summary>
+/// Right-click context menu command that opens the wiki documentation page
+/// for the assembly mnemonic under the cursor.
+/// </summary>
 [VisualStudioContribution]
 internal class OpenDocumentationCommand : Command
 {
     private const string BaseUrl = "https://github.com/HJLebbink/asm-dude/wiki/";
     private static readonly string DiagLogFile = Path.Combine(Path.GetTempPath(), "AsmDude2-extension-diag.log");
 
+    // guidSHLMainMenu, IDG_VS_CODEWIN_NAVIGATETOLOCATION — the "Go to Definition" group in the code editor context menu
     private static readonly Guid GuidSHLMainMenu = new("D309F791-903F-11D0-9EFC-00A0C911004F");
     private const uint IDG_VS_CODEWIN_NAVIGATETOLOCATION = 0x02B1;
 
     private Dictionary<string, string>? mnemonicUrlMap;
 
-    public OpenDocumentationCommand(TraceSource traceSource)
-    {
-    }
+    public OpenDocumentationCommand(TraceSource traceSource) { }
 
     public override CommandConfiguration CommandConfiguration => new("%AsmDude2.OpenDocumentationCommand.DisplayName%")
     {
-        Placements =
-        [
-            CommandPlacement.VsctParent(GuidSHLMainMenu, IDG_VS_CODEWIN_NAVIGATETOLOCATION, 0x0100),
-        ],
+        Placements = [CommandPlacement.VsctParent(GuidSHLMainMenu, IDG_VS_CODEWIN_NAVIGATETOLOCATION, 0x0100)],
         Icon = new(ImageMoniker.KnownValues.QuestionMark, IconSettings.IconAndText),
     };
 
@@ -43,128 +43,78 @@ internal class OpenDocumentationCommand : Command
         try
         {
             ITextViewSnapshot? textView = await context.GetActiveTextViewAsync(cancellationToken);
-            if (textView is null)
-            {
-                Log("OpenDocumentationCommand: no active text view");
-                return;
-            }
+            if (textView is null) return;
 
-            TextPosition caretPosition = textView.Selection.InsertionPosition;
-            ITextDocumentSnapshotLine line = caretPosition.GetContainingLine();
-            string lineText = line.Text.CopyToString();
-            int offsetInLine = caretPosition.Offset - line.Text.Start.Offset;
+            string lineText = textView.Selection.InsertionPosition.GetContainingLine().Text.CopyToString();
+            int offsetInLine = textView.Selection.InsertionPosition.Offset
+                - textView.Selection.InsertionPosition.GetContainingLine().Text.Start.Offset;
 
             string? word = GetWordAtPosition(lineText, offsetInLine);
-            if (string.IsNullOrEmpty(word))
-            {
-                Log("OpenDocumentationCommand: no word at cursor");
-                return;
-            }
+            if (string.IsNullOrEmpty(word)) return;
 
-            string upperWord = word.ToUpperInvariant();
-            if (upperWord.StartsWith('%'))
-            {
-                upperWord = upperWord[1..]; // AT&T syntax prefix
-            }
-
+            string mnemonic = word.TrimStart('%').ToUpperInvariant();
             EnsureMnemonicUrlMap();
-            string htmlRef = this.mnemonicUrlMap!.TryGetValue(upperWord, out string? mapped) && !string.IsNullOrEmpty(mapped)
-                ? mapped
-                : upperWord; // fall back to mnemonic name as wiki page
+
+            if (!this.mnemonicUrlMap!.TryGetValue(mnemonic, out string? htmlRef) || string.IsNullOrEmpty(htmlRef))
+                return;
+
             string url = BaseUrl + htmlRef;
-            Log($"OpenDocumentationCommand: opening {url} for mnemonic {upperWord}");
+            Log($"OpenDocumentationCommand: opening {url}");
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
         catch (Exception ex)
         {
-            Log($"OpenDocumentationCommand: error: {ex.Message}");
+            Log($"OpenDocumentationCommand: {ex.Message}");
         }
     }
 
-    private static string? GetWordAtPosition(string lineText, int offset)
+    private static string? GetWordAtPosition(string line, int offset)
     {
-        if (offset < 0 || offset > lineText.Length || lineText.Length == 0)
-        {
-            return null;
-        }
+        if (line.Length == 0 || offset < 0 || offset > line.Length) return null;
 
-        // Clamp to valid character position
-        int pos = Math.Min(offset, lineText.Length - 1);
-
-        // If we're at a non-word character, try one position back (cursor is between chars)
-        if (!IsWordChar(lineText[pos]) && pos > 0 && IsWordChar(lineText[pos - 1]))
-        {
-            pos--;
-        }
-
-        if (!IsWordChar(lineText[pos]))
-        {
-            return null;
-        }
+        int pos = Math.Min(offset, line.Length - 1);
+        if (!IsWordChar(line[pos]) && pos > 0 && IsWordChar(line[pos - 1])) pos--;
+        if (!IsWordChar(line[pos])) return null;
 
         int start = pos;
-        while (start > 0 && IsWordChar(lineText[start - 1]))
-        {
-            start--;
-        }
+        while (start > 0 && IsWordChar(line[start - 1])) start--;
 
         int end = pos;
-        while (end < lineText.Length - 1 && IsWordChar(lineText[end + 1]))
-        {
-            end++;
-        }
+        while (end < line.Length - 1 && IsWordChar(line[end + 1])) end++;
 
-        return lineText[start..(end + 1)];
+        return line[start..(end + 1)];
     }
 
-    private static bool IsWordChar(char c)
-    {
-        return char.IsLetterOrDigit(c) || c == '_' || c == '%';
-    }
+    private static bool IsWordChar(char c) => char.IsLetterOrDigit(c) || c is '_' or '%';
 
     private void EnsureMnemonicUrlMap()
     {
-        if (this.mnemonicUrlMap is not null)
-        {
-            return;
-        }
+        if (this.mnemonicUrlMap is not null) return;
 
         this.mnemonicUrlMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        string resourceDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "Server", "Resources");
 
-        string extensionDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-        string resourceDir = Path.Combine(extensionDir, "Server", "Resources");
-
-        // Load from both signature files (same format, may2019 has POP/PUSH/RET etc.)
         LoadSignatureFile(Path.Combine(resourceDir, "signature-may2019.txt"));
-        LoadSignatureFile(Path.Combine(resourceDir, "signature-hand-1.txt")); // hand-1 overrides may2019
+        LoadSignatureFile(Path.Combine(resourceDir, "signature-hand-1.txt")); // overrides may2019
 
         Log($"OpenDocumentationCommand: loaded {this.mnemonicUrlMap.Count} mnemonic URL mappings");
     }
 
     private void LoadSignatureFile(string path)
     {
-        if (!File.Exists(path))
-        {
-            Log($"OpenDocumentationCommand: signature file not found: {path}");
-            return;
-        }
+        if (!File.Exists(path)) return;
 
         foreach (string line in File.ReadLines(path))
         {
-            if (line.Length == 0 || line[0] == ';')
-            {
-                continue;
-            }
+            if (line.Length == 0 || line[0] == ';') continue;
 
             string[] columns = line.Split('\t');
-            if (columns.Length == 4 && !string.IsNullOrEmpty(columns[3]))
+            if (columns.Length == 4 && columns[3].Length > 0)
             {
-                // Format: GENERAL\tMNEMONIC\tDescription\tHtmlRef
                 string mnemonic = columns[1].Trim();
-                string htmlRef = columns[3].Trim();
                 if (mnemonic.Length > 0)
                 {
-                    this.mnemonicUrlMap![mnemonic] = htmlRef;
+                    this.mnemonicUrlMap![mnemonic] = columns[3].Trim();
                 }
             }
         }

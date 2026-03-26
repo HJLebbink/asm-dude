@@ -32,7 +32,7 @@ public class Parse
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseNasmIntel(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int endPos, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
             int nKeywords = pos.Count;
 
             for (int k = 0; k < nKeywords; k++)
@@ -49,7 +49,7 @@ public class Parse
                 {
                     case AsmTokenType.Jump:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Jump);
+                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Jump);
 
                             k++; // goto the next word
                             if (k == nKeywords)
@@ -66,7 +66,7 @@ public class Parse
                                 case "SHORT":
                                 case "NEAR":
                                     {
-                                        yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                        yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
 
                                         k++;
                                         if (k == nKeywords)
@@ -77,11 +77,11 @@ public class Parse
                                         string asmToken3 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                         if (asmToken3.Equals("PTR", StringComparison.Ordinal))
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
                                         }
                                         else
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                         }
                                         break;
                                     }
@@ -89,15 +89,15 @@ public class Parse
                                     {
                                         if (RegisterTools.IsRegister(asmToken2, true))
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Register);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Register);
                                         }
                                         else if (AsmSourceToolsAlias.Evaluate_Constant(asmToken2, true).valid)
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                                         }
                                         else
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                         }
 
                                         break;
@@ -110,11 +110,11 @@ public class Parse
                             if (AsmSourceToolsAlias.Evaluate_Constant(keyword_uppercase, true).valid)
                             //if (AsmSourceToolsAlias.Parse_Constant(keyword_uppercase, true).Valid)
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else if (keyword_uppercase.StartsWith('"') && keyword_uppercase.EndsWith('"'))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else
                             {
@@ -129,8 +129,8 @@ public class Parse
                                     {
                                         case "LABEL":
                                             {
-                                                yield return (pos[k - 1].beginPos, pos[k - 1].length, AsmTokenType.LabelDef);
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Directive);
+                                                yield return (pos[k - 1].beginPos, pos[k - 1].endPos, AsmTokenType.LabelDef);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Directive);
                                                 isUnknown = false;
                                                 break;
                                             }
@@ -150,13 +150,13 @@ public class Parse
                                     {
                                         case "ALIAS":
                                             {
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.LabelDef);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.LabelDef);
                                                 isUnknown = false;
                                                 break;
                                             }
                                         case "INCLUDE":
                                             {
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                                                 isUnknown = false;
                                                 break;
                                             }
@@ -168,7 +168,7 @@ public class Parse
                                 }
                                 if (isUnknown)
                                 {
-                                    yield return (pos[k].beginPos, pos[k].length, AsmTokenType.UNKNOWN);
+                                    yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.UNKNOWN);
                                 }
                             }
                             break;
@@ -178,13 +178,13 @@ public class Parse
                             AssemblerEnum assembler = asmDudeTools.Get_Assembler(keyword_uppercase);
                             if (assembler.HasFlag(AssemblerEnum.NASM_INTEL) || assembler.HasFlag(AssemblerEnum.NASM_ATT))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Directive);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Directive);
                             }
                             break;
                         }
                     default:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, keywordType);
+                            yield return (pos[k].beginPos, pos[k].endPos, keywordType);
                             break;
                         }
                 }
@@ -194,7 +194,7 @@ public class Parse
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseNasmAtt(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int endPos, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
             int nKeywords = pos.Count;
 
             for (int k = 0; k < nKeywords; k++)
@@ -211,7 +211,7 @@ public class Parse
                 {
                     case AsmTokenType.Jump:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Jump);
+                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Jump);
 
                             k++; // goto the next word
                             if (k == nKeywords)
@@ -228,7 +228,7 @@ public class Parse
                                 case "SHORT":
                                 case "NEAR":
                                     {
-                                        yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                        yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
 
                                         k++;
                                         if (k == nKeywords)
@@ -239,11 +239,11 @@ public class Parse
                                         string asmToken3 = AsmSourceToolsAlias.Keyword(pos[k], line_uppercase);
                                         if (asmToken3.Equals("PTR", StringComparison.Ordinal))
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
                                         }
                                         else
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                         }
 
                                         break;
@@ -252,15 +252,15 @@ public class Parse
                                     {
                                         if (RegisterTools.IsRegister(asmToken2, true))
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Register);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Register);
                                         }
                                         else if (AsmSourceToolsAlias.Evaluate_Constant(asmToken2, true).valid)
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                                         }
                                         else
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                         }
                                         break;
                                     }
@@ -271,15 +271,15 @@ public class Parse
                         {
                             if (AsmSourceToolsAlias.Evaluate_Constant(keyword_uppercase, true).valid)
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else if (keyword_uppercase.StartsWith('"') && keyword_uppercase.EndsWith('"'))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else if (keyword_uppercase.StartsWith('$'))
                             {
-                                yield return (pos[k].beginPos + 1, pos[k].length - 1, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos + 1, pos[k].endPos - 1, AsmTokenType.Constant);
                             }
                             else
                             {
@@ -294,8 +294,8 @@ public class Parse
                                     {
                                         case "LABEL":
                                             {
-                                                yield return (pos[k - 1].beginPos, pos[k - 1].length, AsmTokenType.LabelDef);
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Directive);
+                                                yield return (pos[k - 1].beginPos, pos[k - 1].endPos, AsmTokenType.LabelDef);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Directive);
                                                 isUnknown = false;
                                                 break;
                                             }
@@ -315,13 +315,13 @@ public class Parse
                                     {
                                         case "ALIAS":
                                             {
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.LabelDef);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.LabelDef);
                                                 isUnknown = false;
                                                 break;
                                             }
                                         case "INCLUDE":
                                             {
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                                                 isUnknown = false;
                                                 break;
                                             }
@@ -333,7 +333,7 @@ public class Parse
                                 }
                                 if (isUnknown)
                                 {
-                                    yield return (pos[k].beginPos, pos[k].length, AsmTokenType.UNKNOWN);
+                                    yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.UNKNOWN);
                                 }
                             }
                             break;
@@ -343,13 +343,13 @@ public class Parse
                             AssemblerEnum assembler = asmDudeTools.Get_Assembler(keyword_uppercase);
                             if (assembler.HasFlag(AssemblerEnum.NASM_INTEL) || assembler.HasFlag(AssemblerEnum.NASM_ATT))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Directive);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Directive);
                             }
                             break;
                         }
                     default:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, keywordType);
+                            yield return (pos[k].beginPos, pos[k].endPos, keywordType);
                             break;
                         }
                 }
@@ -360,7 +360,7 @@ public class Parse
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseMasm(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int endPos, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
             int nKeywords = pos.Count;
 
             for (int k = 0; k < nKeywords; k++)
@@ -377,7 +377,7 @@ public class Parse
                 {
                     case AsmTokenType.Jump:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Jump);
+                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Jump);
 
                             k++; // goto the next word
                             if (k == nKeywords)
@@ -392,7 +392,7 @@ public class Parse
                                 case "@B":
                                 case "@F":
                                     {
-                                        // yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                        // yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                         // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
                                         break;
                                     }
@@ -402,7 +402,7 @@ public class Parse
                                 case "SHORT":
                                 case "NEAR":
                                     {
-                                        yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                        yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
 
                                         k++;
                                         if (k == nKeywords)
@@ -417,18 +417,18 @@ public class Parse
                                             case "@B":
                                             case "@F":
                                                 {
-                                                    // yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                                    // yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                                     // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
                                                     break;
                                                 }
                                             case "PTR":
                                                 {
-                                                    yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                                    yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
                                                     break;
                                                 }
                                             default:
                                                 {
-                                                    yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                                    yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                                     break;
                                                 }
                                         }
@@ -438,11 +438,11 @@ public class Parse
                                     {
                                         if (RegisterTools.IsRegister(asmToken2))
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Register);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Register);
                                         }
                                         else
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                         }
                                         break;
                                     }
@@ -454,11 +454,11 @@ public class Parse
                             if (AsmSourceToolsAlias.Evaluate_Constant(keyword_uppercase, true).valid)
                             //if (AsmTools.AsmSourceToolsAlias.Parse_Constant(keyword_uppercase, true).Valid)
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else if (keyword_uppercase.StartsWith('"') && keyword_uppercase.EndsWith('"'))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else
                             {
@@ -475,15 +475,15 @@ public class Parse
                                         case "EQU":
                                         case "LABEL":
                                             {
-                                                yield return (pos[k - 1].beginPos, pos[k - 1].length, AsmTokenType.LabelDef);
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Directive);
+                                                yield return (pos[k - 1].beginPos, pos[k - 1].endPos, AsmTokenType.LabelDef);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Directive);
                                                 isUnknown = false;
                                                 break;
                                             }
                                         case "PROTO":
                                             { // a proto is considered a label definition but it should not clash with other label definitions
-                                                yield return (pos[k - 1].beginPos, pos[k - 1].length, AsmTokenType.LabelDef);
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Directive);
+                                                yield return (pos[k - 1].beginPos, pos[k - 1].endPos, AsmTokenType.LabelDef);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Directive);
                                                 isUnknown = false;
                                                 break;
                                             }
@@ -503,13 +503,13 @@ public class Parse
                                     {
                                         case "ALIAS":
                                             {
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.LabelDef);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.LabelDef);
                                                 isUnknown = false;
                                                 break;
                                             }
                                         case "INCLUDE":
                                             {
-                                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                                                 isUnknown = false;
                                                 break;
                                             }
@@ -522,7 +522,7 @@ public class Parse
 
                                 if (isUnknown)
                                 {
-                                    yield return (pos[k].beginPos, pos[k].length, AsmTokenType.UNKNOWN);
+                                    yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.UNKNOWN);
                                 }
                             }
                             break;
@@ -532,7 +532,7 @@ public class Parse
                             AssemblerEnum assember = asmDudeTools.Get_Assembler(keyword_uppercase);
                             if (assember.HasFlag(AssemblerEnum.MASM)) // this MASM token-tagger only tags MASM directives
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Directive);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Directive);
 
                                 switch (keyword_uppercase)
                                 {
@@ -543,7 +543,7 @@ public class Parse
                                             {
                                                 break;
                                             }
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.LabelDef);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.LabelDef);
                                             break;
                                         }
                                     case "EXTRN":
@@ -555,7 +555,7 @@ public class Parse
                                                 break;
                                             }
 
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.LabelDef);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.LabelDef);
                                             break;
                                         }
                                 }
@@ -564,7 +564,7 @@ public class Parse
                         }
                     default:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, keywordType);
+                            yield return (pos[k].beginPos, pos[k].endPos, keywordType);
                             break;
                         }
                 }
@@ -574,7 +574,7 @@ public class Parse
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseDisassembly(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int endPos, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
 
             // if the line does not contain a Mnemonic, assume it is a source code line and make it a remark
             if (IsSourceCode(line_uppercase, pos))
@@ -597,7 +597,7 @@ public class Parse
                 {
                     case AsmTokenType.Jump:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Jump);
+                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Jump);
 
                             k++; // goto the next word
                             if (k == nKeywords)
@@ -614,7 +614,7 @@ public class Parse
                                 case "SHORT":
                                 case "NEAR":
                                     {
-                                        yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                        yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
 
                                         k++;
                                         if (k == nKeywords)
@@ -627,7 +627,7 @@ public class Parse
                                         {
                                             case "PTR":
                                                 {
-                                                    yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                                    yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
                                                     break;
                                                 }
                                         }
@@ -638,11 +638,11 @@ public class Parse
                                     {
                                         if (RegisterTools.IsRegister(asmToken2))
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Register);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Register);
                                         }
                                         else
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                         }
                                         break;
                                     }
@@ -653,22 +653,22 @@ public class Parse
                         {
                             if (asmToken.Equals("OFFSET", StringComparison.Ordinal))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Directive);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Directive);
                                 k++; // goto the next word
                                 if (k == nKeywords)
                                 {
                                     break;
                                 }
 
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                             }
                             else if (IsConstant(asmToken))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else if (asmToken.StartsWith('"') && asmToken.EndsWith('"'))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else
                             {
@@ -678,7 +678,7 @@ public class Parse
                         }
                     default:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, keywordType);
+                            yield return (pos[k].beginPos, pos[k].endPos, keywordType);
                             break;
                         }
 
@@ -689,7 +689,7 @@ public class Parse
         public static IEnumerable<(int beginPos, int length, AsmTokenType type)> ParseAttDisassembly(string lineStr, AsmDude2Tools asmDudeTools)
         {
             string line_uppercase = lineStr.ToUpperInvariant();
-            var pos = new List<(int beginPos, int length, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
+            var pos = new List<(int beginPos, int endPos, AsmTokenType type)>(AsmSourceToolsAlias.SplitIntoKeywordsType(line_uppercase));
 
             // if the line does not contain a Mnemonic, assume it is a source code line and make it a remark
             if (IsSourceCode(line_uppercase, pos))
@@ -712,7 +712,7 @@ public class Parse
                 {
                     case AsmTokenType.Jump:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Jump);
+                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Jump);
 
                             k++; // goto the next word
                             if (k == nKeywords)
@@ -729,7 +729,7 @@ public class Parse
                                 case "SHORT":
                                 case "NEAR":
                                     {
-                                        yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                        yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
 
                                         k++;
                                         if (k == nKeywords)
@@ -742,7 +742,7 @@ public class Parse
                                         {
                                             case "PTR":
                                                 {
-                                                    yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Misc);
+                                                    yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Misc);
                                                     break;
                                                 }
                                                 // yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.label_);
@@ -754,15 +754,15 @@ public class Parse
                                     {
                                         if (RegisterTools.IsRegister(asmToken2))
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Register);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Register);
                                         }
                                         else if (AsmSourceToolsAlias.Evaluate_Constant(asmToken2, true).valid)
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                                         }
                                         else
                                         {
-                                            yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Label);
+                                            yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Label);
                                         }
                                         break;
                                     }
@@ -773,15 +773,15 @@ public class Parse
                         {
                             if (AsmSourceToolsAlias.Evaluate_Constant(asmToken, true).valid)
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else if (asmToken.StartsWith('$'))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else if (asmToken.StartsWith('"') && asmToken.EndsWith('"'))
                             {
-                                yield return (pos[k].beginPos, pos[k].length, AsmTokenType.Constant);
+                                yield return (pos[k].beginPos, pos[k].endPos, AsmTokenType.Constant);
                             }
                             else
                             {
@@ -791,7 +791,7 @@ public class Parse
                         }
                     default:
                         {
-                            yield return (pos[k].beginPos, pos[k].length, keywordType);
+                            yield return (pos[k].beginPos, pos[k].endPos, keywordType);
                             break;
                         }
                 }

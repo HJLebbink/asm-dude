@@ -204,7 +204,7 @@ namespace AsmDude2LS
                                             }
                                             else
                                             {
-                                                LanguageServer.LogWarning("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line " + lineNumber + " with content \"" + line + "\".");
+                                                AsmDudeLog.Warning("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line " + lineNumber + " with content \"" + line + "\".");
                                             }
                                         }
                                         else
@@ -232,7 +232,7 @@ namespace AsmDude2LS
                         }
                         else
                         {
-                            LanguageServer.LogWarning("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
+                            AsmDudeLog.Warning("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
                         }
                     }
                     lineNumber++;
@@ -241,11 +241,11 @@ namespace AsmDude2LS
             }
             catch (FileNotFoundException)
             {
-                LanguageServer.LogError("PerformanceStore:LoadData: could not find file \"" + filename + "\".");
+                AsmDudeLog.Error("PerformanceStore:LoadData: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                LanguageServer.LogError("PerformanceStore:LoadData: error while reading file \"" + filename + "\"." + e);
+                AsmDudeLog.Error("PerformanceStore:LoadData: error while reading file \"" + filename + "\"." + e);
             }
         }
 
@@ -271,7 +271,7 @@ namespace AsmDude2LS
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr, false);
                                 if (mnemonic == Mnemonic.NONE)
                                 {
-                                    LanguageServer.LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
+                                    AsmDudeLog.Warning("PerformanceStore:Load_Instruction_Translation: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
                                 }
                                 else
                                 {
@@ -281,7 +281,7 @@ namespace AsmDude2LS
                             //LanguageServer.LogInfo("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
                             if (!translations.TryAdd(key, values))
                             {
-                                LanguageServer.LogWarning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");
+                                AsmDudeLog.Warning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");
                             }
                         }
                     }
@@ -290,11 +290,11 @@ namespace AsmDude2LS
             }
             catch (FileNotFoundException)
             {
-                LanguageServer.LogError("PerformanceStore:Load_Instruction_Translation: could not find file \"" + filename + "\".");
+                AsmDudeLog.Error("PerformanceStore:Load_Instruction_Translation: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                LanguageServer.LogError("PerformanceStore:Load_Instruction_Translation: error while reading file \"" + filename + "\"." + e);
+                AsmDudeLog.Error("PerformanceStore:Load_Instruction_Translation: error while reading file \"" + filename + "\"." + e);
             }
             return translations;
         }

@@ -44,8 +44,20 @@ public class LanguageServerTests
         this._options = new AsmLanguageServerOptions
         {
             ARCH_8086 = true,
+            ARCH_186 = true,
+            ARCH_286 = true,
+            ARCH_386 = true,
+            ARCH_486 = true,
+            ARCH_PENT = true,
+            ARCH_P6 = true,
             ARCH_X64 = true,
+            ARCH_MMX = true,
             ARCH_SSE = true,
+            ARCH_SSE2 = true,
+            ARCH_SSE3 = true,
+            ARCH_SSSE3 = true,
+            ARCH_SSE4_1 = true,
+            ARCH_SSE4_2 = true,
             ARCH_AVX = true,
             ARCH_AVX2 = true,
             ARCH_AVX512_F = true,
@@ -457,6 +469,66 @@ mov rax, rbx";
         // Assert
         result.Should().NotBeNull("signature help for MOV should return signatures");
         result?.Signatures.Should().NotBeEmpty("MOV has multiple signatures");
+    }
+
+    [Theory]
+    [InlineData("mov ", 4, true, 0, "MOV with trailing space")]
+    [InlineData("mov eax,", 8, true, 1, "MOV with first operand and comma")]
+    [InlineData("mov eax, ", 9, true, 1, "MOV with first operand, comma and space")]
+    [InlineData("add ", 4, true, 0, "ADD with trailing space")]
+    [InlineData("add eax, ebx", 12, true, 1, "ADD with two operands")]
+    [InlineData("  mov ", 6, true, 0, "MOV with leading whitespace")]
+    [InlineData("xor ", 4, true, 0, "XOR with trailing space")]
+    [InlineData("mov", 3, false, -1, "MOV without trailing space - cursor at end of mnemonic")]
+    [InlineData("label: mov ", 11, true, 0, "MOV with label prefix")]
+    [InlineData("label: mov eax, ", 16, true, 1, "MOV with label and one operand")]
+    [InlineData("vxorps xmm0, xmm1, ", 20, true, 2, "VXORPS after second comma - third parameter")]
+    [InlineData("vxorps xmm0, ", 14, true, 1, "VXORPS after first comma - second parameter")]
+    public void GetTextDocumentSignatureHelp_VariousInputs_ShouldReturnExpectedResult(
+        string text, int cursorPos, bool expectResult, int expectedActiveParam, string because)
+    {
+        // Arrange
+        var uri = "file:///test_sighelp.asm";
+        var openParams = new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = text
+            }
+        };
+        this._server.OnTextDocumentOpened(openParams);
+
+        var sigHelpParams = new SignatureHelpParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = cursorPos },
+            Context = new SignatureHelpContext
+            {
+                TriggerKind = SignatureHelpTriggerKind.Invoked,
+                IsRetrigger = false
+            }
+        };
+
+        // Act
+        var result = this._server.GetTextDocumentSignatureHelp(sigHelpParams);
+
+        // Assert
+        if (expectResult)
+        {
+            result.Should().NotBeNull($"signature help should be returned for: {because}");
+            result?.Signatures.Should().NotBeEmpty($"signatures should be present for: {because}");
+            if (expectedActiveParam >= 0)
+            {
+                result!.ActiveParameter.Should().Be(expectedActiveParam, $"active parameter should be {expectedActiveParam} for: {because}");
+            }
+        }
+        else
+        {
+            // No result expected - either null or empty signatures
+        }
     }
 
     #endregion

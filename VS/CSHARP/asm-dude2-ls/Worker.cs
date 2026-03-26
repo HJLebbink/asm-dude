@@ -51,6 +51,7 @@ public partial class Worker : BackgroundService
             Console.SetOut(Console.Error);
 
             LanguageServer.UseStdio = true;
+            AsmDude2LS.AsmDudeLog.UseStdio = true;
             this._languageServer = LanguageServer.Create(stdout, stdin);
         }
         else

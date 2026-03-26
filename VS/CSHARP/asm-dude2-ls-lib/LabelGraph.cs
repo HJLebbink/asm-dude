@@ -91,7 +91,7 @@ public sealed class LabelGraph
             if (options.MaxFileLines > 0 && lines.Length >= options.MaxFileLines)
             {
                 this.Enabled = false;
-                LanguageServer.LogWarning($"{this}:LabelGraph; file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
+                AsmDudeLog.Warning($"{this}:LabelGraph; file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
             }
 
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
@@ -140,7 +140,7 @@ public sealed class LabelGraph
                         }
                         catch (Exception ex)
                         {
-                            LanguageServer.LogError(ex.ToString());
+                            AsmDudeLog.Error(ex.ToString());
                         }
                     }
                 }
@@ -176,7 +176,7 @@ public sealed class LabelGraph
                 }
                 catch (Exception ex)
                 {
-                    LanguageServer.LogError(ex.ToString());
+                    AsmDudeLog.Error(ex.ToString());
                 }
             }
         }
@@ -199,7 +199,7 @@ public sealed class LabelGraph
             }
             else
             {
-                LanguageServer.LogWarning("LabelGraph:Get_Filename: no filename for labelID=" + labelID + " (fileId " + labelID.File_Id + "; line " + labelID.LineNumber + ")");
+                AsmDudeLog.Warning("LabelGraph:Get_Filename: no filename for labelID=" + labelID + " (fileId " + labelID.File_Id + "; line " + labelID.LineNumber + ")");
                 return string.Empty;
             }
         }
@@ -297,7 +297,7 @@ public sealed class LabelGraph
         private void Disable()
         {
             string msg = $"Performance of LabelGraph is horrible: disabling label analysis for {this.thisFilename_}.";
-            LanguageServer.LogWarning(msg);
+            AsmDudeLog.Warning(msg);
 
             this.Enabled = false;
             {
@@ -348,7 +348,7 @@ public sealed class LabelGraph
                     int startPos = lineStr.AsSpan().IndexOf(labelStr.AsSpan());
                     if (startPos < 0)
                     {
-                        LanguageServer.LogError($"LabelGraph:Add_Linenumber: startPos {startPos}");
+                        AsmDudeLog.Error($"LabelGraph:Add_Linenumber: startPos {startPos}");
                     }
                     else
                     {
@@ -450,7 +450,7 @@ public sealed class LabelGraph
             }
             catch (Exception e)
             {
-                LanguageServer.LogWarning("LabelGraph:Handle_Include. Exception:" + e.Message);
+                AsmDudeLog.Warning("LabelGraph:Handle_Include. Exception:" + e.Message);
             }
         }
 

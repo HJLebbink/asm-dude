@@ -88,20 +88,7 @@ namespace AsmDude2LS
             this.logger_ = logger;
         }
 
-        private static void Log(string msg)
-        {
-            try
-            {
-                string logPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "asmdude-sim.log");
-                System.IO.File.AppendAllText(logPath, $"[{System.DateTime.Now:HH:mm:ss.fff}] {msg}\n");
-                // Also write to console error as backup
-                System.Console.Error.WriteLine($"[ASMSIM] {msg}");
-            }
-            catch (Exception ex)
-            {
-                System.Console.Error.WriteLine($"[ASMSIM LOG ERROR] {ex.Message}");
-            }
-        }
+        private static void Log(string msg) => AsmDudeLog.Debug($"[ASMSIM] {msg}");
 
         /// <summary>
         /// Trigger a background re-simulation for the given document.
@@ -111,7 +98,7 @@ namespace AsmDude2LS
         /// </summary>
         internal void InvalidateAndSimulate(Uri uri, IReadOnlyList<string> lines, Action<Uri>? onCompleted = null)
         {
-            System.Console.Error.WriteLine($"[InvalidateAndSimulate] ENTRY: uri={uri}, lines={lines.Count}");
+            AsmDudeLog.Debug($"[InvalidateAndSimulate] ENTRY: uri={uri}, lines={lines.Count}");
             Log($"[ENTRY] InvalidateAndSimulate called with {lines.Count} lines");
             CancellationTokenSource cts;
             lock (this.lockObj_)

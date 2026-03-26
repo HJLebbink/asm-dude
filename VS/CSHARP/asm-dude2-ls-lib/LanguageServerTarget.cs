@@ -28,7 +28,6 @@ using StreamJsonRpc;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -57,9 +56,20 @@ public class LanguageServerTarget(LanguageServer server)
         CodeFolding_BeginTag = "#region",
         CodeFolding_EndTag = "#endregion",
         ARCH_8086 = true,
+        ARCH_186 = true,
+        ARCH_286 = true,
+        ARCH_386 = true,
+        ARCH_486 = true,
+        ARCH_PENT = true,
+        ARCH_P6 = true,
         ARCH_X64 = true,
+        ARCH_MMX = true,
         ARCH_SSE = true,
         ARCH_SSE2 = true,
+        ARCH_SSE3 = true,
+        ARCH_SSSE3 = true,
+        ARCH_SSE4_1 = true,
+        ARCH_SSE4_2 = true,
         ARCH_AVX = true,
         ARCH_AVX2 = true,
         IntelliSense_Label_Analysis_On = true,
@@ -127,7 +137,7 @@ public class LanguageServerTarget(LanguageServer server)
     /// SEE ALSO: Initialized, AsmLanguageServerOptions, ServerCapabilities
     public object Initialize(InitializeParams parameter)
     {
-        LanguageServer.LogInfo($"Initialize: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
+        AsmDudeLog.Info($"Initialize: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
 
 #if DEBUG
         this.traceSetting = TraceSetting.Verbose;
@@ -135,7 +145,7 @@ public class LanguageServerTarget(LanguageServer server)
             traceSetting = TraceSetting.Off;
 #endif
 
-        LanguageServer.LogInfo($"Initialize: traceSetting={this.traceSetting}");
+        AsmDudeLog.Info($"Initialize: traceSetting={this.traceSetting}");
 
         // Parse InitializationOptions - it comes as a JsonElement when using System.Text.Json
         // IncludeFields = true is required because AsmLanguageServerOptions uses public fields, not properties
@@ -152,7 +162,7 @@ public class LanguageServerTarget(LanguageServer server)
         }
         catch (Exception ex)
         {
-            LanguageServer.LogError($"Initialize: Failed to deserialize InitializationOptions: {ex.Message}; using defaults");
+            AsmDudeLog.Error($"Initialize: Failed to deserialize InitializationOptions: {ex.Message}; using defaults");
             options = CreateDefaultOptions();
         }
         // If AsmDoc_Url was not received (e.g. older client), fall back to the default wiki URL
@@ -160,7 +170,7 @@ public class LanguageServerTarget(LanguageServer server)
         {
             options.AsmDoc_Url = "https://github.com/HJLebbink/asm-dude/wiki/";
         }
-        LanguageServer.LogInfo($"Initialize: AsmDoc_On={options.AsmDoc_On}, AsmDoc_Url=\"{options.AsmDoc_Url}\", CodeCompletion_On={options.CodeCompletion_On}, ARCH_8086={options.ARCH_8086}");
+        AsmDudeLog.Info($"Initialize: AsmDoc_On={options.AsmDoc_On}, AsmDoc_Url=\"{options.AsmDoc_Url}\", CodeCompletion_On={options.CodeCompletion_On}, ARCH_8086={options.ARCH_8086}");
 
         server.Initialize(options);
 
@@ -347,7 +357,7 @@ public class LanguageServerTarget(LanguageServer server)
         // automatically proxies events as JSON-RPC notifications, which interferes with
         // the response when using stdio mode. The event handler logic is called directly instead.
         server.OnInitializeComplete();
-        LanguageServer.LogToFile($"[Initialize] capabilities sent: {System.Text.Json.JsonSerializer.Serialize(result)}");
+        AsmDudeLog.Debug($"[Initialize] capabilities sent: {System.Text.Json.JsonSerializer.Serialize(result)}");
         return result;
     }
 
@@ -374,7 +384,7 @@ public class LanguageServerTarget(LanguageServer server)
     /// SEE ALSO: Initialize, OnInitialized, AsmLanguageServerOptions
     public void Initialized(InitializedParams parameter)
     {
-        LanguageServer.LogInfo($"Initialized: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
+        AsmDudeLog.Info($"Initialized: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
         server.Initialized();
         OnInitialized?.Invoke(this, EventArgs.Empty);
     }
@@ -382,20 +392,20 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.ProgressNotificationName, UseSingleObjectParameterDeserialization = true)]
     public void ProgressNotification(object parameter)
     {
-        LanguageServer.LogInfo($"ProgressNotification");
+        AsmDudeLog.Info($"ProgressNotification");
     }
 
     [JsonRpcMethod(Methods.PartialResultTokenName, UseSingleObjectParameterDeserialization = true)]
     public void PartialResultToken(object parameter)
     {
-        LanguageServer.LogInfo($"PartialResultToken: NOT IMPLEMENTED");
+        AsmDudeLog.Info($"PartialResultToken: NOT IMPLEMENTED");
         // TODO
     }
 
     [JsonRpcMethod(Methods.ProgressNotificationTokenName, UseSingleObjectParameterDeserialization = true)]
     public void ProgressNotificationToken(object parameter)
     {
-        LanguageServer.LogInfo($"ProgressNotificationToken: NOT IMPLEMENTED");
+        AsmDudeLog.Info($"ProgressNotificationToken: NOT IMPLEMENTED");
         // TODO
     }
 
@@ -425,9 +435,9 @@ public class LanguageServerTarget(LanguageServer server)
     /// SEE ALSO: CodeAction, WorkspaceEdit, TextDocumentEdit, GetCodeActions
     public object TextDocumentCodeAction(CodeActionParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentCodeAction: uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
+        AsmDudeLog.Info($"TextDocumentCodeAction: uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
         var result = server.GetCodeActions(parameter);
-        LanguageServer.LogInfo($"TextDocumentCodeAction: actionCount={((result as object[])?.Length ?? 0)}");
+        AsmDudeLog.Info($"TextDocumentCodeAction: actionCount={((result as object[])?.Length ?? 0)}");
         return result;
     }
 
@@ -435,7 +445,7 @@ public class LanguageServerTarget(LanguageServer server)
     public CodeLens[]? TextDocumentCodeLens(CodeLensParams parameter)
     {
         var result = server.GetCodeLenses(parameter);
-        LanguageServer.LogInfo($"TextDocumentCodeLens: uri={parameter.TextDocument.Uri}, lensCount={result?.Length ?? 0}");
+        AsmDudeLog.Info($"TextDocumentCodeLens: uri={parameter.TextDocument.Uri}, lensCount={result?.Length ?? 0}");
         return result;
     }
 
@@ -443,7 +453,7 @@ public class LanguageServerTarget(LanguageServer server)
     public object? GetResolvedCodeAction(CodeAction parameter)
     {
         var result = server.GetResolvedCodeAction(parameter);
-        LanguageServer.LogInfo($"GetResolvedCodeAction: title={parameter.Title}. result={result}");
+        AsmDudeLog.Info($"GetResolvedCodeAction: title={parameter.Title}. result={result}");
         return result;
     }
 
@@ -451,7 +461,7 @@ public class LanguageServerTarget(LanguageServer server)
     public CodeLens? CodeLensResolve(CodeLens parameter)
     {
         var result = server.ResolveCodeLens(parameter);
-        LanguageServer.LogInfo($"CodeLensResolve: title={result?.Command?.Title}");
+        AsmDudeLog.Info($"CodeLensResolve: title={result?.Command?.Title}");
         return result;
     }
 
@@ -477,7 +487,7 @@ public class LanguageServerTarget(LanguageServer server)
     public AsmCodeLensData[]? GetCodeLensData(CodeLensParams parameter)
     {
         var result = server.GetCodeLensData(parameter.TextDocument.Uri.ToString());
-        LanguageServer.LogInfo($"GetCodeLensData: uri={parameter.TextDocument.Uri}, count={result?.Length ?? 0}");
+        AsmDudeLog.Info($"GetCodeLensData: uri={parameter.TextDocument.Uri}, count={result?.Length ?? 0}");
         return result;
     }
 
@@ -501,25 +511,25 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod("asm/getProvenStates", UseSingleObjectParameterDeserialization = true)]
     public ProvenStatesResponse? GetProvenStates(GetProvenStatesParams parameter)
     {
-        LanguageServer.LogInfo($"GetProvenStates: uri={parameter.Uri}, lineRange={parameter.LineRange?[0]}-{parameter.LineRange?[1]}");
+        AsmDudeLog.Info($"GetProvenStates: uri={parameter.Uri}, lineRange={parameter.LineRange?[0]}-{parameter.LineRange?[1]}");
         var result = server.GetProvenStates(parameter);
-        LanguageServer.LogInfo($"GetProvenStates: stateCount={result?.States?.Count ?? 0}");
+        AsmDudeLog.Info($"GetProvenStates: stateCount={result?.States?.Count ?? 0}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentCompletionName, UseSingleObjectParameterDeserialization = true)]
     public CompletionList? OnTextDocumentCompletion(CompletionParams parameter)
     {
-        LanguageServer.LogInfo($"OnTextDocumentCompletion: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        AsmDudeLog.Info($"OnTextDocumentCompletion: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         var result = server.GetTextDocumentCompletion(parameter);
-        LanguageServer.LogInfo($"OnTextDocumentCompletion: itemCount={result?.Items?.Length ?? 0}");
+        AsmDudeLog.Info($"OnTextDocumentCompletion: itemCount={result?.Items?.Length ?? 0}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentCompletionResolveName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentCompletionResolve(CompletionItem parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentCompletionResolve: NOT IMPLEMENTED. label={parameter.Label}");
+        AsmDudeLog.Info($"TextDocumentCompletionResolve: NOT IMPLEMENTED. label={parameter.Label}");
         // TODO
         return null;
     }
@@ -527,24 +537,21 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentDidOpenName, UseSingleObjectParameterDeserialization = true)]
     public void OnTextDocumentOpened(DidOpenTextDocumentParams parameter)
     {
-        LanguageServer.LogInfo($"OnTextDocumentOpened: uri={parameter.TextDocument.Uri}");
-        Debug.WriteLine($"Document Open: {parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"OnTextDocumentOpened: uri={parameter.TextDocument.Uri}");
         server.OnTextDocumentOpened(parameter);
     }
 
     [JsonRpcMethod(Methods.TextDocumentDidCloseName, UseSingleObjectParameterDeserialization = true)]
     public void OnTextDocumentClosed(DidCloseTextDocumentParams parameter)
     {
-        LanguageServer.LogInfo($"OnTextDocumentClosed: uri={parameter.TextDocument.Uri}");
-        Debug.WriteLine($"Document Close: {parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"OnTextDocumentClosed: uri={parameter.TextDocument.Uri}");
         server.OnTextDocumentClosed(parameter);
     }
 
     [JsonRpcMethod(Methods.TextDocumentDidChangeName, UseSingleObjectParameterDeserialization = true)]
     public void OnTextDocumentChanged(DidChangeTextDocumentParams parameter)
     {
-        LanguageServer.LogInfo($"OnTextDocumentChanged: uri={parameter.TextDocument.Uri}, version={parameter.TextDocument.Version}");
-        Debug.WriteLine($"Document Change: {parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"OnTextDocumentChanged: uri={parameter.TextDocument.Uri}, version={parameter.TextDocument.Version}");
         server.UpdateServerSideTextDocument(parameter.ContentChanges[0].Text, parameter.TextDocument.Version, parameter.TextDocument.Uri.ToString());
         server.SendDiagnostics(parameter.TextDocument.Uri.ToString());
     }
@@ -552,7 +559,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentDidSaveName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentDidSave(DidSaveTextDocumentParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentDidSave: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentDidSave: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -560,7 +567,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentDocumentHighlightName, UseSingleObjectParameterDeserialization = true)]
     public DocumentHighlight[]? GetDocumentHighlights(DocumentHighlightParams parameter, CancellationToken token)
     {
-        LanguageServer.LogInfo($"GetDocumentHighlights: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        AsmDudeLog.Info($"GetDocumentHighlights: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
 
         if (parameter.PartialResultToken != null)
         {
@@ -571,19 +578,19 @@ public class LanguageServerTarget(LanguageServer server)
                 _ = server.SendPartialResultAsync(parameter.PartialResultToken, highlights);
             });
             server.GetDocumentHighlights(progress, parameter.Position, parameter.TextDocument.Uri.ToString(), token);
-            LanguageServer.LogInfo($"GetDocumentHighlights: Sent via $/progress");
+            AsmDudeLog.Info($"GetDocumentHighlights: Sent via $/progress");
             return null;
         }
 
         var result = server.GetDocumentHighlights(new Progress<DocumentHighlight[]>(_ => { }), parameter.Position, parameter.TextDocument.Uri.ToString(), token);
-        LanguageServer.LogInfo($"GetDocumentHighlights: highlightCount={result?.Length ?? 0}");
+        AsmDudeLog.Info($"GetDocumentHighlights: highlightCount={result?.Length ?? 0}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentDocumentColorName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentDocumentColor(DocumentColorParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentDocumentColor: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentDocumentColor: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -616,9 +623,9 @@ public class LanguageServerTarget(LanguageServer server)
     /// SEE ALSO: GetSemanticTokensFullSemanticTokensParams, GetSemanticTokensDelta
     public SemanticTokens? GetSemanticTokensFull(SemanticTokensParams parameter)
     {
-        LanguageServer.LogInfo($"GetSemanticTokensFull: uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"GetSemanticTokensFull: uri={parameter.TextDocument.Uri}");
         SemanticTokens? result = server.GetSemanticTokens(parameter);
-        LanguageServer.LogInfo($"GetSemanticTokensFull: resultId={result?.ResultId}, tokenCount={result?.Data?.Length / 5 ?? 0}");
+        AsmDudeLog.Info($"GetSemanticTokensFull: resultId={result?.ResultId}, tokenCount={result?.Data?.Length / 5 ?? 0}");
         return result;
     }
 
@@ -648,36 +655,31 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentInlayHintName, UseSingleObjectParameterDeserialization = true)]
     public InlayHint[]? GetInlayHints(InlayHintParams parameter)
     {
-        Console.Error.WriteLine($"DEBUG: LanguageServerTarget.GetInlayHints called! uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
-        LanguageServer.LogInfo($"GetInlayHints: uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
+        AsmDudeLog.Debug($"GetInlayHints: uri={parameter.TextDocument.Uri}, range=[{parameter.Range.Start.Line}:{parameter.Range.Start.Character}-{parameter.Range.End.Line}:{parameter.Range.End.Character}]");
         var result = server.GetInlayHints(parameter);
-        Console.Error.WriteLine($"DEBUG: LanguageServerTarget.GetInlayHints returning {result?.Length ?? 0} hints");
-        LanguageServer.LogInfo($"GetInlayHints: hintCount={result?.Length ?? 0}");
+        AsmDudeLog.Debug($"GetInlayHints: hintCount={result?.Length ?? 0}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentDocumentSymbolName, UseSingleObjectParameterDeserialization = true)]
     public object? GetDocumentSymbols(DocumentSymbolParams parameter)
     {
-        LanguageServer.LogInfo($"GetDocumentSymbols: uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"GetDocumentSymbols: uri={parameter.TextDocument.Uri}");
         var result = server.GetDocumentSymbols(parameter);
-        LanguageServer.LogInfo($"GetDocumentSymbols: symbolCount={((result as object[])?.Length ?? 0)}");
+        AsmDudeLog.Info($"GetDocumentSymbols: symbolCount={((result as object[])?.Length ?? 0)}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentFoldingRangeName, UseSingleObjectParameterDeserialization = true)]
-    public object? GetFoldingRanges(FoldingRangeParams parameter)
+    public FoldingRange[] GetFoldingRanges(FoldingRangeParams parameter)
     {
-        LanguageServer.LogInfo($"GetFoldingRanges: uri={parameter.TextDocument.Uri}");
-        var result = server.GetFoldingRanges(parameter);
-        LanguageServer.LogInfo($"GetFoldingRanges: rangeCount={((result as object[])?.Length ?? 0)}");
-        return result;
+        return server.GetFoldingRanges(parameter);
     }
 
     [JsonRpcMethod(Methods.TextDocumentFormattingName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentFormatting(DocumentFormattingParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -713,18 +715,16 @@ public class LanguageServerTarget(LanguageServer server)
     /// SEE ALSO: OnHover, VSInternalHover, PredefinedClassificationTypeNames
     public object? OnHover(TextDocumentPositionParams parameter)
     {
-        Console.Error.WriteLine($"DEBUG: LanguageServerTarget.OnHover called! uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
-        LanguageServer.LogInfo($"OnHover: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        AsmDudeLog.Debug($"OnHover: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         var result = server.GetHover(parameter);
-        Console.Error.WriteLine($"DEBUG: LanguageServerTarget.OnHover returning: {(result != null ? "RESULT" : "NULL")}");
-        LanguageServer.LogInfo($"OnHover: hasResult={result != null}");
+        AsmDudeLog.Debug($"OnHover: hasResult={result != null}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentOnTypeFormattingName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentOnTypeFormatting(DocumentOnTypeFormattingParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentOnTypeFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentOnTypeFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -732,7 +732,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentPublishDiagnosticsName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentPublishDiagnostics(PublishDiagnosticParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentPublishDiagnostics: NOT IMPLEMENTED. uri={parameter.Uri}");
+        AsmDudeLog.Info($"TextDocumentPublishDiagnostics: NOT IMPLEMENTED. uri={parameter.Uri}");
         // TODO
         return null;
     }
@@ -740,7 +740,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentRangeFormattingName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentRangeFormatting(DocumentRangeFormattingParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentRangeFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentRangeFormatting: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -771,9 +771,9 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentDefinitionName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentDefinition(TextDocumentPositionParams parameter)
     {
-        LanguageServer.LogToFile($"[TextDocumentDefinition] uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        AsmDudeLog.Debug($"[TextDocumentDefinition] uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         var result = server.GetDefinition(parameter);
-        LanguageServer.LogToFile($"[TextDocumentDefinition] hasResult={result != null}");
+        AsmDudeLog.Debug($"[TextDocumentDefinition] hasResult={result != null}");
         return result;
     }
 
@@ -798,16 +798,16 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentReferencesName, UseSingleObjectParameterDeserialization = true)]
     public object[]? OnTextDocumentFindReferences(ReferenceParams parameter, CancellationToken token)
     {
-        LanguageServer.LogInfo($"OnTextDocumentFindReferences: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        AsmDudeLog.Info($"OnTextDocumentFindReferences: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         var result = server.SendReferences(args: parameter, returnLocationsOnly: true, token: token);
-        LanguageServer.LogInfo($"OnTextDocumentFindReferences: referenceCount={result?.Length ?? 0}");
+        AsmDudeLog.Info($"OnTextDocumentFindReferences: referenceCount={result?.Length ?? 0}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentRenameName, UseSingleObjectParameterDeserialization = true)]
     public WorkspaceEdit TextDocumentRename(RenameParams renameParams)
     {
-        LanguageServer.LogInfo($"TextDocumentRename: uri={renameParams.TextDocument.Uri}, line={renameParams.Position.Line}, char={renameParams.Position.Character}, newName={renameParams.NewName}");
+        AsmDudeLog.Info($"TextDocumentRename: uri={renameParams.TextDocument.Uri}, line={renameParams.Position.Line}, char={renameParams.Position.Character}, newName={renameParams.NewName}");
         string fullText = File.ReadAllText(new Uri(renameParams.TextDocument.Uri.ToString()).LocalPath);
         string wordToReplace = this.GetWordAtPosition(fullText, renameParams.Position);
         Range[] placesToReplace = this.GetWordRangesInText(fullText, wordToReplace);
@@ -833,14 +833,14 @@ public class LanguageServerTarget(LanguageServer server)
             }
         };
 
-        LanguageServer.LogInfo($"TextDocumentRename: hasResult={result.DocumentChanges != null}");
+        AsmDudeLog.Info($"TextDocumentRename: hasResult={result.DocumentChanges != null}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentSemanticTokensRangeName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentSemanticTokensRange(SemanticTokensRangeParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentSemanticTokensRange: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentSemanticTokensRange: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -852,26 +852,26 @@ public class LanguageServerTarget(LanguageServer server)
         if (result is SemanticTokensDelta delta)
         {
             if ((delta.Edits?.Length ?? 0) > 0)
-                LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: uri={parameter.TextDocument.Uri}, delta edits={delta.Edits?.Length}, resultId={delta.ResultId}");
+                AsmDudeLog.Info($"TextDocumentSemanticTokensFullDelta: uri={parameter.TextDocument.Uri}, delta edits={delta.Edits?.Length}, resultId={delta.ResultId}");
         }
         else if (result is SemanticTokens full)
-            LanguageServer.LogInfo($"TextDocumentSemanticTokensFullDelta: uri={parameter.TextDocument.Uri}, full tokens, tokenCount={full.Data?.Length / 5 ?? 0}, resultId={full.ResultId}");
+            AsmDudeLog.Info($"TextDocumentSemanticTokensFullDelta: uri={parameter.TextDocument.Uri}, full tokens, tokenCount={full.Data?.Length / 5 ?? 0}, resultId={full.ResultId}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentSignatureHelpName, UseSingleObjectParameterDeserialization = true)]
     public SignatureHelp? TextDocumentSignatureHelp(SignatureHelpParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentSignatureHelp: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        AsmDudeLog.Info($"TextDocumentSignatureHelp: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         var result = server.GetTextDocumentSignatureHelp(parameter);
-        LanguageServer.LogInfo($"TextDocumentSignatureHelp: signatureCount={result?.Signatures?.Length ?? 0}");
+        AsmDudeLog.Info($"TextDocumentSignatureHelp: signatureCount={result?.Signatures?.Length ?? 0}");
         return result;
     }
 
     [JsonRpcMethod(Methods.TextDocumentWillSaveName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentWillSave(WillSaveTextDocumentParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentWillSave: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentWillSave: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -879,7 +879,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentLinkedEditingRangeName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentLinkedEditingRange(LinkedEditingRangeParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentLinkedEditingRange: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentLinkedEditingRange: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -887,7 +887,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentWillSaveWaitUntilName, UseSingleObjectParameterDeserialization = true)]
     public object? TextDocumentWillSaveWaitUntil(WillSaveTextDocumentParams parameter)
     {
-        LanguageServer.LogInfo($"TextDocumentWillSaveWaitUntil: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"TextDocumentWillSaveWaitUntil: NOT IMPLEMENTED. uri={parameter.TextDocument.Uri}");
         // TODO
         return null;
     }
@@ -895,7 +895,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.WindowLogMessageName, UseSingleObjectParameterDeserialization = true)]
     public object? WindowLogMessage(LogMessageParams parameter)
     {
-        LanguageServer.LogInfo($"WindowLogMessage: NOT IMPLEMENTED. type={parameter.MessageType}");
+        AsmDudeLog.Info($"WindowLogMessage: NOT IMPLEMENTED. type={parameter.MessageType}");
         // TODO
         return null;
     }
@@ -903,7 +903,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.WindowShowMessageName, UseSingleObjectParameterDeserialization = true)]
     public object? WindowShowMessage(ShowMessageParams parameter)
     {
-        LanguageServer.LogInfo($"WindowShowMessage: NOT IMPLEMENTED. type={parameter.MessageType}");
+        AsmDudeLog.Info($"WindowShowMessage: NOT IMPLEMENTED. type={parameter.MessageType}");
         // TODO
         return null;
     }
@@ -911,7 +911,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.WindowShowMessageRequestName, UseSingleObjectParameterDeserialization = true)]
     public object? WindowShowMessageRequest(ShowMessageRequestParams parameter)
     {
-        LanguageServer.LogInfo($"WindowShowMessageRequest: NOT IMPLEMENTED. type={parameter.MessageType}");
+        AsmDudeLog.Info($"WindowShowMessageRequest: NOT IMPLEMENTED. type={parameter.MessageType}");
         // TODO
         return null;
     }
@@ -919,7 +919,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.WorkspaceApplyEditName, UseSingleObjectParameterDeserialization = true)]
     public object? WorkspaceApplyEdit(ApplyWorkspaceEditParams parameter)
     {
-        LanguageServer.LogInfo($"WorkspaceApplyEdit: NOT IMPLEMENTED");
+        AsmDudeLog.Info($"WorkspaceApplyEdit: NOT IMPLEMENTED");
         // TODO
         return null;
     }
@@ -927,7 +927,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.WorkspaceConfigurationName, UseSingleObjectParameterDeserialization = true)]
     public object? WorkspaceConfiguration(ConfigurationParams parameter)
     {
-        LanguageServer.LogInfo($"WorkspaceConfiguration: NOT IMPLEMENTED");
+        AsmDudeLog.Info($"WorkspaceConfiguration: NOT IMPLEMENTED");
         // TODO
         return null;
     }
@@ -935,14 +935,14 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.WorkspaceDidChangeConfigurationName, UseSingleObjectParameterDeserialization = true)]
     public void OnDidChangeConfiguration(DidChangeConfigurationParams parameter)
     {
-        LanguageServer.LogInfo($"OnDidChangeConfiguration");
+        AsmDudeLog.Info($"OnDidChangeConfiguration");
         server.SendSettings(parameter);
     }
 
     [JsonRpcMethod(Methods.WorkspaceSymbolName, UseSingleObjectParameterDeserialization = true)]
     public object? WorkspaceSymbol(WorkspaceSymbolParams parameter)
     {
-        LanguageServer.LogInfo($"WorkspaceSymbol: NOT IMPLEMENTED. query={parameter.Query}");
+        AsmDudeLog.Info($"WorkspaceSymbol: NOT IMPLEMENTED. query={parameter.Query}");
         // TODO
         return null;
     }
@@ -950,7 +950,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.WorkspaceDidChangeWatchedFilesName, UseSingleObjectParameterDeserialization = true)]
     public object? WorkspaceDidChangeWatchedFiles(DidChangeWatchedFilesParams parameter)
     {
-        LanguageServer.LogInfo($"WorkspaceDidChangeWatchedFiles: NOT IMPLEMENTED. changeCount={parameter.Changes?.Length ?? 0}");
+        AsmDudeLog.Info($"WorkspaceDidChangeWatchedFiles: NOT IMPLEMENTED. changeCount={parameter.Changes?.Length ?? 0}");
         // TODO
         return null;
     }
@@ -958,21 +958,21 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.ShutdownName)]
     public object? Shutdown()
     {
-        LanguageServer.LogInfo($"Received Shutdown notification");
+        AsmDudeLog.Info($"Received Shutdown notification");
         return null;
     }
 
     [JsonRpcMethod(Methods.ExitName)]
     public void Exit()
     {
-        LanguageServer.LogInfo($"Received Exit notification");
+        AsmDudeLog.Info($"Received Exit notification");
         server.Exit();
     }
 
     [JsonRpcMethod(Methods.TelemetryEventName, UseSingleObjectParameterDeserialization = true)]
     public object? TelemetryEvent(object parameter)
     {
-        LanguageServer.LogInfo($"TelemetryEvent: NOT IMPLEMENTED");
+        AsmDudeLog.Info($"TelemetryEvent: NOT IMPLEMENTED");
         // TODO
         return null;
     }
@@ -980,7 +980,7 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.ClientUnregisterCapabilityName, UseSingleObjectParameterDeserialization = true)]
     public object? ClientUnregisterCapability(UnregistrationParams parameter)
     {
-        LanguageServer.LogInfo($"ClientUnregisterCapability: NOT IMPLEMENTED");
+        AsmDudeLog.Info($"ClientUnregisterCapability: NOT IMPLEMENTED");
         // TODO
         return null;
     }
@@ -988,16 +988,16 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod("textDocument/prepareRename", UseSingleObjectParameterDeserialization = true)]
     public object? PrepareRename(PrepareRenameParams parameter)
     {
-        LanguageServer.LogInfo($"PrepareRename: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        AsmDudeLog.Info($"PrepareRename: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
         return null;
     }
 
     [JsonRpcMethod(VSMethods.GetProjectContextsName, UseSingleObjectParameterDeserialization = true)]
     public object? GetProjectContexts(VSGetProjectContextsParams parameter)
     {
-        LanguageServer.LogInfo($"GetProjectContexts: uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Info($"GetProjectContexts: uri={parameter.TextDocument.Uri}");
         var result = server.GetProjectContexts();
-        LanguageServer.LogInfo($"GetProjectContexts: contextCount={result?.ProjectContexts?.Length ?? 0}");
+        AsmDudeLog.Info($"GetProjectContexts: contextCount={result?.ProjectContexts?.Length ?? 0}");
         return result;
     }
 
