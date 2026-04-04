@@ -1,0 +1,11 @@
+{
+  "name": "asmdude-lsp-test",
+  "version": "1.0.0",
+  "description": "Test client for AsmDude LSP server",
+  "main": "test_lsp.js",
+  "type": "module",
+  "scripts": {
+    "test": "node test_lsp.js"
+  },
+  "dependencies": {}
+}

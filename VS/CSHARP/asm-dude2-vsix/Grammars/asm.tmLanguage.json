@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Assembly",
+  "scopeName": "source.asm",
+  "fileTypes": ["asm", "s", "inc", "cod"],
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#string" },
+    { "include": "#number" }
+  ],
+  "repository": {
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.semicolon.asm",
+          "match": ";.*$"
+        },
+        {
+          "name": "comment.line.hash.asm",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.asm",
+          "begin": "\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.single.asm",
+          "begin": "'",
+          "end": "'"
+        }
+      ]
+    },
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.asm",
+          "match": "\\b0[xX][0-9a-fA-F]+\\b"
+        },
+        {
+          "name": "constant.numeric.decimal.asm",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    }
+  }
+}

@@ -41,12 +41,13 @@ public class LanguageServerTarget(LanguageServer server)
 {
     private int version = 1;
     public TraceSetting traceSetting;
+    private SettingsManager? settingsManager;
 
     public event EventHandler? OnInitializeCompletion;
 
     public event EventHandler? OnInitialized;
 
-    private static AsmLanguageServerOptions CreateDefaultOptions() => new()
+    internal static AsmLanguageServerOptions CreateDefaultOptions() => new()
     {
         AsmDoc_On = true,
         AsmDoc_Url = "https://github.com/HJLebbink/asm-dude/wiki/",
@@ -165,12 +166,28 @@ public class LanguageServerTarget(LanguageServer server)
             AsmDudeLog.Error($"Initialize: Failed to deserialize InitializationOptions: {ex.Message}; using defaults");
             options = CreateDefaultOptions();
         }
+
+        // Load user settings from %APPDATA%\AsmDude2\settings.json (overrides defaults and client options)
+        this.settingsManager = new SettingsManager();
+        options = this.settingsManager.LoadSettings(options);
+        this.settingsManager.SettingsChanged += newOptions =>
+        {
+            AsmDudeLog.Info("Initialize: settings file changed, reinitializing server");
+            if (string.IsNullOrEmpty(newOptions.AsmDoc_Url))
+            {
+                newOptions.AsmDoc_Url = "https://github.com/HJLebbink/asm-dude/wiki/";
+            }
+            server.Initialize(newOptions);
+        };
+        this.settingsManager.StartWatching();
+
         // If AsmDoc_Url was not received (e.g. older client), fall back to the default wiki URL
         if (string.IsNullOrEmpty(options.AsmDoc_Url))
         {
             options.AsmDoc_Url = "https://github.com/HJLebbink/asm-dude/wiki/";
         }
         AsmDudeLog.Info($"Initialize: AsmDoc_On={options.AsmDoc_On}, AsmDoc_Url=\"{options.AsmDoc_Url}\", CodeCompletion_On={options.CodeCompletion_On}, ARCH_8086={options.ARCH_8086}");
+        AsmDudeLog.Info($"Initialize: Settings file: {SettingsManager.SettingsFilePath}");
 
         server.Initialize(options);
 
@@ -233,26 +250,40 @@ public class LanguageServerTarget(LanguageServer server)
                     Range = false,
                     Legend = new SemanticTokensLegend
                     {
-// Token types for assembly language (LSP 3.17)
+// Legend indices MUST match VS's client token type ordering.
+                         // VS ignores the server legend and uses its own fixed indices:
+                         //   0=namespace 1=type 2=class 3=enum 4=interface 5=struct
+                         //   6=typeParameter 7=parameter 8=variable 9=property
+                         //   10=enumMember 11=event 12=function 13=method 14=macro
+                         //   15=keyword 16=modifier 17=comment 18=string 19=number
+                         //   20=regexp 21=operator
+                         // Token type indices in LanguageServer.MapTokenType() must use
+                         // these client indices directly.
                          TokenTypes =
                          [
-                             "keyword",      // 0: mnemonics (MOV, ADD, etc.)
-                                 "variable",     // 1: registers (RAX, EAX, etc.)
-                                 "label",        // 2: labels (loop_start:, etc.)
-                                 "macro",        // 3: directives (.data, PROC, etc.)
-                                 "number",       // 4: immediate values (0x10, 42, etc.)
-                                 "operator",     // 5: memory operands ([rax], etc.)
-                                 "comment",      // 6: comments (; this is a comment)
-                                 "string",       // 7: string literals ("hello")
-                                 "function",     // 8: CALL targets
-                                 "decorator",    // 9: decorators/attributes (LSP 3.17)
-                                 "masmDirective",  // 10: MASM-specific directives
-                                 "nasmDirective",  // 11: NASM-specific directives
-                                 "masmOperator",   // 12: MASM-specific operators
-                                 "nasmOperator",   // 13: NASM-specific operators
-                                 "masmPseudoOp",   // 14: MASM-specific pseudo-ops
-                                 "nasmPseudoOp",   // 15: NASM-specific pseudo-ops
-                             ],
+                             "namespace",        // 0
+                             "type",             // 1: labels
+                             "class",            // 2
+                             "enum",             // 3
+                             "interface",        // 4
+                             "struct",           // 5
+                             "typeParameter",    // 6
+                             "parameter",        // 7: registers
+                             "variable",         // 8
+                             "property",         // 9: UserDefined1
+                             "enumMember",       // 10: UserDefined2
+                             "event",            // 11
+                             "function",         // 12: CALL/JMP targets
+                             "method",           // 13
+                             "macro",            // 14: directives
+                             "keyword",          // 15: mnemonics
+                             "modifier",         // 16
+                             "comment",          // 17: comments
+                             "string",           // 18: string literals
+                             "number",           // 19: immediate values
+                             "regexp",           // 20
+                             "operator",         // 21: memory operands, brackets
+                         ],
                         // Token modifiers for additional classification
                         TokenModifiers =
                         [
@@ -606,10 +637,10 @@ public class LanguageServerTarget(LanguageServer server)
     ///   - resultId: document version (for delta comparison)
     ///   - data: [deltaLine, deltaChar, length, tokenType, tokenModifiers] * N tokens
     /// 
-    /// Token types mapped from AsmTokenType:
-    ///   0: keyword (mnemonics), 1: variable (registers), 2: label (labels),
-    ///   3: macro (directives), 4: number (constants), 5: operator (memory),
-    ///   6: comment (remarks), 7: string, 8: function (jumps), 10-15: MASM/NASM-specific
+    /// Token types mapped from AsmTokenType (all standard LSP 3.17):
+    ///   0: keyword (mnemonics), 1: variable (registers), 2: type (labels),
+    ///   3: macro (directives + MASM/NASM), 4: number (constants), 5: operator (memory + MASM/NASM),
+    ///   6: comment (remarks), 7: string, 8: function (jumps)
     /// 
     /// VS uses this for rich syntax highlighting with colored tokens.
     /// </remarks>
@@ -626,6 +657,19 @@ public class LanguageServerTarget(LanguageServer server)
         AsmDudeLog.Info($"GetSemanticTokensFull: uri={parameter.TextDocument.Uri}");
         SemanticTokens? result = server.GetSemanticTokens(parameter);
         AsmDudeLog.Info($"GetSemanticTokensFull: resultId={result?.ResultId}, tokenCount={result?.Data?.Length / 5 ?? 0}");
+        if (result?.Data is { Length: > 0 } d)
+        {
+            // Log all tokens with absolute positions for debugging
+            var sb = new System.Text.StringBuilder("GetSemanticTokensFull: ALL tokens:\n");
+            int absLine = 0, absChar = 0;
+            for (int i = 0; i + 4 < d.Length; i += 5)
+            {
+                absLine += d[i];
+                absChar = d[i] > 0 ? d[i + 1] : absChar + d[i + 1];
+                sb.Append($"  L{absLine}:[{absChar}-{absChar + d[i + 2]}] type={d[i + 3]} mod={d[i + 4]}\n");
+            }
+            AsmDudeLog.Info(sb.ToString());
+        }
         return result;
     }
 

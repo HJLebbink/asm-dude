@@ -755,6 +755,91 @@ add rcx, rdx
         result.ResultId.Should().NotBeNullOrEmpty("ResultId must be set even for empty documents");
     }
 
+    [Fact]
+    public void GetSemanticTokens_FullDump_AllTokenTypes()
+    {
+        string[] typeNames = ["namespace","type","class","enum","interface","struct","typeParameter","parameter","variable","property","enumMember","event","function","method","macro","keyword","modifier","comment","string","number","regexp","operator"];
+        var text = ".intel_syntax noprefix\npop rax\n    VPAND ymm0, ymm1, ymm2\n    mov rax, rbx\nlabel1:\n    jmp label1\n; this is a comment\n    add rcx, 42\n";
+        var uri = "file:///test_fulldump.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = text }
+        });
+        var result = this._server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+        var lines = text.Split('\n');
+        var sb = new System.Text.StringBuilder($"\nTotal tokens: {result.Data.Length / 5}\n");
+        int absLine = 0, absChar = 0;
+        for (int i = 0; i + 4 < result.Data.Length; i += 5)
+        {
+            int dL = result.Data[i], dC = result.Data[i+1], len = result.Data[i+2], tt = result.Data[i+3], tm = result.Data[i+4];
+            absLine += dL;
+            absChar = dL > 0 ? dC : absChar + dC;
+            string tn = tt < typeNames.Length ? typeNames[tt] : $"?{tt}";
+            string tok = absLine < lines.Length && absChar + len <= lines[absLine].Length ? lines[absLine].Substring(absChar, len) : "OOB";
+            sb.AppendLine($"  L{absLine}:[{absChar,3}-{absChar+len,3}] {tn,-12} \"{tok}\"");
+        }
+        throw new System.Exception(sb.ToString());
+    }
+
+    [Fact]
+    public void GetSemanticTokens_TokenPositions_ShouldMatchSourceText()
+    {
+        // Verify that semantic token positions correctly map to the expected source text,
+        // especially for indented lines where a Trim() bug previously shifted all positions.
+        var uri = "file:///test_positions.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "    VPAND ymm0, ymm1, ymm2" }
+        });
+
+        var result = this._server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        // Decode the delta-encoded tokens: [deltaLine, deltaChar, length, type, modifiers]
+        result.Data.Length.Should().Be(20, "VPAND ymm0 ymm1 ymm2 = 4 tokens * 5 ints");
+
+        // Token 0: VPAND at position 4, length 5, type=keyword(15)
+        result.Data[0].Should().Be(0, "deltaLine");
+        result.Data[1].Should().Be(4, "deltaChar — VPAND starts at column 4 (after 4 spaces)");
+        result.Data[2].Should().Be(5, "length of VPAND");
+        result.Data[3].Should().Be(15, "tokenType: keyword(15) for mnemonic");
+
+        // Token 1: ymm0 at position 10, length 4, type=variable(8)
+        result.Data[5].Should().Be(0, "deltaLine");
+        result.Data[6].Should().Be(6, "deltaChar from VPAND(4) to ymm0(10)");
+        result.Data[7].Should().Be(4, "length of ymm0");
+        result.Data[8].Should().Be(8, "tokenType: variable(8) for register");
+
+        // Token 2: ymm1 at position 16, length 4, type=variable(8)
+        result.Data[10].Should().Be(0, "deltaLine");
+        result.Data[11].Should().Be(6, "deltaChar from ymm0(10) to ymm1(16)");
+        result.Data[12].Should().Be(4, "length of ymm1");
+        result.Data[13].Should().Be(8, "tokenType: variable(8) for register");
+    }
+
+    [Fact]
+    public void GetSemanticTokens_Mnemonic_ShouldBeKeywordNotLabel()
+    {
+        // Mnemonics must be classified as keyword(0), not type/label(2).
+        var uri = "file:///test_mnemonic_type.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        var result = this._server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        result.Data[3].Should().Be(15, "mov should be keyword(15), not type/label(1)");
+    }
+
     #endregion
 
     #region Exit Tests

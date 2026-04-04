@@ -32,12 +32,20 @@ AsmDude2 is a Visual Studio 2022/2026 extension that provides assembly language 
 
 ### Active Extension
 
-**asm-dude2-vsix** (.NET 10.0-windows) — **Modern out-of-process extension**
-   - ✅ Uses VisualStudio.Extensibility SDK v17.14.40608
+**asm-dude2-vsix** (net10.0-windows8.0) — **Modern out-of-process extension**
+   - ✅ Uses VisualStudio.Extensibility SDK v18.5.39115-Preview
    - ✅ LSP-based architecture (launches separate asm-dude2-ls process)
    - ✅ Targets Visual Studio 2022 & 2026
-   - ✅ Fully debuggable with F5 (launches experimental instance via launchSettings.json)
+   - ✅ Fully debuggable with F5 (debug target provided by Extensibility.Build package)
    - Bundles LSP server (asm-dude2-ls) in `Server/` subdirectory of VSIX package
+
+   **⚠ CRITICAL: Extension MUST use OOP (out-of-process) mode.**
+   - **NEVER add `VssdkCompatibleExtension=true`** to the csproj — it forces in-proc hosting which silently breaks LSP activation (`CreateServerConnectionAsync` is never called, no errors, no logs)
+   - **NEVER add `RequiresInProcessHosting = true`** to Extension.cs — same effect
+   - Extension.cs MUST use `Metadata = new(...)` with id/version/publisher (OOP mode)
+   - Correct deployment path: `VSExtensions/Henk-Jan Lebbink/AsmDude2/<version>/`
+   - Wrong deployment path (in-proc): `Extensions/<random>/` — if you see this, the mode is wrong
+   - This has been broken and re-debugged 6+ times. Do not deviate.
 
 **Archived Projects** (moved to `VS\CSHARP\old\`)
    - `asm-dude2-vsix`: Legacy .NET Framework 4.8 in-process extension (VSSDK/MEF) — archived
@@ -299,15 +307,15 @@ Communication between VS extension and LSP server uses named pipes (Windows) wit
 
 The asm-dude2-ls-lib implements LSP Semantic Tokens for rich syntax highlighting. This allows Visual Studio to apply distinct colors to different assembly language elements.
 
-**Token Types** (defined in `LanguageServerTarget.cs`):
+**Token Types** (defined in `LanguageServerTarget.cs`) — all standard LSP 3.17 names:
 | Index | Type | Used For |
 |-------|------|----------|
 | 0 | `keyword` | Mnemonics (MOV, ADD, etc.) |
 | 1 | `variable` | Registers (RAX, EAX, etc.) |
-| 2 | `label` | Labels (loop_start:, etc.) |
-| 3 | `macro` | Directives (.data, PROC, etc.) |
+| 2 | `type` | Labels (loop_start:, etc.) |
+| 3 | `macro` | Directives (.data, PROC, MASM/NASM directives, pseudo-ops) |
 | 4 | `number` | Immediate values (0x10, 42, etc.) |
-| 5 | `operator` | Memory operands ([rax], etc.) |
+| 5 | `operator` | Memory operands ([rax], MASM/NASM operators) |
 | 6 | `comment` | Comments (; this is a comment) |
 | 7 | `string` | String literals ("hello") |
 | 8 | `function` | CALL/jump targets |
@@ -322,16 +330,22 @@ The asm-dude2-ls-lib implements LSP Semantic Tokens for rich syntax highlighting
 
 **AsmTokenType to LSP Mapping** (in `LanguageServer.cs`):
 ```csharp
-Mnemonic    → keyword (0)
-MnemonicOff → keyword (0) + deprecated modifier
-Register    → variable (1)
-Label       → label (2)
-LabelDef    → label (2) + declaration+definition modifiers
-Jump        → function (8)
-Directive   → macro (3)
-Constant    → number (4) + readonly modifier
-Remark      → comment (6)
-Misc        → operator (5)
+Mnemonic       → keyword (0)
+MnemonicOff    → keyword (0) + deprecated modifier
+Register       → variable (1)
+Label          → type (2)
+LabelDef       → type (2) + declaration+definition modifiers
+Jump           → function (8)
+Directive      → macro (3)
+MasmDirective  → macro (3)
+NasmDirective  → macro (3)
+MasmPseudoOp   → macro (3)
+NasmPseudoOp   → macro (3)
+Constant       → number (4) + readonly modifier
+Remark         → comment (6)
+Misc           → operator (5)
+MasmOperator   → operator (5)
+NasmOperator   → operator (5)
 ```
 
 **Key Files:**
@@ -379,17 +393,11 @@ To add clickable links, the VSIX must convert to a hybrid VSSDK+VisualStudio.Ext
 - `Microsoft.VSSDK.BuildTools` **17.14.2120** (VS 2022/2026 — see note below)
 - `Microsoft.Extensions.Logging.Abstractions` **10.0.3** (Logging)
 
-**⚠ DO NOT upgrade `Microsoft.VisualStudio.SDK`, `Microsoft.VSSDK.BuildTools`, or `Microsoft.VisualStudio.Threading.Analyzers` to version 18.x.**
-The plugin must support **both VS 2022 (17.x) and VS 2026 (18.x)**. These three packages at 18.x target VS 2026 only and drop VS 2022 compatibility. Stay on 17.14.x.
 
-**⚠ DO NOT change `asm-dude2-vsix` TargetFramework to `net10.0` or higher.**
-OOP extensions run inside `ServiceHub.Host.Extensibility`, a .NET 8 host process shipped with VS. Targeting net10.0 causes `FileNotFoundException: System.Runtime, Version=10.0.0.0`. This is a known SDK limitation ([microsoft/VSExtensibility#544](https://github.com/microsoft/VSExtensibility/issues/544)). .NET 10 support for the extension host is planned for a future VS 2026 update. The LSP server (`asm-dude2-ls`) runs as a separate process and targets `net10.0-windows` independently. C# 14 is available in the VSIX via `<LangVersion>14</LangVersion>` even on net8.0.
-
-**⚠ DO NOT upgrade `StreamJsonRpc` in `asm-dude2-vsix` beyond 2.24.84.**
-The VSIX references StreamJsonRpc with `<ExcludeAssets>runtime</ExcludeAssets>` — it does **not** bundle the DLL but relies on Visual Studio to provide it at runtime. VS 2022 ships StreamJsonRpc 2.24.x; upgrading the reference to 2.25.x causes a `FileNotFoundException` ("StreamJsonRpc Version 2.25.0.0 is not found") when the extension loads. The LSP server (`asm-dude2-ls-lib`) bundles its own copy and may use a newer version independently.
+**Note:** Starting with Extensibility SDK 18.5, the VSIX can target `net10.0-windows8.0`. The extension host in VS 18.5+ supports .NET 10. Previous versions required `net8.0-windows8.0` (see [microsoft/VSExtensibility#544](https://github.com/microsoft/VSExtensibility/issues/544)).
 
 **⚠ The `Microsoft.VisualStudio.Extensibility.Sdk` minor version MUST match the installed Visual Studio minor version.**
-The SDK generates `Microsoft.VisualStudio.RpcContracts` with a matching version at build time. If the SDK minor version is higher than VS (e.g., SDK 18.6 on VS 18.4), VS rejects the extension because it doesn't have the newer RpcContracts. If the SDK version is too old (e.g., SDK 18.2 on VS 18.4), commands may silently fail to register. Check your VS version via Help → About, then use the matching SDK preview from the vssdk feed. Example: VS 2026 **18.4**.2 → SDK **18.4**.38655-Preview.
+The SDK generates `Microsoft.VisualStudio.RpcContracts` with a matching version at build time. If the SDK minor version is higher than VS (e.g., SDK 18.6 on VS 18.5), VS rejects the extension because it doesn't have the newer RpcContracts. If the SDK version is too old (e.g., SDK 18.2 on VS 18.5), commands may silently fail to register. Check your VS version via Help → About, then use the matching SDK preview from the vssdk feed. Example: VS 2026 **18.5** → SDK **18.5**.39115-Preview.
 
 **NuGet Sources**: Requires both nuget.org and vssdk feed (configured in `NuGet.config`):
 ```
@@ -399,7 +407,7 @@ https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.js
 ## Project Structure
 
 ### Active Projects (Current Development)
-- `asm-dude2-vsix`: **Main extension** for VS 2022/2026 (.NET Framework 4.8)
+- `asm-dude2-vsix`: **Main extension** for VS 2026 (.NET 10.0)
 - `asm-dude2-ls`: Language server executable (.NET 10.0 LTS)
 - `asm-dude2-ls-lib`: Language server implementation (.NET 10.0 LTS)
 - `asm-dude2-ls-tests`: Unit tests for LSP server (xUnit)

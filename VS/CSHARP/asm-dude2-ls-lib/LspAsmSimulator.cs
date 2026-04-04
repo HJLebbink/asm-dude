@@ -81,6 +81,7 @@ namespace AsmDude2LS
 
         private readonly Dictionary<Uri, DocCache> cache_ = [];
         private readonly Dictionary<Uri, CancellationTokenSource> pendingTasks_ = [];
+        private readonly Dictionary<Uri, long> simVersion_ = [];
         private readonly object lockObj_ = new();
 
         internal LspAsmSimulator(ILogger logger)
@@ -98,24 +99,29 @@ namespace AsmDude2LS
         /// </summary>
         internal void InvalidateAndSimulate(Uri uri, IReadOnlyList<string> lines, Action<Uri>? onCompleted = null)
         {
-            AsmDudeLog.Debug($"[InvalidateAndSimulate] ENTRY: uri={uri}, lines={lines.Count}");
-            Log($"[ENTRY] InvalidateAndSimulate called with {lines.Count} lines");
+            Log($"InvalidateAndSimulate: {lines.Count} lines");
             CancellationTokenSource cts;
+            long version;
             lock (this.lockObj_)
             {
                 if (this.pendingTasks_.TryGetValue(uri, out CancellationTokenSource? existing))
                 {
-                    Log($"[ENTRY] Cancelling existing task");
                     existing.Cancel();
                     existing.Dispose();
                 }
                 cts = new CancellationTokenSource();
                 this.pendingTasks_[uri] = cts;
+                // Bump version: any in-flight thread with the old version will stop writing.
+                version = this.simVersion_.TryGetValue(uri, out long v) ? v + 1 : 1;
+                this.simVersion_[uri] = version;
+                // Put a fresh (empty) cache entry immediately so stale data from the
+                // previous simulation is invisible while the new one runs.
+                if (this.cache_.TryGetValue(uri, out DocCache? old))
+                    DisposeList(old.ownedStates);
+                this.cache_[uri] = new DocCache();
             }
 
-            Log($"[ENTRY] Spawning Task.Run...");
-            _ = Task.Run(() => this.RunSimulation(uri, lines, cts.Token, onCompleted), cts.Token);
-            Log($"[ENTRY] Task.Run spawned successfully");
+            _ = Task.Run(() => this.RunSimulation(uri, version, lines, cts.Token, onCompleted), cts.Token);
         }
 
         // ── After-state queries ────────────────────────────────────────────────
@@ -177,6 +183,7 @@ namespace AsmDude2LS
             }
         }
 
+
         // ── Private helpers ────────────────────────────────────────────────────
 
         private string? GetCachedString(Uri uri, int lineNumber, bool after)
@@ -234,19 +241,16 @@ namespace AsmDude2LS
 
         // ── Background simulation ──────────────────────────────────────────────
 
-        private void RunSimulation(Uri uri, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted)
+        private void RunSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted)
         {
-            Log($"[THREAD] RunSimulation thread started for {uri}, lines.Count={lines.Count}");
+            Log($"[THREAD] RunSimulation started for {uri}, {lines.Count} lines");
             try
             {
-                Log($"[THREAD] Creating AsmSimTools with timeout=5000...");
                 var settings = new Dictionary<string, string>
                 {
                     { "timeout", "5000" },
                 };
-                Log($"[THREAD] About to instantiate AsmSimTools...");
                 AsmSimTools tools = new(settings);
-                Log($"[THREAD] AsmSimTools created successfully");
                 tools.StateConfig.Set_All_Off();
                 tools.StateConfig.RAX = true;
                 tools.StateConfig.RBX = true;
@@ -270,23 +274,19 @@ namespace AsmDude2LS
                 tools.StateConfig.OF = true;
                 tools.Quiet = true;
 
-                var newLineStringsAfter = new Dictionary<int, string?>();
-                var newLineStringsBefore = new Dictionary<int, string?>();
                 var newDiagnostics = new List<SimDiagnostic>();
                 var ownedStates = new List<AsmSimState>();
+                int linesWritten = 0;
 
                 // Memoize ComputeStateString per state instance: multiple lines sharing the same
                 // state (blank/comment) reuse the pre-computed string without re-running Z3.
                 var stateToString = new Dictionary<AsmSimState, string?>(ReferenceEqualityComparer.Instance);
 
-                Log($"[THREAD] Creating initial state...");
                 string initialKey = "!0";
                 AsmSimState state = new(tools, initialKey, initialKey);
                 ownedStates.Add(state);
-                Log($"[THREAD] Initial state created, starting main loop...");
 
                 int limit = Math.Min(lines.Count, MaxLines);
-                Log($"[THREAD] Processing {limit} lines (MaxLines={MaxLines})");
                 for (int i = 0; i < limit; i++)
                 {
                     if (ct.IsCancellationRequested)
@@ -298,34 +298,35 @@ namespace AsmDude2LS
 
                     string line = lines[i].Trim();
 
-                    // Blank/comment: reuse current state's string if already memoized.
-                    if (line.Length == 0 || line.StartsWith(';'))
+                    // Blank/comment: skip (no Z3 work, state unchanged).
+                    if (line.Length == 0 || line.StartsWith(';') || line.StartsWith('#'))
                     {
-                        if (stateToString.TryGetValue(state, out string? cached))
-                        {
-                            newLineStringsBefore[i] = cached;
-                            newLineStringsAfter[i] = cached;
-                        }
-                        Log($"[THREAD] Line {i}: blank/comment, skipping");
+                        Log($"[THREAD] Line {i}: blank/comment/directive, skipping");
                         continue;
                     }
 
-                    Log($"[THREAD] Line {i}: processing '{line.Substring(0, Math.Min(50, line.Length))}'...");
+                    // Parse to check if this is a real instruction the simulator can handle.
+                    (AsmTools.KeywordID[] _, string _label, Mnemonic mnemonic, string[] args, string _remark)
+                        = AsmTools.AsmSourceTools.ParseLine(line, -1, -1, AssemblerEnum.UNKNOWN);
+
+                    // Skip lines that aren't real instructions: labels, directives, includes, etc.
+                    if (mnemonic == Mnemonic.NONE)
+                    {
+                        Log($"[THREAD] Line {i}: not an instruction ('{line.Substring(0, Math.Min(30, line.Length))}'), skipping");
+                        continue;
+                    }
+
+                    Log($"[THREAD] Line {i}: processing '{mnemonic} {string.Join(", ", args)}'...");
 
                     // ── Before-state: state at entry to this instruction ──────────
                     if (!stateToString.TryGetValue(state, out string? beforeStr))
                     {
-                        Log($"[THREAD] Line {i}: computing before state...");
                         beforeStr = ComputeStateString(state);
                         stateToString[state] = beforeStr;
-                        Log($"[THREAD] Line {i}: before state computed");
                     }
-                    newLineStringsBefore[i] = beforeStr;
 
                     // ── Diagnostics ───────────────────────────────────────────────
-                    Log($"[THREAD] Line {i}: collecting diagnostics...");
                     this.CollectDiagnostics(line, i, state, tools, newDiagnostics);
-                    Log($"[THREAD] Line {i}: diagnostics collected");
 
                     // ── Advance state ─────────────────────────────────────────────
                     try
@@ -343,58 +344,60 @@ namespace AsmDude2LS
                         this.logger_.LogDebug("LspAsmSimulator: line {Line}: {Ex}", i, ex.Message);
                     }
 
-                    // ── After-state: state after this instruction ─────────────────
+                    // ── After-state ───────────────────────────────────────────────
                     if (!stateToString.TryGetValue(state, out string? afterStr))
                     {
-                        Log($"[THREAD] Line {i}: computing after state...");
                         afterStr = ComputeStateString(state);
                         stateToString[state] = afterStr;
-                        Log($"[THREAD] Line {i}: after state computed");
                     }
-                    newLineStringsAfter[i] = afterStr;
-                    Log($"[THREAD] Line {i}: COMPLETE");
+
+                    // ── Write to cache incrementally so hover can see results immediately ──
+                    lock (this.lockObj_)
+                    {
+                        if (!ct.IsCancellationRequested
+                            && this.simVersion_.TryGetValue(uri, out long curVer) && curVer == version
+                            && this.cache_.TryGetValue(uri, out DocCache? entry))
+                        {
+                            if (beforeStr != null) entry.lineStringsBefore[i] = beforeStr;
+                            if (afterStr != null) entry.lineStringsAfter[i] = afterStr;
+                            linesWritten++;
+                        }
+                    }
+
+                    Log($"[THREAD] Line {i}: {mnemonic} done");
                 }
 
-                Log($"[THREAD] Main loop complete, updating cache...");
+                // Finalize: attach owned states and diagnostics to the cache entry.
+                // String data was already written incrementally above.
                 lock (this.lockObj_)
                 {
-                    if (ct.IsCancellationRequested)
+                    if (ct.IsCancellationRequested
+                        || !this.simVersion_.TryGetValue(uri, out long curVer) || curVer != version)
                     {
-                        Log($"[THREAD] Cancellation requested during cache update");
                         DisposeList(ownedStates);
                         return;
                     }
-                    if (this.cache_.TryGetValue(uri, out DocCache? old))
+                    if (this.cache_.TryGetValue(uri, out DocCache? entry))
                     {
-                        Log($"[THREAD] Disposing old cache entry");
-                        DisposeList(old.ownedStates);
+                        entry.diagnostics.AddRange(newDiagnostics);
+                        ownedStates.ForEach(s => entry.ownedStates.Add(s));
                     }
-                    var newEntry = new DocCache();
-                    foreach (var kv in newLineStringsAfter) newEntry.lineStringsAfter[kv.Key] = kv.Value;
-                    foreach (var kv in newLineStringsBefore) newEntry.lineStringsBefore[kv.Key] = kv.Value;
-                    newEntry.diagnostics.AddRange(newDiagnostics);
-                    ownedStates.ForEach(s => newEntry.ownedStates.Add(s));
-                    this.cache_[uri] = newEntry;
-                    Log($"[THREAD] Cache updated with {newLineStringsAfter.Count} after-states, {newLineStringsBefore.Count} before-states, {newDiagnostics.Count} diagnostics");
+                    else
+                    {
+                        DisposeList(ownedStates);
+                    }
                 }
 
-                Log($"[THREAD] Invoking onCompleted callback...");
+                Log($"[THREAD] SUCCESS: {linesWritten} lines written, {newDiagnostics.Count} diagnostics");
                 onCompleted?.Invoke(uri);
-                Log($"[THREAD] SUCCESS - simulation complete!");
             }
             catch (OperationCanceledException)
             {
-                Log($"[THREAD] CANCELLED");
-                // Expected.
+                // Expected — a newer simulation replaced this one.
             }
             catch (Exception ex)
             {
                 Log($"[THREAD] EXCEPTION: {ex.GetType().Name}: {ex.Message}");
-                Log($"[THREAD] Stack: {ex.StackTrace}");
-                if (ex.InnerException != null)
-                {
-                    Log($"[THREAD] Inner: {ex.InnerException.Message}");
-                }
                 this.logger_.LogWarning("LspAsmSimulator: simulation failed for {Uri}: {Ex}", uri, ex.Message);
             }
         }
@@ -509,6 +512,7 @@ namespace AsmDude2LS
                     cts.Dispose();
                 }
                 this.pendingTasks_.Clear();
+                this.simVersion_.Clear();
 
                 foreach (DocCache entry in this.cache_.Values)
                 {

@@ -1,0 +1,4 @@
+; Register TextMate grammar repository for assembly language files.
+; This gives VS a base content type so LSP semantic tokens are rendered with proper colors.
+[$RootKey$\TextMate\Repositories]
+"AsmDude2"="$PackageFolder$\Grammars"

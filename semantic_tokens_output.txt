@@ -1,0 +1,119 @@
+Starting AsmDude LSP server in stdio mode...
+Sending initialize request...
+
+=== Initialize Response ===
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "capabilities": {
+      "textDocumentSync": {
+        "openClose": true,
+        "change": 1,
+        "willSave": false,
+        "willSaveWaitUntil": false
+      },
+      "completionProvider": {
+        "triggerCharacters": [
+          "\b"
+        ],
+        "allCommitCharacters": [
+          "\t"
+        ],
+        "resolveProvider": false,
+        "workDoneProgress": false
+      },
+      "hoverProvider": {
+        "workDoneProgress": false
+      },
+      "signatureHelpProvider": {
+        "triggerCharacters": [
+          " ",
+          ",",
+          "\b"
+        ],
+        "retriggerCharacters": [
+          ";"
+        ],
+        "workDoneProgress": false
+      },
+      "definitionProvider": {
+        "workDoneProgress": false
+      },
+      "referencesProvider": {
+        "workDoneProgress": false
+      },
+      "documentHighlightProvider": {
+        "workDoneProgress": false
+      },
+      "codeActionProvider": {
+        "codeActionKinds": [
+          "quickfix"
+        ],
+        "workDoneProgress": false,
+        "resolveProvider": false
+      },
+      "codeLensProvider": {
+        "resolveProvider": true,
+        "workDoneProgress": false
+      },
+      "foldingRangeProvider": {
+        "workDoneProgress": false
+      },
+      "semanticTokensProvider": {
+        "legend": {
+          "tokenTypes": [
+            "keyword",
+            "variable",
+            "label",
+            "macro",
+            "number",
+            "operator",
+            "comment",
+            "string",
+            "function",
+            "decorator",
+            "masmDirective",
+            "nasmDirective",
+            "masmOperator",
+            "nasmOperator",
+            "masmPseudoOp",
+            "nasmPseudoOp"
+          ],
+          "tokenModifiers": [
+            "declaration",
+            "definition",
+            "deprecated",
+            "readonly"
+          ]
+        },
+        "range": false,
+        "full": {
+          "delta": true
+        },
+        "workDoneProgress": false
+      },
+      "inlayHintProvider": {
+        "workDoneProgress": false,
+        "resolveProvider": false
+      }
+    }
+  }
+}
+
+Sending textDocument/didOpen...
+Waiting 2 seconds for document parsing...
+
+Sending textDocument/semanticTokens/full request...
+
+=== Semantic Tokens Response ===
+{
+  "jsonrpc": "2.0",
+  "method": "textDocument/publishDiagnostics",
+  "params": {
+    "uri": "file:///C:/Source/Github/asm-dude/VS/CSHARP/asm-dude2-vsix/Resources/examples/example_semantic_analysis.asm",
+    "diagnostics": []
+  }
+}
+
+=== Done ===

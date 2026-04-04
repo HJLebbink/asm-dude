@@ -74,8 +74,10 @@ public sealed class LspProcessTestClient : IAsyncDisposable
         timeout ??= TimeSpan.FromSeconds(30);
 
         // Find the server executable based on the project path
+        // The csproj has <AssemblyName>AsmDude2.LSP</AssemblyName>, so the exe name
+        // does not match the csproj filename. Use the actual assembly name.
         var serverDir = Path.GetDirectoryName(serverProjectPath)!;
-        var exeName = $"{Path.GetFileNameWithoutExtension(serverProjectPath)}.exe";
+        var exeName = "AsmDude2.LSP.exe";
         var exePath = Path.Combine(serverDir, "bin", "Release", "net10.0-windows", exeName);
 
         // Fall back to Debug if Release doesn't exist

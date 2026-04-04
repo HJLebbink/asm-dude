@@ -53,7 +53,7 @@ internal class OpenDocumentationCommand : Command
             if (string.IsNullOrEmpty(word)) return;
 
             string mnemonic = word.TrimStart('%').ToUpperInvariant();
-            EnsureMnemonicUrlMap();
+            this.EnsureMnemonicUrlMap();
 
             if (!this.mnemonicUrlMap!.TryGetValue(mnemonic, out string? htmlRef) || string.IsNullOrEmpty(htmlRef))
                 return;
@@ -94,8 +94,8 @@ internal class OpenDocumentationCommand : Command
         this.mnemonicUrlMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         string resourceDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "Server", "Resources");
 
-        LoadSignatureFile(Path.Combine(resourceDir, "signature-may2019.txt"));
-        LoadSignatureFile(Path.Combine(resourceDir, "signature-hand-1.txt")); // overrides may2019
+        this.LoadSignatureFile(Path.Combine(resourceDir, "signature-may2019.txt"));
+        this.LoadSignatureFile(Path.Combine(resourceDir, "signature-hand-1.txt")); // overrides may2019
 
         Log($"OpenDocumentationCommand: loaded {this.mnemonicUrlMap.Count} mnemonic URL mappings");
     }

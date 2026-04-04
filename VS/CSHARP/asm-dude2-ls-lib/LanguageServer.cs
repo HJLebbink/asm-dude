@@ -941,7 +941,7 @@ private void UpdateInternals(string uri)
 
     public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token)
     {
-        if (target.traceSetting == TraceSetting.Verbose)
+        if (this.target.traceSetting == TraceSetting.Verbose)
         {
             AsmDudeLog.Info($"Received: {System.Text.Json.JsonSerializer.Serialize(args)}");
         }
@@ -1208,6 +1208,13 @@ private void UpdateInternals(string uri)
                 }
             }
 
+            // When VS triggers on comma, the document may not yet contain the comma.
+            // Bump activeParameter so the next parameter is highlighted immediately.
+            if (parameter.Context?.TriggerCharacter == ",")
+            {
+                nCommas++;
+            }
+
             AsmDudeLog.Debug($"GetTextDocumentSignatureHelp: lineStr=\"{lineStr}\"; pos={parameter.Position.Character}; mnemonic={mnemonic}, nCommas={nCommas}, resultCount={z.Count}");
             return new SignatureHelp()
             {
@@ -1371,18 +1378,21 @@ private void UpdateInternals(string uri)
     /// Map AsmTokenType to semantic token type index (matching the legend in server capabilities)
     /// </summary>
     /// <param name="type">AsmTokenType from parsed document tokens.</param>
-    /// <returns>LSP token type index (0-8 for standard types, 10-15 for MASM/NASM-specific types), or -1 for unknown.</returns>
+    /// <returns>LSP token type index (0-11), or -1 for UNKNOWN. All types use standard LSP names.</returns>
     /// <remarks>
-    /// Standard token types:
-    ///   0: keyword (Mnemonic, MnemonicOff - deprecated)
+    /// Token types (all standard LSP 3.17):
+    ///   0: keyword (Mnemonic, MnemonicOff)
     ///   1: variable (Register)
-    ///   2: label (Label, LabelDef)
-    ///   3: macro (Directive)
+    ///   2: type (Label, LabelDef)
+    ///   3: macro (Directive, MasmDirective, NasmDirective, MasmPseudoOp, NasmPseudoOp)
     ///   4: number (Constant)
-    ///   5: operator (Misc - memory operands)
+    ///   5: operator (Misc, MasmOperator, NasmOperator)
     ///   6: comment (Remark)
     ///   7: string (not used currently)
     ///   8: function (Jump - CALL targets)
+    ///   9: property (UserDefined1)
+    ///  10: enumMember (UserDefined2)
+    ///  11: namespace (UserDefined3)
     /// </remarks>
     /// <example>
     /// MapTokenType(AsmTokenType.Mnemonic) → 0
@@ -1395,26 +1405,31 @@ private void UpdateInternals(string uri)
     /// SEE ALSO: GetTokenModifiers, SemanticTokensLegend, AsmTokenType
 private static int MapTokenType(AsmTokenType type)
      {
+         // Indices must match VS's fixed client token type ordering (not our legend order).
          return type switch
          {
-             AsmTokenType.Mnemonic => 0,    // keyword
-             AsmTokenType.MnemonicOff => 0, // keyword (deprecated - will add modifier)
-             AsmTokenType.Register => 1,    // variable
-             AsmTokenType.Label => 2,       // label
-             AsmTokenType.LabelDef => 2,    // label (definition)
-             AsmTokenType.Jump => 8,        // function (jump target)
-             AsmTokenType.Directive => 3,   // macro
-             AsmTokenType.Constant => 4,    // number
-             AsmTokenType.Remark => 6,      // comment
-             AsmTokenType.Misc => 5,        // operator (memory operands, brackets, etc.)
-             // MASM/NASM-specific token types
-             AsmTokenType.MasmDirective => 10, // masmDirective
-             AsmTokenType.NasmDirective => 11, // nasmDirective
-             AsmTokenType.MasmOperator => 12,  // masmOperator
-             AsmTokenType.NasmOperator => 13,  // nasmOperator
-             AsmTokenType.MasmPseudoOp => 14,  // masmPseudoOp
-             AsmTokenType.NasmPseudoOp => 15,  // nasmPseudoOp
-             _ => -1, // Skip unknown tokens
+             AsmTokenType.Mnemonic => 15,    // keyword
+             AsmTokenType.MnemonicOff => 15, // keyword (deprecated - will add modifier)
+             AsmTokenType.Register => 2,     // class
+             AsmTokenType.Label => 1,        // type
+             AsmTokenType.LabelDef => 1,     // type (definition)
+             AsmTokenType.Jump => 12,        // function (jump target)
+             AsmTokenType.Directive => 14,   // macro
+             AsmTokenType.Constant => 19,    // number
+             AsmTokenType.Remark => 17,      // comment
+             AsmTokenType.Misc => 21,        // operator (memory operands, brackets, etc.)
+             // MASM/NASM-specific types mapped to standard equivalents
+             AsmTokenType.MasmDirective => 14, // macro
+             AsmTokenType.NasmDirective => 14, // macro
+             AsmTokenType.MasmOperator => 21,  // operator
+             AsmTokenType.NasmOperator => 21,  // operator
+             AsmTokenType.MasmPseudoOp => 14,  // macro
+             AsmTokenType.NasmPseudoOp => 14,  // macro
+             // User-defined token types
+             AsmTokenType.UserDefined1 => 9,   // property
+             AsmTokenType.UserDefined2 => 10,  // enumMember
+             AsmTokenType.UserDefined3 => 0,   // namespace
+             _ => -1, // Skip UNKNOWN tokens
          };
      }
 
@@ -1496,6 +1511,39 @@ private static int GetTokenModifiers(AsmTokenType type)
         var hints = new List<InlayHint>();
         int startLine = parameter.Range.Start.Line;
         int endLine = Math.Min(parameter.Range.End.Line, lines.Length - 1);
+
+        // Add label reference count hints (e.g., "2 references" after label definitions)
+        LabelGraph? labelGraph = this.GetLabelGraph(uri);
+        if (labelGraph != null && labelGraph.Enabled)
+        {
+            var definitions = labelGraph.GetFrozenDefinitions();
+            var usages = labelGraph.GetFrozenUsages();
+
+            foreach (var kvp in definitions)
+            {
+                string label = kvp.Key;
+                List<KeywordID> defList = kvp.Value;
+                KeywordID def = defList[0];
+                int defLine = def.LineNumber;
+
+                if (defLine < startLine || defLine > endLine) continue;
+
+                int referenceCount = 0;
+                if (usages.TryGetValue(label, out List<KeywordID>? usagesList))
+                {
+                    referenceCount = usagesList.Count;
+                }
+
+                string refText = referenceCount == 1 ? " 1 reference" : $" {referenceCount} references";
+                hints.Add(new InlayHint
+                {
+                    Position = new Position(defLine, def.End_Pos + 1), // after the colon
+                    Label = refText,
+                    Kind = InlayHintKind.Parameter,
+                    PaddingLeft = true,
+                });
+            }
+        }
 
         // Get selected microarchitectures for performance info
         MicroArch selectedArch = this.options?.Get_MicroArch_Switched_On() ?? MicroArch.NONE;
@@ -2536,18 +2584,9 @@ private static int GetTokenModifiers(AsmTokenType type)
                         }
                     }
 
-                    // Build doc URL hint for hover
-                    string docUrlHint = "";
-                    string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
-                    if (!string.IsNullOrEmpty(htmlRef))
-                    {
-                        docUrlHint = "\nCtrl+Click mnemonic for docs: " + this.options.AsmDoc_Url.TrimEnd('/') + "/" + htmlRef;
-                    }
-
                     hoverContent = [
                         full_Descr,
                         (performanceInfoAvailable) ? "\nPerformance:\n" + performanceStr : "",
-                        docUrlHint,
                     ];
                     break;
                 }
@@ -2581,9 +2620,8 @@ private static int GetTokenModifiers(AsmTokenType type)
                         if (simBefore != null || simAfter != null)
                         {
                             var sb = new System.Text.StringBuilder("\n");
-                            if (simBefore != null) sb.Append($"Before: {simBefore}");
-                            if (simBefore != null && simAfter != null) sb.Append("  →  ");
-                            if (simAfter != null) sb.Append($"After: {simAfter}");
+                            if (simBefore != null) sb.Append($"Before: {simBefore}\n");
+                            if (simAfter != null)  sb.Append($"After : {simAfter}");
                             simSuffix = sb.ToString();
                         }
 

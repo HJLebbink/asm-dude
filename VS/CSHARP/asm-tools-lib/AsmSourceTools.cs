@@ -226,11 +226,14 @@ using System.Text;
                 {
                     remark = lineStr[remarkPos.startPos..remarkPos.endPos];
                     codeEndPos = remarkPos.startPos;
-                    remarkKeyword = new KeywordID(lineNumber, fileID, startPos, endPos, AsmTokenType.Remark);
+                    remarkKeyword = new KeywordID(lineNumber, fileID, remarkPos.startPos, remarkPos.endPos, AsmTokenType.Remark);
                     // Console.WriteLine("found remark " + remark);
                 }
 
-                string codeStr = lineStr[codeBeginPos..codeEndPos].Trim();
+                string codeStrUntrimmed = lineStr[codeBeginPos..codeEndPos];
+                string codeStr = codeStrUntrimmed.TrimStart();
+                codeBeginPos += codeStrUntrimmed.Length - codeStr.Length; // adjust for removed leading whitespace
+                codeStr = codeStr.TrimEnd();
                 // Console.WriteLine("code string \"" + codeStr + "\".");
                 if (codeStr.Length > 0)
                 {
@@ -265,20 +268,25 @@ using System.Text;
                         var pos = keywordPositions[i];
                         int globalBeginPos = codeBeginPos + pos.beginPos;
                         int globalEndPos = codeBeginPos + pos.endPos;
-                        
+
                         if (pos.type != AsmTokenType.UNKNOWN)
                         {
                             // Already known type from SplitIntoKeywordsType
                             k.Add(new KeywordID(lineNumber, fileID, globalBeginPos, globalEndPos, pos.type));
+                        }
+                        else if (i == mnemonicPos)
+                        {
+                            // This is the mnemonic identified in the first pass
+                            k.Add(new KeywordID(lineNumber, fileID, globalBeginPos, globalEndPos, AsmTokenType.Mnemonic));
                         }
                         else
                         {
                             // Need to determine the type
                             string keyword = codeStr_uppercase[pos.beginPos..pos.endPos];
                             AsmTokenType tokenType = DetermineTokenType(
-                                keyword, 
-                                i, 
-                                keywordPositions, 
+                                keyword,
+                                i,
+                                keywordPositions,
                                 codeStr_uppercase,
                                 parsedMnemonic,
                                 mnemonicPos,
@@ -326,19 +334,16 @@ using System.Text;
             ArgumentNullException.ThrowIfNull(operandStrArray);
 
             int nOperands = operandStrArray.Length;
-            if (nOperands <= 1)
+            if (nOperands == 0)
             {
                 return [];
             }
-            else
+            var operands = new List<Operand>(nOperands);
+            foreach (string opStr in operandStrArray)
             {
-                var operands = new List<Operand>(nOperands);
-                foreach (string opStr in operandStrArray)
-                {
-                    operands.Add(new Operand(new CapitalToken(opStr)));
-                }
-                return operands;
+                operands.Add(new Operand(new CapitalToken(opStr)));
             }
+            return operands;
         }
 
         /// <summary>
@@ -1391,6 +1396,8 @@ using System.Text;
                     case "TBYTE":
                     case "DQWORD":
                     case "OWORD":
+                    case "YWORD":
+                    case "ZWORD":
                     case "XMMWORD":
                     case "YMMWORD":
                     case "ZMMWORD":
@@ -1419,28 +1426,84 @@ using System.Text;
                 }
             }
             
-            // Default handling for unknown tokens
+            // Check if it's a mnemonic (may not be at mnemonicPos for multi-mnemonic lines like rep movs)
+            if (ParseMnemonic(keyword, true) != Mnemonic.NONE)
+            {
+                return AsmTokenType.Mnemonic;
+            }
+
             // Check if it's a register
             if (RegisterTools.IsRn(keyword, true))
             {
                 return AsmTokenType.Register;
             }
-            
+
             // Check if it's a constant
             if (Evaluate_Constant(keyword, true).valid)
             {
                 return AsmTokenType.Constant;
             }
-            
+
             // Check if it's a string literal
-            if (keyword.StartsWith("\"") && keyword.EndsWith("\"") && keyword.Length >= 2)
+            if (keyword.StartsWith('"') && keyword.EndsWith('"') && keyword.Length >= 2)
             {
-                return AsmTokenType.Constant; // String literals are treated as constants for now
+                return AsmTokenType.Constant;
             }
-            
-            // Check if it's a label (heuristic: not a known keyword, not a register/constant)
-            // In assembly, labels often appear at the start of lines or before colons
-            // But we've already handled label definitions separately, so this is for label references
+
+            // Check for common directives (regardless of assembler type)
+            if (keyword.StartsWith('.') || keyword.StartsWith('#'))
+            {
+                return AsmTokenType.Directive;
+            }
+            switch (keyword)
+            {
+                case "INCLUDE":
+                case "INCLUDELIB":
+                case "EXTERN":
+                case "GLOBAL":
+                case "SECTION":
+                case "SEGMENT":
+                case "PROC":
+                case "ENDP":
+                case "MACRO":
+                case "ENDM":
+                case "EQU":
+                case "DB":
+                case "DW":
+                case "DD":
+                case "DQ":
+                case "DT":
+                case "RESB":
+                case "RESW":
+                case "RESD":
+                case "RESQ":
+                case "TIMES":
+                case "ORG":
+                case "ALIGN":
+                case "EVEN":
+                    return AsmTokenType.Directive;
+                case "BYTE":
+                case "WORD":
+                case "DWORD":
+                case "QWORD":
+                case "TWORD":
+                case "TBYTE":
+                case "DQWORD":
+                case "OWORD":
+                case "YWORD":
+                case "ZWORD":
+                case "XMMWORD":
+                case "YMMWORD":
+                case "ZMMWORD":
+                case "PTR":
+                case "NEAR":
+                case "FAR":
+                case "SHORT":
+                case "OFFSET":
+                    return AsmTokenType.Misc; // size/memory operators
+            }
+
+            // Default: label reference (unknown identifier)
             return AsmTokenType.Label;
         }
     }

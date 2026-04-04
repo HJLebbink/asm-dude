@@ -1,33 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!--
-    DO NOT change TargetFramework to net10.0 or higher.
-
-    VS.Extensibility OOP extensions run inside ServiceHub.Host.Extensibility, which is a .NET 8
-    host process shipped with Visual Studio. The extension DLL is loaded into that host — if it
-    targets net10.0, the host fails with:
-      "Could not load file or assembly 'System.Runtime, Version=10.0.0.0'"
-
-    This is a known SDK limitation confirmed by Microsoft (github.com/microsoft/VSExtensibility/issues/544).
-    .NET 10 support for the extension host is planned for a future VS 2026 update.
-
-    The LSP server (asm-dude2-ls) runs as a separate process and CAN target net10.0-windows.
-    C# 14 features ARE available here via LangVersion even on net8.0.
-  -->
   <PropertyGroup>
-    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <TargetFramework>net10.0-windows8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>14</LangVersion>
     <ExtensionName>AsmDude2</ExtensionName>
-    <ExtensionVersion>3.0.0.0</ExtensionVersion>
-    <NoWarn>VSEXTPREVIEW_LSP;VSEXTPREVIEW_SETTINGS</NoWarn>
+    <ExtensionVersion>1.0.0.0</ExtensionVersion>
+    <NoWarn>VSEXTPREVIEW_LSP;VSEXTPREVIEW_SETTINGS;VSEXTPREVIEW_CODELENS;VSEXTPREVIEW_TAGGERS</NoWarn>
     <ExtensionDeploymentRootSuffix>Exp</ExtensionDeploymentRootSuffix>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="18.4.38655-Preview" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="18.4.38655-Preview" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="18.5.39115-Preview" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="18.5.39115-Preview" PrivateAssets="all" />
+    <!-- VSSDK.BuildTools comes transitively from Extensibility.Build -->
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +33,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInExtension>true</IncludeInExtension>
     </None>
+  </ItemGroup>
+
+  <!-- TextMate grammar: required for VS to render LSP semantic tokens -->
+  <ItemGroup>
+    <Content Include="Grammars\asm.tmLanguage.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Grammars.pkgdef">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
 
   <!-- Include LSP server in VSIX -->
