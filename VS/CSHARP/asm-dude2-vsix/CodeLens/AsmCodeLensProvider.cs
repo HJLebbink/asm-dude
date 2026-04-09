@@ -17,10 +17,7 @@ internal class AsmCodeLensProvider : ExtensionPart, ICodeLensProvider
     {
         AppliesTo =
         [
-            DocumentFilter.FromDocumentType(AsmLanguageServerProvider.AsmDocumentType),
-            DocumentFilter.FromDocumentType(AsmLanguageServerProvider.CodDocumentType),
-            DocumentFilter.FromDocumentType(AsmLanguageServerProvider.IncDocumentType),
-            DocumentFilter.FromDocumentType(AsmLanguageServerProvider.SDocumentType),
+            DocumentFilter.FromDocumentType(DocumentType.KnownValues.Code),
         ],
     };
 
@@ -30,9 +27,10 @@ internal class AsmCodeLensProvider : ExtensionPart, ICodeLensProvider
     public Task<CodeLens?> TryCreateCodeLensAsync(CodeElement codeElement, CodeElementContext codeElementContext, CancellationToken token)
     {
         if (codeElement.Kind == AsmCodeLensTagger.AsmLabelKind)
-        {
-            return Task.FromResult<CodeLens?>(new AsmLabelCodeLens(codeElement));
-        }
+            return Task.FromResult<CodeLens?>(new AsmLabelCodeLens(codeElement, this.Extensibility));
+
+        if (codeElement.Kind == AsmCodeLensTagger.AsmSimStateKind)
+            return Task.FromResult<CodeLens?>(new AsmSimStateCodeLens(codeElement));
 
         return Task.FromResult<CodeLens?>(null);
     }

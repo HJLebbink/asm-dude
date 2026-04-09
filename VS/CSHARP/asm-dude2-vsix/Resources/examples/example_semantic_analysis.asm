@@ -1,8 +1,8 @@
 .intel_syntax noprefix
 
 	#region Unreachable code
-	#pragma assume mov al, 1 << 3
-	cmp al, 1<<3
+	#pragma assume mov al, 8
+	cmp al, 8
 	jz label2
 	mov al, 1
 	jz label2

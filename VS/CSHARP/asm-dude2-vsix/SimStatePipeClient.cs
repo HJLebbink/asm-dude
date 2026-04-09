@@ -1,0 +1,265 @@
+// Copyright (c) 2026 Henk-Jan Lebbink
+// Licensed under the MIT license.
+
+namespace AsmDude2;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Pipes;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+
+/// <summary>
+/// Singleton named-pipe client that connects to the LSP server's <c>SimStatePipeServer</c>.
+/// Provides <see cref="GetSimStatesAsync"/> for fetching sim-state labels and raises
+/// <see cref="SimStateUpdated"/> whenever the server pushes a progress notification.
+///
+/// Protocol safety: a single background reader loop owns the <c>StreamReader</c>.
+/// <c>GetSimStatesAsync</c> posts a request and awaits a <c>TaskCompletionSource</c>
+/// that the reader loop resolves when the response line arrives. This prevents the
+/// <c>InvalidOperationException: stream is currently in use</c> caused by concurrent reads.
+///
+/// Call <see cref="SetServerPid"/> immediately after starting the LSP server process.
+/// </summary>
+internal sealed class SimStatePipeClient : IDisposable
+{
+    // ── Singleton ─────────────────────────────────────────────────────────────
+    private static SimStatePipeClient? instance_;
+    private static readonly object instanceLock_ = new();
+
+    internal static SimStatePipeClient Instance
+    {
+        get
+        {
+            if (instance_ == null)
+            {
+                lock (instanceLock_)
+                    instance_ ??= new SimStatePipeClient();
+            }
+            return instance_;
+        }
+    }
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    private string? pipeName_;
+    private NamedPipeClientStream? pipe_;
+    private StreamWriter? writer_;
+    private readonly SemaphoreSlim requestSem_ = new(1, 1); // one request in-flight at a time
+    private readonly CancellationTokenSource cts_ = new();
+    private volatile TaskCompletionSource<string>? pendingResponse_;
+    private int disposed_ = 0;
+
+    /// <summary>
+    /// Raised (from a background thread) when the server notifies that sim state
+    /// has been updated for a document URI. Listeners should schedule a tagger refresh.
+    /// </summary>
+    internal event Action<Uri>? SimStateUpdated;
+
+    private SimStatePipeClient() { }
+
+    /// <summary>
+    /// Call this immediately after starting the LSP server process.
+    /// </summary>
+    internal void SetServerPid(int pid)
+    {
+        this.pipeName_ = $"asmdude2-simstate-{pid}";
+        PipeClientLog($"SetServerPid: will connect to pipe '{this.pipeName_}'");
+        _ = Task.Run(this.ConnectAndListenAsync);
+    }
+
+    /// <summary>
+    /// Requests a snapshot of sim-state labels for the given document URI.
+    /// Returns an empty dictionary if the server is not connected or has no data.
+    /// Keys are 0-based line indices; values are compact labels like "→RAX=0x10, ←ZF=0".
+    /// </summary>
+    internal async Task<Dictionary<int, string>> GetSimStatesAsync(Uri uri, CancellationToken ct = default)
+    {
+        if (this.writer_ == null) return [];
+
+        await this.requestSem_.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            if (this.writer_ == null) return [];
+
+            // Set up TCS before writing so the reader loop can't miss the response
+            var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            this.pendingResponse_ = tcs;
+
+            string request = JsonSerializer.Serialize(new { method = "getSimStates", uri = uri.ToString() });
+            await this.writer_.WriteLineAsync(request.AsMemory(), ct).ConfigureAwait(false);
+
+            // Wait up to 5s for the reader loop to fill in the response
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeoutCts.CancelAfter(5000);
+            string responseLine = await tcs.Task.WaitAsync(timeoutCts.Token).ConfigureAwait(false);
+
+            return ParseSimStatesResponse(responseLine);
+        }
+        catch (OperationCanceledException)
+        {
+            return [];
+        }
+        catch (Exception ex)
+        {
+            PipeClientLog($"GetSimStatesAsync error: {ex.GetType().Name}: {ex.Message}");
+            return [];
+        }
+        finally
+        {
+            this.pendingResponse_ = null;
+            this.requestSem_.Release();
+        }
+    }
+
+    public void Dispose()
+    {
+        if (Interlocked.Exchange(ref this.disposed_, 1) != 0) return;
+        this.cts_.Cancel();
+        this.pipe_?.Dispose();
+        this.requestSem_.Dispose();
+        this.cts_.Dispose();
+    }
+
+    // ── Private ───────────────────────────────────────────────────────────────
+
+    private async Task ConnectAndListenAsync()
+    {
+        while (!this.cts_.Token.IsCancellationRequested && this.pipeName_ != null)
+        {
+            NamedPipeClientStream? pipe = null;
+            try
+            {
+                pipe = new NamedPipeClientStream(".", this.pipeName_, PipeDirection.InOut, PipeOptions.Asynchronous);
+
+                PipeClientLog($"Connecting to '{this.pipeName_}'...");
+                await pipe.ConnectAsync(10_000, this.cts_.Token).ConfigureAwait(false);
+                PipeClientLog("Connected");
+
+                this.pipe_ = pipe;
+                this.writer_ = new StreamWriter(pipe, leaveOpen: true) { AutoFlush = true };
+
+                // Single reader loop: owns the StreamReader, dispatches responses and notifications
+                using var reader = new StreamReader(pipe, leaveOpen: true);
+                await this.ReadLoopAsync(reader).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                PipeClientLog($"Connection failed: {ex.GetType().Name}: {ex.Message}");
+            }
+            finally
+            {
+                this.writer_ = null;
+                this.pendingResponse_?.TrySetCanceled();
+                this.pendingResponse_ = null;
+                pipe?.Dispose();
+                this.pipe_ = null;
+            }
+
+            // Back-off before retrying
+            if (!this.cts_.Token.IsCancellationRequested)
+            {
+                try { await Task.Delay(3000, this.cts_.Token).ConfigureAwait(false); }
+                catch (OperationCanceledException) { break; }
+            }
+        }
+
+        PipeClientLog("Listen loop ended");
+    }
+
+    /// <summary>
+    /// Sole reader of the pipe. Dispatches:
+    /// <list type="bullet">
+    ///   <item>Lines with <c>"lines"</c> key → response to pending <see cref="GetSimStatesAsync"/>.</item>
+    ///   <item>Lines with <c>"method"</c> key → server-push notification.</item>
+    /// </list>
+    /// </summary>
+    private async Task ReadLoopAsync(StreamReader reader)
+    {
+        while (!this.cts_.Token.IsCancellationRequested && this.pipe_?.IsConnected == true)
+        {
+            string? line;
+            try
+            {
+                line = await reader.ReadLineAsync(this.cts_.Token).ConfigureAwait(false);
+            }
+            catch
+            {
+                break;
+            }
+
+            if (line == null) break;
+
+            if (line.Contains("\"lines\""))
+            {
+                // Response to our getSimStates request — hand off to the awaiting TCS
+                this.pendingResponse_?.TrySetResult(line);
+            }
+            else if (line.Contains("\"method\""))
+            {
+                // Server-push notification
+                this.HandleNotification(line);
+            }
+        }
+
+        PipeClientLog("Read loop ended");
+    }
+
+    private void HandleNotification(string line)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(line);
+            if (!doc.RootElement.TryGetProperty("method", out var methodEl)) return;
+            if (methodEl.GetString() != "simStateUpdated") return;
+
+            if (!doc.RootElement.TryGetProperty("uri", out var uriEl)) return;
+            string? uriStr = uriEl.GetString();
+            if (string.IsNullOrEmpty(uriStr)) return;
+
+            var uri = new Uri(uriStr);
+            PipeClientLog($"Received simStateUpdated for {uriStr}");
+            this.SimStateUpdated?.Invoke(uri);
+        }
+        catch (Exception ex)
+        {
+            PipeClientLog($"Notification parse error: {ex.Message}");
+        }
+    }
+
+    private static Dictionary<int, string> ParseSimStatesResponse(string responseLine)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(responseLine);
+            if (!doc.RootElement.TryGetProperty("lines", out var linesEl)) return [];
+
+            var result = new Dictionary<int, string>();
+            foreach (var prop in linesEl.EnumerateObject())
+            {
+                if (int.TryParse(prop.Name, out int lineIdx))
+                    result[lineIdx] = prop.Value.GetString() ?? string.Empty;
+            }
+            return result;
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private static void PipeClientLog(string msg)
+    {
+        try
+        {
+            string path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AsmDude2-pipe-client.log");
+            System.IO.File.AppendAllText(path, $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n");
+        }
+        catch { }
+    }
+}

@@ -79,6 +79,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     private readonly object updateLock = new();
     private readonly Dictionary<string, CancellationTokenSource> pendingUpdates = [];
 
+    // Tracks semantic token invalidation version per document (incremented when sim unreachable lines change)
+    private readonly Dictionary<string, int> simTokenVersions = [];
+
 
     private readonly TraceSource traceSource;
 
@@ -86,6 +89,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     public MnemonicStore? mnemonicStore;
 
     private readonly LspAsmSimulator asmSimulator_;
+    private readonly SimStatePipeServer simStatePipeServer_;
     public PerformanceStore? performanceStore;
     public AsmLanguageServerOptions? options;
 
@@ -147,10 +151,14 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.target.OnInitializeCompletion += this.OnTargetInitializeCompletion;
         this.target.OnInitialized += this.OnTargetInitialized;
         this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_);
+        this.simStatePipeServer_.Start();
+        AsmDudeLog.Info($"LanguageServer: SimStatePipeServer started on pipe '{this.simStatePipeServer_.PipeName}'");
     }
 
     /// <summary>
-    /// Internal constructor for unit testing - initializes basic state without streams/RPC
+    /// Internal constructor for unit testing - initializes basic state without streams/RPC.
+    /// The pipe server is NOT started in this path (no VSIX client in tests).
     /// </summary>
     internal LanguageServer()
     {
@@ -164,6 +172,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.diagnostics = [];
         this.Symbols = [];
         this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_);
+        // Do NOT call Start() in tests — no VSIX client to connect
     }
 
     #region Tools
@@ -345,6 +355,36 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     public void OnInitializeComplete()
     {
         AsmDudeLog.Info("LanguageServer: OnInitializeComplete");
+        // Dynamically register inlay hints so VS activates the feature (VS prefers dynamic registration).
+        var registrationTask = this.SendMethodRequestAsync<RegistrationParams, object>(Methods.ClientRegisterCapabilityName, new RegistrationParams
+        {
+            Registrations =
+            [
+                new Registration
+                {
+                    Id = "asm-dude2-inlay-hint",
+                    Method = Methods.TextDocumentInlayHintName,
+                    RegisterOptions = new InlayHintRegistrationOptions
+                    {
+                        DocumentSelector =
+                        [
+                            new DocumentFilter { Pattern = "**/*.asm" },
+                            new DocumentFilter { Pattern = "**/*.cod" },
+                            new DocumentFilter { Pattern = "**/*.inc" },
+                            new DocumentFilter { Pattern = "**/*.s" },
+                        ],
+                        ResolveProvider = false,
+                    },
+                },
+            ],
+        });
+        registrationTask.ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+                AsmDudeLog.Warning($"[OnInitializeComplete] client/registerCapability failed: {t.Exception?.GetBaseException().Message}");
+            else
+                AsmDudeLog.Info("[OnInitializeComplete] client/registerCapability succeeded");
+        }, System.Threading.Tasks.TaskScheduler.Default);
     }
 
     private void OnTargetInitialized(object sender, EventArgs e)
@@ -484,7 +524,13 @@ private void UpdateInternals(string uri)
                 try
                 {
                     this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
-                        onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()));
+                        onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()),
+                        onProgress: progressUri =>
+                        {
+                            AsmDudeLog.Debug($"[UpdateInternals] sending {Methods.WorkspaceInlayHintRefreshName} + pipe notify");
+                            _ = this.SendMethodNotificationAsync<object?>(Methods.WorkspaceInlayHintRefreshName, null);
+                            this.simStatePipeServer_.NotifySimStateUpdated(progressUri);
+                        });
                 }
                 catch (Exception ex)
                 {
@@ -524,6 +570,7 @@ private void UpdateInternals(string uri)
         this.parsedDocuments.Remove(uri);
         this.labelGraphs.Remove(uri);
         this.labelGraphDirty.Remove(uri);
+        this.simTokenVersions.Remove(uri);
     }
 
     private void UpdateLabelGraph(string uri)
@@ -665,25 +712,60 @@ private void UpdateInternals(string uri)
     public void SendDiagnostics(string uri)
     {
         var simDiags = this.asmSimulator_.GetDiagnostics(new Uri(uri));
+        AsmDudeLog.Debug($"[SendDiagnostics] uri={uri}, simDiags={simDiags.Count}, baseDiags={this.diagnostics.Count}");
         var allDiags = new List<Diagnostic>(this.diagnostics);
+        // Pre-fetch document lines for computing character ranges
+        string[]? docLines = this.textDocumentLines.TryGetValue(uri, out var dl) ? dl : null;
+
         foreach (SimDiagnostic sd in simDiags)
         {
             DiagnosticSeverity severity = sd.Kind switch
             {
-                SimDiagnosticKind.SyntaxError => DiagnosticSeverity.Error,
+                SimDiagnosticKind.SyntaxError    => DiagnosticSeverity.Error,
                 SimDiagnosticKind.NotImplemented => DiagnosticSeverity.Information,
-                _ => DiagnosticSeverity.Warning,
+                SimDiagnosticKind.Unreachable    => DiagnosticSeverity.Warning,  // full wavy underline under entire instruction
+                _                                => DiagnosticSeverity.Warning,
             };
+
+            // Use the actual line content to compute precise start/end character positions:
+            // start = first non-whitespace char, end = last non-whitespace char + 1.
+            string rawLine = (docLines != null && sd.Line < docLines.Length) ? docLines[sd.Line] : string.Empty;
+            int startChar = 0;
+            int endChar = rawLine.Length;
+            if (rawLine.Length > 0)
+            {
+                startChar = rawLine.Length - rawLine.TrimStart().Length;
+                endChar = startChar + rawLine.TrimStart().TrimEnd().Length;
+            }
+
+            // For unreachable code: fade the text (Unnecessary) AND show a full wavy underline
+            // (IntellisenseError). Both tags together give the same visual as C# unreachable code:
+            // faded/greyed text with a green squiggle covering the entire instruction.
+            // For all other diagnostics: keep IntellisenseError so they appear in the error list.
+            DiagnosticTag[] tags = sd.Kind == SimDiagnosticKind.Unreachable
+                ? [DiagnosticTag.Unnecessary, (DiagnosticTag)AsmDiagnosticTag.IntellisenseError]
+                : [(DiagnosticTag)AsmDiagnosticTag.IntellisenseError];
+
             allDiags.Add(new VSDiagnostic
             {
                 Message = sd.Message,
                 Severity = severity,
+                Source = "AsmDude2",
+                Code = sd.Kind switch
+                {
+                    SimDiagnosticKind.SyntaxError    => "SIM-E001",
+                    SimDiagnosticKind.NotImplemented => "SIM-I001",
+                    SimDiagnosticKind.Unreachable    => "SIM-W001",
+                    _                                => "SIM-W002",
+                },
                 Range = new Range
                 {
-                    Start = new Position(sd.Line, 0),
-                    End = new Position(sd.Line, int.MaxValue),
+                    Start = new Position(sd.Line, startChar),
+                    End = new Position(sd.Line, endChar),
                 },
+                Tags = tags,
             });
+            AsmDudeLog.Debug($"[SendDiagnostics] diag: line={sd.Line}, severity={severity}, msg={sd.Message}");
         }
 
         PublishDiagnosticParams parameter = new()
@@ -692,6 +774,16 @@ private void UpdateInternals(string uri)
             Diagnostics = [.. allDiags],
         };
         _ = this.SendMethodNotificationAsync(Methods.TextDocumentPublishDiagnosticsName, parameter);
+
+        // If there are any unreachable-code diagnostics, invalidate the semantic token result ID
+        // and request VS to re-fetch semantic tokens (so unreachable lines are rendered as deprecated/gray).
+        bool hasUnreachable = simDiags.Any(d => d.Kind == SimDiagnosticKind.Unreachable);
+        if (hasUnreachable)
+        {
+            this.simTokenVersions[uri] = (this.simTokenVersions.TryGetValue(uri, out int prev) ? prev : 0) + 1;
+            _ = this.SendMethodNotificationAsync<object?>(Methods.WorkspaceSemanticTokensRefreshName, null);
+            AsmDudeLog.Debug($"[SendDiagnostics] sent workspace/semanticTokens/refresh for {uri}");
+        }
     }
 
     public CodeAction? GetResolvedCodeAction(CodeAction parameter)
@@ -1288,6 +1380,11 @@ private void UpdateInternals(string uri)
             return new SemanticTokens { ResultId = this.GetDocumentResultId(uri), Data = [] };
         }
 
+        // Get unreachable lines from simulator so we can mark them with "deprecated" modifier
+        var unreachableLines = this.options?.AsmSim_On == true
+            ? this.asmSimulator_.GetUnreachableLines(new Uri(uri))
+            : [];
+
         var data = new List<int>();
         int prevLine = 0;
         int prevChar = 0;
@@ -1298,8 +1395,7 @@ private void UpdateInternals(string uri)
             var lineTokens = keywords[lineNumber];
             if (lineTokens == null) continue;
 
-            // Tokens are already sorted by the parser, skip unnecessary sorting
-            // var sortedTokens = lineTokens.OrderBy(t => t.Start_Pos).ToList();
+            bool lineIsUnreachable = unreachableLines.Contains(lineNumber);
 
             foreach (var token in lineTokens)
             {
@@ -1310,6 +1406,12 @@ private void UpdateInternals(string uri)
                 if (tokenType < 0) continue;
 
                 int tokenModifiers = GetTokenModifiers(token.Type);
+
+                // Mark all tokens on unreachable lines with "deprecated" modifier (bit 2 = 0x4)
+                // so VS renders them with strikethrough or gray color.
+                if (lineIsUnreachable)
+                    tokenModifiers |= 0x4;
+
                 int tokenLength = token.End_Pos - token.Start_Pos;
                 if (tokenLength <= 0) continue;
 
@@ -1367,11 +1469,9 @@ private void UpdateInternals(string uri)
 
     private string GetDocumentResultId(string uri)
     {
-        if (this.textDocuments.TryGetValue(uri, out var doc))
-        {
-            return doc.Version.ToString();
-        }
-        return "0";
+        int docVersion = this.textDocuments.TryGetValue(uri, out var doc) ? doc.Version : 0;
+        int simVer = this.simTokenVersions.TryGetValue(uri, out int sv) ? sv : 0;
+        return $"{docVersion}.{simVer}";
     }
 
     /// <summary>
@@ -1626,9 +1726,69 @@ private static int GetTokenModifiers(AsmTokenType type)
                     ToolTip = $"Value: {value} (0x{value:X})"
                 });
             }
+
+            // Add AsmSim register/flag state hint at end of line (if simulation has results)
+            if (this.options?.AsmSim_On == true && this.options?.AsmSim_Decorate_Registers == true)
+            {
+                // Filtered: only registers/flags the instruction reads or writes (inlay hint)
+                // Full state is still used for hover tooltip
+                string? stateStrFiltered = this.asmSimulator_.GetRegisterStatesAfterLineFiltered(new Uri(uri), lineNumber);
+                string? stateStrFull = this.asmSimulator_.GetRegisterStatesAfterLine(new Uri(uri), lineNumber);
+                string? simLabel = BuildSimInlayLabel(stateStrFiltered);
+                if (simLabel != null)
+                {
+                    hints.Add(new InlayHint
+                    {
+                        Position = new Position(lineNumber, lineText.TrimEnd().Length),
+                        Label = simLabel,
+                        Kind = InlayHintKind.Type,
+                        PaddingLeft = true,
+                        ToolTip = stateStrFull,  // hover shows full state
+                    });
+                }
+            }
         }
 
         return [.. hints];
+    }
+
+    private static string? BuildSimInlayLabel(string? stateStr)
+    {
+        if (string.IsNullOrEmpty(stateStr)) return null;
+        var parts = new List<string>();
+        foreach (string rawLine in stateStr.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            // Trim only trailing whitespace; leading ↔/→/← (single Unicode chars) must be preserved.
+            string line = rawLine.TrimEnd().TrimStart(' ');
+            if (line.Length == 0) continue;
+
+            // Register line: "↔RAX = 0000000000001010 = 0x000A"  or  "←RBX = ?" (unknown)
+            // The prefix char (↔/→/←) is at index 0, register name follows, then " = ".
+            int firstEqIdx = line.IndexOf(" = ", StringComparison.Ordinal);
+            if (firstEqIdx > 0)
+            {
+                // regName includes the prefix symbol, e.g. "↔RAX" or "←RBX"
+                string regName = line[..firstEqIdx];
+                int hexMarker = line.IndexOf("= 0x", StringComparison.Ordinal);
+                if (hexMarker >= 0)
+                {
+                    string hexVal = line[(hexMarker + 4)..].Trim().TrimStart('0');
+                    if (hexVal.Length == 0) hexVal = "0";
+                    parts.Add($"{regName}=0x{hexVal}");
+                }
+                else
+                {
+                    // Unknown value: "↔RAX = ?"
+                    parts.Add($"{regName}=?");
+                }
+            }
+            else
+            {
+                // Flags line: "↔ZF=1 →CF=0 ←SF=?" — include as-is
+                parts.Add(line);
+            }
+        }
+        return parts.Count > 0 ? " ; " + string.Join("  ", parts) : null;
     }
 
     private HashSet<CompletionItem> Mnemonic_Operand_Completions(bool useCapitals, HashSet<AsmSignatureEnum> allowedOperands, int lineNumber)
@@ -3167,6 +3327,7 @@ private static int GetTokenModifiers(AsmTokenType type)
     public void Dispose()
     {
         if (Interlocked.Exchange(ref this._disposed, 1) != 0) return;
+        this.simStatePipeServer_.Dispose();
         this.Exit();
         this.rpc?.Dispose();
     }

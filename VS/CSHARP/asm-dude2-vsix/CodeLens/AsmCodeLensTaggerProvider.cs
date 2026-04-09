@@ -23,10 +23,7 @@ internal class AsmCodeLensTaggerProvider : ExtensionPart, ITextViewTaggerProvide
     {
         AppliesTo =
         [
-            DocumentFilter.FromDocumentType(AsmLanguageServerProvider.AsmDocumentType),
-            DocumentFilter.FromDocumentType(AsmLanguageServerProvider.CodDocumentType),
-            DocumentFilter.FromDocumentType(AsmLanguageServerProvider.IncDocumentType),
-            DocumentFilter.FromDocumentType(AsmLanguageServerProvider.SDocumentType),
+            DocumentFilter.FromDocumentType(DocumentType.KnownValues.Code),
         ],
     };
 

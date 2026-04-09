@@ -112,6 +112,9 @@ public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken
             {
                 Log($"  Process started: PID={process.Id}");
 
+                // Tell the pipe client which server PID to connect to for sim-state data
+                SimStatePipeClient.Instance.SetServerPid(process.Id);
+
                 return Task.FromResult<IDuplexPipe?>(new DuplexPipe(
                     PipeReader.Create(process.StandardOutput.BaseStream),
                     PipeWriter.Create(process.StandardInput.BaseStream)));
