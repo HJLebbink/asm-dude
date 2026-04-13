@@ -157,31 +157,6 @@ using System.Diagnostics;
             return (value, undef);
         }
 
-        private static (bool valid, ulong value) IsSimpleAssignment_UNUSED(string name, BoolExpr e)
-        {
-            ArgumentNullException.ThrowIfNull(e);
-
-            if (e.IsEq)
-            {
-                if (e.Args[0].IsConst)
-                {
-                    if (e.Args[0].ToString().Equals(name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        //Console.WriteLine("isSimpleAssignment: " + e + "; found name " + name+ "; type second argument ="+ e.Args[1].GetType());
-
-                        if (e.Args[1].GetType().Equals(typeof(BitVecNum)))
-                        {
-                            //Console.WriteLine("isSimpleAssignment: e=" + e + "; second argument is numeral "+e.Args[1]);
-                            BitVecNum value = e.Args[1] as BitVecNum;
-
-                            return (valid: true, value: value.UInt64);
-                        }
-                    }
-                }
-            }
-            return (valid: false, value: 0);
-        }
-
         /// <summary>
         /// Consolidate constraints. Remove all redundancies.
         /// Eg. (= rax, rbx-4443) and (= rbx-4443, 2) is replaced by (= rax, 2)
@@ -362,44 +337,6 @@ using System.Diagnostics;
             // this can be done faster
             Tv tv = GetTv(valueExpr, undef, solver, solver_U, ctx);
             return tv == Tv.ONE;
-        }
-
-        private static Flags CollectFlags_UNUSED(Expr e)
-        {
-            Flags flags = 0;
-            CollectFlags_UNUSED(e, ref flags);
-            return flags;
-        }
-
-        private static void CollectFlags_UNUSED(Expr e, ref Flags flags)
-        {
-            if (e.IsConst)
-            {
-                flags |= FlagTools.Parse(e.ToString()[..2], false);
-            }
-            else
-            {
-                foreach (Expr e2 in e.Args)
-                {
-                    CollectFlags_UNUSED(e2, ref flags);
-                }
-            }
-        }
-
-        /// <summary>add the constants from Expression e to the provided set</summary>
-        private static void CollectConstants_UNUSED(Expr e, ref ISet<Expr> set)
-        {
-            if (e.IsConst)
-            {
-                set.Add(e);
-            }
-            else
-            {
-                foreach (Expr e2 in e.Args)
-                {
-                    CollectConstants_UNUSED(e2, ref set);
-                }
-            }
         }
 
         public static string ToString(Expr e)
@@ -773,6 +710,18 @@ using System.Diagnostics;
                     default: return null;
                 }
             }
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Tv"/> array of length <paramref name="nBits"/> where every element
+        /// has the same truth value <paramref name="tv"/>. Useful for e.g. all-UNKNOWN (untracked)
+        /// or all-UNDEFINED (ISA-undefined) registers.
+        /// </summary>
+        public static Tv[] GetTvArray(Tv tv, int nBits)
+        {
+            Tv[] result = new Tv[nBits];
+            Array.Fill(result, tv);
             return result;
         }
 
@@ -1168,7 +1117,7 @@ using System.Diagnostics;
             return (boolConstants: boolResults, bvConstants: bvResults);
         }
 
-        /// <summary> check whethe provided array of truth-values only contains a single value, return this single value</summary>
+        /// <summary> check whether the provided array of truth-values only contains a single truth-value type, return this single value</summary>
         public static (bool hasOneValue, Tv value) HasOneValue(Tv[] array)
         {
             ArgumentNullException.ThrowIfNull(array);

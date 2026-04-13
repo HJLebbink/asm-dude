@@ -28,13 +28,19 @@ using System;
     public enum Tv
     {
         /// <summary>
-        /// Unknown bit value: the value of a bit is neither 1 or 0. This happens when Z3 determines that 1] the bit value of 1 is consistent, and 2] the bit value of 0 is consistent.
+        /// Unknown bit value: the bit is either 0 or 1 at runtime, but which value is not (yet) tracked.
+        /// Typical cause: an uninitialized register or flag at function entry, or a value that depends on
+        /// an unresolved runtime input. Z3 reports both 0 and 1 as consistent with the current constraints.
         /// (This is the default value: The default value of an enum E is the value produced by the expression (E)0)
         /// </summary>
         UNKNOWN = 0,
 
         /// <summary>
-        /// Undefined bit value: the value of a bit is undefined. Instructions may produce this value as a result of normal operation
+        /// Undefined bit value: the ISA specification (Intel/AMD manual) explicitly states that the value
+        /// of this bit after the instruction is architecturally unpredictable and must not be relied upon.
+        /// Examples: AF after SHR/SAR/SHL, OF after a multi-bit shift.
+        /// This is an architectural property of the instruction — independent of the concrete input values.
+        /// Reading an UNDEFINED bit is a code bug; the simulator can flag such reads as diagnostics.
         /// </summary>
         UNDEFINED = 1 << 0,
 
@@ -49,12 +55,15 @@ using System;
         ZERO = 1 << 2,
 
         /// <summary>
-        /// Inconsistent bit value: the value of a bit is set to both 1 and 0. This happens when Z3 determines that 1] the bit value of 1 is inconsistent, and 2] the bit value 0 is inconsistent. This happens when unreachable code is evaluated
+        /// Inconsistent bit value: Z3 determines that neither 0 nor 1 is consistent with the current
+        /// path constraints — i.e. this code path is unreachable. Both possible values lead to
+        /// a contradiction, so no concrete execution can reach this point.
         /// </summary>
         INCONSISTENT = 1 << 3,
 
         /// <summary>
-        /// Undetermined bit value: the value of a bit could not be determined by Z3. This happens when Z3 cannot determine consistency due to timeouts
+        /// Undetermined bit value: Z3 could not decide consistency within the allotted timeout.
+        /// The value may be 0, 1, or unknown — the solver simply ran out of time to prove it.
         /// </summary>
         UNDETERMINED = 1 << 4,
     }

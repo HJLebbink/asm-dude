@@ -51,6 +51,7 @@ namespace AsmSim
         {
             ArgumentNullException.ThrowIfNull(ctx);
             ArgumentNullException.ThrowIfNull(a);
+            ArgumentNullException.ThrowIfNull(b);
 
             BitVecExpr result = ctx.MkBVAdd(a, b);
             BoolExpr cf = ToolsFlags.Create_CF_Add(a, b, a.SortSize, ctx);

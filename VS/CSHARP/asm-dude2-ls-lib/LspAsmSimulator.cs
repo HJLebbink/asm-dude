@@ -67,6 +67,12 @@ namespace AsmDude2LS
     {
         internal const int MaxLines = 200;
 
+        /// <summary>
+        /// Milliseconds of inactivity after the last document change before simulation starts.
+        /// Prevents a Z3 thread from launching on every keystroke.
+        /// </summary>
+        private const int DebounceMs = 3000;
+
         private readonly ILogger logger_;
 
         internal sealed class DocCache
@@ -105,6 +111,8 @@ namespace AsmDude2LS
         /// <summary>
         /// Trigger a background re-simulation for the given document.
         /// Called whenever the document content changes.
+        /// Debounced: simulation only starts after <see cref="DebounceMs"/> ms of inactivity,
+        /// so rapid keystrokes each cancel the previous pending run rather than pile up Z3 threads.
         /// The optional <paramref name="onCompleted"/> callback is invoked (from the background
         /// thread) after simulation finishes, so callers can re-publish diagnostics.
         /// </summary>
@@ -132,7 +140,40 @@ namespace AsmDude2LS
                 this.cache_[uri] = new DocCache();
             }
 
-            _ = Task.Run(() => this.RunSimulation(uri, version, lines, cts.Token, onCompleted, onProgress), cts.Token);
+            _ = Task.Run(async () =>
+            {
+                // Debounce: wait for inactivity before starting expensive Z3 work.
+                // If another keystroke arrives within DebounceMs, this token is cancelled
+                // and the delay throws OperationCanceledException — no simulation starts.
+                try { await Task.Delay(DebounceMs, cts.Token).ConfigureAwait(false); }
+                catch (OperationCanceledException) { return; }
+
+                this.RunSimulation(uri, version, lines, cts.Token, onCompleted, onProgress);
+            }, cts.Token);
+        }
+
+        /// <summary>
+        /// Cancel any in-flight or pending simulation for <paramref name="uri"/> and release
+        /// all cached data for that document. Called when the document is closed.
+        /// </summary>
+        internal void CancelAndRemove(Uri uri)
+        {
+            Log($"CancelAndRemove: {uri}");
+            lock (this.lockObj_)
+            {
+                if (this.pendingTasks_.TryGetValue(uri, out CancellationTokenSource? cts))
+                {
+                    cts.Cancel();
+                    cts.Dispose();
+                    this.pendingTasks_.Remove(uri);
+                }
+                this.simVersion_.Remove(uri);
+                if (this.cache_.TryGetValue(uri, out DocCache? entry))
+                {
+                    DisposeList(entry.ownedStates);
+                    this.cache_.Remove(uri);
+                }
+            }
         }
 
         // ── After-state queries ────────────────────────────────────────────────
@@ -430,8 +471,8 @@ namespace AsmDude2LS
             {
                 Tv[] content = state.GetTvArray(reg64);
                 (bool hasOne, Tv tv) = ToolsZ3.HasOneValue(content);
-                if (hasOne && tv == Tv.UNKNOWN)
-                    sb.Append($"\nr:{reg64} = ?");
+                if (hasOne && tv is not Tv.ONE and not Tv.ZERO)
+                    sb.Append($"\nr:{reg64} = {ToolsZ3.ToStringBin(tv)}");
                 else
                     sb.Append($"\nr:{reg64} = {ToolsZ3.ToStringBin(content)} = {ToolsZ3.ToStringHex(content)}");
             }
@@ -451,7 +492,7 @@ namespace AsmDude2LS
                 Tv tv = beforeState.GetTv(flag);
                 if (flagSb.Length > 0) flagSb.Append(' ');
                 flagSb.Append("r:").Append(flag).Append('=')
-                      .Append(tv == Tv.ONE ? '1' : tv == Tv.ZERO ? '0' : '?');
+                      .Append(ToolsZ3.ToStringBin(tv));
             }
             if (flagSb.Length > 0)
                 sb.Append('\n').Append(flagSb);
@@ -477,8 +518,8 @@ namespace AsmDude2LS
             {
                 Tv[] content = state.GetTvArray(reg64);
                 (bool hasOne, Tv tv) = ToolsZ3.HasOneValue(content);
-                if (hasOne && tv == Tv.UNKNOWN)
-                    sb.Append($"\nw:{reg64} = ?");
+                if (hasOne && tv is not Tv.ONE and not Tv.ZERO)
+                    sb.Append($"\nw:{reg64} = {ToolsZ3.ToStringBin(tv)}");
                 else
                     sb.Append($"\nw:{reg64} = {ToolsZ3.ToStringBin(content)} = {ToolsZ3.ToStringHex(content)}");
             }
@@ -498,7 +539,7 @@ namespace AsmDude2LS
                 Tv tv = afterState.GetTv(flag);
                 if (flagSb.Length > 0) flagSb.Append(' ');
                 flagSb.Append("w:").Append(flag).Append('=')
-                      .Append(tv == Tv.ONE ? '1' : tv == Tv.ZERO ? '0' : '?');
+                      .Append(ToolsZ3.ToStringBin(tv));
             }
             if (flagSb.Length > 0)
                 sb.Append('\n').Append(flagSb);

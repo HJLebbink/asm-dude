@@ -76,5 +76,20 @@ namespace unit_tests_asm_z3
                 Assert.IsTrue(AsmTestTools.Calc_OF_Add(nBits, a, b) ? resultExpr.IsTrue : resultExpr.IsFalse);
             }
         }
+
+        [TestMethod]
+        public void Test_FlagTools_Create_ZF()
+        {
+            Context ctx = this.CreateContext();
+            {
+                uint nBits = 8;
+                ulong a = 10;
+
+                BitVecExpr aExpr = ctx.MkBV(a, nBits);
+
+                BoolExpr resultExpr = ToolsFlags.Create_ZF(aExpr, ctx).Simplify() as BoolExpr;
+                Assert.IsTrue(AsmTestTools.Calc_ZF(a) ? resultExpr.IsTrue : resultExpr.IsFalse);
+            }
+        }
     }
 }

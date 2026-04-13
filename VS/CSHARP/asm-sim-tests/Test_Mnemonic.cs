@@ -23,6 +23,7 @@
 namespace unit_tests_asm_z3
 {
     using AsmSim;
+    using AsmSim.Mnemonics;
 
     using AsmTools;
 
@@ -33,6 +34,8 @@ namespace unit_tests_asm_z3
     using System.Collections.Generic;
     using System.Globalization;
     using System.Numerics; // for BigInt
+
+    using static Microsoft.CodeAnalysis.CSharp.SyntaxTokenParser;
 
     [TestClass]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
@@ -1494,6 +1497,7 @@ namespace unit_tests_asm_z3
         {
             Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
+            tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
 
             State state = this.CreateState(tools);
@@ -1518,6 +1522,136 @@ namespace unit_tests_asm_z3
                 }
 
                 AsmTestTools.AreEqual(Rn.RAX, value_rax + 1, state);
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.UNKNOWN, state); // NOTE: inc does not touch CF
+                AsmTestTools.AreEqual(Flags.PF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state);
+            }
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Inc_2()
+        {
+            Tools tools = this.CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.Set_All_Flags_On();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RCX = true;
+
+            State state = this.CreateState(tools);
+
+            // set the value of rax to undefined before the inc instruction, to test if inc can handle that case correctly
+            string line1 = "mov rcx, 0";
+            string line2 = "bsf rax, rcx"; // set rax to undefined
+            string line3 = "xor rcx, rcx"; // set flags to known values
+            string line4 = "inc rax"; // set flags to unknown/undefined values
+
+            Tv[] undef = ToolsZ3.GetTvArray(Tv.UNDEFINED, 64);
+
+            { // forward
+                state = Runner.SimpleStep_Forward(line1, state);
+                if (LogToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+                AsmTestTools.AreEqual(Rn.RCX, 0, state);
+                /////
+                state = Runner.SimpleStep_Forward(line2, state);
+                if (LogToDisplay)
+                {
+                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+                AsmTestTools.AreEqual(Rn.RCX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, undef, state);
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ONE, state); 
+                AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state); 
+                AsmTestTools.AreEqual(Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.SF, Tv.UNDEFINED, state); 
+                /////
+                state = Runner.SimpleStep_Forward(line3, state);
+                if (LogToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ONE, state);  // result is zero
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state); // cleared by xor
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state);  // zero has even parity
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // result is non-negative
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); // cleared by xor
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+                /////
+                state = Runner.SimpleStep_Forward(line4, state);
+                if (true)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+                AsmTestTools.AreEqual(Rn.RAX, undef, state);
+                AsmTestTools.AreEqual(Flags.ZF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state); // NOTE: inc does not touch CF
+                AsmTestTools.AreEqual(Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.SF, Tv.UNDEFINED, state); 
+            }
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Inc_3()
+        {
+            Tools tools = this.CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.Set_All_Flags_On();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RCX = true;
+
+            State state = this.CreateState(tools);
+
+            // set the value of rax to undefined before the inc instruction, to test if inc can handle that case correctly
+            string line1 = "mov cx, 0";
+            string line2 = "bsf ax, cx"; // set rax to undefined
+            string line3 = "xor cx, cx"; // set flags to known values
+            string line4 = "inc ax"; // set flags to unknown/undefined values
+
+            Tv[] undef = ToolsZ3.GetTvArray(Tv.UNDEFINED, 16);
+
+            { // forward
+                state = Runner.SimpleStep_Forward(line1, state);
+                if (LogToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+                AsmTestTools.AreEqual(Rn.CX, 0, state);
+                /////
+                state = Runner.SimpleStep_Forward(line2, state);
+                if (LogToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+                AsmTestTools.AreEqual(Rn.CX, 0, state);
+                AsmTestTools.AreEqual(Rn.AX, undef, state);
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.SF, Tv.UNDEFINED, state);
+                /////
+                state = Runner.SimpleStep_Forward(line3, state);
+                if (LogToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ONE, state);  // result is zero
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state); // cleared by xor
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state);  // zero has even parity
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // result is non-negative
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); // cleared by xor
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+                /////
+                state = Runner.SimpleStep_Forward(line4, state);
+                if (true)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+                AsmTestTools.AreEqual(Rn.AX, undef, state);
+                AsmTestTools.AreEqual(Flags.ZF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state); // NOTE: inc does not touch CF
+                AsmTestTools.AreEqual(Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.SF, Tv.UNDEFINED, state);
             }
         }
 
@@ -2324,6 +2458,7 @@ namespace unit_tests_asm_z3
         {
             Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
+            tools.StateConfig.ZF = true;
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
 
@@ -2343,6 +2478,7 @@ namespace unit_tests_asm_z3
                 }
 
                 AsmTestTools.AreEqual(Rn.RAX, "UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU", state);
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ONE, state); // ZF is set if there are no set bits in source
             }
         }
 

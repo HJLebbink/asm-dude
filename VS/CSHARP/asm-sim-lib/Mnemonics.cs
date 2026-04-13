@@ -738,11 +738,8 @@ namespace AsmSim
             }
         }
 
-        public sealed class Ignore : OpcodeBase
+        public sealed class Ignore(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeBase(Mnemonic.NOP, args, keys, t)
         {
-            public Ignore(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.NOP, args, keys, t) { }
-
             public override void Execute()
             {
                 this.Create_RegularUpdate(); // do nothing, only create an empty update
@@ -752,11 +749,8 @@ namespace AsmSim
         /// <summary>
         /// Dummy SIMD instruction implementation. Threats all operands as destructive, but leaves all untouched registers as unchanged.
         /// </summary>
-        public sealed class DummySIMD : OpcodeNBase
+        public sealed class DummySIMD(Mnemonic mnemnonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeNBase(Mnemonic.NOP, args, 3, keys, t)
         {
-            public DummySIMD(Mnemonic mnemnonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.NOP, args, 3, keys, t) { }
-
             public override void Execute()
             {
                 this.Create_RegularUpdate();
@@ -801,11 +795,8 @@ namespace AsmSim
         }
 
         #region Data Transfer Instructions
-        public sealed class Mov : Opcode2Type1
+        public sealed class Mov(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode2Type1(Mnemonic.MOV, args, keys, t)
         {
-            public Mov(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.MOV, args, keys, t) { }
-
             public override void Execute()
             {
                 if (this.op1_.Type == Ot1.UNKNOWN)
@@ -824,15 +815,9 @@ namespace AsmSim
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
-        public sealed class Cmovcc : Opcode2Base
+        public sealed class Cmovcc(Mnemonic mnemonic, string[] args, ConditionalElement ce, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode2Base(mnemonic, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
         {
-            private readonly ConditionalElement ce_;
-
-            public Cmovcc(Mnemonic mnemonic, string[] args, ConditionalElement ce, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(mnemonic, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
-            {
-                this.ce_ = ce;
-            }
+            private readonly ConditionalElement ce_ = ce;
 
             public override void Execute()
             {
@@ -1466,11 +1451,8 @@ namespace AsmSim
         */
 
         /// <summary>Convert word to doubleword</summary>
-        public sealed class Cwd : Opcode0Base
+        public sealed class Cwd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CWD, args, keys, t)
         {
-            public Cwd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CWD, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.DX, this.ctx_.MkExtract(32, 16, this.ctx_.MkSignExt(16, this.Get(Rn.AX))));
@@ -1482,11 +1464,8 @@ namespace AsmSim
         }
 
         /// <summary>Convert doubleword to quadword</summary>
-        public sealed class Cdq : Opcode0Base
+        public sealed class Cdq(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CDQ, args, keys, t)
         {
-            public Cdq(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CDQ, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.EDX, this.ctx_.MkExtract(64, 32, this.ctx_.MkSignExt(32, this.Get(Rn.EAX))));
@@ -1498,11 +1477,8 @@ namespace AsmSim
         }
 
         /// <summary>Convert quadword to octoword</summary>
-        public sealed class Cqo : Opcode0Base
+        public sealed class Cqo(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CQO, args, keys, t)
         {
-            public Cqo(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CQO, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.RDX, this.ctx_.MkExtract(128, 64, this.ctx_.MkSignExt(64, this.Get(Rn.RAX))));
@@ -1514,11 +1490,8 @@ namespace AsmSim
         }
 
         /// <summary>Convert byte to word</summary>
-        public sealed class Cbw : Opcode0Base
+        public sealed class Cbw(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CBW, args, keys, t)
         {
-            public Cbw(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CBW, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.AX, this.ctx_.MkSignExt(8, this.Get(Rn.AL)));
@@ -1530,11 +1503,8 @@ namespace AsmSim
         }
 
         /// <summary>Convert word to doubleword in EAX register</summary>
-        public sealed class Cwde : Opcode0Base
+        public sealed class Cwde(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CWDE, args, keys, t)
         {
-            public Cwde(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CWDE, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.EAX, this.ctx_.MkSignExt(16, this.Get(Rn.AX)));
@@ -1546,11 +1516,8 @@ namespace AsmSim
         }
 
         /// <summary>Move and sign extend</summary>
-        public sealed class Cdqe : Opcode0Base
+        public sealed class Cdqe(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CDQE, args, keys, t)
         {
-            public Cdqe(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CDQE, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Rn.RAX, this.ctx_.MkSignExt(32, this.Get(Rn.EAX)));
@@ -1705,11 +1672,9 @@ namespace AsmSim
         #region Binary Arithmetic Instructions
 
         /// <summary>Unsigned integer add with carry, leaves overflow flag unchanged</summary>
-        public sealed class Adcx : Opcode2Type1
+        public sealed class Adcx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) :
+            Opcode2Type1(Mnemonic.ADCX, args, keys, t)
         {
-            public Adcx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.ADCX, args, keys, t) { }
-
             public override void Execute()
             {
                 throw new NotImplementedException();
@@ -1717,11 +1682,8 @@ namespace AsmSim
         }
 
         /// <summary>Unsigned integer add with overflow flag instead of carry flag</summary>
-        public sealed class Adox : Opcode2Type1
+        public sealed class Adox(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode2Type1(Mnemonic.ADOX, args, keys, t)
         {
-            public Adox(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.ADOX, args, keys, t) { }
-
             public override void Execute()
             {
                 throw new NotImplementedException();
@@ -1729,11 +1691,8 @@ namespace AsmSim
         }
 
         /// <summary>Integer add</summary>
-        public sealed class Add : Opcode2Type1
+        public sealed class Add(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode2Type1(Mnemonic.ADD, args, keys, t)
         {
-            public Add(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.ADD, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.ctx_);
@@ -1746,17 +1705,14 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Add with carry</summary>
-        public sealed class Adc : Opcode2Type1
+        public sealed class Adc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode2Type1(Mnemonic.ADC, args, keys, t)
         {
-            public Adc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.ADC, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.ctx_);
@@ -1771,7 +1727,7 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
@@ -1783,11 +1739,8 @@ namespace AsmSim
         ///
         ///In 64-bit mode, the instruction’s default operation size is 32 bits.Using a REX prefix in the form of REX.R permits access to additional registers (R8-R15). Using a REX prefix in the form of REX.W promotes operation to 64 bits.See the summary chart at the beginning of this section for encoding data and limits.
         ///
-        public sealed class Sub : Opcode2Type1
+        public sealed class Sub(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode2Type1(Mnemonic.SUB, args, keys, t)
         {
-            public Sub(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SUB, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.Op2Value, this.ctx_);
@@ -1800,17 +1753,14 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Subtract with borrow</summary>
-        public sealed class Sbb : Opcode2Type1
+        public sealed class Sbb(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode2Type1(Mnemonic.SBB, args, keys, t)
         {
-            public Sbb(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SBB, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.ctx_);
@@ -1825,7 +1775,7 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
@@ -2111,11 +2061,8 @@ namespace AsmSim
         }
 
         /// <summary>Unsigned multiply</summary>
-        public sealed class Mul : Opcode1Base
+        public sealed class Mul(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode1Base(Mnemonic.MUL, args, Ot1.reg | Ot1.mem, keys, t)
         {
-            public Mul(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.MUL, args, Ot1.reg | Ot1.mem, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2241,11 +2188,8 @@ namespace AsmSim
         }
 
         /// <summary>Signed divide</summary>
-        public sealed class Idiv : Opcode1Base
+        public sealed class Idiv(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode1Base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t)
         {
-            public Idiv(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2382,11 +2326,8 @@ namespace AsmSim
         }
 
         /// <summary>Unsigned divide</summary>
-        public sealed class Div : Opcode1Base
+        public sealed class Div(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode1Base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t)
         {
-            public Div(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2523,16 +2464,13 @@ namespace AsmSim
         }
 
         /// <summary>Increment</summary>
-        public sealed class Inc : Opcode1Base
+        public sealed class Inc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode1Base(Mnemonic.INC, args, Ot1.reg | Ot1.mem, keys, t)
         {
-            public Inc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.INC, args, Ot1.reg | Ot1.mem, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr result, _, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
                 this.RegularUpdate.Set(this.op1_, result);
-                //CF is not updated!
+                //NOTE: CF is not updated! This is a deliberate x86 design choice — it allows using INC as a loop counter without disturbing the carry flag from a preceding ADC/SBB chain
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
                 this.RegularUpdate.Set_SF_ZF_PF(result);
@@ -2540,17 +2478,14 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Decrement</summary>
-        public sealed class Dec : Opcode1Base
+        public sealed class Dec(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode1Base(Mnemonic.DEC, args, Ot1.reg | Ot1.mem, keys, t)
         {
-            public Dec(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.DEC, args, Ot1.reg | Ot1.mem, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr result, _, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
@@ -2563,17 +2498,14 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Negate</summary>
-        public sealed class Neg : Opcode1Base
+        public sealed class Neg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode1Base(Mnemonic.NEG, args, Ot1.reg | Ot1.mem, keys, t)
         {
-            public Neg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.NEG, args, Ot1.reg | Ot1.mem, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Neg(this.Op1Value, this.ctx_);
@@ -2586,17 +2518,14 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Compare</summary>
-        public sealed class Cmp : Opcode2Type1
+        public sealed class Cmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode2Type1(Mnemonic.CMP, args, keys, t)
         {
-            public Cmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CMP, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.Op2Value, this.ctx_);
@@ -2615,11 +2544,8 @@ namespace AsmSim
         #region Decimal Arithmetic Instructions
 
         ///<summary> DAA - Decimal adjust after addition</summary>
-        public sealed class Daa : Opcode0Base
+        public sealed class Daa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.DAA, args, keys, t)
         {
-            public Daa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.DAA, args, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2653,11 +2579,8 @@ namespace AsmSim
         }
 
         ///<summary> DAS - Decimal adjust after subtraction</summary>
-        public sealed class Das : Opcode0Base
+        public sealed class Das(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.DAS, args, keys, t)
         {
-            public Das(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.DAS, args, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2691,11 +2614,8 @@ namespace AsmSim
         }
 
         /// <summary>AAA - ASCII adjust after addition</summary>
-        public sealed class Aaa : Opcode0Base
+        public sealed class Aaa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.AAA, args, keys, t)
         {
-            public Aaa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.AAA, args, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2729,11 +2649,8 @@ namespace AsmSim
         }
 
         /// <summary>AAS - ASCII adjust after subtraction</summary>
-        public sealed class Aas : Opcode0Base
+        public sealed class Aas(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.AAS, args, keys, t)
         {
-            public Aas(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.AAS, args, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -2927,41 +2844,32 @@ namespace AsmSim
                 this.RegularUpdate.Set_SF_ZF_PF(value);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
-        public sealed class Xor : LogicalBase
+        public sealed class Xor(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : LogicalBase(Mnemonic.XOR, args, keys, t)
         {
-            public Xor(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.XOR, args, keys, t) { }
         }
 
-        public sealed class And : LogicalBase
+        public sealed class And(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : LogicalBase(Mnemonic.AND, args, keys, t)
         {
-            public And(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.AND, args, keys, t) { }
         }
 
-        public sealed class Or : LogicalBase
+        public sealed class Or(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : LogicalBase(Mnemonic.OR, args, keys, t)
         {
-            public Or(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.OR, args, keys, t) { }
         }
 
-        public sealed class Not : Opcode1Base
+        public sealed class Not(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode1Base(Mnemonic.NOT, args, keys, t)
         {
-            public Not(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.NOT, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(this.op1_, this.ctx_.MkBVNot(this.Op1Value));
                 // Flags are unaffected
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
@@ -3129,7 +3037,7 @@ namespace AsmSim
                 #endregion
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
@@ -3137,11 +3045,8 @@ namespace AsmSim
         #region Shift
 
         ///<summary>Shift arithmetic right</summary>
-        public sealed class Sar : ShiftRotateBase
+        public sealed class Sar(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftRotateBase(Mnemonic.SAR, args, keys, t)
         {
-            public Sar(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SAR, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3154,11 +3059,8 @@ namespace AsmSim
         }
 
         /// <summary>Shift arithmetic left</summary>
-        public sealed class Sal : ShiftRotateBase
+        public sealed class Sal(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftRotateBase(Mnemonic.SAL, args, keys, t)
         {
-            public Sal(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SAL, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3171,11 +3073,8 @@ namespace AsmSim
         }
 
         ///<summary>Shift logical right</summary>
-        public sealed class Shr : ShiftRotateBase
+        public sealed class Shr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftRotateBase(Mnemonic.SHR, args, keys, t)
         {
-            public Shr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SHR, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3188,11 +3087,8 @@ namespace AsmSim
         }
 
         /// <summary>Shift logical left</summary>
-        public sealed class Shl : ShiftRotateBase
+        public sealed class Shl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftRotateBase(Mnemonic.SHL, args, keys, t)
         {
-            public Shl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SHL, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3208,11 +3104,8 @@ namespace AsmSim
         #region Rotate
 
         /// <summary>Rotate right</summary>
-        public sealed class Ror : ShiftRotateBase
+        public sealed class Ror(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftRotateBase(Mnemonic.ROR, args, keys, t)
         {
-            public Ror(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.ROR, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3225,11 +3118,8 @@ namespace AsmSim
         }
 
         /// <summary>Rotate through carry right</summary>
-        public sealed class Rcr : ShiftRotateBase
+        public sealed class Rcr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftRotateBase(Mnemonic.RCR, args, keys, t)
         {
-            public Rcr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.RCR, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3244,11 +3134,8 @@ namespace AsmSim
         }
 
         /// <summary>Rotate through carry left</summary>
-        public sealed class Rcl : ShiftRotateBase
+        public sealed class Rcl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftRotateBase(Mnemonic.RCL, args, keys, t)
         {
-            public Rcl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.RCL, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3263,11 +3150,8 @@ namespace AsmSim
         }
 
         /// <summary>Rotate left</summary>
-        public sealed class Rol : ShiftRotateBase
+        public sealed class Rol(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftRotateBase(Mnemonic.ROL, args, keys, t)
         {
-            public Rol(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.ROL, args, keys, t) { }
-
             public override void Execute()
             {
                 (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
@@ -3307,11 +3191,8 @@ namespace AsmSim
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
-        public sealed class Rorx : ShiftBaseX
+        public sealed class Rorx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftBaseX(Mnemonic.RORX, args, keys, t)
         {
-            public Rorx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.RORX, args, keys, t) { }
-
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
@@ -3320,11 +3201,8 @@ namespace AsmSim
             }
         }
 
-        public sealed class Sarx : ShiftBaseX
+        public sealed class Sarx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftBaseX(Mnemonic.SARX, args, keys, t)
         {
-            public Sarx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SARX, args, keys, t) { }
-
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
@@ -3333,11 +3211,8 @@ namespace AsmSim
             }
         }
 
-        public sealed class Shlx : ShiftBaseX
+        public sealed class Shlx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftBaseX(Mnemonic.SHLX, args, keys, t)
         {
-            public Shlx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SHLX, args, keys, t) { }
-
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
@@ -3346,11 +3221,8 @@ namespace AsmSim
             }
         }
 
-        public sealed class Shrx : ShiftBaseX
+        public sealed class Shrx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftBaseX(Mnemonic.SHRX, args, keys, t)
         {
-            public Shrx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SHRX, args, keys, t) { }
-
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_).shiftCount;
@@ -3393,17 +3265,14 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false, this.op3_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false, this.op3_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
         /// <summary>Shift right double</summary>
-        public sealed class Shrd : ShiftDoubleBase
+        public sealed class Shrd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftDoubleBase(Mnemonic.SHRD, args, keys, t)
         {
-            public Shrd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SHRD, args, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -3432,11 +3301,8 @@ namespace AsmSim
         }
 
         /// <summary>Shift left double</summary>
-        public sealed class Shld : ShiftDoubleBase
+        public sealed class Shld(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : ShiftDoubleBase(Mnemonic.SHLD, args, keys, t)
         {
-            public Shld(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SHLD, args, keys, t) { }
-
             public override void Execute()
             {
                 Context ctx = this.ctx_;
@@ -3574,42 +3440,30 @@ namespace AsmSim
 
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_SF_OF; } }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
         }
 
-        public sealed class Bt_Opcode : BitTestBase
+        public sealed class Bt_Opcode(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : BitTestBase(Mnemonic.BT, args, keys, t)
         {
-            public Bt_Opcode(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.BT, args, keys, t) { }
-
             public override void Execute() { this.SetBitValue(Mnemonic.BT); }
         }
 
-        public sealed class Bts : BitTestBase
+        public sealed class Bts(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : BitTestBase(Mnemonic.BTS, args, keys, t)
         {
-            public Bts(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.BTS, args, keys, t) { }
-
             public override void Execute() { this.SetBitValue(Mnemonic.BTS); }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
-        public sealed class Btr : BitTestBase
+        public sealed class Btr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : BitTestBase(Mnemonic.BTR, args, keys, t)
         {
-            public Btr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.BTR, args, keys, t) { }
-
             public override void Execute() { this.SetBitValue(Mnemonic.BTR); }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
-        public sealed class Btc : BitTestBase
+        public sealed class Btc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : BitTestBase(Mnemonic.BTC, args, keys, t)
         {
-            public Btc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.BTC, args, keys, t) { }
-
             public override void Execute() { this.SetBitValue(Mnemonic.BTC); }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
@@ -3747,11 +3601,8 @@ namespace AsmSim
         #endregion
 
         #region Control Transfer Instructions
-        public abstract class OpcodeJumpBase : Opcode1Base
+        public abstract class OpcodeJumpBase(Mnemonic mnemonic, string[] args, Ot1 allowedOperands1, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode1Base(mnemonic, args, allowedOperands1, keys, t)
         {
-            public OpcodeJumpBase(Mnemonic mnemonic, string[] args, Ot1 allowedOperands1, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(mnemonic, args, allowedOperands1, keys, t) { }
-
             protected abstract BoolExpr Jump { get; }
 
             public int LineNumber
@@ -3810,26 +3661,17 @@ namespace AsmSim
             }
         }
 
-        public sealed class Jmp : OpcodeJumpBase
+        public sealed class Jmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeJumpBase(Mnemonic.JMP, args, Ot1.imm | Ot1.mem | Ot1.reg | Ot1.UNKNOWN, keys, t)
         {
-            public Jmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.JMP, args, Ot1.imm | Ot1.mem | Ot1.reg | Ot1.UNKNOWN, keys, t) { }
-
             protected sealed override BoolExpr Jump
             {
                 get { return this.ctx_.MkTrue(); }
             }
         }
 
-        public sealed class Jmpcc : OpcodeJumpBase
+        public sealed class Jmpcc(Mnemonic mnemonic, string[] args, ConditionalElement ce, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeJumpBase(mnemonic, args, Ot1.imm | Ot1.UNKNOWN, keys, t)
         {
-            private readonly ConditionalElement ce_;
-
-            public Jmpcc(Mnemonic mnemonic, string[] args, ConditionalElement ce, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(mnemonic, args, Ot1.imm | Ot1.UNKNOWN, keys, t)
-            {
-                this.ce_ = ce;
-            }
+            private readonly ConditionalElement ce_ = ce;
 
             protected sealed override BoolExpr Jump { get { return ToolsAsmSim.ConditionalTaken(this.ce_, this.keys_.prevKey, this.ctx_); } }
 
@@ -3837,11 +3679,8 @@ namespace AsmSim
         }
 
         #region Loop
-        public abstract class OpcodeLoopBase : OpcodeJumpBase
+        public abstract class OpcodeLoopBase(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeJumpBase(mnemonic, args, Ot1.UNKNOWN, keys, t)
         {
-            public OpcodeLoopBase(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(mnemonic, args, Ot1.UNKNOWN, keys, t) { }
-
             public override void Execute()
             {
                 throw new NotImplementedException();
@@ -3857,49 +3696,34 @@ namespace AsmSim
             public override IEnumerable<Rn> RegsReadStatic { get { return new List<Rn>(1) { Rn.ECX }; } }
         }
 
-        public sealed class Loop : OpcodeLoopBase
+        public sealed class Loop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeLoopBase(Mnemonic.LOOP, args, keys, t)
         {
-            public Loop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.LOOP, args, keys, t) { }
-
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)); } }
         }
 
-        public sealed class Loopz : OpcodeLoopBase
+        public sealed class Loopz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeLoopBase(Mnemonic.LOOPZ, args, keys, t)
         {
-            public Loopz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.LOOPZ, args, keys, t) { }
-
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.Get(Flags.ZF)); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
 
-        public sealed class Loope : OpcodeLoopBase
+        public sealed class Loope(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeLoopBase(Mnemonic.LOOPE, args, keys, t)
         {
-            public Loope(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.LOOPE, args, keys, t) { }
-
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.Get(Flags.ZF)); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
 
-        public sealed class Loopnz : OpcodeLoopBase
+        public sealed class Loopnz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeLoopBase(Mnemonic.LOOPNZ, args, keys, t)
         {
-            public Loopnz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.LOOPNZ, args, keys, t) { }
-
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.ctx_.MkNot(this.Get(Flags.ZF))); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
 
-        public sealed class Loopne : OpcodeLoopBase
+        public sealed class Loopne(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : OpcodeLoopBase(Mnemonic.LOOPNE, args, keys, t)
         {
-            public Loopne(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.LOOPNE, args, keys, t) { }
-
             protected sealed override BoolExpr Jump { get { return this.ctx_.MkAnd(this.ctx_.MkEq(this.Get(Rn.ECX), this.ctx_.MkBV(0, 32)), this.ctx_.MkNot(this.Get(Flags.ZF))); } }
 
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
@@ -4809,11 +4633,8 @@ namespace AsmSim
 
         #region Flag Control (EFLAG) Instructions
         /// <summary>Set carry flag</summary>
-        public sealed class Stc : Opcode0Base
+        public sealed class Stc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.STC, args, keys, t)
         {
-            public Stc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.STC, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Flags.CF, Tv.ONE);
@@ -4823,11 +4644,8 @@ namespace AsmSim
         }
 
         /// <summary>Clear carry flag</summary>
-        public sealed class Clc : Opcode0Base
+        public sealed class Clc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CLC, args, keys, t)
         {
-            public Clc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CLC, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Flags.CF, Tv.ZERO);
@@ -4837,11 +4655,8 @@ namespace AsmSim
         }
 
         /// <summary>Complement carry flag</summary>
-        public sealed class Cmc : Opcode0Base
+        public sealed class Cmc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CMC, args, keys, t)
         {
-            public Cmc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CMC, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Flags.CF, this.ctx_.MkNot(this.Get(Flags.CF)));
@@ -4851,11 +4666,8 @@ namespace AsmSim
         }
 
         /// <summary>Set direction flag</summary>
-        public sealed class Std : Opcode0Base
+        public sealed class Std(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.STD, args, keys, t)
         {
-            public Std(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.STD, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Flags.DF, Tv.ONE);
@@ -4865,11 +4677,8 @@ namespace AsmSim
         }
 
         /// <summary>Clear direction flag</summary>
-        public sealed class Cld : Opcode0Base
+        public sealed class Cld(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.CLD, args, keys, t)
         {
-            public Cld(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.CLD, args, keys, t) { }
-
             public override void Execute()
             {
                 this.RegularUpdate.Set(Flags.DF, Tv.ZERO);
@@ -4878,11 +4687,8 @@ namespace AsmSim
             public override Flags FlagsWriteStatic { get { return Flags.DF; } }
         }
 
-        public sealed class Lahf : Opcode0Base
+        public sealed class Lahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.LAHF, args, keys, t)
         {
-            public Lahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.LAHF, args, keys, t) { }
-
             public override void Execute()
             {
                 BitVecNum zERO = this.ctx_.MkBV(0, 1);
@@ -4903,11 +4709,8 @@ namespace AsmSim
             public override Flags FlagsReadStatic { get { return Flags.SF | Flags.ZF | Flags.AF | Flags.PF | Flags.CF; } }
         }
 
-        public sealed class Sahf : Opcode0Base
+        public sealed class Sahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.SAHF, args, keys, t)
         {
-            public Sahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.SAHF, args, keys, t) { }
-
             public override void Execute()
             {
                 BitVecNum oNE = this.ctx_.MkBV(1, 1);
@@ -4989,11 +4792,8 @@ namespace AsmSim
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
 
-        public sealed class Nop : Opcode0Base
+        public sealed class Nop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : Opcode0Base(Mnemonic.NOP, args, keys, t)
         {
-            public Nop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
-                : base(Mnemonic.NOP, args, keys, t) { }
-
             public override void Execute()
             {
                 this.Create_RegularUpdate(); // do nothing, only create an empty update
@@ -5170,7 +4970,7 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1_, result);
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }
@@ -5197,7 +4997,7 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1_, this.ctx_.MkBVXOR(this.Op1Value, this.Op2Value));
             }
 
-            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, true, this.op2_, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1_, false, this.op2_, false); } }
 
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1_); } }
         }

@@ -571,6 +571,7 @@ private void UpdateInternals(string uri)
         this.labelGraphs.Remove(uri);
         this.labelGraphDirty.Remove(uri);
         this.simTokenVersions.Remove(uri);
+        this.asmSimulator_.CancelAndRemove(new Uri(uri));
     }
 
     private void UpdateLabelGraph(string uri)
