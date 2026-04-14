@@ -50,11 +50,7 @@ using System.Xml;
             return Instance;
         }
 
-        private static AsmDude2Tools Instance
-        {
-            get;
-            set;
-        }
+        private static AsmDude2Tools? Instance { get; set; }
 
         /// <summary>
         /// Singleton pattern: use AsmDudeTools.Instance for the instance of this class
@@ -73,7 +69,6 @@ using System.Xml;
 
         public AsmTokenType Get_Token_Type_Att(string keyword)
         {
-            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             int length = keyword.Length;
@@ -121,7 +116,6 @@ using System.Xml;
 
         public AsmTokenType Get_Token_Type_Intel(string keyword)
         {
-            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             Mnemonic mnemonic = AsmSourceToolsAlias.ParseMnemonic(keyword, true);
@@ -144,7 +138,6 @@ using System.Xml;
 
         public AssemblerEnum Get_Assembler(string keyword)
         {
-            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.assembler_.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
@@ -155,7 +148,6 @@ using System.Xml;
         /// </summary>
         public string Get_Description(string keyword)
         {
-            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.description_.TryGetValue(keyword, out string description) ? description : string.Empty;
@@ -172,7 +164,6 @@ using System.Xml;
         /// </summary>
         public Arch Get_Architecture(string keyword)
         {
-            ArgumentNullException.ThrowIfNull(keyword);
             Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
 
             return this.arch_.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;

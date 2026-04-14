@@ -48,8 +48,6 @@ public enum MicroArch
     {
         public static MicroArch ParseMicroArch(string str, bool strIsCapitals)
         {
-            ArgumentNullException.ThrowIfNull(str);
-
             return AsmSourceToolsAlias.ToCapitals(str, strIsCapitals) switch
             {
                 "SANDYBRIDGE" => MicroArch.SandyBridge,

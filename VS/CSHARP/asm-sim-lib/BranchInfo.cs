@@ -38,24 +38,22 @@ namespace AsmSim
             this.BranchTaken = taken;
         }
 
-        public BranchInfo Translate(Context ctx)
+        public BranchInfo? Translate(Context ctx)
         {
-            return new BranchInfo(this.BranchCondition.Translate(ctx) as BoolExpr, this.BranchTaken);
+            BoolExpr? translatedCondition = this.BranchCondition.Translate(ctx) as BoolExpr;
+            if (translatedCondition is null)
+            {
+                return null;
+            }
+            return new BranchInfo(translatedCondition, this.BranchTaken);
         }
 
         public BoolExpr GetData(Context ctx)
         {
             ArgumentNullException.ThrowIfNull(ctx);
 
-            if (false)
-            {
-                BoolExpr bc = this.BranchCondition.Translate(ctx) as BoolExpr;
-                return this.BranchTaken ? bc : ctx.MkNot(bc);
-            }
-            else
-            {
-                return this.BranchTaken ? this.BranchCondition : ctx.MkNot(this.BranchCondition);
-            }
+            // Note: BranchCondition is non-nullable (ensured by constructor)
+            return this.BranchTaken ? this.BranchCondition : ctx.MkNot(this.BranchCondition);
         }
 
         public override string ToString()

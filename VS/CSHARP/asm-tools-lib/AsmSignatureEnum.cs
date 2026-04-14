@@ -139,8 +139,6 @@ using System.Text;
     {
         public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str, bool strIsCapitals)
         {
-            ArgumentNullException.ThrowIfNull(str);
-
             switch (AsmSourceTools.ToCapitals(str, strIsCapitals).Trim())
             {
                 #region Memory

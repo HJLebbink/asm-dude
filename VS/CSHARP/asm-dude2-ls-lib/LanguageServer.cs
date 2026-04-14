@@ -53,9 +53,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     public static readonly CultureInfo CultureUI = CultureInfo.CurrentUICulture;
 
-    private readonly JsonRpc rpc;
-    private readonly HeaderDelimitedMessageHandler messageHandler;
-    private readonly LanguageServerTarget target;
+    private readonly JsonRpc rpc = default!;
+    private readonly HeaderDelimitedMessageHandler messageHandler = default!;
+    private readonly LanguageServerTarget target = default!;
     private readonly ManualResetEvent disconnectEvent = new(false);
     private int _disposed = 0;
     private readonly List<Diagnostic> diagnostics;
@@ -322,7 +322,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     public string CurrentSettings
     {
         get; private set;
-    }
+    } = "";
 
     public IEnumerable<VSSymbolInformation> Symbols
     {
@@ -402,16 +402,17 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     public void Initialized()
     {
-        string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Resources");
+        string? assemblyLocation = Assembly.GetExecutingAssembly().Location;
+        string path = assemblyLocation != null ? Path.Combine(Path.GetDirectoryName(assemblyLocation), "Resources") : "Resources";
         {
             string filename_Regular = Path.Combine(path, "signature-may2019.txt");
             string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
-            this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.options);
+            this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.options!);
             // WriteMnemonicUrlMapping removed — documentation links now handled by context menu command
         }
         {
             string path_performance = Path.Combine(path, "Performance");
-            this.performanceStore = new PerformanceStore(path_performance, this.options);
+            this.performanceStore = new PerformanceStore(path_performance, this.options!);
         }
         {
             this.asmDudeTools = AsmDude2Tools.Create(path, this.traceSource);

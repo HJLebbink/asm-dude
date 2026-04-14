@@ -36,8 +36,6 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
         /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
         public static (bool valid, ulong value, int nBits) Parse_Constant(string str, bool isCapitals = false)
         {
-            ArgumentNullException.ThrowIfNull(str);
-
             string token2;
             bool isHex = false;
             bool isBinary = false;
@@ -186,8 +184,6 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 #if NET10_0_OR_GREATER
         public static (bool valid, ulong value, int nBits) Evaluate_Constant(string str, bool isCapitals = false)
         {
-            ArgumentNullException.ThrowIfNull(str);
-
             // 1] test whether str has digits, if it has none it is not a constant
             if (!str.Any(char.IsDigit))
             {

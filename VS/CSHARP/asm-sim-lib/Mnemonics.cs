@@ -31,6 +31,7 @@ namespace AsmSim
         using System;
         using System.Collections.Generic;
         using System.Diagnostics;
+        using System.Diagnostics.CodeAnalysis;
         using System.Globalization;
 
         #region Instructions
@@ -235,14 +236,12 @@ namespace AsmSim
             protected int NOperands { get { return this.args_.Length; } }
 
             public static BitVecExpr? OpValue(
-                Operand operand,
+                Operand? operand,
                 string key,
                 Context ctx,
                 int nBits = -1)
             {
-                ArgumentNullException.ThrowIfNull(operand);
                 ArgumentNullException.ThrowIfNull(ctx);
-
 
                 try
                 {
@@ -287,17 +286,17 @@ namespace AsmSim
 
             protected static bool ToMemReadWrite(Operand? op1)
             {
-                return (op1 == null) ? false : op1.IsMem;
+                return op1 != null && op1.IsMem;
             }
 
             protected static bool ToMemReadWrite(Operand? op1, Operand? op2)
             {
-                return ((op1 == null) ? false : op1.IsMem) || ((op2 == null) ? false : op2.IsMem);
+                return (op1 != null && op1.IsMem) || (op2 != null && op2.IsMem);
             }
 
             protected static bool ToMemReadWrite(Operand? op1, Operand? op2, Operand? op3)
             {
-                return ((op1 == null) ? false : op1.IsMem) || ((op2 == null) ? false : op2.IsMem) || ((op3 == null) ? false : op3.IsMem);
+                return (op1 != null && op1.IsMem) || (op2 != null && op2.IsMem) || (op3 != null && op3.IsMem);
             }
 
             protected static IEnumerable<Rn> ReadRegs(Operand? op1, bool op1_IsWrite)
@@ -460,6 +459,9 @@ namespace AsmSim
         {
             protected readonly Operand? op1_;
 
+            [MemberNotNullWhen(false, nameof(op1_))]
+            public new bool IsHalted => base.IsHalted;
+
             public Opcode1Base(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
             {
@@ -500,7 +502,7 @@ namespace AsmSim
                 }
             }
 
-            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_)!; } }
 
             public override bool MemReadStatic { get { return ToMemReadWrite(this.op1_); } }
 
@@ -509,8 +511,11 @@ namespace AsmSim
 
         public abstract class Opcode2Base : OpcodeBase
         {
-            protected readonly Operand op1_;
-            protected readonly Operand op2_;
+            protected readonly Operand? op1_;
+            protected readonly Operand? op2_;
+
+            [MemberNotNullWhen(false, nameof(op1_), nameof(op2_))]
+            public new bool IsHalted => base.IsHalted;
 
             public Opcode2Base(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
@@ -560,9 +565,9 @@ namespace AsmSim
                 }
             }
 
-            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_)!; } }
 
-            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_)!; } }
 
             public override bool MemReadStatic { get { return ToMemReadWrite(this.op1_, this.op2_); } }
 
@@ -571,9 +576,12 @@ namespace AsmSim
 
         public abstract class Opcode3Base : OpcodeBase
         {
-            protected readonly Operand op1_;
-            protected readonly Operand op2_;
-            protected readonly Operand op3_;
+            protected readonly Operand? op1_;
+            protected readonly Operand? op2_;
+            protected readonly Operand? op3_;
+
+            [MemberNotNullWhen(false, nameof(op1_), nameof(op2_), nameof(op3_))]
+            public new bool IsHalted => base.IsHalted;
 
             public Opcode3Base(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
@@ -628,11 +636,11 @@ namespace AsmSim
                 }
             }
 
-            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_)!; } }
 
-            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_)!; } }
 
-            public BitVecExpr Op3Value { get { return OpValue(this.op3_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op3Value { get { return OpValue(this.op3_, this.keys_.prevKey, this.ctx_)!; } }
 
             public override bool MemReadStatic { get { return ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
 
@@ -641,9 +649,9 @@ namespace AsmSim
 
         public abstract class OpcodeNBase : OpcodeBase
         {
-            protected readonly Operand op1_;
-            protected readonly Operand op2_;
-            protected readonly Operand op3_;
+            protected readonly Operand? op1_;
+            protected readonly Operand? op2_;
+            protected readonly Operand? op3_;
 
             public OpcodeNBase(Mnemonic mnemonic, string[] args, int maxNArgs, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
@@ -680,11 +688,11 @@ namespace AsmSim
                 }
             }
 
-            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op1Value { get { return OpValue(this.op1_, this.keys_.prevKey, this.ctx_)!; } }
 
-            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op2Value { get { return OpValue(this.op2_, this.keys_.prevKey, this.ctx_)!; } }
 
-            public BitVecExpr Op3Value { get { return OpValue(this.op3_, this.keys_.prevKey, this.ctx_); } }
+            public BitVecExpr Op3Value { get { return OpValue(this.op3_, this.keys_.prevKey, this.ctx_)!; } }
 
             public override bool MemReadStatic { get { return ToMemReadWrite(this.op1_, this.op2_, this.op3_); } }
 
@@ -2468,7 +2476,8 @@ namespace AsmSim
         {
             public override void Execute()
             {
-                (BitVecExpr result, _, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
+                BitVecExpr op1 = this.Op1Value;
+                (BitVecExpr result, _, BoolExpr of, BoolExpr af) = BitOperations.Addition(op1, this.ctx_.MkBV(1, op1.SortSize), this.ctx_);
                 this.RegularUpdate.Set(this.op1_, result);
                 //NOTE: CF is not updated! This is a deliberate x86 design choice — it allows using INC as a loop counter without disturbing the carry flag from a preceding ADC/SBB chain
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -2488,7 +2497,8 @@ namespace AsmSim
         {
             public override void Execute()
             {
-                (BitVecExpr result, _, BoolExpr of, BoolExpr af) = BitOperations.Subtract(this.Op1Value, this.ctx_.MkBV(1, (uint)this.op1_.NBits), this.ctx_);
+                BitVecExpr op1 = this.Op1Value;
+                (BitVecExpr result, _, BoolExpr of, BoolExpr af) = BitOperations.Subtract(op1, this.ctx_.MkBV(1, op1.SortSize), this.ctx_);
                 this.RegularUpdate.Set(this.op1_, result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, of);

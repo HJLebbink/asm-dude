@@ -94,8 +94,6 @@ using System.Text;
 
         public static Flags Parse(string str, bool strIsCapitals)
         {
-            ArgumentNullException.ThrowIfNull(str);
-
             return AsmSourceTools.ToCapitals(str, strIsCapitals) switch
             {
                 "CF" => Flags.CF,

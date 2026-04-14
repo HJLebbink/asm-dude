@@ -33,7 +33,7 @@ namespace AsmSim
     {
         #region Fields
         private readonly Context ctx_;
-        private IDictionary<string, BranchInfo> branchInfo_;
+        private IDictionary<string, BranchInfo>? branchInfo_;
         #endregion
 
         #region Constructors
@@ -208,7 +208,11 @@ namespace AsmSim
                 //Console.WriteLine("INFO: AddBranchInfo: key=" + branchInfo.key);
                 if (translate)
                 {
-                    this.branchInfo_.Add(branchInfo.Key, branchInfo.Translate(this.ctx_));
+                    BranchInfo? translated = branchInfo.Translate(this.ctx_);
+                    if (translated != null)
+                    {
+                        this.branchInfo_.Add(branchInfo.Key, translated);
+                    }
                 }
                 else
                 {

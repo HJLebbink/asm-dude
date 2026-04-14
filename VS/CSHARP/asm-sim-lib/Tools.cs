@@ -66,7 +66,7 @@ namespace AsmSim
 
         public Dictionary<string, string> ContextSettings { get; private set; }
 
-        public string SolverSetting { get; private set; }
+        public string SolverSetting { get; private set; } = "";
 
         public Random Rand { get { return this.rand_; } }
 
@@ -82,7 +82,6 @@ namespace AsmSim
 
         public static string Reg_Name(Rn reg, string key)
         {
-            ArgumentNullException.ThrowIfNull(key);
             return (RegisterTools.Is_SIMD_Register(reg)) ? ("SIMD" + key) : (reg.ToString() + key);
         }
 

@@ -2493,8 +2493,6 @@ public enum Mnemonic
 
         public static string ToCapitals(string str, bool strIsCapitals)
         {
-            ArgumentNullException.ThrowIfNull(str);
-
 #if DEBUG
             if (strIsCapitals && (str != str.ToUpperInvariant()))
             {
@@ -2538,8 +2536,6 @@ public enum Mnemonic
 
         public static (Mnemonic mnemonic, AttType attribute_type) ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
-            ArgumentNullException.ThrowIfNull(str);
-
             int length = str.Length;
             if (length > 1)
             {
@@ -2572,8 +2568,6 @@ public enum Mnemonic
 
         public static bool IsMnemonic_Att(string keyword, bool strIsCapitals = false)
         {
-            ArgumentNullException.ThrowIfNull(keyword);
-
             int length = keyword.Length;
             if (length < 2)
             {

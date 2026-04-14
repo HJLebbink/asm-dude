@@ -41,7 +41,7 @@ namespace AsmSim
         private readonly BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> graph_;
         private readonly IDictionary<int, string> lineNumber_2_Key_;
         private readonly IDictionary<string, int> key_2_LineNumber_;
-        private string rootKey_;
+        private string? rootKey_;
         private readonly object updateLock_ = new();
         #endregion
 

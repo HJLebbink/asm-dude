@@ -351,8 +351,6 @@ using System.Text;
         /// </summary>
         public static (int beginPos, int length, AsmTokenType type) Get_First_Keyword(string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             bool started = false;
             int keywordBegin = 0;
 
@@ -404,8 +402,6 @@ using System.Text;
         /// </summary>
         public static IEnumerable<(int beginPos, int endPos, AsmTokenType type)> SplitIntoKeywordsType(string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             int keywordBegin = 0;
             bool inStringDef = false;
             bool isFirstKeyword = true;
@@ -519,8 +515,6 @@ using System.Text;
         /// </summary>
         public static bool IsInRemark(int pos, string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             // check if the lineStr contains a remark character before the current point
             int nChars = line.Length;
             int startPos = (pos >= nChars) ? nChars - 1 : pos;
@@ -539,8 +533,6 @@ using System.Text;
         /// </summary>
         public static bool IsRemarkOnly(string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
             {
@@ -567,8 +559,6 @@ using System.Text;
 
         public static int GetRemarkCharPosition(string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             for (int i = 0; i < line.Length; ++i)
             {
                 if (IsRemarkChar(line[i]))
@@ -624,10 +614,8 @@ using System.Text;
         }
 
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
-        public static (bool valid, ulong value, int nBits) Evaluate_Constant(string? token, bool isCapitals = false)
+        public static (bool valid, ulong value, int nBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
-            ArgumentNullException.ThrowIfNull(token);
-
             // AT&T syntax constants start with '$'
             if (token.Length > 0 && token[0] == '$')
             {
@@ -639,7 +627,7 @@ using System.Text;
         }
 
         /// <summary> Check if the provided string is a constant by parsing it. Does not evaluate arithmetic in the string.</summary>
-        public static (bool valid, ulong value, int nBits) Parse_Constant(string? token, bool isCapitals = false)
+        public static (bool valid, ulong value, int nBits) Parse_Constant(string token, bool isCapitals = false)
         {
             return ExpressionEvaluator.Parse_Constant(token, isCapitals);
         }
@@ -661,8 +649,6 @@ using System.Text;
         public static (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage)
             Parse_Mem_Operand(string token, bool isCapitals = false)
         {
-            ArgumentNullException.ThrowIfNull(token);
-
             int length = token.Length;
             if (length < 3)
             {
@@ -802,8 +788,6 @@ using System.Text;
             #region Local Methods
             int ParseScale(string str)
             {
-                ArgumentNullException.ThrowIfNull(str);
-
                 return str switch
                 {
                     "1" => 1,
@@ -817,8 +801,6 @@ using System.Text;
             /// <summary> Return the number of bits of the provided operand (assumes 64-bits) </summary>
             int Get_Nbits_Mem_Operand(string token2)
             {
-                ArgumentNullException.ThrowIfNull(token2);
-
                 string s = token2.TrimStart();
                 if (s.StartsWith("PTR", StringComparison.Ordinal))
                 {
@@ -927,8 +909,6 @@ using System.Text;
 
         public static string GetKeyword(int pos, string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             (int beginPos, int endPos) = GetKeywordPos(pos, line);
             return line[beginPos..endPos];
         }
@@ -938,8 +918,6 @@ using System.Text;
         /// </summary>
         public static string GetPreviousKeyword(int begin, int end, string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             Debug.Assert(begin >= 0);
             Debug.Assert(begin <= line.Length);
             Debug.Assert(end <= line.Length);
@@ -1022,8 +1000,6 @@ using System.Text;
         /// <summary>Return the begin and end of the keyword</summary>
         public static (int beginPos, int endPos) GetKeywordPos(int pos, string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getKeyword; pos={0}; lineStr=\"{1}\"", pos, new string(lineStr)));
             if ((pos < 0) || (pos >= line.Length))
             {
@@ -1056,8 +1032,6 @@ using System.Text;
 
         public static (bool valid, int beginPos, int endPos) GetLabelDefPos(string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             (bool valid, int beginPos, int endPos) tup = GetLabelDefPos_Regular(line);
             if (tup.valid)
             {
@@ -1125,8 +1099,6 @@ using System.Text;
 
         private static (bool valid, int beginPos, int endPos) GetLabelDefPos_Masm(string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             string line2 = line.TrimStart();
             int displacement = 0;
 
@@ -1159,8 +1131,6 @@ using System.Text;
         /// Valid is true if one such char is found.</summary>
         public static (bool valid, int beginPos, int endPos) GetRemarkPos(string line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
             {

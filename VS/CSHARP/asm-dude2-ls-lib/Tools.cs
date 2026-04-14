@@ -89,8 +89,6 @@ public static partial class Tools
 
         public static string Retrieve_Regular_Label(string label, AssemblerEnum assembler)
         {
-            ArgumentNullException.ThrowIfNull(label);
-
             if (assembler.HasFlag(AssemblerEnum.MASM))
             {
                 if ((label.Length > 0) && label[0].Equals('['))

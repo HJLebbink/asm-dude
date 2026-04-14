@@ -176,7 +176,7 @@ namespace AsmSim
         }
 
         //TODO
-        public BitVecExpr NextLineNumberExpr { get; set; }
+        public BitVecExpr? NextLineNumberExpr { get; set; }
 
         #region Getters
         private IEnumerable<BoolExpr> Value

@@ -24,19 +24,13 @@ namespace AsmTools;
 
 using System;
 
-public readonly struct CapitalToken
-    {
-        public readonly string _data;
-
-        public CapitalToken(string token)
-        {
-            ArgumentNullException.ThrowIfNull(token);
-            this._data = token.ToUpper();
-        }
-    }
+public readonly struct CapitalToken(string token)
+{
+    public readonly string _data = token.ToUpper();
+}
 
 
-    public class Operand
+public class Operand
     {
         private readonly CapitalToken str_;
         private readonly Ot1 type_;

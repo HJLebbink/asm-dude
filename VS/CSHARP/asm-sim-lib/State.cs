@@ -780,7 +780,7 @@ namespace AsmSim
             }
         }
 
-        private BoolExpr[] undefStore_;
+        private BoolExpr[]? undefStore_;
 
         #endregion
 

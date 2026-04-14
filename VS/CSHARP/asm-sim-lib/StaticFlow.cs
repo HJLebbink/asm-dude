@@ -628,8 +628,6 @@ namespace AsmSim
         /// <summary>Get all labels with the line number on which it is defined</summary>
         private static IDictionary<string, int> GetLabels(string text)
         {
-            ArgumentNullException.ThrowIfNull(text);
-
             IDictionary<string, int> result = new Dictionary<string, int>();
             string[] lines = text.Split([Environment.NewLine], StringSplitOptions.None);
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
