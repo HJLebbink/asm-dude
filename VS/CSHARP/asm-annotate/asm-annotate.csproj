@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <PackageReference Include="itext" Version="9.5.0" />
+    <!-- Pin to fix CVE GHSA-5crp-9r3c-p9vr in transitive Newtonsoft.Json 9.0.1 from itext -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.12.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

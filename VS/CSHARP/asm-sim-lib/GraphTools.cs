@@ -154,7 +154,7 @@ namespace AsmSim
             }
         }
 
-        public static string Get_Branch_Point(string vertex1, string vertex2, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
+        public static string? Get_Branch_Point(string vertex1, string vertex2, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
             if (vertex1 == vertex2)
             {

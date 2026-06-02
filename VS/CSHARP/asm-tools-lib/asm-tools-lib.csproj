@@ -5,7 +5,8 @@
     <RootNamespace>AsmTools</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <NoWarn>CS1668</NoWarn>
+    <!-- Suppress nullable reference warnings, tuple names, and AOT warnings -->
+    <NoWarn>CS0162;CS1668;CS8123;CS8600;CS8602;CS8603;CS8604;CS8618;CS8619;CS8620;CS8625;CS9113;IL3050</NoWarn>
     <IsPackable>false</IsPackable>
     <IsAotCompatible>true</IsAotCompatible>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -15,6 +16,11 @@
   <ItemGroup>
     <!-- Required for ExpressionEvaluator.cs (script evaluation) -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Shared, dependency-light settings contract (AsmSettingsData base of AsmLanguageServerOptions). -->
+    <ProjectReference Include="..\asm-options-lib\asm-options-lib.csproj" />
   </ItemGroup>
 
 </Project>

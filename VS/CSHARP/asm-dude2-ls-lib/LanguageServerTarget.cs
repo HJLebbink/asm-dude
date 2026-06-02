@@ -472,6 +472,24 @@ public class LanguageServerTarget(LanguageServer server)
         return result;
     }
 
+    // ───────────────────────────────────────────────────────────────────────────────────────
+    // CodeLens — TWO delivery paths, by client:
+    //
+    //   • Visual Studio (VisualStudio.Extensibility): does NOT call these standard LSP methods.
+    //     That OOP model gives extension parts (the CodeLens tagger) no access to the LSP
+    //     connection, so VS gets label data over the side named pipe instead — see
+    //     SimStatePipeServer.CodeLensDataProvider → LanguageServer.GetCodeLensData. The standard
+    //     handlers below are never invoked under VS (verified in a live hive session: zero
+    //     textDocument/codeLens requests arrived).
+    //
+    //   • VS Code / other LSP clients (FUTURE, intended): use these standard handlers
+    //     (textDocument/codeLens + codeLens/resolve) and the codeLensProvider capability.
+    //
+    // Both paths funnel into the same server logic (GetCodeLenses / GetCodeLensData → LabelGraph),
+    // so reference counting lives only on the server regardless of client. Keep these for VS Code
+    // compatibility even though VS doesn't exercise them.
+    // ───────────────────────────────────────────────────────────────────────────────────────
+
     [JsonRpcMethod(Methods.TextDocumentCodeLensName, UseSingleObjectParameterDeserialization = true)]
     public CodeLens[]? TextDocumentCodeLens(CodeLensParams parameter)
     {
@@ -502,18 +520,28 @@ public class LanguageServerTarget(LanguageServer server)
     /// SEE ALSO: AsmCodeLensData, GetCodeLensData
 
     /// <summary>
-    /// Handle custom asm/codeLensData request. Returns label definitions with reference locations.
+    /// Handle the custom <c>asm/codeLensData</c> request. Returns label definitions with their
+    /// definition position and reference line numbers.
     /// </summary>
     /// <param name="parameter">CodeLensParams with document URI.</param>
     /// <returns>Array of AsmCodeLensData with label definitions and reference line numbers.</returns>
     /// <remarks>
-    /// Used by CodeLens adornments to show "N references" above label definitions.
-    /// Each AsmCodeLensData entry contains Label, DefinitionLine, and ReferenceLines array.
+    /// NOTE — currently UNUSED by any client. Visual Studio fetches the same data
+    /// (<see cref="LanguageServer.GetCodeLensData(string)"/>) over the SimState named pipe, not over
+    /// JSON-RPC, because the VisualStudio.Extensibility CodeLens tagger cannot reach the LSP
+    /// connection. This JSON-RPC entry point is retained as a convenience for non-VS LSP clients
+    /// that might prefer a single custom request over the standard two-phase
+    /// textDocument/codeLens + codeLens/resolve flow. Each entry contains Label, DefinitionLine,
+    /// DefinitionColumn, DefinitionLength, and ReferenceLines.
     /// </remarks>
     /// <example>
     /// Client requests: { method: "asm/codeLensData", params: { textDocument: { uri: "..." } } }
-    /// Server returns: [ { label: "my_label", definitionLine: 10, referenceLines: [12, 14] } ]
+    /// Server returns: [ { label: "my_label", definitionLine: 10, definitionColumn: 0, definitionLength: 8, referenceLines: [12, 14] } ]
     /// </example>
+    /// <!-- LLM-ANNOTATION -->
+    /// LLM KEYWORDS: code lens, label references, assembly analysis, LSP, custom request
+    /// USED IN: (none currently — VS uses the pipe; kept for non-VS LSP clients)
+    /// SEE ALSO: AsmCodeLensData, LanguageServer.GetCodeLensData, SimStatePipeServer.CodeLensDataProvider
     [JsonRpcMethod("asm/codeLensData", UseSingleObjectParameterDeserialization = true)]
     public AsmCodeLensData[]? GetCodeLensData(CodeLensParams parameter)
     {

@@ -23,6 +23,12 @@ using System.Threading.Tasks;
 ///
 /// Call <see cref="SetServerPid"/> immediately after starting the LSP server process.
 /// </summary>
+/// <summary>
+/// A label CodeLens record computed by the LSP server (definition position + reference count),
+/// rendered as-is by the VSIX tagger. Reference counting lives only on the server.
+/// </summary>
+internal sealed record AsmLabelRef(string Label, int DefinitionLine, int DefinitionColumn, int DefinitionLength, int ReferenceCount);
+
 internal sealed class SimStatePipeClient : IDisposable
 {
     // ── Singleton ─────────────────────────────────────────────────────────────
@@ -113,6 +119,94 @@ internal sealed class SimStatePipeClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Requests label CodeLens data (definition position + jump/call reference count) for the
+    /// given document URI. The server owns the reference counting (via its assembler-aware
+    /// LabelGraph); this client only renders the result. Returns an empty list if the server is
+    /// not connected or has no data.
+    /// </summary>
+    internal async Task<IReadOnlyList<AsmLabelRef>> GetCodeLensDataAsync(Uri uri, CancellationToken ct = default)
+    {
+        if (this.writer_ == null) return [];
+
+        await this.requestSem_.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            if (this.writer_ == null) return [];
+
+            var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            this.pendingResponse_ = tcs;
+
+            string request = JsonSerializer.Serialize(new { method = "getCodeLensData", uri = uri.ToString() });
+            await this.writer_.WriteLineAsync(request.AsMemory(), ct).ConfigureAwait(false);
+
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeoutCts.CancelAfter(5000);
+            string responseLine = await tcs.Task.WaitAsync(timeoutCts.Token).ConfigureAwait(false);
+
+            return ParseCodeLensDataResponse(responseLine);
+        }
+        catch (OperationCanceledException)
+        {
+            return [];
+        }
+        catch (Exception ex)
+        {
+            PipeClientLog($"GetCodeLensDataAsync error: {ex.GetType().Name}: {ex.Message}");
+            return [];
+        }
+        finally
+        {
+            this.pendingResponse_ = null;
+            this.requestSem_.Release();
+        }
+    }
+
+    /// <summary>
+    /// Resolves the documentation URL for a mnemonic via the LSP server (which owns the signature
+    /// data and honors the configured AsmDoc_Url). Returns null if the server is not connected, the
+    /// word is not a known mnemonic, or it has no documentation reference.
+    /// </summary>
+    internal async Task<string?> GetMnemonicUrlAsync(string mnemonic, CancellationToken ct = default)
+    {
+        if (this.writer_ == null || string.IsNullOrWhiteSpace(mnemonic)) return null;
+
+        await this.requestSem_.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            if (this.writer_ == null) return null;
+
+            var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+            this.pendingResponse_ = tcs;
+
+            string request = JsonSerializer.Serialize(new { method = "getMnemonicUrl", mnemonic });
+            await this.writer_.WriteLineAsync(request.AsMemory(), ct).ConfigureAwait(false);
+
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeoutCts.CancelAfter(5000);
+            string responseLine = await tcs.Task.WaitAsync(timeoutCts.Token).ConfigureAwait(false);
+
+            using var doc = JsonDocument.Parse(responseLine);
+            if (doc.RootElement.TryGetProperty("mnemonicUrl", out var urlEl) && urlEl.ValueKind == JsonValueKind.String)
+                return urlEl.GetString();
+            return null;
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+        catch (Exception ex)
+        {
+            PipeClientLog($"GetMnemonicUrlAsync error: {ex.GetType().Name}: {ex.Message}");
+            return null;
+        }
+        finally
+        {
+            this.pendingResponse_ = null;
+            this.requestSem_.Release();
+        }
+    }
+
     public void Dispose()
     {
         if (Interlocked.Exchange(ref this.disposed_, 1) != 0) return;
@@ -195,9 +289,10 @@ internal sealed class SimStatePipeClient : IDisposable
 
             if (line == null) break;
 
-            if (line.Contains("\"lines\""))
+            if (line.Contains("\"lines\"") || line.Contains("\"codeLensData\"") || line.Contains("\"mnemonicUrl\""))
             {
-                // Response to our getSimStates request — hand off to the awaiting TCS
+                // Response to our getSimStates / getCodeLensData / getMnemonicUrl request — hand off
+                // to the awaiting TCS. Only one request is in flight at a time (serialized by requestSem_).
                 this.pendingResponse_?.TrySetResult(line);
             }
             else if (line.Contains("\"method\""))
@@ -229,6 +324,35 @@ internal sealed class SimStatePipeClient : IDisposable
         catch (Exception ex)
         {
             PipeClientLog($"Notification parse error: {ex.Message}");
+        }
+    }
+
+    private static IReadOnlyList<AsmLabelRef> ParseCodeLensDataResponse(string responseLine)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(responseLine);
+            if (!doc.RootElement.TryGetProperty("codeLensData", out var arr) || arr.ValueKind != JsonValueKind.Array)
+                return [];
+
+            var result = new List<AsmLabelRef>(arr.GetArrayLength());
+            foreach (var el in arr.EnumerateArray())
+            {
+                string label = el.TryGetProperty("Label", out var l) ? l.GetString() ?? string.Empty : string.Empty;
+                if (label.Length == 0) continue;
+                int defLine = el.TryGetProperty("DefinitionLine", out var dl) ? dl.GetInt32() : 0;
+                int defCol = el.TryGetProperty("DefinitionColumn", out var dc) ? dc.GetInt32() : 0;
+                int defLen = el.TryGetProperty("DefinitionLength", out var dlen) ? dlen.GetInt32() : 0;
+                int refCount = el.TryGetProperty("ReferenceLines", out var rl) && rl.ValueKind == JsonValueKind.Array
+                    ? rl.GetArrayLength()
+                    : 0;
+                result.Add(new AsmLabelRef(label, defLine, defCol, defLen, refCount));
+            }
+            return result;
+        }
+        catch
+        {
+            return [];
         }
     }
 

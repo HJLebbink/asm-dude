@@ -1,6 +1,4 @@
-using System.IO.Pipes;
 using System.Runtime.InteropServices;
-using System.Security.Principal;
 
 namespace AsmDude2LS;
 
@@ -56,22 +54,13 @@ public partial class Worker : BackgroundService
         }
         else
         {
-            // Use named pipes for Visual Studio communication
-            const string stdInPipeName = @"input";
-            const string stdOutPipeName = @"output";
-
-            SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
-            PipeAccessRule pipeAccessRule = new(everyone, PipeAccessRights.ReadWrite, System.Security.AccessControl.AccessControlType.Allow);
-            PipeSecurity pipeSecurity = new();
-            pipeSecurity.AddAccessRule(pipeAccessRule);
-
-            NamedPipeClientStream readerPipe = new(stdInPipeName);
-            NamedPipeClientStream writerPipe = new(stdOutPipeName);
-
-            readerPipe.Connect();
-            writerPipe.Connect();
-
-            this._languageServer = LanguageServer.Create(writerPipe, readerPipe);
+            // Named-pipe hosting was removed. The VS extension always launches the server with
+            // --stdio (see AsmLanguageServerProvider.CreateServerConnectionAsync). The former
+            // "input"/"output" pipe path was dead — nothing ever created those pipes, and the
+            // PipeSecurity it built was applied to nothing — so Connect() would simply hang.
+            // Fail loudly instead.
+            throw new NotSupportedException(
+                "AsmDude2 LSP must be started with --stdio. Named-pipe hosting is no longer supported.");
         }
 
         this._languageServer.Disconnected += this.OnDisconnected;

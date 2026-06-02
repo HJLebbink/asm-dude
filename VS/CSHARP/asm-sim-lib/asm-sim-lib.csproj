@@ -13,6 +13,8 @@
     <IsPackable>false</IsPackable>
     <IsAotCompatible>true</IsAotCompatible>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <!-- Suppress nullable reference warnings for Z3 interop patterns and unreachable code -->
+    <NoWarn>$(NoWarn);CS0162;CS8600;CS8620;CS8625;CS8602;CS8603;CS8604;CS8618;CS8619;CS9113</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

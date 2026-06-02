@@ -98,9 +98,18 @@ The LSP server is split into two projects following the **library + executable p
 
 ### Supporting Libraries
 
+- **asm-options-lib**: Dependency-light shared **settings contract** (`net10.0`, no Roslyn/Z3)
+  - `AsmSettingsData` — the serializable settings DTO (all the `ARCH_*`, `AsmSim_*`, etc. fields)
+  - `ColorJsonConverter` — Color↔JSON converter used by both sides
+  - Referenced by **both** the VSIX (settings producer) and `asm-tools-lib`/server (consumer), so the
+    `settings.json` contract is compile-checked on both ends. The VSIX references THIS (not
+    `asm-tools-lib`) to avoid dragging Roslyn into the extension. See [Settings flow](#settings-flow-vsix--server).
+
 - **asm-tools-lib**: Core assembly language parsing and analysis (.NET 10.0-windows)
   - Defines fundamental types: `Mnemonic`, `Register`, `Operand`, `KeywordID`
   - Contains instruction data and architecture definitions
+  - `AsmLanguageServerOptions : AsmSettingsData` adds the arch/micro-arch/assembler helper logic
+    (`Get_Arch_Switched_On`, `Used_Assembler`, …) on top of the shared data contract
   - Single-targeted for .NET 10.0-windows (dropped net48 support)
 
 - **asm-sim-lib**: Assembly instruction simulator using Z3 solver (.NET 10.0 LTS)
@@ -411,8 +420,8 @@ https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.js
 - `asm-dude2-ls`: Language server executable (.NET 10.0 LTS)
 - `asm-dude2-ls-lib`: Language server implementation (.NET 10.0 LTS)
 - `asm-dude2-ls-tests`: Unit tests for LSP server (xUnit)
-- `asm-tools-lib`: Core assembly language tools (.NET 10.0 LTS)
-- `asm-tools-lib-net48`: .NET Framework 4.8 version
+- `asm-options-lib`: Shared, dependency-light settings contract (`AsmSettingsData` + `ColorJsonConverter`); referenced by both the VSIX and the server
+- `asm-tools-lib`: Core assembly language tools (.NET 10.0 LTS; single-targeted, no net48)
 - `asm-tools-tests`: Tests for asm-tools-lib (MSTest)
 - `asm-sim-lib`: Assembly simulator using Z3 (.NET 10.0 LTS)
 - `asm-sim-tests`: Tests for asm-sim-lib (MSTest)
@@ -426,48 +435,57 @@ https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.js
 
 **Focus development on `asm-dude2-ls-lib`** (LSP server) and `asm-dude2-vsix` (VS extension).
 
+### Settings flow (VSIX ↔ server)
+
+Runtime config push over LSP isn't supported in the VS.Extensibility model (microsoft/VSExtensibility#426), so settings travel via a JSON file, but the **type is shared** for compile-time safety:
+
+1. The VSIX `SettingsSyncService` subscribes to the VS.Extensibility Settings API and, on change, maps `SettingValues` into a strongly-typed **`AsmSettingsData`** (from `asm-options-lib`) and serializes it to `%APPDATA%\AsmDude2\settings.json` (using the shared `ColorJsonConverter`).
+2. The server `SettingsManager` deserializes that file into **`AsmLanguageServerOptions`** (which derives from `AsmSettingsData`) and watches it via `FileSystemWatcher`.
+
+Because both sides bind to the same field names through the shared `AsmSettingsData`, a renamed/removed field is a **compile error**, not a silently-defaulted value. The VSIX references only `asm-options-lib` (not `asm-tools-lib`) so Roslyn isn't pulled into the extension. This mirrors what the original (in-proc / `ILanguageClient`) AsmDude did with `Settings.Default` → `AsmLanguageServerOptions`, adapted to the file transport this platform forces.
+
 ### Assembly CodeLens (asm-dude2-vsix)
 
 **Implementation:** `VS\CSHARP\asm-dude2-vsix\CodeLens\`
 
-Shows "N references" above each assembly label definition line, with click-to-navigate. Implemented as a WPF adornment (not the official `IAsyncCodeLensDataPointProvider`, which requires complex async provider/tagger/aggregator machinery and doesn't integrate with LSP easily).
+CodeLens shows two kinds of inline annotations on assembly lines:
+- **Label references** — "N references" above each label definition.
+- **Sim-state** — a Z3-proven register/flag summary (e.g. `→RAX=0x10, ←ZF=0`) above instruction lines.
 
-**Why adornment-based, not `IAsyncCodeLensDataPointProvider`:**
-The official Roslyn CodeLens path (`src/VisualStudio/Core/Def/CodeLens/` in `github.com/dotnet/roslyn`) uses `IAsyncCodeLensDataPointProvider` with VS-internal types. It requires a `ICodeLensCallbackListener` service and is tightly coupled to the Roslyn workspace model. Our LSP-based approach is simpler: request data from the language server, render a TextBlock adornment above the line.
+Implemented with the modern **VisualStudio.Extensibility** CodeLens API (`TextViewTagger<CodeLensTag>` + `ICodeLensProvider`), NOT the old WPF-adornment approach and NOT the classic `IAsyncCodeLensDataPointProvider`.
 
-**Reference implementations:**
-- Roslyn CodeLens: `github.com/dotnet/roslyn`, `src/VisualStudio/Core/Def/CodeLens/`
-- IntraText adornments: `github.com/microsoft/VSSDK-Extensibility-Samples`
+> **Note:** Earlier revisions used a WPF-adornment approach (`AsmCodeLensAdornmentManager`, `AsmCodeLensLineTransformSource`, `AsmCodeLensMouseProcessor`, `AsmLanguageClient`). Those files no longer exist. If you find references to them, they are stale.
 
 **Files:**
 
 | File | Role |
 |------|------|
-| `AsmCodeLensProvider.cs` | MEF exports: `IWpfTextViewCreationListener` (creates manager), `ILineTransformSourceProvider` (creates transform source) |
-| `AsmCodeLensLineTransformSource.cs` | `ILineTransformSource` — adds `topSpace` pixels above label lines to make room for the TextBlock |
-| `AsmCodeLensAdornmentManager.cs` | Requests LSP data, renders TextBlock adornments, handles clicks and hover underline |
-| `AsmCodeLensMouseProcessor.cs` | `IMouseProcessor` — routes `MouseMove` to manager for hover underline tracking |
+| `AsmCodeLensProvider.cs` | `[VisualStudioContribution] ICodeLensProvider` — `TryCreateCodeLensAsync` dispatches on `CodeElementKind` to create the right CodeLens object |
+| `AsmCodeLensTaggerProvider.cs` | Creates/owns the per-document `AsmCodeLensTagger` instances |
+| `AsmCodeLensTagger.cs` | `TextViewTagger<CodeLensTag>` — scans the document, produces `CodeLensTag`s for label defs and sim-state lines; encodes payload in `CodeElement.Description` |
+| `AsmLabelCodeLens.cs` | `InvokableCodeLens` — renders "N references" from the tag's `refcount:N\|...` description |
+| `AsmSimStateCodeLens.cs` | `InvokableCodeLens` — renders the sim-state label from the tag's `simstate:\|...` description (display-only; click is a no-op) |
 
 **Data flow:**
-1. `AsmCodeLensAdornmentManager.RequestCodeLensData()` calls `AsmLanguageClient.SendCodeLensDataRequestAsync()` (custom `asm/codeLensData` LSP method)
-2. LSP server returns JSON array: `[{ label, definitionLine, referenceLines[] }, ...]`
-3. Manager stores data in `codeLensData` dict, calls `lineTransformSource.UpdateLabelLines()` with definition line numbers
-4. `ILineTransformSource.GetLineTransform()` returns `LineTransform(topSpace, 0, 1.0)` for label lines — this adds blank space above the line
-5. On `LayoutChanged`, manager renders a `TextBlock` per visible label line, positioned at `viewLine.Top - topSpace`
+1. `AsmCodeLensTagger.CreateTagsAsync` fetches label data from the LSP server via `SimStatePipeClient.GetCodeLensDataAsync` — a list of `AsmLabelRef` (label name, definition line/column/length, reference count). The tagger does **not** parse the document or count references itself; that logic lives only on the server (`GetCodeLensData` → assembler-aware `LabelGraph`, jump/call targets only).
+2. For sim-state, it also fetches a `Dictionary<int,string>` (line → label) from the server via `SimStatePipeClient.GetSimStatesAsync` (see the pipe note below).
+3. It emits one `CodeLensTag` per annotation, packing the data into `CodeElement.Description` (`refcount:N|Label: name` or `simstate:|<label>`); label tags are positioned using the server-reported definition column/length.
+4. `AsmCodeLensProvider.TryCreateCodeLensAsync` turns each tag into an `AsmLabelCodeLens` or `AsmSimStateCodeLens`, which unpacks the description in `GetLabelAsync`.
+5. The tagger re-runs on document change and when `SimStatePipeClient.SimStateUpdated` fires for this document's URI.
 
-**Font metrics (via `IClassificationFormatMap`):**
-Derived from the live editor format map so they scale correctly when the user changes font/size:
-- `IClassificationFormatMapService.GetClassificationFormatMap(textView)` → injected via MEF `[Import]` in `AsmCodeLensLineTransformSourceProvider`
-- `formatMap.DefaultTextProperties.FontRenderingEmSize` = editor font size (e.g. 16px at Consolas 12pt)
-- `CodeLensFontSize = editorFontSize × 0.70` (CodeLens text at 70% of editor font)
-- `topSpace = Math.Ceiling(CodeLensFontSize × GlyphTypeface.Baseline)` — typographic ascent only (NOT full line height); `GlyphTypeface.Baseline ≈ 0.727` for Consolas
-- `ClassificationFormatMappingChanged` event invalidates cache; VS re-layouts the view, which re-calls `GetLineTransform` with fresh values
+> **Reference semantics:** the server counts **jump/call targets only** (via `LabelGraph`), so a label used only by a data reference (`lea`/`mov`/`dq`) shows 0 references. This is intentional.
 
-**Why typographic ascent, not full TextBlock height:**
-`GlyphTypeface.Baseline = sTypoAscender / unitsPerEm` is the ratio of the font's capital/ascender height to the em square. Using the full `TextBlock.DesiredSize.Height` as `topSpace` includes transparent descender space and leading, creating a visible empty gap above the text. Using just the ascent makes the visible ink sit flush above the label line.
+**⚠ Why sim-state arrives over a separate named pipe, not LSP:**
+The VisualStudio.Extensibility OOP LSP model exposes **no** API for an extension part (tagger/command/CodeLens) to send a custom LSP request or receive server-initiated messages — the only documented surface is `CreateServerConnectionAsync` + `OnServerInitializationResultAsync` + startup `InitializationOptions`. So a tagger cannot reach the LSP connection. The sim-state therefore travels over a dedicated named pipe `asmdude2-simstate-{pid}` (`SimStatePipeServer` in the LS, `SimStatePipeClient` in the VSIX). This is a platform limitation, not a design preference. See `SimStatePipeServer.cs` for the protocol. (Settings are delivered the same way — via `%APPDATA%\AsmDude2\settings.json` + a FileSystemWatcher — because runtime config push over LSP is also unsupported in this model: microsoft/VSExtensibility#426.)
 
-**Click mechanism:**
-`MouseLeftButtonDown` is attached directly to each `TextBlock` (cursor changes to `Hand`, proving the TextBlock is hit-test visible and WPF routes clicks to it). Clicking navigates to a reference line (single reference) or shows a `Popup` list (multiple references). The popup items also use `MouseLeftButtonDown` for navigation.
+**Server owns reference counting (no VSIX-side parsing):**
+`AsmCodeLensTagger` is a thin renderer — it calls `SimStatePipeClient.GetCodeLensDataAsync` and emits tags from the server's answer. All label detection and reference counting is the server's `GetCodeLensData`/`LabelGraph`, exposed over the pipe via `SimStatePipeServer.CodeLensDataProvider` (wired in the `LanguageServer` constructor). The pipe protocol gained a `getCodeLensData` request → `{"codeLensData":[{Label,DefinitionLine,DefinitionColumn,DefinitionLength,ReferenceLines}]}` response.
 
-**Hover underline:**
-`AsmCodeLensMouseProcessor.PreprocessMouseMove` calls `manager.UpdateHover(position)`. The manager checks if the mouse position is inside any active block's `Rect bounds` (stored in `activeBlocks` list) and sets/clears `TextDecorations.Underline` on the hovered `TextBlock`.
+**Two CodeLens delivery paths (by client) — both intentionally kept:**
+
+| Client | Path | Server entry points |
+|--------|------|---------------------|
+| **Visual Studio** (VisualStudio.Extensibility) | Side named pipe (tagger → `SimStatePipeClient` → `SimStatePipeServer.CodeLensDataProvider`) | `LanguageServer.GetCodeLensData(string)` |
+| **VS Code / other LSP clients** (future, intended) | Standard LSP | `textDocument/codeLens` (`GetCodeLenses`), `codeLens/resolve` (`ResolveCodeLens`), `codeLensProvider` capability; optional custom `asm/codeLensData` |
+
+VS.Extensibility never calls the standard LSP CodeLens methods (confirmed via server logs in a live hive session — zero `textDocument/codeLens` requests arrived) because its CodeLens tagger has no access to the LSP connection. **Do not remove the standard LSP CodeLens surface or its tests** — this server is intended to also drive VS Code later, where the standard path is the only one available. Both paths share the same `LabelGraph` logic, so reference counting lives only on the server regardless of client.

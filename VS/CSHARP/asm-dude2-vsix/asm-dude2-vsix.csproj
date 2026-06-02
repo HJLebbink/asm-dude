@@ -14,6 +14,15 @@
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="18.5.39115-Preview" PrivateAssets="all" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="18.5.39115-Preview" PrivateAssets="all" />
     <!-- VSSDK.BuildTools comes transitively from Extensibility.Build -->
+    <!-- Pin to fix CVEs in transitive Nerdbank.MessagePack 1.0.11 from Extensibility SDK's StreamJsonRpc 2.25.6 -->
+    <PackageReference Include="Nerdbank.MessagePack" Version="1.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Dependency-light shared settings contract (AsmSettingsData + ColorJsonConverter). Lets the
+         VSIX serialize the SAME type the server deserializes, so settings.json is compile-checked.
+         Deliberately NOT a reference to asm-tools-lib (which would drag Roslyn into the extension). -->
+    <ProjectReference Include="..\asm-options-lib\asm-options-lib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

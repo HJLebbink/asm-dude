@@ -237,8 +237,8 @@ public sealed class LabelGraph
         }
 
         public Dictionary<string, List<KeywordID>> Definitions => this.defAt_;
-        public FrozenDictionary<string, List<KeywordID>> DefinitionsFrozen => this.defAtFrozen_;
-        public FrozenDictionary<string, List<KeywordID>> UsagesFrozen => this.usagesFrozen_;
+        public FrozenDictionary<string, List<KeywordID>>? DefinitionsFrozen => this.defAtFrozen_;
+        public FrozenDictionary<string, List<KeywordID>>? UsagesFrozen => this.usagesFrozen_;
 
         private FrozenDictionary<string, List<KeywordID>>? defAtFrozen_;
         private FrozenDictionary<string, List<KeywordID>>? usagesFrozen_;

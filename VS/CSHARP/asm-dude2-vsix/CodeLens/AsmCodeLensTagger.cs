@@ -151,74 +151,38 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
 
         TaggerLog($"CreateTagsAsync: got {simStates.Count} sim states");
 
-        // First pass: find all label definitions and collect all label names
-        var labelDefs = new List<(string name, int lineIndex, int start, int length)>();
-        var allLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        // Fetch label CodeLens data (definition position + jump/call reference count) from the
+        // LSP server. Reference counting lives on the (multithreaded) server via its
+        // assembler-aware LabelGraph; the tagger only renders the result — it does NOT parse.
+        IReadOnlyList<AsmLabelRef> labels = await SimStatePipeClient.Instance
+            .GetCodeLensDataAsync(this.documentUri)
+            .ConfigureAwait(false);
 
-        foreach (var line in document.Lines)
-        {
-            string lineText = line.Text.CopyToString();
-            string? labelName = TryParseLabelDefinition(lineText);
-            if (labelName != null)
-            {
-                allLabels.Add(labelName);
-                int leadingSpaces = lineText.Length - lineText.TrimStart().Length;
-                int tagStart = line.Text.Start + leadingSpaces;
-                int tagLength = line.Text.Length - leadingSpaces;
-                labelDefs.Add((labelName, line.LineNumber, tagStart, tagLength));
-            }
-        }
+        TaggerLog($"CreateTagsAsync: got {labels.Count} label(s) from server");
 
-        // Second pass: count references for each label
-        var refCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        foreach (var label in allLabels)
-            refCounts[label] = 0;
-
-        foreach (var line in document.Lines)
-        {
-            string lineText = line.Text.CopyToString();
-
-            string trimmed = lineText.TrimStart();
-            if (trimmed.Length == 0 || trimmed[0] == ';' || trimmed[0] == '#') continue;
-
-            int commentIdx = lineText.IndexOf(';');
-            string codePart = commentIdx >= 0 ? lineText[..commentIdx] : lineText;
-
-            foreach (var label in allLabels)
-            {
-                int searchStart = 0;
-                while (true)
-                {
-                    int idx = codePart.IndexOf(label, searchStart, StringComparison.OrdinalIgnoreCase);
-                    if (idx < 0) break;
-
-                    int endIdx = idx + label.Length;
-
-                    bool startOk = idx == 0 || !IsIdentifierChar(codePart[idx - 1]);
-                    bool endOk = endIdx >= codePart.Length || !IsIdentifierChar(codePart[endIdx]);
-                    bool isDefinition = endOk && endIdx < codePart.Length && codePart[endIdx] == ':';
-
-                    if (startOk && endOk && !isDefinition)
-                        refCounts[label]++;
-
-                    searchStart = endIdx;
-                }
-            }
-        }
+        var labelsByLine = new Dictionary<int, AsmLabelRef>();
+        foreach (var lbl in labels)
+            labelsByLine[lbl.DefinitionLine] = lbl;
 
         // Build tag list
         var tags = new List<TaggedTrackingTextRange<CodeLensTag>>();
 
-        // ── Label reference-count tags ────────────────────────────────────────
-        foreach (var (name, lineIndex, start, length) in labelDefs)
+        // ── Label reference-count tags (positioned on the label token reported by the server) ──
+        foreach (var line in document.Lines)
         {
-            int count = refCounts.GetValueOrDefault(name, 0);
+            if (!labelsByLine.TryGetValue(line.LineNumber, out var lbl)) continue;
+
+            int lineLen = line.Text.Length;
+            int col = Math.Max(0, Math.Min(lbl.DefinitionColumn, Math.Max(0, lineLen - 1)));
+            int len = Math.Max(1, Math.Min(lbl.DefinitionLength, lineLen - col));
+            int tagStart = line.Text.Start + col;
+
             tags.Add(new(
-                new(document, start, length, TextRangeTrackingMode.ExtendForwardAndBackward),
+                new(document, tagStart, len, TextRangeTrackingMode.ExtendForwardAndBackward),
                 new(AsmLabelKind)
                 {
-                    UniqueIdentifier = name,
-                    Description = $"refcount:{count}|Label: {name}",
+                    UniqueIdentifier = lbl.Label,
+                    Description = $"refcount:{lbl.ReferenceCount}|Label: {lbl.Label}",
                     DisplayBeforeCreatingCodeLenses = true,
                 }));
         }
@@ -255,38 +219,6 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
         await this.UpdateTagsAsync([new(document, 0, document.Length)], tags, CancellationToken.None);
         TaggerLog("CreateTagsAsync: UpdateTagsAsync done");
     }
-
-    /// <summary>
-    /// Tries to parse a label definition from a line of assembly code.
-    /// Returns the label name if found, null otherwise.
-    /// </summary>
-    private static string? TryParseLabelDefinition(string line)
-    {
-        string trimmed = line.TrimStart();
-        if (trimmed.Length == 0) return null;
-
-        if (trimmed[0] == ';' || trimmed[0] == '#') return null;
-
-        int colonIdx = trimmed.IndexOf(':');
-        if (colonIdx <= 0) return null;
-
-        string candidate = trimmed[..colonIdx].TrimEnd();
-
-        if (candidate.Contains(' ') || candidate.Contains('\t')) return null;
-
-        char first = candidate[0];
-        if (!char.IsLetter(first) && first != '_' && first != '.' && first != '@') return null;
-
-        for (int i = 1; i < candidate.Length; i++)
-        {
-            if (!IsIdentifierChar(candidate[i])) return null;
-        }
-
-        return candidate;
-    }
-
-    private static bool IsIdentifierChar(char c) =>
-        char.IsLetterOrDigit(c) || c == '_' || c == '.' || c == '@' || c == '$' || c == '?';
 
     private static readonly string TaggerLogPath = Path.Combine(Path.GetTempPath(), "asmdude-tagger.log");
     private static readonly object TaggerLogLock = new();

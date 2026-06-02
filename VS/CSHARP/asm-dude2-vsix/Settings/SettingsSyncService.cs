@@ -73,7 +73,9 @@ internal class SettingsSyncService : ExtensionPart
         string assembler = v.ValueOrDefault(AsmDudeSettings.AssemblerFlavor, "auto");
         string assemblerDisasm = v.ValueOrDefault(AsmDudeSettings.AssemblerFlavorDisassembly, "auto");
 
-        var options = new
+        // Build the SHARED, strongly-typed contract (not an anonymous object) so a renamed/removed
+        // field is a compile error here instead of a silently-defaulted value on the server.
+        var options = new AsmTools.AsmSettingsData
         {
             // General
             Global_MaxFileLines = v.ValueOrDefault(AsmDudeSettings.MaxFileLines, 10000),
@@ -226,6 +228,8 @@ internal class SettingsSyncService : ExtensionPart
         {
             WriteIndented = true,
             IncludeFields = true,
+            // Same converter the server uses (from the shared contract lib) so Color fields match.
+            Converters = { new AsmTools.ColorJsonConverter() },
         });
         File.WriteAllText(SettingsFile, json);
     }

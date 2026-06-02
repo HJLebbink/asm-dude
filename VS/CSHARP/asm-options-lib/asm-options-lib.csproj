@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Lightweight settings contract shared by the LSP server (via asm-tools-lib) AND the VSIX.
+    Deliberately depends on NOTHING heavy (no Roslyn, no Z3) so the VSIX can reference it without
+    bloating the extension host. Holds the serializable settings DTO (AsmSettingsData) and the
+    Color JSON converter that both sides use, so the settings.json contract is compile-checked on
+    both producer (VSIX) and consumer (server). See AsmLanguageServerOptions (asm-tools-lib) which
+    derives from AsmSettingsData and adds the arch/assembler behavior.
+    Targets net10.0 (no -windows) so both net10.0-windows and net10.0-windows8.0 projects can reference it.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>AsmTools</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoWarn>SA1401</NoWarn>
+    <IsPackable>false</IsPackable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+  </PropertyGroup>
+
+</Project>

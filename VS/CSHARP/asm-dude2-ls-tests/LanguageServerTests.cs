@@ -842,6 +842,48 @@ add rcx, rdx
 
     #endregion
 
+    #region Mnemonic Documentation URL Tests
+
+    [Fact]
+    public void GetMnemonicUrl_KnownMnemonic_ReturnsConfiguredBasePlusRef()
+    {
+        // The VSIX "open documentation" command relies on this to resolve URLs (it no longer reads
+        // signature files). The result must honor the configured AsmDoc_Url base and append the
+        // mnemonic's html reference from MnemonicStore.
+        var server = new LanguageServer();
+        server.Initialize(new AsmLanguageServerOptions
+        {
+            ARCH_X64 = true,
+            AsmDoc_On = true,
+            AsmDoc_Url = "https://example.test/wiki/",
+        });
+        server.Initialized();
+
+        string? url = server.GetMnemonicUrl("mov");
+
+        url.Should().NotBeNullOrEmpty("MOV is a documented mnemonic");
+        url.Should().StartWith("https://example.test/wiki/", "the configured AsmDoc_Url must be honored, not a hardcoded base");
+        url!.Length.Should().BeGreaterThan("https://example.test/wiki/".Length, "an html reference is appended to the base");
+    }
+
+    [Fact]
+    public void GetMnemonicUrl_NotAMnemonic_ReturnsNull()
+    {
+        this._server.GetMnemonicUrl("not_a_real_mnemonic_xyz").Should().BeNull("unknown words have no documentation URL");
+    }
+
+    [Fact]
+    public void GetMnemonicUrl_LowercaseAndAttPrefix_ResolvesSameAsBare()
+    {
+        // The command passes the cursor word uppercased with a leading '%' already stripped, but the
+        // server should also tolerate raw case. "mov" and "MOV" must resolve identically.
+        var bare = this._server.GetMnemonicUrl("mov");
+        var upper = this._server.GetMnemonicUrl("MOV");
+        upper.Should().Be(bare, "mnemonic lookup is case-insensitive");
+    }
+
+    #endregion
+
     #region Exit Tests
 
     [Fact]
@@ -1077,6 +1119,33 @@ add rcx, rdx
         result[0].DefinitionLine.Should().Be(0);
         result[0].ReferenceLines.Should().HaveCount(1);
         result[0].ReferenceLines[0].Should().Be(1);
+    }
+
+    [Fact]
+    public void GetCodeLensData_ReportsDefinitionColumnAndLength()
+    {
+        // The VSIX CodeLens tagger positions its tag using DefinitionColumn/DefinitionLength
+        // returned by the server (it no longer parses the document itself), so these must be
+        // the exact column and length of the label token on the definition line.
+        // line 0: "  my_label:" — token "my_label" starts at column 2, length 8.
+        var uri = "file:///test_codelensdata_colpos.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "  my_label:\n    jmp my_label\n"
+            }
+        });
+
+        var result = this._server.GetCodeLensData(uri);
+
+        result.Should().HaveCount(1);
+        result[0].Label.Should().Be("my_label");
+        result[0].DefinitionColumn.Should().Be(2, "the label token starts after two leading spaces");
+        result[0].DefinitionLength.Should().Be(8, "\"my_label\" is 8 characters");
     }
 
     [Fact]

@@ -209,10 +209,11 @@ namespace AsmSim
                 if (translate)
                 {
                     BranchInfo? translated = branchInfo.Translate(this.ctx_);
-                    if (translated != null)
+                    if (translated == null)
                     {
-                        this.branchInfo_.Add(branchInfo.Key, translated);
+                        throw new InvalidOperationException($"Failed to translate BranchInfo for key '{branchInfo.Key}' (translate={translate})");
                     }
+                    this.branchInfo_.Add(branchInfo.Key, translated);
                 }
                 else
                 {

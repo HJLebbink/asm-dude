@@ -1,13 +1,18 @@
+// Copyright (c) 2026 Henk-Jan Lebbink
+// Licensed under the MIT license.
+
 using System;
 using System.Drawing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AsmDude2LS;
+namespace AsmTools;
 
 /// <summary>
 /// System.Text.Json converter for System.Drawing.Color.
-/// Handles the JSON format produced by StreamJsonRpc when serializing Color values.
+/// Lives in the shared contract lib so both the VSIX (settings producer) and the LSP server
+/// (consumer) serialize/deserialize the Color fields of <see cref="AsmSettingsData"/> identically.
+/// Also handles the JSON format produced by StreamJsonRpc when serializing Color values.
 /// </summary>
 public class ColorJsonConverter : JsonConverter<Color>
 {

@@ -151,7 +151,13 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.target.OnInitializeCompletion += this.OnTargetInitializeCompletion;
         this.target.OnInitialized += this.OnTargetInitialized;
         this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
-        this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_);
+        this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_)
+        {
+            // Server owns label reference counting; the VSIX tagger fetches it over the pipe.
+            CodeLensDataProvider = this.GetCodeLensData,
+            // Server owns mnemonic->doc-URL resolution; the VSIX command fetches it over the pipe.
+            MnemonicUrlProvider = this.GetMnemonicUrl,
+        };
         this.simStatePipeServer_.Start();
         AsmDudeLog.Info($"LanguageServer: SimStatePipeServer started on pipe '{this.simStatePipeServer_.PipeName}'");
     }
@@ -172,7 +178,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.diagnostics = [];
         this.Symbols = [];
         this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
-        this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_);
+        this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_)
+        {
+            CodeLensDataProvider = this.GetCodeLensData,
+            MnemonicUrlProvider = this.GetMnemonicUrl,
+        };
         // Do NOT call Start() in tests — no VSIX client to connect
     }
 
@@ -403,7 +413,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     public void Initialized()
     {
         string? assemblyLocation = Assembly.GetExecutingAssembly().Location;
-        string path = assemblyLocation != null ? Path.Combine(Path.GetDirectoryName(assemblyLocation), "Resources") : "Resources";
+        string path = assemblyLocation != null && Path.GetDirectoryName(assemblyLocation) != null
+            ? Path.Combine(Path.GetDirectoryName(assemblyLocation), "Resources")
+            : "Resources";
         {
             string filename_Regular = Path.Combine(path, "signature-may2019.txt");
             string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
@@ -581,9 +593,15 @@ private void UpdateInternals(string uri)
         this.labelGraphs.Remove(uri);
 
         TextDocumentItem? textDocument = this.GetTextDocument(uri);
+        if (textDocument == null)
+        {
+            AsmDudeLog.Error($"UpdateLabelGraph: textDocument is null for uri={uri}");
+            return;
+        }
         string filename = new Uri(textDocument.Uri.ToString()).LocalPath;
         string[] lines = this.GetLines(uri);
         bool caseSensitiveLabels = true; //nasm has case sensitive labels
+        if (this.options == null) return;
         LabelGraph labelGraph = new(lines, filename, caseSensitiveLabels, this.options);
         if (false)
         { // TODO 30-09-23: switch on the label diagnostics when most of the false positives are removed
@@ -597,7 +615,7 @@ private void UpdateInternals(string uri)
 
     private void UpdateFoldingRanges(string uri)
     {
-        if (!this.options.CodeFolding_On)
+        if (this.options == null || !this.options.CodeFolding_On)
         {
             return;
         }
@@ -2401,11 +2419,46 @@ private static int GetTokenModifiers(AsmTokenType type)
             {
                 Label = label,
                 DefinitionLine = defLine,
+                DefinitionColumn = def.Start_Pos,
+                DefinitionLength = def.End_Pos - def.Start_Pos,
                 ReferenceLines = [.. refLines],
             });
         }
 
         return [.. result];
+    }
+
+    /// <summary>
+    /// Resolve the documentation URL for a mnemonic: the configured <c>AsmDoc_Url</c> base
+    /// concatenated with the mnemonic's html reference from <see cref="MnemonicStore"/>.
+    /// Returns null if the word is not a known mnemonic or has no documentation reference.
+    /// </summary>
+    /// <remarks>
+    /// The VSIX "open documentation" command fetches this over the SimState pipe
+    /// (<see cref="SimStatePipeServer.MnemonicUrlProvider"/>) so the signature files that carry
+    /// the html references are parsed only on the server — the VSIX no longer re-reads them.
+    /// Honors the user's configurable <c>AsmDoc_Url</c> instead of a hardcoded base.
+    /// </remarks>
+    public string? GetMnemonicUrl(string mnemonicStr)
+    {
+        if (string.IsNullOrWhiteSpace(mnemonicStr) || this.mnemonicStore == null || this.options == null)
+        {
+            return null;
+        }
+
+        Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(mnemonicStr.ToUpperInvariant(), true);
+        if (mnemonic == Mnemonic.NONE)
+        {
+            return null;
+        }
+
+        string htmlRef = this.mnemonicStore.GetHtmlRef(mnemonic);
+        if (string.IsNullOrEmpty(htmlRef))
+        {
+            return null;
+        }
+
+        return (this.options.AsmDoc_Url ?? string.Empty) + htmlRef;
     }
 
     public CodeLens ResolveCodeLens(CodeLens codeLens)

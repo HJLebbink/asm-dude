@@ -26,5 +26,12 @@ public class AsmCodeLensData
 {
     public required string Label { get; set; }
     public int DefinitionLine { get; set; }
+
+    /// <summary>Start column (0-based) of the label token on the definition line.</summary>
+    public int DefinitionColumn { get; set; }
+
+    /// <summary>Length in characters of the label token on the definition line.</summary>
+    public int DefinitionLength { get; set; }
+
     public required int[] ReferenceLines { get; set; }
 }
