@@ -297,17 +297,36 @@ using System.Text;
                     }
                     
                     // Set the mnemonic for return value (first mnemonic found)
+                    int argKeywordPos = mnemonicPos; // keyword index whose end marks where operands start
                     if (mnemonicPos >= 0 && mnemonicPos < keywordPositions.Count)
                     {
                         var mnemonicPosInfo = keywordPositions[mnemonicPos];
                         string mnemonicKeyword = codeStr_uppercase[mnemonicPosInfo.beginPos..mnemonicPosInfo.endPos];
                         mnemonic = ParseMnemonic(mnemonicKeyword, true);
+
+                        // Combine a REP-family prefix with the following string-op into the single
+                        // combined mnemonic the simulator dispatches on (e.g. "REP"+"MOVSB" -> REP_MOVSB).
+                        // Without this, "rep movsb" returned bare REP, the REP loop semantics
+                        // (RCX -> 0) were lost, and operands were taken from the wrong keyword.
+                        if ((mnemonic == Mnemonic.REP || mnemonic == Mnemonic.REPE || mnemonic == Mnemonic.REPZ ||
+                             mnemonic == Mnemonic.REPNE || mnemonic == Mnemonic.REPNZ)
+                            && (mnemonicPos + 1 < keywordPositions.Count))
+                        {
+                            var nextInfo = keywordPositions[mnemonicPos + 1];
+                            string nextKeyword = codeStr_uppercase[nextInfo.beginPos..nextInfo.endPos];
+                            Mnemonic combined = ParseMnemonic(mnemonicKeyword + "_" + nextKeyword, true);
+                            if (combined != Mnemonic.NONE)
+                            {
+                                mnemonic = combined;
+                                argKeywordPos = mnemonicPos + 1; // operands (if any) follow the string-op keyword
+                            }
+                        }
                     }
-                    
-                    // Extract arguments (simplified - in a real implementation we'd do this more precisely)
-                    if (mnemonic != Mnemonic.NONE && mnemonicPos >= 0)
+
+                    // Extract arguments
+                    if (mnemonic != Mnemonic.NONE && argKeywordPos >= 0 && argKeywordPos < keywordPositions.Count)
                     {
-                        int argStartPos = keywordPositions[mnemonicPos].endPos;
+                        int argStartPos = keywordPositions[argKeywordPos].endPos;
                         if (argStartPos < codeStr.Length)
                         {
                             string argsStr = codeStr[argStartPos..];

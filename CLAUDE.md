@@ -166,10 +166,12 @@ dotnet test VS\CSHARP\asm-dude2-ls-tests\asm-dude2-ls-tests.csproj
 | Project | Passed | Skipped | Notes |
 |---------|--------|---------|-------|
 | asm-tools-tests | 27 | 0 | Core assembly tools |
-| asm-sim-tests | 149 | 28 | Z3 simulator (28 skipped due to known issue) |
-| asm-dude2-ls-tests | 66 | 36 | 66 unit tests pass, 36 integration tests skipped |
+| asm-sim-tests | 178 | 3 | Z3 simulator (DynamicFlow merge crash FIXED; 3 skips unrelated) |
+| asm-dude2-ls-tests | 120 | 37 | Unit + AsmSim integration (6 pre-existing failures being triaged) |
 
-**Note**: 28 tests in `asm-sim-tests` are skipped due to a known regression (see Known Issues below).
+**Note**: The DynamicFlow **branch-merge** Z3 context-lifecycle crash is **FIXED** (shared-context rewrite — see Known Issues); the 25 previously-skipped DynamicFlow tests are re-enabled and pass. Only 3 sim tests remain skipped for unrelated reasons. Run sim tests via `vstest.console.dll`, not `dotnet test`.
+
+**REP-prefix parse fix**: `AsmSourceTools.ParseLine` now combines a REP-family prefix with the following string-op into the combined mnemonic (`"rep movsb"` → `REP_MOVSB`); previously the prefix was dropped and the simulator skipped the REP loop semantics.
 
 **LSP Integration Tests**: `LspIntegrationTests.cs` contains true JSON-RPC tests over streams. Some integration tests are skipped due to serialization complexity. The unit tests in `LanguageServerTests.cs` provide comprehensive coverage.
 
@@ -214,37 +216,22 @@ Z3 is **not on nuget.org** — it is distributed as `.nupkg` files on GitHub rel
    ```
    dotnet "C:/Program Files/dotnet/sdk/10.0.100/vstest.console.dll" VS/CSHARP/asm-sim-tests/bin/Debug/net10.0-windows/asm-sim-tests.dll
    ```
-   Expected: **149 passed, 28 skipped, 0 failed**.
+   Expected: **152 passed, 28 skipped, 0 failed**.
 7. Verify `libz3.dll` appears in `VS/CSHARP/asm-dude2-ls/bin/Debug/net10.0-windows/`.
 
 The NuGet source `local-z3` → `local-nuget/` is already configured in `NuGet.config`.
 
 ---
 
-### Z3 Context Lifecycle Bug in DynamicFlow (Regression)
+### Z3 Context Lifecycle Bug in DynamicFlow (Regression) — ✅ FIXED (2026-06-03)
 
-**Status**: Tests skipped, awaiting architectural fix
+**Status**: RESOLVED via the shared-context rewrite (Phase 1). The 25 previously-skipped DynamicFlow tests (`Test_DynamicFlow` class, `Test_BitTricks_LegatosMultiplier`, the `Test_Runner_*` jump/merge tests) are re-enabled and pass; `asm-sim-tests` is now 178 passed / 0 failed / 3 skipped.
 
-**Affected tests** (27 DynamicFlow-related, 28 total skipped):
-- `Test_DynamicFlow` class (2 tests) in `Test_ExecutionTree.cs`
-- `Test_BitTricks_LegatosMultiplier` in `Test_BitTricks.cs`
-- 24 tests in `Test_Runner.cs` (all except `Test_Runner_Several_Mnemonics`)
+**Was**: each `State`/`StateUpdate`/`OpcodeBase` created its OWN Z3 `Context`, so `DynamicFlow` state-merging translated expressions between contexts and crashed (AV 0xC0000005 in `BranchInfo.Translate` → `Z3_translate`) when a source context had been disposed.
 
-**Root cause**: `StateUpdate` objects create their own Z3 contexts. When state merging happens in `DynamicFlow`, `BranchInfo.Translate` attempts to translate Z3 expressions between contexts, but source contexts may already be disposed.
+**Fix**: `Tools.SharedCtx` carries one Z3 `Context` per simulation unit. `State`/`StateUpdate`/`OpcodeBase` BORROW it when set (tracked by an `ownsCtx_` flag; they don't dispose a borrowed context). `DynamicFlow` creates and owns one `Context`, sets it on its internal `Tools`, and disposes it last (after the graph's borrowing states/updates). With everything in one context, the cross-context `Translate` calls become identities and the merge AV is gone. (See `VS/CSHARP/asm-sim-lib/Z3_CONTEXT_LIFECYCLE_BUG.md` and `INCREMENTAL_SIM_PLAN.md`.)
 
-**Crash location**: `BranchInfo.Translate` → `Z3_translate` native call (0xC0000005)
-
-**Key code locations**:
-- `StateUpdate.cs` lines 139, 153 - context creation
-- `BranchInfoStore.cs` line 211 - translation call
-- `BranchInfo.cs` line 45 - crash site
-- `DynamicFlow.cs` line 800 - `using` block that disposes context prematurely
-
-**Workaround**: Tests are marked with `[Ignore]` attribute. The working test `Test_Runner_Several_Mnemonics` uses `SimpleStep` instead of `DynamicFlow`.
-
-**Fix approach**: Requires architectural changes to either:
-1. Use a single shared Z3 context across all operations, or
-2. Translate expressions immediately when stored rather than on retrieval
+**Next (incremental sim)**: the shared context is per-`DynamicFlow`; the planned next step is per-**CFG-component** contexts + reusing unaffected components on edit (`StaticFlow.ComputeLineToComponent`). See `INCREMENTAL_SIM_PLAN.md` Phases 2–3.
 
 ## Development Workflow
 

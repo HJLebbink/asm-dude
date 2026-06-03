@@ -75,7 +75,6 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        [Ignore("Z3 context lifecycle bug in DynamicFlow (regression) - see Test_DynamicFlow class comment in Test_ExecutionTree.cs")]
         public void Test_BitTricks_LegatosMultiplier()
         {
             /*

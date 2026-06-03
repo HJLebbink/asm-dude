@@ -46,6 +46,10 @@ namespace AsmSim
             public readonly Tools tools_;
             protected readonly Context ctx_;
 
+            /// <summary>True iff this opcode created its own Context (must dispose it); false when it
+            /// borrows <see cref="Tools.SharedCtx"/> (the simulation driver owns it).</summary>
+            private readonly bool ownsCtx_;
+
             protected (string prevKey, string nextKey, string nextKeyBranch) keys_;
 
             private bool halted_;
@@ -95,7 +99,16 @@ namespace AsmSim
                 this.keys_ = keys;
                 try
                 {
-                    this.ctx_ = new Context(t.ContextSettings);
+                    if (t.SharedCtx != null)
+                    {
+                        this.ctx_ = t.SharedCtx;
+                        this.ownsCtx_ = false;
+                    }
+                    else
+                    {
+                        this.ctx_ = new Context(t.ContextSettings);
+                        this.ownsCtx_ = true;
+                    }
                 }
                 catch
                 {
@@ -419,8 +432,12 @@ namespace AsmSim
             {
                 if (disposing)
                 {
-                    // free managed resources
-                    this.ctx_?.Dispose();
+                    // free managed resources — only dispose the Context if this opcode created it
+                    // (not a borrowed shared one).
+                    if (this.ownsCtx_)
+                    {
+                        this.ctx_?.Dispose();
+                    }
                     /* // TODO HJ 26 okt 2019: why does disposing this does not work?
                     if (this.branchUpdate_ != null)
                     {

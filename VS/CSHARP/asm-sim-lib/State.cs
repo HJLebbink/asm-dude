@@ -44,6 +44,13 @@ namespace AsmSim
 
         private readonly Context ctx_;
 
+        /// <summary>
+        /// True when this State created its own Z3 Context (must dispose it).
+        /// False when this State borrows a shared Context from the caller (must NOT dispose it —
+        /// the owner is responsible, and must outlive every State that borrows it).
+        /// </summary>
+        private readonly bool ownsCtx_;
+
         public Context Ctx => this.ctx_;
 
         public Solver Solver { get; private set; }
@@ -74,11 +81,38 @@ namespace AsmSim
 
         #region Constructors
 
-        /// <summary>Private constructor for internal use</summary>
+        /// <summary>
+        /// Private constructor. If the Tools carries a <see cref="Tools.SharedCtx"/> it BORROWS that
+        /// shared Context (all states in the simulation unit share one context); otherwise it creates
+        /// and OWNS a new Context (legacy behavior).
+        /// </summary>
         private State(Tools tools)
         {
             this.tools_ = new Tools(tools);
-            this.ctx_ = new Context(this.tools_.ContextSettings); // housekeeping in Dispose();
+            if (this.tools_.SharedCtx != null)
+            {
+                this.ctx_ = this.tools_.SharedCtx;
+                this.ownsCtx_ = false;
+            }
+            else
+            {
+                this.ctx_ = new Context(this.tools_.ContextSettings); // housekeeping in Dispose();
+                this.ownsCtx_ = true;
+            }
+            this.Solver = MakeSolver(this.ctx_, this.tools_.SolverSetting);
+            this.Solver_U = MakeSolver(this.ctx_, this.tools_.SolverSetting);
+            this.branchInfoStore_ = new BranchInfoStore(this.ctx_);
+            this.cached_Reg_Values_ = new Dictionary<Rn, Tv[]>();
+            this.cached_Flag_Values_ = new Dictionary<Flags, Tv>();
+        }
+
+        /// <summary>Private constructor: BORROWS an existing Z3 Context (does not own/dispose it).</summary>
+        private State(Context ctx, Tools tools)
+        {
+            ArgumentNullException.ThrowIfNull(ctx);
+            this.tools_ = new Tools(tools);
+            this.ctx_ = ctx;
+            this.ownsCtx_ = false;
             this.Solver = MakeSolver(this.ctx_, this.tools_.SolverSetting);
             this.Solver_U = MakeSolver(this.ctx_, this.tools_.SolverSetting);
             this.branchInfoStore_ = new BranchInfoStore(this.ctx_);
@@ -100,7 +134,7 @@ namespace AsmSim
             return s;
         }
 
-        /// <summary>Regular constructor</summary>
+        /// <summary>Regular constructor: creates and OWNS a new Z3 Context.</summary>
         public State(Tools tools, string tailKey, string headKey)
             : this(tools)
         {
@@ -108,9 +142,25 @@ namespace AsmSim
             this.HeadKey = headKey;
         }
 
-        /// <summary>Copy constructor</summary>
+        /// <summary>
+        /// Shared-context constructor: uses the provided Z3 <paramref name="ctx"/> without owning it.
+        /// The caller must keep <paramref name="ctx"/> alive for as long as this State (and every State
+        /// derived from it via the copy constructor) is in use, and dispose the owner LAST.
+        /// </summary>
+        public State(Context ctx, Tools tools, string tailKey, string headKey)
+            : this(ctx, tools)
+        {
+            this.TailKey = tailKey;
+            this.HeadKey = headKey;
+        }
+
+        /// <summary>
+        /// Copy constructor: BORROWS the source state's Z3 Context (does not own it). Because both
+        /// states share one Context, the assertion copy in <see cref="Copy"/> skips Z3 Translate.
+        /// The owning State must be disposed AFTER all copies made from it.
+        /// </summary>
         public State(State other)
-            : this(other.Tools)
+            : this(other.ctx_, other.Tools)
         {
             ArgumentNullException.ThrowIfNull(other);
             lock (this.ctxLock_)
@@ -135,22 +185,23 @@ namespace AsmSim
                 other.HeadKey = this.HeadKey;
                 this.UndefGrounding = false;
 
-                Context ctx = other.ctx_;
+                // When both states share the same Context, Z3 Translate is a no-op — skip it.
+                bool sameCtx = ReferenceEquals(this.ctx_, other.ctx_);
                 {
                     other.Solver.Reset();
-                    other.Assert(this.Solver.Assertions, false, true);
+                    other.Assert(this.Solver.Assertions, false, translate: !sameCtx);
                     other.solver_Dirty = true;
                 }
                 {
                     other.Solver_U.Reset();
-                    other.Assert(this.Solver_U.Assertions, true, true);
+                    other.Assert(this.Solver_U.Assertions, true, translate: !sameCtx);
                     other.solver_U_Dirty = true;
                 }
                 {
                     other.BranchInfoStore.Clear();
                     foreach (BranchInfo v in this.BranchInfoStore.Values)
                     {
-                        other.BranchInfoStore.Add(v, true);
+                        other.BranchInfoStore.Add(v, translate: !sameCtx);
                     }
                 }
             }
@@ -1214,7 +1265,13 @@ namespace AsmSim
                 {
                     this.Solver.Dispose();
                     this.Solver_U.Dispose();
-                    this.ctx_.Dispose();
+                    // Only dispose the Context if this State created it. A borrowed (shared) Context
+                    // is owned by the caller — disposing it here would free it out from under the
+                    // other States that share it (use-after-free / AV).
+                    if (this.ownsCtx_)
+                    {
+                        this.ctx_.Dispose();
+                    }
                 }
             }
             // free native resources if there are any.

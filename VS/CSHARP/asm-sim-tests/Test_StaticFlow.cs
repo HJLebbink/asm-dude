@@ -406,5 +406,42 @@ namespace unit_tests_asm_z3
                 Assert.IsFalse(isLoopMergePoint);
             }
         }
+
+        [TestMethod]
+        public void Test_StaticFlow_ConnectedComponents_SeparateFunctions()
+        {
+            // Two functions with no fall-through or jump between them: the first jumps straight to
+            // 'main', RET ends each, and nothing jumps into 'deadfunc'. They must land in DIFFERENT
+            // weakly-connected components — the basis for per-component incremental simulation
+            // (editing one function must not invalidate the Z3 state of the other).
+            string programStr =
+                "           jmp     main                 ;line 0       " + Environment.NewLine +
+                "deadfunc:                               ;line 1       " + Environment.NewLine +
+                "           mov     rax,        1        ;line 2       " + Environment.NewLine +
+                "           ret                          ;line 3       " + Environment.NewLine +
+                "main:                                   ;line 4       " + Environment.NewLine +
+                "           mov     rbx,        2        ;line 5       " + Environment.NewLine +
+                "           ret                          ;line 6       ";
+
+            StaticFlow sFlow = new(new Tools());
+            sFlow.Update(programStr, removeEmptyLines: false);
+            if (LogToDisplay)
+            {
+                Console.WriteLine(sFlow);
+            }
+
+            IReadOnlyDictionary<int, int> comp = sFlow.ComputeLineToComponent();
+
+            int cMain = comp[0];   // 'jmp main' cluster
+            int cDead = comp[1];   // 'deadfunc' island
+
+            Assert.AreNotEqual(cMain, cDead, "the two functions must be in different components");
+            Assert.AreEqual(cMain, comp[4], "jmp target 'main' shares the jmp's component");
+            Assert.AreEqual(cMain, comp[5]);
+            Assert.AreEqual(cMain, comp[6]);
+            Assert.AreEqual(cDead, comp[2], "deadfunc body shares its component");
+            Assert.AreEqual(cDead, comp[3]);
+            Assert.AreEqual(2, new HashSet<int>(comp.Values).Count, "exactly two clusters");
+        }
     }
 }

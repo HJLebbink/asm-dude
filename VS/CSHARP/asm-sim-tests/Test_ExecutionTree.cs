@@ -33,22 +33,16 @@ namespace unit_tests_asm_z3
     using System.Globalization;
 
     /// <summary>
-    /// NOTE: These tests used to work. A regression was introduced at some point.
+    /// These tests exercise DynamicFlow state-merging. They were [Ignore]d for a long time due to a
+    /// Z3 context-lifecycle regression: each State/StateUpdate created its OWN Z3 Context, so merging
+    /// translated expressions between contexts and crashed (Access Violation in BranchInfo.Translate)
+    /// when a source context had been disposed.
     ///
-    /// These tests are ignored due to a Z3 context lifecycle bug in DynamicFlow.
-    /// Root cause: StateUpdate objects create their own Z3 contexts. When state merging
-    /// happens, BranchInfo.Translate attempts to translate expressions between contexts,
-    /// but source contexts may be disposed. Fix requires architectural changes to use
-    /// a single shared context or translate expressions immediately when stored.
-    ///
-    /// Crash location: BranchInfo.Translate -> Z3_translate native call
-    /// See: StateUpdate.cs lines 139, 153 (context creation)
-    ///      BranchInfoStore.cs line 211 (translation call)
-    ///      BranchInfo.cs line 45 (crash site)
-    ///      DynamicFlow.cs line 800 (using block that disposes context prematurely)
+    /// RESOLVED (2026-06-03): every State/StateUpdate/Opcode in one DynamicFlow now shares a single
+    /// Context (Tools.SharedCtx, owned by the DynamicFlow), so cross-context Translate is gone. These
+    /// tests are re-enabled. See VS/CSHARP/asm-sim-lib/Z3_CONTEXT_LIFECYCLE_BUG.md.
     /// </summary>
     [TestClass]
-    [Ignore("Z3 context lifecycle bug - BranchInfo.Translate crashes when source context is disposed (regression)")]
     public class Test_DynamicFlow
     {
         private const bool LogToDisplay = AsmTestTools.LOG_TO_DISPLAY;

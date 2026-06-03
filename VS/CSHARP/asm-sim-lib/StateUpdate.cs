@@ -36,6 +36,10 @@ namespace AsmSim
         #region Fields
         private readonly Tools tools_;
         private readonly Context ctx_;
+
+        /// <summary>True iff this StateUpdate created its own Context (must dispose it); false when it
+        /// borrows <see cref="Tools.SharedCtx"/> (the simulation driver owns it).</summary>
+        private readonly bool ownsCtx_;
         private string? nextKey_;
         private readonly string prevKey_Regular_;
         private readonly string? prevKey_Branch_;
@@ -134,7 +138,16 @@ namespace AsmSim
             this.prevKey_Branch_ = null;
             this.nextKey_ = nextKey;
             this.tools_ = tools;
-            this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
+            if (tools.SharedCtx != null)
+            {
+                this.ctx_ = tools.SharedCtx;
+                this.ownsCtx_ = false;
+            }
+            else
+            {
+                this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
+                this.ownsCtx_ = true;
+            }
             this.Empty = true;
         }
 
@@ -146,7 +159,17 @@ namespace AsmSim
             ArgumentNullException.ThrowIfNull(tools);
             ArgumentNullException.ThrowIfNull(branchCondition);
 
-            this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
+            if (tools.SharedCtx != null)
+            {
+                this.ctx_ = tools.SharedCtx;
+                this.ownsCtx_ = false;
+            }
+            else
+            {
+                this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
+                this.ownsCtx_ = true;
+            }
+            // When branchCondition is already in ctx_ (shared context), Translate is an identity.
             this.branch_Condition_ = branchCondition.Translate(this.ctx_) as BoolExpr;
             this.prevKey_Regular_ = prevKey_Regular;
             this.prevKey_Branch_ = prevKey_Branch;
@@ -1176,7 +1199,11 @@ namespace AsmSim
                     //TODO HJ 26-10-2019 why when when branch_Condition_ is disposed Get_Private will throw
                     //this.branch_Condition_?.Dispose();
 
-                    this.ctx_.Dispose();
+                    // Only dispose the Context if this StateUpdate created it (not a borrowed shared one).
+                    if (this.ownsCtx_)
+                    {
+                        this.ctx_.Dispose();
+                    }
                 }
             }
             // free native resources if there are any.

@@ -301,6 +301,77 @@ namespace AsmSim
             }
         }
 
+        /// <summary>
+        /// Partition the code lines into weakly-connected components of the control-flow graph:
+        /// two lines share a component iff a chain of CFG edges (followed in either direction)
+        /// connects them. Unconnected code clusters — e.g. separate functions with no fall-through
+        /// or jump between them — land in different components.
+        ///
+        /// Returns a map from line number to a stable component id (the smallest line number in that
+        /// component). This is the intended unit of incremental simulation: an edit only invalidates
+        /// the component(s) it touches; the Z3 state of other components can be reused untouched.
+        /// </summary>
+        public IReadOnlyDictionary<int, int> ComputeLineToComponent()
+        {
+            // Union-find over the CFG vertices; union each vertex with its successors (edges treated
+            // as undirected, giving weakly-connected components). The component id is the smallest
+            // line number in the component, so it is stable and human-meaningful.
+            Dictionary<int, int> parent = [];
+
+            int Find(int x)
+            {
+                int root = x;
+                while (parent[root] != root)
+                {
+                    root = parent[root];
+                }
+                while (parent[x] != root) // path compression
+                {
+                    int next = parent[x];
+                    parent[x] = root;
+                    x = next;
+                }
+                return root;
+            }
+
+            void Union(int a, int b)
+            {
+                int ra = Find(a);
+                int rb = Find(b);
+                if (ra == rb)
+                {
+                    return;
+                }
+                if (ra < rb)
+                {
+                    parent[rb] = ra;
+                }
+                else
+                {
+                    parent[ra] = rb;
+                }
+            }
+
+            foreach (int v in this.graph_.Vertices)
+            {
+                parent[v] = v;
+            }
+            foreach (int v in this.graph_.Vertices)
+            {
+                foreach (TaggedEdge<int, bool> e in this.graph_.OutEdges(v))
+                {
+                    Union(v, e.Target);
+                }
+            }
+
+            Dictionary<int, int> result = new(parent.Count);
+            foreach (int line in parent.Keys)
+            {
+                result[line] = Find(line);
+            }
+            return result;
+        }
+
         /// <summary>A BranchPoint is an code line that has two next states (that need not be different)</summary>
         public bool Is_Branch_Point(int lineNumber)
         {

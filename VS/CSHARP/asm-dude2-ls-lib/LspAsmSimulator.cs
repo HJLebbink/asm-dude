@@ -783,23 +783,23 @@ namespace AsmDude2LS
                     Log($"[THREAD] Line {i}: {mnemonic} done");
                 }
 
-                // Finalize: attach owned states. Diagnostics and strings were already written incrementally.
+                // Finalize. The per-line state STRINGS were already written to the cache
+                // incrementally; the read paths (GetCachedString / GetSimStatesSummary) use ONLY those
+                // strings and never touch the live AsmSimState objects again. Each AsmSimState owns a
+                // heavy Z3 native Context, so retaining one per line kept the whole document's worth of
+                // Z3 contexts alive for as long as the document was open — GiBs of *native* memory that
+                // the GC can't see (observed ~18 GiB for a ~140-line file, idle overnight). Dispose them
+                // now; the cached strings remain valid (plain managed strings, independent of Z3).
+                bool stillCurrent;
                 lock (this.lockObj_)
                 {
-                    if (ct.IsCancellationRequested
-                        || !this.simVersion_.TryGetValue(uri, out long curVer) || curVer != version)
-                    {
-                        DisposeList(ownedStates);
-                        return;
-                    }
-                    if (this.cache_.TryGetValue(uri, out DocCache? entry))
-                    {
-                        ownedStates.ForEach(s => entry.ownedStates.Add(s));
-                    }
-                    else
-                    {
-                        DisposeList(ownedStates);
-                    }
+                    stillCurrent = !ct.IsCancellationRequested
+                        && this.simVersion_.TryGetValue(uri, out long curVer) && curVer == version;
+                    DisposeList(ownedStates);
+                }
+                if (!stillCurrent)
+                {
+                    return;
                 }
 
                 Log($"[THREAD] SUCCESS: {linesWritten} lines written, {newDiagnostics.Count} diagnostics");
@@ -912,9 +912,14 @@ namespace AsmDude2LS
 
         private static void DisposeList(List<AsmSimState> states)
         {
-            foreach (AsmSimState s in states)
+            // Dispose in REVERSE creation order. Under the shared-context model a state created by
+            // the copy constructor borrows the context of the state it was copied from; the original
+            // (lower index) owns the context and must be disposed LAST, after every state that shares
+            // it has released its solvers. Disposing forward would free the context out from under
+            // later states → use-after-free / AV.
+            for (int i = states.Count - 1; i >= 0; i--)
             {
-                s.Dispose();
+                states[i].Dispose();
             }
         }
 

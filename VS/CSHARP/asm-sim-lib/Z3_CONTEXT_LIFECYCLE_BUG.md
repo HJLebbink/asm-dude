@@ -1,6 +1,18 @@
-# Z3 Context Lifecycle Bug in AsmSim
+# Z3 Context Lifecycle Bug in AsmSim — ✅ RESOLVED (2026-06-03)
 
-## Executive Summary
+## Resolution
+
+Fixed by the **shared-context rewrite** (Phase 1 of `INCREMENTAL_SIM_PLAN.md`). `Tools.SharedCtx` now
+carries one Z3 `Context` per simulation unit; `State`/`StateUpdate`/`OpcodeBase` borrow it (with an
+`ownsCtx_` flag guarding disposal), and `DynamicFlow` owns one `Context`, sets it on its `Tools`, and
+disposes it last. With everything in a single context, the cross-context `Translate` calls in
+`Merge_State_Update_LOCAL` are identities, so the AV is gone. The 25 previously-skipped DynamicFlow
+tests are re-enabled and pass (`asm-sim-tests`: 178 passed / 0 failed / 3 skipped). The historical
+analysis below is kept for reference.
+
+---
+
+## Executive Summary (historical)
 
 **Location:** `DynamicFlow.cs:800-822`  
 **Severity:** Critical (Access Violation 0xC0000005)  

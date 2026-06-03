@@ -50,6 +50,7 @@ namespace AsmSim
             this.Quiet = other.Quiet;
             this.ShowUndefConstraints = other.ShowUndefConstraints;
             this.StateConfig = other.StateConfig;
+            this.SharedCtx = other.SharedCtx; // share the same Z3 Context reference (by design)
         }
 
         public Tools(Dictionary<string, string> contextSettings, string solverSetting = "")
@@ -65,6 +66,16 @@ namespace AsmSim
         }
 
         public Dictionary<string, string> ContextSettings { get; private set; }
+
+        /// <summary>
+        /// Optional shared Z3 Context for one simulation unit (e.g. a CFG component). When non-null,
+        /// every <c>State</c>/<c>StateUpdate</c>/<c>OpcodeBase</c> created from this <see cref="Tools"/>
+        /// BORROWS this Context instead of allocating its own — so all states in the unit share one
+        /// context (no cross-context Translate, no per-line context bloat). Tools does NOT own or
+        /// dispose it; the simulation driver that created it is responsible. Null = legacy behavior
+        /// (each object allocates and owns its own Context).
+        /// </summary>
+        public Context? SharedCtx { get; set; }
 
         public string SolverSetting { get; private set; } = "";
 

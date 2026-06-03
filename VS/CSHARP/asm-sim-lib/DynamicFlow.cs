@@ -38,6 +38,16 @@ namespace AsmSim
         #region Fields
         private readonly Tools tools_;
 
+        /// <summary>
+        /// The single Z3 Context shared by every State/StateUpdate/Opcode this flow creates (via
+        /// <see cref="Tools.SharedCtx"/> on <see cref="tools_"/>). Owned here and disposed in Dispose()
+        /// AFTER all borrowing states/updates are released. Sharing one context across the flow removes
+        /// the cross-context Translate that crashed state-merging, and avoids one Context per line.
+        /// NOTE: States returned by Create_States_* borrow this context — keep the DynamicFlow alive
+        /// while using them, and dispose it only afterwards.
+        /// </summary>
+        private readonly Context ctx_;
+
         private readonly BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> graph_;
         private readonly IDictionary<int, string> lineNumber_2_Key_;
         private readonly IDictionary<string, int> key_2_LineNumber_;
@@ -48,7 +58,9 @@ namespace AsmSim
         #region Constructors
         public DynamicFlow(Tools tools)
         {
-            this.tools_ = tools;
+            ArgumentNullException.ThrowIfNull(tools);
+            this.ctx_ = new Context(tools.ContextSettings);
+            this.tools_ = new Tools(tools) { SharedCtx = this.ctx_ };
             this.graph_ = new BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>>(true); // allowParallelEdges because of conditional branches to the next line of code
             this.lineNumber_2_Key_ = new Dictionary<int, string>();
             this.key_2_LineNumber_ = new Dictionary<string, int>();
@@ -797,26 +809,33 @@ namespace AsmSim
                         state2.Update_Forward(update2);
                     }
 
-                    BoolExpr? bc = null;
                     {
-                        using (Context ctx = new(this.tools_.ContextSettings))
-                        {
-                            string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this.graph_);
-                            BranchInfo branchInfo = Get_Branch_Condition_LOCAL(branchKey);
-                            if (branchInfo == null)
-                            {
-                                Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo is null. source1=" + source1 + "; source2=" + source2);
-                                bc = ctx.MkBoolConst("BC" + target);
-                            }
-                            else
-                            {
-                                bc = branchInfo.BranchCondition;
-                                sharedBranchConditions.Add(bc.ToString());
-                            }
-                        }
+                        string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this.graph_);
+                        BranchInfo branchInfo = Get_Branch_Condition_LOCAL(branchKey);
                         string nextKey3 = (counter == nBranches) ? target : target + "A" + counter;
 
-                        using StateUpdate stateUpdate = new(bc, nextKey2, nextKey1, nextKey3, this.tools_);
+                        // Build the branch condition in the SHARED context (this.ctx_) that every graph
+                        // StateUpdate already borrows, so the StateUpdate ctor's Translate is an identity
+                        // and never dereferences a disposed/foreign context (the old merge AV).
+                        //
+                        // NOT a 'using' on the StateUpdate: it is consumed below by
+                        // result_State.Update_Forward and disposed there (mergeStateUpdates loop). It
+                        // borrows the shared context, so disposing it never frees ctx_.
+                        StateUpdate stateUpdate;
+                        if (branchInfo == null)
+                        {
+                            Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo is null. source1=" + source1 + "; source2=" + source2);
+                            BoolExpr bc = this.ctx_.MkBoolConst("BC" + target);
+                            stateUpdate = new(bc, nextKey2, nextKey1, nextKey3, this.tools_);
+                        }
+                        else
+                        {
+                            // BranchCondition already lives in the shared ctx_ (the edge's StateUpdate
+                            // borrows it), so the ctor's Translate is a no-op.
+                            BoolExpr bc = branchInfo.BranchCondition;
+                            sharedBranchConditions.Add(bc.ToString());
+                            stateUpdate = new(bc, nextKey2, nextKey1, nextKey3, this.tools_);
+                        }
                         nextKey1 = nextKey3;
                         mergeStateUpdates.Add(stateUpdate);
                     }
@@ -930,8 +949,10 @@ namespace AsmSim
         {
             if (disposing)
             {
-                // free managed resources
+                // free managed resources. Clear() disposes the graph's states/updates first (they
+                // borrow ctx_ and only release their solvers); then dispose the shared Context last.
                 this.Clear();
+                this.ctx_?.Dispose();
             }
             // free native resources if there are any.
         }
