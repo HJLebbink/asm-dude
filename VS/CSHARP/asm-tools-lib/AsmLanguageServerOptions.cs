@@ -167,6 +167,39 @@ public class AsmLanguageServerOptions : AsmSettingsData
                 Arch.ARCH_3DNOW => this.ARCH_3DNOW,
                 Arch.ARCH_CYRIX => this.ARCH_CYRIX,
                 Arch.ARCH_CYRIXM => this.ARCH_CYRIXM,
+
+                // rev-091 / 2026 SDM additions (user-toggleable via ArchitectureSettings, default off,
+                // consistent with the AVX-512/advanced convention). NOTE on AVX10: in the SDM virtually
+                // every EVEX instruction now lists "... OR AVX10.1", so turning AVX10 ON makes ALL those
+                // instructions visible regardless of their AVX512_* toggles (OR semantics in
+                // CalcMnemonicsSwitchedOn) — that's the correct meaning of AVX10 as a converged superset.
+                Arch.ARCH_AVX10 => this.ARCH_AVX10,
+                Arch.ARCH_AVX512_FP16 => this.ARCH_AVX512_FP16,
+                Arch.ARCH_AVX_VNNI => this.ARCH_AVX_VNNI,
+                Arch.ARCH_AVX_VNNI_INT => this.ARCH_AVX_VNNI_INT,
+                Arch.ARCH_AVX_NE_CONVERT => this.ARCH_AVX_NE_CONVERT,
+                Arch.ARCH_AVX_IFMA => this.ARCH_AVX_IFMA,
+                Arch.ARCH_AMX => this.ARCH_AMX,
+                Arch.ARCH_CMPCCXADD => this.ARCH_CMPCCXADD,
+                Arch.ARCH_CET_SS => this.ARCH_CET_SS,
+                Arch.ARCH_CET_IBT => this.ARCH_CET_IBT,
+                Arch.ARCH_KEYLOCKER => this.ARCH_KEYLOCKER,
+                Arch.ARCH_UINTR => this.ARCH_UINTR,
+                Arch.ARCH_PBNDKB => this.ARCH_PBNDKB,
+                Arch.ARCH_SMAP => this.ARCH_SMAP,
+                Arch.ARCH_SERIALIZE => this.ARCH_SERIALIZE,
+                Arch.ARCH_WBNOINVD => this.ARCH_WBNOINVD,
+                Arch.ARCH_HRESET => this.ARCH_HRESET,
+                Arch.ARCH_MSRLIST => this.ARCH_MSRLIST,
+                Arch.ARCH_WRMSRNS => this.ARCH_WRMSRNS,
+                Arch.ARCH_PTWRITE => this.ARCH_PTWRITE,
+                Arch.ARCH_TSXLDTRK => this.ARCH_TSXLDTRK,
+                Arch.ARCH_PREFETCHI => this.ARCH_PREFETCHI,
+                Arch.ARCH_SHA512 => this.ARCH_SHA512,
+                Arch.ARCH_SM3 => this.ARCH_SM3,
+                Arch.ARCH_SM4 => this.ARCH_SM4,
+                Arch.ARCH_MOVBE => this.ARCH_MOVBE,
+                Arch.ARCH_PKU => this.ARCH_PKU,
                 _ => false,// TODO return error;
             };
         }

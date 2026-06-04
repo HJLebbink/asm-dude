@@ -29,6 +29,7 @@ namespace unit_tests
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
 
     [TestClass]
     public class Test_AsmSourceTools
@@ -343,6 +344,69 @@ namespace unit_tests
                 Assert.AreEqual(ArchTools.ParseArch(ArchTools.ToString(x), true, true), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
+        }
+
+        // Canonicalise a DNF requirement for comparison: members sorted within each AND-group,
+        // groups sorted; '+' joins AND-members, '|' joins OR-groups. Uses only ArchTools.ToString
+        // (rendering), so a wrong grouping from the parser under test produces a different string.
+        private static string NormalizeDnf(Arch[][] dnf)
+        {
+            var groups = new List<string>();
+            foreach (Arch[] g in dnf)
+            {
+                groups.Add(string.Join("+", g.Select(a => ArchTools.ToString(a)).OrderBy(x => x)));
+            }
+            groups.Sort(StringComparer.Ordinal);
+            return string.Join("|", groups);
+        }
+
+        [TestMethod]
+        public void Test_ArchTools_ParseArchExpression_Dnf()
+        {
+            // (VL AND F) OR AVX10.1  =>  (AVX512_VL AND AVX512_F) OR AVX10
+            Assert.AreEqual(
+                "AVX10|AVX512_F+AVX512_VL",
+                NormalizeDnf(ArchTools.ParseArchExpression("(AVX512VL AND AVX512F) OR AVX10.1")));
+
+            // simple OR
+            Assert.AreEqual(
+                "AVX10|AVX512_F",
+                NormalizeDnf(ArchTools.ParseArchExpression("AVX512F OR AVX10.1")));
+
+            // distribution of a trailing implicit-AND factor over an OR group:
+            // (F OR AVX10.1) GFNI => (F AND GFNI) OR (AVX10 AND GFNI)   [GFNI maps to AVX512_GFNI]
+            Assert.AreEqual(
+                "AVX10+AVX512_GFNI|AVX512_F+AVX512_GFNI",
+                NormalizeDnf(ArchTools.ParseArchExpression("(AVX512F OR AVX10.1) GFNI")));
+
+            // implicit AND by juxtaposition
+            Assert.AreEqual("AVX+SM4", NormalizeDnf(ArchTools.ParseArchExpression("AVX SM4")));
+
+            // single flag
+            Assert.AreEqual("AVX", NormalizeDnf(ArchTools.ParseArchExpression("AVX")));
+
+            // empty / unparseable => no constraint (empty DNF)
+            Assert.AreEqual(string.Empty, NormalizeDnf(ArchTools.ParseArchExpression(string.Empty)));
+            Assert.AreEqual(0, ArchTools.ParseArchExpression(string.Empty).Length);
+        }
+
+        [TestMethod]
+        public void Test_ArchTools_ParseArchDnf_AndOr_BackwardCompatible()
+        {
+            // '+' = AND within a group, ',' = OR between groups
+            Assert.AreEqual(
+                "AVX10|AVX512_F+AVX512_VL",
+                NormalizeDnf(ArchTools.ParseArchDnf("AVX512_VL+AVX512_F,AVX10", false, false)));
+
+            // backward compatible: a comma-only list (the historical format) parses as a pure OR of
+            // singleton groups — so old signature files keep their exact meaning.
+            Assert.AreEqual("AVX|AVX2", NormalizeDnf(ArchTools.ParseArchDnf("AVX,AVX2", false, false)));
+
+            // ToStringDnf writes the machine format and ParseArchDnf reads it back unchanged
+            Arch[][] dnf = [[Arch.ARCH_AVX512_VL, Arch.ARCH_AVX512_F], [Arch.ARCH_AVX10]];
+            string s = ArchTools.ToStringDnf(dnf);
+            Assert.AreEqual("AVX512_VL+AVX512_F,AVX10", s);
+            Assert.AreEqual(NormalizeDnf(dnf), NormalizeDnf(ArchTools.ParseArchDnf(s, false, false)));
         }
 
         [TestMethod]

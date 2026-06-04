@@ -192,8 +192,8 @@ namespace AsmDude2LS
 
             var operandList = new List<IList<AsmSignatureEnum>>();
 
-            var archs = ArchTools.ParseArchList(arch, false, true);
-            if (archs[0] == Arch.ARCH_NONE)
+            var archs = ArchTools.ParseArchDnf(arch, false, true);
+            if (archs.Length == 0)
             {
                 AsmDudeLog.Warning($"MnemonicStore: CreateAsmSignatureElement: arch is \"{arch}\": mnemonic={mnemonic}; doc ={doc}");
             }
@@ -339,7 +339,10 @@ namespace AsmDude2LS
                         HashSet<Arch> archs = [];
                         foreach (AsmSignatureInformation signatureElement in value)
                         {
-                            archs.UnionWith(signatureElement.Arch);
+                            foreach (Arch[] group in signatureElement.Arch) // flatten DNF for the display union
+                            {
+                                archs.UnionWith(group);
+                            }
                         }
                         arch[key] = [.. archs];
                     }
@@ -421,7 +424,10 @@ namespace AsmDude2LS
                         HashSet<Arch> archs = [];
                         foreach (AsmSignatureInformation signatureElement in value)
                         {
-                            archs.UnionWith(signatureElement.Arch);
+                            foreach (Arch[] group in signatureElement.Arch) // flatten DNF for the display union
+                            {
+                                archs.UnionWith(group);
+                            }
                         }
                         arch[key] = [.. archs];
                     }
@@ -509,9 +515,13 @@ namespace AsmDude2LS
             HashSet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
             foreach (Mnemonic mnemonic in Enum.GetValues<Mnemonic>())
             {
-                foreach (Arch a in this.GetArch(mnemonic))
+                // A mnemonic is offered if ANY of its signature forms is allowed under the selected
+                // architectures. Is_Allowed honours the DNF requirement per form, so e.g. the VADDPS
+                // XMM form ((AVX512_VL AND AVX512_F) OR AVX10) appears only when both VL and F are on,
+                // or when AVX10 is on — not when only one of VL/F is enabled.
+                foreach (AsmSignatureInformation sig in this.GetSignatures(mnemonic))
                 {
-                    if (arch_switched_on.Contains(a))
+                    if (sig.Is_Allowed(arch_switched_on))
                     {
                         result.Add(mnemonic);
                         break;

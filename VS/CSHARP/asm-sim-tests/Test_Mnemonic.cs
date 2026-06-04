@@ -1379,8 +1379,8 @@ namespace unit_tests_asm_z3
                 _ = ToolsFlags.Create_OF_Add(state.Ctx.MkBV(a, nBits), state.Ctx.MkBV(b, nBits), nBits, state.Ctx);
                 if (LogToDisplay)
                 {
-                    BoolExpr of;
-                    Console.WriteLine(of);
+                    //BoolExpr of;
+                    //Console.WriteLine(of);
                 }
 
                 AsmTestTools.AreEqual(Flags.OF, true, state);
@@ -1407,8 +1407,8 @@ namespace unit_tests_asm_z3
                 _ = ToolsFlags.Create_OF_Add(state.Ctx.MkBV(a, nBits), state.Ctx.MkBV(b, nBits), nBits, state.Ctx);
                 if (LogToDisplay)
                 {
-                    BoolExpr of;
-                    Console.WriteLine(of);
+                    //BoolExpr of;
+                    //Console.WriteLine(of);
                 }
 
                 AsmTestTools.AreEqual(Flags.OF, false, state);

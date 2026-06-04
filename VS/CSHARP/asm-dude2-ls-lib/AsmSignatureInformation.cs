@@ -35,7 +35,13 @@ public class AsmSignatureInformation
 {
     public required SignatureInformation SignatureInformation;
     public Mnemonic Mnemonic;
-    public required Arch[] Arch;
+
+    /// <summary>
+    /// Architecture requirement in disjunctive normal form (DNF): outer array = OR-alternatives,
+    /// inner array = AND-ed members. E.g. [[VL,F],[AVX10]] means (AVX512_VL AND AVX512_F) OR AVX10.
+    /// An empty outer array means "no architecture constraint" (always allowed).
+    /// </summary>
+    public required Arch[][] Arch;
     public required IList<IList<AsmSignatureEnum>> Operands;
 
     /// <summary>Return true if this Signature Element is allowed with the constraints of the provided operand</summary>
@@ -61,15 +67,29 @@ public class AsmSignatureInformation
         return false;
     }
 
-    /// <summary>Return true if this Signature Element is allowed in the provided architectures</summary>
+    /// <summary>Return true if this Signature Element is allowed in the provided architectures.
+    /// DNF semantics: allowed iff ANY OR-group has ALL its AND-members enabled. An empty requirement
+    /// (no groups) means the instruction has no architecture gate and is always allowed.</summary>
     public bool Is_Allowed(HashSet<Arch> selectedArchitectures)
     {
         ArgumentNullException.ThrowIfNull(selectedArchitectures);
-        foreach (Arch a in this.Arch)
+        if (this.Arch.Length == 0)
         {
-            if (selectedArchitectures.Contains(a))
+            return true; // no architecture constraint (e.g. base/legacy instruction)
+        }
+        foreach (Arch[] group in this.Arch) // OR over groups
+        {
+            bool allEnabled = true;
+            foreach (Arch a in group) // AND within a group
             {
-                //LanguageServer.LogInfo("AsmSignatureElement: isAllowed: selected architectures=" + ArchTools.ToString(selectedArchitectures) + "; arch = " + ArchTools.ToString(a));
+                if (!selectedArchitectures.Contains(a))
+                {
+                    allEnabled = false;
+                    break;
+                }
+            }
+            if (allEnabled)
+            {
                 return true;
             }
         }

@@ -24,6 +24,8 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
+# asm-annotate generated per-instruction markdown (deliverable is copied to the wiki repo)
+VS/CSHARP/asm-annotate/output/
 *.dropbox.attr
 *.tmp_proj
 **/.vs/*

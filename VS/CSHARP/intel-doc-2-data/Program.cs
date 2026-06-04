@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace intel_doc_2_data
 {
@@ -12,22 +13,31 @@ namespace intel_doc_2_data
         [STAThread]
         static void Main(string[] args)
         {
-            // Executable to load the AsmDude wiki pages, and turn them into source files for AsmDude
+            // Executable to load the AsmDude wiki pages, and turn them into source files for AsmDude.
+            //   args[0] = wiki doc dir   (default: the local asm-dude.wiki/doc)
+            //   args[1] = output signature file (default: ...asm-dude2-ls-lib/Resources/signature-<sdm>.txt)
 
             DateTime startTime = DateTime.Now;
 
-            Payload();
+            string wikiDir = (args.Length > 0) ? args[0] : "C:/Source/Github/asm-dude.wiki/doc";
+            string outFile = (args.Length > 1) ? args[1]
+                : "C:/Source/Github/asm-dude/VS/CSHARP/asm-dude2-ls-lib/Resources/signature-mar2026.txt";
+
+            Payload(wikiDir, outFile);
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));
-            Console.WriteLine(string.Format("Press any key to continue."));
-            Console.ReadKey();
+
+            // Only wait for a key when running interactively (skip when piped/redirected).
+            if (!Console.IsInputRedirected)
+            {
+                Console.WriteLine(string.Format("Press any key to continue."));
+                Console.ReadKey();
+            }
         }
 
-        static void Payload()
+        static void Payload(string path, string outFile)
         {
-            string path = "C:/Source/Github/asm-dude.wiki/doc";
-
             if (!Directory.Exists(path))
             {
                 Console.WriteLine("Could not find directory \"" + path + "\".");
@@ -48,6 +58,8 @@ namespace intel_doc_2_data
                 string file_Content = file_Stream.ReadToEnd();
                 (string Description, IList<Signature> Signatures) = Parse(file_Content);
                 file_Stream.Close();
+                // NOTE: the GENERAL/title line keeps the FULL description (no SP/FP abbreviation);
+                // only the per-form signature rows are abbreviated (in To_Signature) to stay compact.
 
                 sb.AppendLine(";--------------------------------------------------------");
 
@@ -55,15 +67,28 @@ namespace intel_doc_2_data
                 foreach (Signature s in Signatures)
                 {
                     mnemonics.Add(s.mnemonic);
-                    foreach (Arch a in s.archs)
+                    foreach (IList<Arch> group in s.archs)
                     {
-                        if (!dictionary.ContainsKey(a)) dictionary.Add(a, new HashSet<Mnemonic>());
-                        dictionary[a].Add(s.mnemonic);
+                        foreach (Arch a in group)
+                        {
+                            if (!dictionary.ContainsKey(a)) dictionary.Add(a, new HashSet<Mnemonic>());
+                            dictionary[a].Add(s.mnemonic);
+                        }
                     }
                 }
 
                 foreach (Mnemonic m in mnemonics)
                 {
+                    // Skip mnemonics not in the Mnemonic enum (ParseMnemonic returned NONE). Writing
+                    // them produced junk "GENERAL NONE ..." rows. A NONE here means the instruction
+                    // (e.g. an SGX leaf like EDECCSSA) is missing from asm-tools-lib/Mnemonic.cs —
+                    // add it there to get a proper signature.
+                    if (m == Mnemonic.NONE)
+                    {
+                        Console.WriteLine("Skipping NONE mnemonic in " + Path.GetFileNameWithoutExtension(filename) + " (add it to the Mnemonic enum)");
+                        continue;
+                    }
+
                     sb2.AppendLine("<tr><td><a href=\"https://github.com/HJLebbink/asm-dude/wiki/" + Path.GetFileNameWithoutExtension(filename) + "\">" + m.ToString() + "</a></td><td>" + Description + "</td><td>" + Get_Arch_Str(Signatures, m) + "</td></tr>");
 
                     #region Handle Signature File
@@ -77,10 +102,35 @@ namespace intel_doc_2_data
                     }
                     #endregion
                 }
-                File.WriteAllText(@"C:\Temp\VS\signature-dec2018.txt", sb.ToString());
             }
+
+            // Write once, after processing every page (was re-writing the whole file each iteration).
+            string outDir = Path.GetDirectoryName(outFile);
+            if (!string.IsNullOrEmpty(outDir)) Directory.CreateDirectory(outDir);
+            File.WriteAllText(outFile, sb.ToString());
+            Console.WriteLine("Wrote " + sb.ToString().Split('\n').Length + " lines to " + outFile);
+
             sb2.AppendLine("</table>");
-            File.WriteAllText(@"C:\Temp\VS\overview.txt", sb2.ToString());
+            File.WriteAllText(Path.Combine(outDir ?? ".", "overview.txt"), sb2.ToString());
+
+            // The wiki's Home.md IS this overview (a preamble followed by the instruction table).
+            // Update it in place: keep whatever preamble it currently has (everything before the
+            // first "<table>") and replace the table with the freshly generated one. `path` is the
+            // wiki's doc/ dir, so Home.md sits in its parent.
+            string wikiRoot = Directory.GetParent(path)?.FullName;
+            if (wikiRoot != null)
+            {
+                string homePath = Path.Combine(wikiRoot, "Home.md");
+                string preamble = "Welcome to the Asm-Dude wiki!\n\nThis wiki contains a page for every x86 instruction, generated from the official Intel SDM (see asm-dude/VS/CSHARP/asm-annotate).\n\n --- \n\n";
+                if (File.Exists(homePath))
+                {
+                    string old = File.ReadAllText(homePath);
+                    int t = old.IndexOf("<table>");
+                    if (t >= 0) preamble = old[..t];
+                }
+                File.WriteAllText(homePath, preamble + sb2.ToString());
+                Console.WriteLine("Updated wiki overview: " + homePath);
+            }
 
             foreach (Arch a in dictionary.Keys.OrderBy(f => f))
             {
@@ -105,7 +155,7 @@ namespace intel_doc_2_data
         static string Get_Arch_Str(IList<Signature> Signatures, Mnemonic m)
         {
             ISet<Arch> archs = new HashSet<Arch>();
-            foreach (Signature s in Signatures) if (s.mnemonic == m) foreach (Arch a in s.archs) archs.Add(a);
+            foreach (Signature s in Signatures) if (s.mnemonic == m) foreach (IList<Arch> group in s.archs) foreach (Arch a in group) archs.Add(a);
             string archStr = "";
             foreach (Arch a in archs) archStr += ArchTools.ToString(a) + " ";
             return archStr.TrimEnd();
@@ -113,14 +163,33 @@ namespace intel_doc_2_data
 
         static (string Description, IList<Signature> Signatures) Parse(string content)
         {
-            //1] get everting before the first occurrence of "<table>"
+            //1] get everything before the first occurrence of "<table>"
             int pos_Start_Table = content.IndexOf("<table>");
             string substr1 = content[..pos_Start_Table];
             int pos_Hyphen = Find_First_Hyphen_Position(substr1);
-            string Description = substr1[(pos_Hyphen + 1)..].Trim().Replace("\r\n", " ");
-            int pos_End_Table = content.IndexOf("</table>");
-            var table = Parse_Table(content[pos_Start_Table..pos_End_Table].Replace("<table>", ""));
-            var signatures = To_Signature(table);
+            // Collapse ALL newlines (the wiki uses LF, not CRLF) — a long title wraps across lines
+            // ("...Floating-Point\nValues"), and a newline here would split the tab-separated GENERAL
+            // line across two output lines, breaking the signature file format.
+            string Description = Regex.Replace(substr1[(pos_Hyphen + 1)..].Trim(), @"\s+", " ");
+
+            // 2] parse EVERY opcode table (a long instruction's opcode list is split across page
+            // breaks into multiple <table> blocks, each with its own "Opcode" header). Reading only
+            // the first would drop the last forms (e.g. VFNMADD231PH). Non-opcode tables (the
+            // "Instruction Operand Encoding" table) are skipped — they don't define signatures.
+            var signatures = new List<Signature>();
+            int pos = pos_Start_Table;
+            while (pos >= 0)
+            {
+                int end = content.IndexOf("</table>", pos);
+                if (end < 0) break;
+                string tableHtml = content[pos..end].Replace("<table>", "");
+                if (tableHtml.Contains("Opcode"))
+                {
+                    foreach (var s in To_Signature(Parse_Table(tableHtml)))
+                        signatures.Add(s);
+                }
+                pos = content.IndexOf("<table>", end);
+            }
             return (Description, signatures);
         }
 
@@ -129,7 +198,9 @@ namespace intel_doc_2_data
             public Mnemonic mnemonic;
             public string parameters;
             public string parameter_descriptions;
-            public IList<Arch> archs;
+
+            /// <summary>Architecture requirement in DNF: outer = OR-groups, inner = AND-members.</summary>
+            public IList<IList<Arch>> archs;
             public string description;
 
             public override readonly string ToString()
@@ -138,11 +209,9 @@ namespace intel_doc_2_data
                 sb.Append(this.mnemonic.ToString() + "\t");
                 sb.Append(this.parameters + "\t");
 
-                for (int i = 0; i < this.archs.Count; ++i)
-                {
-                    sb.Append(ArchTools.ToString(this.archs[i]));
-                    if (i < (this.archs.Count - 1)) sb.Append(',');
-                }
+                // DNF machine format: '+' between AND-members, ',' between OR-groups
+                // (e.g. "AVX512_VL+AVX512_F,AVX10").
+                sb.Append(ArchTools.ToStringDnf(this.archs));
                 sb.Append('\t');
                 sb.Append(this.parameter_descriptions + "\t");
 
@@ -221,6 +290,10 @@ namespace intel_doc_2_data
             int n_Signatures = table.Count;
             IList<Signature> Results = new List<Signature>(n_Signatures);
 
+            // Unrecognised header layout (e.g. a malformed/continuation fragment that merely contains
+            // the word "Opcode") — mnemonic_column was never set; skip rather than index out of range.
+            if (mnemonic_column < 0) return Results;
+
             for (int row_i = 1; row_i < n_Signatures; ++row_i)
             {
                 var row = table[row_i];
@@ -232,7 +305,26 @@ namespace intel_doc_2_data
                 }
                 var Parameters = Parse_Parameters(row[mnemonic_column]);
 
-                IList<Arch> archs;
+                // The 2026 tables are inconsistent about where the mnemonic sits: sometimes the
+                // "Opcode" + "Instruction" header columns are merged into column 0 of the data
+                // ("9F LAHF", Instruction cell empty), sometimes the header is the combined
+                // "Opcode/Instruction" but the data splits opcode (col0) / instruction (col1)
+                // — often with a footnote "1" shoved in as a phantom header column. When the chosen
+                // column yields no mnemonic, search the first two columns (opcode/instruction), but
+                // NOT the description column (it may name a different instruction).
+                if (Parameters.mnemonic == Mnemonic.NONE)
+                {
+                    foreach (int c in new[] { 0, 1 })
+                    {
+                        if (c == mnemonic_column || c >= row.Count) continue;
+                        var alt = Parse_Parameters(row[c]);
+                        if (alt.mnemonic != Mnemonic.NONE) { Parameters = alt; break; }
+                    }
+                }
+
+                // archs in DNF: a list of OR-groups, each an AND-list. The opcode-pattern fallbacks
+                // below are single unconditional archs, so they become a single one-member group.
+                IList<IList<Arch>> archs;
                 if (arch_column == -1)
                 {
                     string descr = " " + Parameters.Parameter_Descriptions;
@@ -241,37 +333,37 @@ namespace intel_doc_2_data
                     {
                         if (descr.Contains("R64"))
                         {
-                            archs = [Arch.ARCH_X64];
+                            archs = [[Arch.ARCH_X64]];
                         }
                         else
                         {
-                            archs = [Arch.ARCH_P6];
+                            archs = [[Arch.ARCH_P6]];
                         }
                     }
                     else if (descr.Contains("REL16") || descr.Contains("REL32"))
                     {
-                        archs = [Arch.ARCH_386];
+                        archs = [[Arch.ARCH_386]];
                     }
                     else if (descr.Contains("REL64"))
                     {
-                        archs = [Arch.ARCH_X64];
+                        archs = [[Arch.ARCH_X64]];
                     }
                     else if (descr.Contains("M64") || descr.Contains("R64") || descr.Contains("RCX"))
                     {
-                        archs = [Arch.ARCH_X64];
+                        archs = [[Arch.ARCH_X64]];
                     }
                     else if (descr.Contains("IMM32") || descr.Contains("M32") || descr.Contains("R32") || descr.Contains("ECX"))
                     {
-                        archs = [Arch.ARCH_386];
+                        archs = [[Arch.ARCH_386]];
                     }
                     else
                     {
-                        archs = [Arch.ARCH_8086];
+                        archs = [[Arch.ARCH_8086]];
                     }
                 }
                 else if (arch_column == -10)
                 {
-                    archs = [Arch.ARCH_SMX];
+                    archs = [[Arch.ARCH_SMX]];
                 }
                 else
                 {
@@ -281,15 +373,12 @@ namespace intel_doc_2_data
                     }
                     else
                     {
-                        archs = [Arch.ARCH_NONE];
+                        archs = [];
                     }
                 }
 
                 string description = (description_column < row.Count) ? row[description_column] : "";
-                description = description.
-                    Replace("floating-point", "FP").Replace("floating- point", "FP").Replace("Floating-Point", "FP").Replace("Floating- Point", "FP").
-                    Replace("double-precision", "DP").Replace("double- precision", "DP").Replace("Double-Precision", "DP").Replace("Double- Precision", "DP").
-                    Replace("single-precision", "SP").Replace("single- precision", "SP").Replace("Single-Precision", "SP").Replace("Single- Precision", "SP");
+                description = AbbreviateDescription(description);
 
                 Results.Add(new Signature
                 {
@@ -307,7 +396,9 @@ namespace intel_doc_2_data
         {
             string parameters = "";
             string parameter_descriptions = "";
-            string str2 = " " + str.Replace("*", "").Trim() + " ";
+            // Drop a stray "hyphen-space" left by a line break inside the cell ("AES- ENCWIDE128KL"
+            // -> "AESENCWIDE128KL"); a real instruction cell never contains "- ".
+            string str2 = " " + str.Replace("*", "").Replace("- ", "").Trim() + " ";
 
             str2 = str2.Replace("REP ", "REP_").Replace("REPE ", "REPE_").Replace("REPNE ", "REPNE_");
 
@@ -349,6 +440,14 @@ namespace intel_doc_2_data
 
         static string Cleanup_Parameters(string str)
         {
+            // Normalise implicit-operand angle-bracket notation FIRST — before the digit-stripping
+            // below, which would otherwise mangle "<XMM4-6>" into "<XMM-6>". Every implicit XMM
+            // form (<XMM0>, <XMM0-7>, <XMM4-6>, …) maps to the recognised XMM_ZERO token
+            // (AsmSignatureEnum.REG_XMM0); any other implicit register ("<EAX>") just loses its
+            // brackets. Leaving the angle brackets in would break signature help (unrecognised token).
+            str = Regex.Replace(str, "<[XYZ]MM[0-9][^>]*>", "XMM_ZERO");
+            str = Regex.Replace(str, "<([A-Za-z][A-Za-z0-9]*)>", "$1");
+
             var tmp = str.Replace("IMM16", "XYZZY");
             tmp = tmp.
                 Replace("+3", "").
@@ -356,7 +455,6 @@ namespace intel_doc_2_data
                 Replace("YMM1", "YMM").Replace("YMM2", "YMM").Replace("YMM3", "YMM").Replace("YMM4", "YMM").
                 Replace("ZMM1", "ZMM").Replace("ZMM2", "ZMM").Replace("ZMM3", "ZMM").
                 Replace("MM1", "MM").Replace("MM2", "MM").
-                Replace("<XMM0>", "XMM_ZERO").
                 Replace("BND1", "BND").Replace("BND2", "BND").Replace("ZMM3", "ZMM").
                 Replace("K1", "K").Replace("K2", "K").Replace("K3", "K").
                 Replace("R32A", "R32").Replace("R32B", "R32").Replace("R64A", "R64").Replace("R64B", "R64");
@@ -364,24 +462,35 @@ namespace intel_doc_2_data
             return tmp;
         }
 
-        static IList<Arch> Parse_Archs(string str)
+        /// <summary>
+        /// Shrinks the long phrases the SDM repeats in instruction descriptions to keep the
+        /// signature file compact: floating-point→FP, double-precision→DP, single-precision→SP.
+        /// Matches the hyphenated form ("single-precision"), the space form that recent SDM
+        /// revisions use ("single precision"), and the "hyphen-space" PDF artifact
+        /// ("single- precision"), case-insensitively.
+        /// </summary>
+        static string AbbreviateDescription(string description)
         {
-            IList<Arch> Results = [];
-            foreach (string s in str.Replace(",", " ").Split(' '))
-            {
-                Arch a = ArchTools.ParseArch(s.Trim(), false, false);
-                if (a != Arch.ARCH_NONE)
-                {
-                    Results.Add(a);
-                }
-            }
-            return Results;
+            description = Regex.Replace(description, @"floating[- ]+point", "FP", RegexOptions.IgnoreCase);
+            description = Regex.Replace(description, @"double[- ]+precision", "DP", RegexOptions.IgnoreCase);
+            description = Regex.Replace(description, @"single[- ]+precision", "SP", RegexOptions.IgnoreCase);
+            return description;
+        }
+
+        // Parse the SDM "CPUID Feature Flag" cell into an architecture requirement in DNF
+        // (list of OR-groups, each an AND-list). The boolean-expression parser lives in
+        // ArchTools.ParseArchExpression so it is unit-testable from asm-tools-tests.
+        static IList<IList<Arch>> Parse_Archs(string str)
+        {
+            return ArchTools.ParseArchExpression(str).Select(g => (IList<Arch>)g.ToList()).ToList();
         }
 
         static IList<IList<string>> Parse_Table(string str)
         {
             var results = new List<IList<string>>();
-            string str2 = str.Replace("<b>", "").Replace("</b>", "");
+            // Drop footnote-reference superscripts ("imm32<sup>1</sup>" -> "imm32") and bold tags
+            // so they don't leak into the parsed mnemonic/parameters.
+            string str2 = Regex.Replace(str, "<sup>[^<]*</sup>", "").Replace("<b>", "").Replace("</b>", "");
 
             while (str2.Length > 0)
             {
@@ -407,16 +516,13 @@ namespace intel_doc_2_data
         static IList<string> Parse_Table_Cells(string str)
         {
             IList<string> Results = [];
-            // remove the first <td> and all </td>
-
+            // Split on any opening <td ...> (cells may carry colspan/rowspan attributes), dropping
+            // the text before the first cell. </td> tags are removed.
             string str2 = str.Replace("</td>", "");
-            int pos_td = str2.IndexOf("<td>");
-            str2 = str2[(pos_td + 4)..];
-
-            foreach (string s1 in str2.Split("<td>"))
+            string[] parts = Regex.Split(str2, "<td[^>]*>");
+            for (int i = 1; i < parts.Length; i++) // [0] is the text before the first <td>
             {
-                string s2 = s1.Trim();
-                Results.Add(s2);
+                Results.Add(parts[i].Trim());
             }
             return Results;
         }

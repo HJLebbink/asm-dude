@@ -26,6 +26,7 @@ using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
     public enum Arch
@@ -124,6 +125,90 @@ using System.Text;
 
         /// <summary>Tiger Lake: Support for VP2INTERSECT[D,Q]</summary>
         ARCH_AVX512_VP2INTERSECT,
+
+        #region rev-091 / 2026 SDM additions
+        /// <summary>AVX-512 FP16 (half-precision) instructions: Sapphire Rapids onward.</summary>
+        ARCH_AVX512_FP16,
+
+        /// <summary>AVX10 (converged vector ISA). In the SDM most EVEX instructions are now listed as
+        /// "(AVX512xx AND AVX512xx) OR AVX10.1"; this models the AVX10.1/AVX10.2 alternative.</summary>
+        ARCH_AVX10,
+
+        /// <summary>AVX-VNNI (VEX-encoded VNNI), Alder Lake onward.</summary>
+        ARCH_AVX_VNNI,
+
+        /// <summary>CMPccXADD (compare-and-add), Sierra Forest / Granite Rapids.</summary>
+        ARCH_CMPCCXADD,
+
+        /// <summary>CET shadow stack instructions (CLRSSBSY, INCSSP*, RDSSP*, RSTORSSP, SAVEPREVSSP, WRSS*, WRUSS*).</summary>
+        ARCH_CET_SS,
+
+        /// <summary>CET indirect-branch tracking (ENDBR32/ENDBR64).</summary>
+        ARCH_CET_IBT,
+
+        /// <summary>Key Locker (AESKLE / wide KL): AES{ENC,DEC}*KL, ENCODEKEY*, LOADIWKEY.</summary>
+        ARCH_KEYLOCKER,
+
+        /// <summary>User Interrupts: CLUI, SENDUIPI, STUI, TESTUI, UIRET.</summary>
+        ARCH_UINTR,
+
+        /// <summary>Platform key/Total Storage Encryption: PBNDKB.</summary>
+        ARCH_PBNDKB,
+
+        /// <summary>Supervisor-Mode Access Prevention: CLAC, STAC.</summary>
+        ARCH_SMAP,
+
+        /// <summary>SERIALIZE instruction.</summary>
+        ARCH_SERIALIZE,
+
+        /// <summary>WBNOINVD instruction.</summary>
+        ARCH_WBNOINVD,
+
+        /// <summary>History reset: HRESET.</summary>
+        ARCH_HRESET,
+
+        /// <summary>RDMSRLIST / WRMSRLIST.</summary>
+        ARCH_MSRLIST,
+
+        /// <summary>WRMSRNS (non-serializing WRMSR).</summary>
+        ARCH_WRMSRNS,
+
+        /// <summary>PTWRITE instruction.</summary>
+        ARCH_PTWRITE,
+
+        /// <summary>TSX suspend load address tracking: XRESLDTRK, XSUSLDTRK.</summary>
+        ARCH_TSXLDTRK,
+
+        /// <summary>PREFETCHIT0 / PREFETCHIT1 (instruction prefetch).</summary>
+        ARCH_PREFETCHI,
+
+        /// <summary>SHA-512 new instructions (VSHA512*).</summary>
+        ARCH_SHA512,
+
+        /// <summary>SM3 new instructions (VSM3*).</summary>
+        ARCH_SM3,
+
+        /// <summary>SM4 new instructions (VSM4*).</summary>
+        ARCH_SM4,
+
+        /// <summary>Advanced Matrix Extensions (tiles): LDTILECFG, TILE*, TDP*, TCMM* (AMX_TILE/INT8/BF16/FP16/COMPLEX).</summary>
+        ARCH_AMX,
+
+        /// <summary>AVX VNNI INT8 / INT16 (VEX-encoded): VPDPB*/VPDPW* integer dot-product.</summary>
+        ARCH_AVX_VNNI_INT,
+
+        /// <summary>AVX-NE-CONVERT: VCVTNE*, VBCSTNE* (BF16/FP16 conversions).</summary>
+        ARCH_AVX_NE_CONVERT,
+
+        /// <summary>AVX-IFMA (VEX-encoded): VPMADD52LUQ/HUQ.</summary>
+        ARCH_AVX_IFMA,
+
+        /// <summary>MOVBE (move with byte swap).</summary>
+        ARCH_MOVBE,
+
+        /// <summary>Protection Keys for User pages (OSPKE): RDPKRU, WRPKRU.</summary>
+        ARCH_PKU,
+        #endregion
 
         #region Misc Intel
         /// <summary>Multi-Precision Add-Carry Instruction Extensions</summary>
@@ -299,6 +384,51 @@ using System.Text;
                 case "AVX512BF16": return Arch.ARCH_AVX512_BF16;
                 case "AVX512VP2INTERSECT": return Arch.ARCH_AVX512_VP2INTERSECT;
 
+                // rev-091 / 2026 SDM additions
+                case "AVX512FP16": return Arch.ARCH_AVX512_FP16;
+                case "AVX10":
+                case "AVX10.1":
+                case "AVX10.2": return Arch.ARCH_AVX10;
+                case "AVXVNNI": return Arch.ARCH_AVX_VNNI;
+                case "CMPCCXADD": return Arch.ARCH_CMPCCXADD;
+                case "CETSS": return Arch.ARCH_CET_SS;
+                case "CETIBT": return Arch.ARCH_CET_IBT;
+                case "AESKLE":
+                case "KL":
+                case "WIDEKL":
+                case "KEYLOCKER": return Arch.ARCH_KEYLOCKER;
+                case "UINTR": return Arch.ARCH_UINTR;
+                case "PBNDKB": return Arch.ARCH_PBNDKB;
+                case "SMAP": return Arch.ARCH_SMAP;
+                case "SERIALIZE": return Arch.ARCH_SERIALIZE;
+                case "WBNOINVD": return Arch.ARCH_WBNOINVD;
+                case "HRESET": return Arch.ARCH_HRESET;
+                case "MSRLIST": return Arch.ARCH_MSRLIST;
+                case "WRMSRNS": return Arch.ARCH_WRMSRNS;
+                case "PTWRITE": return Arch.ARCH_PTWRITE;
+                case "TSXLDTRK": return Arch.ARCH_TSXLDTRK;
+                case "PREFETCHI":
+                case "PREFETCHITI":
+                case "PREFETCHIT0":
+                case "PREFETCHIT1": return Arch.ARCH_PREFETCHI;
+                case "SHA512": return Arch.ARCH_SHA512;
+                case "SM3": return Arch.ARCH_SM3;
+                case "SM4": return Arch.ARCH_SM4;
+                case "AMX":
+                case "AMXTILE":
+                case "AMXINT8":
+                case "AMXBF16":
+                case "AMXFP16":
+                case "AMXCOMPLEX": return Arch.ARCH_AMX;
+                case "AVXVNNIINT":
+                case "AVXVNNIINT8":
+                case "AVXVNNIINT16": return Arch.ARCH_AVX_VNNI_INT;
+                case "AVXNECONVERT": return Arch.ARCH_AVX_NE_CONVERT;
+                case "AVXIFMA": return Arch.ARCH_AVX_IFMA;
+                case "MOVBE": return Arch.ARCH_MOVBE;
+                case "PKU":
+                case "OSPKE": return Arch.ARCH_PKU;
+
                 case "HLE": return Arch.ARCH_HLE;
                 case "BMI1": return Arch.ARCH_BMI1;
                 case "BMI2": return Arch.ARCH_BMI2;
@@ -326,6 +456,8 @@ using System.Text;
                 case "XSS": return Arch.ARCH_XSAVEOPT;
                 case "XSAVE": return Arch.ARCH_XSAVEOPT;
                 case "XSAVEC": return Arch.ARCH_XSAVEOPT;
+                case "XSAVES": return Arch.ARCH_XSAVEOPT;
+                case "XRSTORS": return Arch.ARCH_XSAVEOPT;
 
                 case "FSGSBASE": return Arch.ARCH_FSGSBASE;
                 case "LZCNT": return Arch.ARCH_LZCNT;
@@ -367,6 +499,259 @@ using System.Text;
                 result[i] = ParseArch(substrArray[i], strIsCapitals, warn);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Parse an architecture requirement in disjunctive normal form (DNF) from the signature-file
+        /// arch column: groups separated by ',' are OR-alternatives, members within a group separated
+        /// by '+' are AND-ed. E.g. "AVX512_VL+AVX512_F,AVX10" => (VL AND F) OR (AVX10). Backward
+        /// compatible: a plain comma list (no '+') yields singleton AND-groups, i.e. a pure OR — the
+        /// historical meaning of the column. Unknown tokens (ARCH_NONE) are dropped; a group that
+        /// becomes empty is dropped; an entirely empty requirement returns an empty array (= no
+        /// architecture constraint, always allowed).
+        /// </summary>
+        public static Arch[][] ParseArchDnf(string str, bool strIsCapitals, bool warn)
+        {
+            ArgumentNullException.ThrowIfNull(str);
+            var groups = new List<Arch[]>();
+            foreach (string orPart in str.Split(','))
+            {
+                var members = new List<Arch>();
+                foreach (string andPart in orPart.Split('+'))
+                {
+                    string t = andPart.Trim();
+                    if (t.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    Arch a = ParseArch(t, strIsCapitals, warn);
+                    if ((a != Arch.ARCH_NONE) && !members.Contains(a))
+                    {
+                        members.Add(a);
+                    }
+                }
+                if (members.Count > 0)
+                {
+                    groups.Add([.. members]);
+                }
+            }
+            return [.. groups];
+        }
+
+        /// <summary>Render a DNF arch requirement to the signature-file machine format
+        /// ("AVX512_VL+AVX512_F,AVX10"): '+' between AND-members, ',' between OR-groups.</summary>
+        public static string ToStringDnf(IEnumerable<IEnumerable<Arch>> dnf)
+        {
+            ArgumentNullException.ThrowIfNull(dnf);
+            var orParts = new List<string>();
+            foreach (IEnumerable<Arch> group in dnf)
+            {
+                var andParts = new List<string>();
+                foreach (Arch a in group)
+                {
+                    andParts.Add(ToString(a));
+                }
+                if (andParts.Count > 0)
+                {
+                    orParts.Add(string.Join("+", andParts));
+                }
+            }
+            return string.Join(",", orParts);
+        }
+
+        /// <summary>
+        /// Parse a CPUID feature-flag boolean expression (as written in the Intel SDM) into an
+        /// architecture requirement in disjunctive normal form (DNF). The expression is over
+        /// feature-flag tokens using AND, OR, parentheses, and implicit AND (juxtaposition), e.g.:
+        ///   "(AVX512VL AND AVX512F) OR AVX10.1" => [[VL,F],[AVX10]]
+        ///   "AVX512F OR AVX10.1"                => [[F],[AVX10]]
+        ///   "(AVX512F OR AVX10.1) GFNI"         => [[F,GFNI],[AVX10,GFNI]]
+        ///   "AVX SM4"                           => [[AVX,SM4]]
+        /// Unknown tokens (ARCH_NONE) are dropped, empty groups removed, duplicate arches/groups
+        /// de-duplicated. An empty/unparseable expression yields an empty array (no constraint).
+        /// Distinct from <see cref="ParseArchDnf"/>, which parses the already-flattened signature-file
+        /// format ("VL+F,AVX10"); this parses the original SDM boolean text.
+        /// </summary>
+        public static Arch[][] ParseArchExpression(string str)
+        {
+            ArgumentNullException.ThrowIfNull(str);
+            List<string> tokens = TokenizeArchExpr(str);
+            int pos = 0;
+            List<List<Arch>> dnf = (tokens.Count == 0) ? [] : ParseExprOr(tokens, ref pos);
+
+            var cleaned = new List<Arch[]>();
+            var seen = new HashSet<string>();
+            foreach (List<Arch> group in dnf)
+            {
+                var g = new List<Arch>();
+                foreach (Arch a in group)
+                {
+                    if ((a != Arch.ARCH_NONE) && !g.Contains(a))
+                    {
+                        g.Add(a);
+                    }
+                }
+                if (g.Count == 0)
+                {
+                    continue;
+                }
+                string key = string.Join("+", g.Select(a => a.ToString()).OrderBy(x => x));
+                if (seen.Add(key))
+                {
+                    cleaned.Add([.. g]);
+                }
+            }
+            return [.. cleaned];
+        }
+
+        // Split a CPUID-flag expression into tokens: '(' ')' are single tokens; whitespace and ','
+        // separate tokens; "AND"/"OR" are keywords; everything else is a feature-flag token.
+        // "_ " is a wrap artifact inside one flag ("AVX_NE_ CONVERT" -> "AVX_NE_CONVERT").
+        private static List<string> TokenizeArchExpr(string str)
+        {
+            string s = str.Replace("_ ", "_");
+            var tokens = new List<string>();
+            var sb = new StringBuilder();
+            void Flush()
+            {
+                if (sb.Length > 0)
+                {
+                    tokens.Add(sb.ToString());
+                    sb.Clear();
+                }
+            }
+            foreach (char c in s)
+            {
+                if ((c == '(') || (c == ')'))
+                {
+                    Flush();
+                    tokens.Add(c.ToString());
+                }
+                else if (char.IsWhiteSpace(c) || (c == ','))
+                {
+                    Flush();
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            Flush();
+            return tokens;
+        }
+
+        // OR := AND ( "OR" AND )*   — OR is the union of the operands' groups.
+        private static List<List<Arch>> ParseExprOr(List<string> t, ref int pos)
+        {
+            List<List<Arch>> result = ParseExprAnd(t, ref pos);
+            while ((pos < t.Count) && t[pos].Equals("OR", StringComparison.OrdinalIgnoreCase))
+            {
+                pos++; // consume OR
+                result.AddRange(ParseExprAnd(t, ref pos));
+            }
+            return result;
+        }
+
+        // AND := primary ( ("AND")? primary )*   — implicit AND by juxtaposition; cartesian product.
+        private static List<List<Arch>> ParseExprAnd(List<string> t, ref int pos)
+        {
+            List<List<Arch>> result = ParseExprPrimary(t, ref pos);
+            while (pos < t.Count)
+            {
+                string tok = t[pos];
+                if ((tok == ")") || tok.Equals("OR", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+                if (tok.Equals("AND", StringComparison.OrdinalIgnoreCase))
+                {
+                    pos++; // consume AND
+                }
+                int before = pos;
+                List<List<Arch>> rhs = ParseExprPrimary(t, ref pos);
+                if (pos == before)
+                {
+                    break; // safety: no progress (e.g. stray AND at end)
+                }
+                result = DistributeArch(result, rhs);
+            }
+            return result;
+        }
+
+        // primary := "(" OR ")" | FLAG
+        private static List<List<Arch>> ParseExprPrimary(List<string> t, ref int pos)
+        {
+            if (pos >= t.Count)
+            {
+                return [];
+            }
+            string tok = t[pos];
+            if (tok == "(")
+            {
+                pos++; // consume (
+                List<List<Arch>> inner = ParseExprOr(t, ref pos);
+                if ((pos < t.Count) && (t[pos] == ")"))
+                {
+                    pos++; // consume )
+                }
+                return inner;
+            }
+            if (tok == ")")
+            {
+                return []; // unmatched, let caller handle
+            }
+            pos++; // consume flag
+            return [[ParseArch(tok, false, false)]];
+        }
+
+        // (a OR b) AND (c OR d) => ac, ad, bc, bd
+        private static List<List<Arch>> DistributeArch(List<List<Arch>> left, List<List<Arch>> right)
+        {
+            if (left.Count == 0)
+            {
+                return right;
+            }
+            if (right.Count == 0)
+            {
+                return left;
+            }
+            var result = new List<List<Arch>>();
+            foreach (List<Arch> lg in left)
+            {
+                foreach (List<Arch> rg in right)
+                {
+                    var combined = new List<Arch>(lg);
+                    combined.AddRange(rg);
+                    result.Add(combined);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>Render a DNF arch requirement for humans ("(AVX512_VL AND AVX512_F) OR AVX10").
+        /// Single-member groups are not parenthesised. Returns an empty string for no constraint.</summary>
+        public static string ToStringDnfHuman(IEnumerable<IEnumerable<Arch>> dnf)
+        {
+            ArgumentNullException.ThrowIfNull(dnf);
+            var orParts = new List<string>();
+            foreach (IEnumerable<Arch> group in dnf)
+            {
+                var andParts = new List<string>();
+                foreach (Arch a in group)
+                {
+                    andParts.Add(ToString(a));
+                }
+                if (andParts.Count == 1)
+                {
+                    orParts.Add(andParts[0]);
+                }
+                else if (andParts.Count > 1)
+                {
+                    orParts.Add("(" + string.Join(" AND ", andParts) + ")");
+                }
+            }
+            return string.Join(" OR ", orParts);
         }
 
         public static string ArchDocumentation(Arch arch)
@@ -447,6 +832,33 @@ using System.Text;
                 Arch.ARCH_PCONFIG => string.Empty,
                 Arch.ARCH_WAITPKG => string.Empty,
                 Arch.ARCH_ENQCMD => "Enqueue Stores",
+                Arch.ARCH_AVX512_FP16 => "AVX512-FP16 - Half-precision floating-point instructions",
+                Arch.ARCH_AVX10 => "AVX10 - Converged vector ISA (AVX10.1 / AVX10.2)",
+                Arch.ARCH_AVX_VNNI => "AVX-VNNI - VEX-encoded Vector Neural Network Instructions",
+                Arch.ARCH_CMPCCXADD => "CMPccXADD - Compare and add if condition is met",
+                Arch.ARCH_CET_SS => "CET - Control-flow Enforcement Technology (shadow stack)",
+                Arch.ARCH_CET_IBT => "CET - Control-flow Enforcement Technology (indirect branch tracking)",
+                Arch.ARCH_KEYLOCKER => "Key Locker - AES key wrapping instructions",
+                Arch.ARCH_UINTR => "User Interrupts",
+                Arch.ARCH_PBNDKB => "Total Storage Encryption - PBNDKB",
+                Arch.ARCH_SMAP => "Supervisor-Mode Access Prevention",
+                Arch.ARCH_SERIALIZE => "Serialize instruction execution",
+                Arch.ARCH_WBNOINVD => "Write Back and Do Not Invalidate Cache",
+                Arch.ARCH_HRESET => "History reset",
+                Arch.ARCH_MSRLIST => "Read/Write list of MSRs",
+                Arch.ARCH_WRMSRNS => "Non-serializing Write to Model Specific Register",
+                Arch.ARCH_PTWRITE => "Write data to a Processor Trace packet",
+                Arch.ARCH_TSXLDTRK => "TSX Suspend Load Address Tracking",
+                Arch.ARCH_PREFETCHI => "Prefetch instruction into caches",
+                Arch.ARCH_SHA512 => "SHA-512 Secure Hash Algorithm Extensions",
+                Arch.ARCH_SM3 => "SM3 Hash Extensions",
+                Arch.ARCH_SM4 => "SM4 Cipher Extensions",
+                Arch.ARCH_AMX => "AMX - Advanced Matrix Extensions (tiles)",
+                Arch.ARCH_AVX_VNNI_INT => "AVX-VNNI-INT8/INT16 - VEX-encoded integer dot-product",
+                Arch.ARCH_AVX_NE_CONVERT => "AVX-NE-CONVERT - BF16/FP16 conversion instructions",
+                Arch.ARCH_AVX_IFMA => "AVX-IFMA - VEX-encoded Integer Fused Multiply-Add",
+                Arch.ARCH_MOVBE => "MOVBE - Move data after swapping bytes",
+                Arch.ARCH_PKU => "Protection Keys for User pages",
                 _ => string.Empty,
             };
         }
@@ -518,6 +930,34 @@ using System.Text;
                 case Arch.ARCH_AVX512_VPCLMULQDQ: return "AVX512_VPCLMULQDQ";
                 case Arch.ARCH_AVX512_BF16: return "AVX512_BF16";
                 case Arch.ARCH_AVX512_VP2INTERSECT: return "AVX512_VP2INTERSECT";
+
+                case Arch.ARCH_AVX512_FP16: return "AVX512_FP16";
+                case Arch.ARCH_AVX10: return "AVX10";
+                case Arch.ARCH_AVX_VNNI: return "AVX_VNNI";
+                case Arch.ARCH_CMPCCXADD: return "CMPCCXADD";
+                case Arch.ARCH_CET_SS: return "CET_SS";
+                case Arch.ARCH_CET_IBT: return "CET_IBT";
+                case Arch.ARCH_KEYLOCKER: return "KEYLOCKER";
+                case Arch.ARCH_UINTR: return "UINTR";
+                case Arch.ARCH_PBNDKB: return "PBNDKB";
+                case Arch.ARCH_SMAP: return "SMAP";
+                case Arch.ARCH_SERIALIZE: return "SERIALIZE";
+                case Arch.ARCH_WBNOINVD: return "WBNOINVD";
+                case Arch.ARCH_HRESET: return "HRESET";
+                case Arch.ARCH_MSRLIST: return "MSRLIST";
+                case Arch.ARCH_WRMSRNS: return "WRMSRNS";
+                case Arch.ARCH_PTWRITE: return "PTWRITE";
+                case Arch.ARCH_TSXLDTRK: return "TSXLDTRK";
+                case Arch.ARCH_PREFETCHI: return "PREFETCHI";
+                case Arch.ARCH_SHA512: return "SHA512";
+                case Arch.ARCH_SM3: return "SM3";
+                case Arch.ARCH_SM4: return "SM4";
+                case Arch.ARCH_AMX: return "AMX";
+                case Arch.ARCH_AVX_VNNI_INT: return "AVX_VNNI_INT";
+                case Arch.ARCH_AVX_NE_CONVERT: return "AVX_NE_CONVERT";
+                case Arch.ARCH_AVX_IFMA: return "AVX_IFMA";
+                case Arch.ARCH_MOVBE: return "MOVBE";
+                case Arch.ARCH_PKU: return "PKU";
 
                 case Arch.ARCH_ADX: return "ADX";
                 case Arch.ARCH_AES: return "AES";

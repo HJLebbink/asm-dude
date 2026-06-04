@@ -57,7 +57,7 @@ namespace AsmSim
         }
 
         /// <summary>Perform one step forward and return the regular branch</summary>
-        public static State? SimpleStep_Forward(string line, State state)
+        public static State? SimpleStep_Forward(string line, State? state)
         {
             if (state == null)
             {

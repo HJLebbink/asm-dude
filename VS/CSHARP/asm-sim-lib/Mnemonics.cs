@@ -3135,13 +3135,16 @@ namespace AsmSim
         {
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this.ctx_, this.tools_.Rand);
-                this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, false);
+                (BitVecExpr shiftCount, BoolExpr _) = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                this.UpdateFlagsRotate(result, cf, shiftCount, false);
                 this.RegularUpdate.Set(this.op1_, result);
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF | Flags.OF; } }
+            
+            //TODO is this also possible? and would that be more efficient?
+            //public static Flags FlagsWriteStatic => Flags.CF | Flags.OF;
         }
 
         /// <summary>Rotate through carry right</summary>
@@ -3149,9 +3152,9 @@ namespace AsmSim
         {
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys_.prevKey, this.ctx_);
-                this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, false);
+                (BitVecExpr shiftCount, BoolExpr _) = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount, this.Get(Flags.CF), this.keys_.prevKey, this.ctx_);
+                this.UpdateFlagsRotate(result, cf, shiftCount, false);
                 this.RegularUpdate.Set(this.op1_, result);
             }
 
@@ -3165,9 +3168,9 @@ namespace AsmSim
         {
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys_.prevKey, this.ctx_);
-                this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, true);
+                (BitVecExpr shiftCount, BoolExpr _)  = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount, this.Get(Flags.CF), this.keys_.prevKey, this.ctx_);
+                this.UpdateFlagsRotate(result, cf, shiftCount, true);
                 this.RegularUpdate.Set(this.op1_, result);
             }
 
@@ -3181,9 +3184,9 @@ namespace AsmSim
         {
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
-                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this.ctx_, this.tools_.Rand);
-                this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, true);
+                (BitVecExpr shiftCount, BoolExpr _) = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount, this.ctx_, this.tools_.Rand);
+                this.UpdateFlagsRotate(result, cf, shiftCount, true);
                 this.RegularUpdate.Set(this.op1_, result);
             }
 

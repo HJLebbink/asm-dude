@@ -319,6 +319,63 @@ public class AsmSettingsData
         public bool ARCH_AVX512_VP2INTERSECT;
         [DataMember]
         public bool ARCH_ENQCMD;
+
+        // rev-091 / 2026 SDM additions
+        [DataMember]
+        public bool ARCH_AVX512_FP16;
+        [DataMember]
+        public bool ARCH_AVX10;
+        [DataMember]
+        public bool ARCH_AVX_VNNI;
+        [DataMember]
+        public bool ARCH_AVX_VNNI_INT;
+        [DataMember]
+        public bool ARCH_AVX_NE_CONVERT;
+        [DataMember]
+        public bool ARCH_AVX_IFMA;
+        [DataMember]
+        public bool ARCH_AMX;
+        [DataMember]
+        public bool ARCH_CMPCCXADD;
+        [DataMember]
+        public bool ARCH_CET_SS;
+        [DataMember]
+        public bool ARCH_CET_IBT;
+        [DataMember]
+        public bool ARCH_KEYLOCKER;
+        [DataMember]
+        public bool ARCH_UINTR;
+        [DataMember]
+        public bool ARCH_PBNDKB;
+        [DataMember]
+        public bool ARCH_SMAP;
+        [DataMember]
+        public bool ARCH_SERIALIZE;
+        [DataMember]
+        public bool ARCH_WBNOINVD;
+        [DataMember]
+        public bool ARCH_HRESET;
+        [DataMember]
+        public bool ARCH_MSRLIST;
+        [DataMember]
+        public bool ARCH_WRMSRNS;
+        [DataMember]
+        public bool ARCH_PTWRITE;
+        [DataMember]
+        public bool ARCH_TSXLDTRK;
+        [DataMember]
+        public bool ARCH_PREFETCHI;
+        [DataMember]
+        public bool ARCH_SHA512;
+        [DataMember]
+        public bool ARCH_SM3;
+        [DataMember]
+        public bool ARCH_SM4;
+        [DataMember]
+        public bool ARCH_MOVBE;
+        [DataMember]
+        public bool ARCH_PKU;
+
         [DataMember]
         public bool useAssemblerDisassemblyMasm;
         [DataMember]

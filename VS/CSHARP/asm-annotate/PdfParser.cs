@@ -33,8 +33,7 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using iText.Layout.Layout;
-using iText.Layout.Renderer;
+using Path = iText.Kernel.Geom.Path;
 
 namespace AsmAnnotate
 {
@@ -311,44 +310,180 @@ namespace AsmAnnotate
 
         /// <summary>
         /// Gets the instruction mnemonic and description from this pile.
-        /// Looks for text with em-dash (U+2014) or en-dash (U+2013) separator.
-        /// Example: "ADD — Add packed FP values"
+        /// The instruction title looks like "MNEMONIC<sep>Description", where the separator
+        /// is an em-dash (U+2014), en-dash (U+2013) or — in recent SDM revisions, as itext
+        /// decodes the title font — a plain hyphen. Example: "AAA-ASCII Adjust After Addition".
         ///
-        /// CRITICAL: Font selection is key to avoiding false positives.
-        /// Titles use "NeoSansIntelMedium" font and height > 14.5.
+        /// CRITICAL: Font + height select the title and avoid false positives. Titles use the
+        /// "NeoSansIntelMedium" font; the running-header title is ~12.4pt while section headers
+        /// ("Instruction Operand Encoding") are ~10.3pt and body text ~9.3pt, so a 11.5pt floor
+        /// isolates the title. (The 2018 PDF used &gt;14.5pt; 11.5 covers both old and new.)
         /// </summary>
         public (string Mnemonic, string Description) GetInstruction()
         {
-            foreach (PdfTextElement text in TextElements)
+            // Title-font lines, top-to-bottom. A very long multi-form title wraps, putting the
+            // mnemonic part (ending with the '-' separator) on one line and the description on the
+            // next (e.g. "VEXTRACTF128/.../VEXTRACTF64x4-" then "Extract Packed Floating-Point
+            // Values"); we have to look at the following line to recover the description.
+            var titles = TextElements
+                .Where(t => t.Height >= TitleMinHeight
+                            && !string.IsNullOrEmpty(t.FontName) && t.FontName.EndsWith("NeoSansIntelMedium"))
+                .OrderByDescending(t => t.Y1)
+                .ToList();
+
+            for (int i = 0; i < titles.Count; i++)
             {
-                // Only titles have this specific font and height
-                if (text.Height <= 14.5) continue;
-                if (string.IsNullOrEmpty(text.FontName) || !text.FontName.EndsWith("NeoSansIntelMedium")) continue;
+                string content = titles[i].GetText();
+                int idx = IndexOfTitleSeparator(content);
+                if (idx <= 0) continue;
 
-                string content = text.GetText();
+                string mnemonic = content[..idx].Trim();
+                string descr = content[(idx + 1)..].Trim();
+                // Wrapped title: separator at the end, description is the next title line.
+                if (descr.Length == 0 && i + 1 < titles.Count)
+                    descr = titles[i + 1].GetText().Trim();
 
-                // Try em-dash (U+2014): "—"
-                if (content.Contains("—"))
-                {
-                    string[] parts = content.Split('—');
-                    if (parts.Length >= 2)
-                    {
-                        return (parts[0].Trim(), parts[1].Trim());
-                    }
-                }
-
-                // Try en-dash (U+2013): "–"
-                if (content.Contains("–"))
-                {
-                    string[] parts = content.Split('–');
-                    if (parts.Length >= 2)
-                    {
-                        return (parts[0].Trim(), parts[1].Trim());
-                    }
-                }
+                // The part before the separator must look like a mnemonic (rejects pseudocode such
+                // as "CPUID.17H.M>..."). Reject a MULTI-WORD ALL-CAPS description: those are
+                // appendix/section headings ("GENERAL — PURPOSE INSTRUCTION FORMATS..."), not
+                // instructions. Sentence-case ("Complement Carry Flag") and short single-word
+                // ("FTST — TEST") descriptions are kept.
+                bool headingLike = !descr.Any(char.IsLower) && descr.Contains(' ');
+                if (mnemonic.Length > 0 && descr.Length > 0
+                    && LooksLikeMnemonic(mnemonic)
+                    && !headingLike)
+                    return (ExpandCompactMnemonic(mnemonic), descr);
             }
 
             return (null, null);
+        }
+
+        /// <summary>
+        /// Returns the mnemonic from this pile's running header/footer — the "MNEMONIC-Description"
+        /// line repeated in the top or bottom page margin — or null if there isn't one. Unlike
+        /// <see cref="GetInstruction"/> this accepts the small (≈8pt) footer that continuation pages
+        /// use *instead* of a tall title (e.g. AAA's 2nd page, which only has the "Compatibility /
+        /// 64-Bit Mode Exceptions" sections plus the footer). Restricted to the margins so body
+        /// mentions of "IA-32 ..." don't qualify. The caller pairs this with the current instruction
+        /// to decide whether the page is a genuine continuation.
+        /// </summary>
+        public string GetRunningTitleMnemonic()
+        {
+            foreach (PdfTextElement text in TextElements)
+            {
+                // Only the page margins (top header band / bottom footer band).
+                bool inMargin = text.Y0 > 700.0 || text.Y1 < 65.0;
+                if (!inMargin) continue;
+
+                string content = text.GetText();
+                int idx = IndexOfTitleSeparator(content);
+                if (idx <= 0 || idx >= content.Length - 1) continue;
+
+                string mnemonic = content[..idx].Trim();
+                string descr = content[(idx + 1)..].Trim();
+                if (mnemonic.Length > 0 && descr.Length > 0
+                    && LooksLikeMnemonic(mnemonic)
+                    && descr.Any(char.IsLower))
+                    return ExpandCompactMnemonic(mnemonic);
+            }
+            return null;
+        }
+
+        /// <summary>Minimum text height (pt) for a line to be considered an instruction title.</summary>
+        internal const double TitleMinHeight = 11.5;
+
+        /// <summary>
+        /// Expands the SDM's compact multi-form shorthand into the slash-joined explicit list so the
+        /// page name matches the other multi-form pages. A bracket group containing commas is a set
+        /// of alternatives (an empty alternative is allowed): "VF[,N]MADD[132,213,231]PH" becomes
+        /// "VFMADD132PH/VFMADD213PH/VFMADD231PH/VFNMADD132PH/VFNMADD213PH/VFNMADD231PH". A bracket
+        /// WITHOUT a comma is a literal part of the name and is kept (e.g. "GETSEC[SENTER]").
+        /// </summary>
+        internal static string ExpandCompactMnemonic(string m)
+        {
+            if (m.IndexOf('[') < 0) return m;
+
+            var results = new List<string> { string.Empty };
+            int i = 0;
+            while (i < m.Length)
+            {
+                if (m[i] == '[')
+                {
+                    int close = m.IndexOf(']', i);
+                    if (close < 0) break; // malformed — bail
+                    string inner = m.Substring(i + 1, close - i - 1);
+                    if (inner.Contains(','))
+                    {
+                        string[] opts = inner.Split(',');
+                        var next = new List<string>(results.Count * opts.Length);
+                        foreach (string r in results)
+                            foreach (string o in opts)
+                                next.Add(r + o);
+                        results = next;
+                    }
+                    else
+                    {
+                        for (int k = 0; k < results.Count; k++) results[k] += "[" + inner + "]";
+                    }
+                    i = close + 1;
+                }
+                else
+                {
+                    int nextBracket = m.IndexOf('[', i);
+                    string lit = (nextBracket < 0) ? m[i..] : m[i..nextBracket];
+                    for (int k = 0; k < results.Count; k++) results[k] += lit;
+                    i += lit.Length;
+                }
+            }
+            return string.Join("/", results);
+        }
+
+        /// <summary>
+        /// True if <paramref name="token"/> looks like an instruction mnemonic: an upper-case run
+        /// of letters/digits, optionally slash- or comma-joined for multi-form titles
+        /// ("AAA", "PUNPCKLBW/PUNPCKHBW", "VFMADD132PD/...", "MOVDQA,VMOVDQA32/64"). A few lowercase
+        /// placeholders Intel uses are tolerated: the condition code "cc" (Jcc, CMOVcc, SETcc,
+        /// CMPccXADD), the EVEX tuple-width "x4/x8/x16" (VEXTRACTF32x4), a single trailing hint
+        /// letter ("PREFETCHh"), and a single-letter operand placeholder after a space ("INT n").
+        /// Mixed-case words ("General", "Adjusts"), prose with spaces, and pseudocode
+        /// ("CPUID.17H.M>...") are rejected so they don't become junk files.
+        /// </summary>
+        internal static bool LooksLikeMnemonic(string token)
+        {
+            if (token.Length is 0 or > 80) return false;
+
+            string t = token.Replace("cc", "");                 // condition-code placeholder
+            t = Regex.Replace(t, "x[0-9]+", "");                // EVEX tuple width (x4/x8/x16)
+            // single-letter operand placeholder after a space/start, before a slash/comma/end
+            // ("INT n/INTO" -> "INT/INTO"); a real prose word ("and", "in") is longer and survives.
+            t = Regex.Replace(t, @"(?:^|(?<=[/,A-Z0-9])) [a-z](?=[/,]|$)", "");
+
+            bool hasUpper = false;
+            int otherLower = 0;
+            foreach (char c in t)
+            {
+                if (c >= 'A' && c <= 'Z') { hasUpper = true; continue; }
+                if ((c >= '0' && c <= '9') || c is '/' or '[' or ']' or ',') continue; // '[]' GETSEC; ',' multi-form
+                if (c >= 'a' && c <= 'z') { otherLower++; continue; } // e.g. PREFETCHh
+                return false; // space (other than the placeholder), punctuation -> not a mnemonic token
+            }
+            return hasUpper && otherLower <= 1;
+        }
+
+        /// <summary>
+        /// Index of the first instruction-title separator (em-dash, en-dash, or hyphen) in the
+        /// text, or -1 if none. Hyphen is accepted only because the caller has already gated on
+        /// the title font/height, where the first hyphen reliably splits mnemonic from description.
+        /// </summary>
+        internal static int IndexOfTitleSeparator(string content)
+        {
+            for (int i = 0; i < content.Length; i++)
+            {
+                char c = content[i];
+                if (c is '—' or '–' or '-')
+                    return i;
+            }
+            return -1;
         }
 
         /// <summary>
@@ -428,6 +563,26 @@ namespace AsmAnnotate
                 }
             }
             catch { /* Ignore extraction errors */ }
+        }
+
+        /// <summary>
+        /// Adds an already-classified line to this pile, first snapping it to a nearby
+        /// parallel line (pdfminer's <c>_adjust_to_close</c>). Snapping makes near-coincident
+        /// grid lines share an identical coordinate so that <see cref="CalcCoordinates"/> can
+        /// dedupe them into a single column/row and <see cref="LineExists"/> can match them.
+        /// </summary>
+        internal void AddLineSnapped(PdfLineElement line)
+        {
+            if (line.IsVertical)
+            {
+                AdjustToClose(line, VerticalLines, SEARCH_DISTANCE_VERTICAL);
+                VerticalLines.Add(line);
+            }
+            else if (line.IsHorizontal)
+            {
+                AdjustToClose(line, HorizontalLines, SEARCH_DISTANCE_HORIZONTAL);
+                HorizontalLines.Add(line);
+            }
         }
 
         private void ExtractLineElement(object obj)
@@ -723,8 +878,11 @@ namespace AsmAnnotate
         }
 
         /// <summary>
-        /// Calculates coordinate boundaries (unique X or Y positions).
-        /// Returns sorted list in descending order (for top-to-bottom processing).
+        /// Calculates the unique grid coordinate boundaries.
+        /// Vertical (column) coordinates are returned ascending (left → right) and horizontal
+        /// (row) coordinates descending (top → bottom), matching pdfminer/the Python writer
+        /// (verticals reverse=False, horizontals reverse=True). Getting this backwards inverts
+        /// each cell's left/right edges so no text ever falls "in range" and tables come out empty.
         /// </summary>
         private List<double> CalcCoordinates(List<PdfLineElement> lines, bool isVertical)
         {
@@ -737,7 +895,10 @@ namespace AsmAnnotate
                     coordSet.Add(line.Y0);
             }
             var coordList = coordSet.ToList();
-            coordList.Sort((a, b) => b.CompareTo(a)); // Descending order
+            if (isVertical)
+                coordList.Sort((a, b) => a.CompareTo(b)); // ascending: left → right
+            else
+                coordList.Sort((a, b) => b.CompareTo(a)); // descending: top → bottom
             return coordList;
         }
 
@@ -887,7 +1048,7 @@ namespace AsmAnnotate
                 foreach (var cell in row)
                 {
                     var texts = (List<PdfTextElement>)cell["texts"];
-                    var cellTexts = string.Join(" ", texts.Select(t => t.GetText()));
+                    var cellTexts = RenderCellText(texts);
 
                     int colspan = cell.ContainsKey("colspan") ? (int)cell["colspan"] : 1;
                     int rowspan = cell.ContainsKey("rowspan") ? (int)cell["rowspan"] : 1;
@@ -915,6 +1076,66 @@ namespace AsmAnnotate
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Builds a table cell's text from its runs. Footnote-reference superscripts — small
+        /// (notably shorter than the cell's body text) 1-2 digit numbers that the PDF raises above
+        /// the baseline — are pulled out of the body and rendered as &lt;sup&gt;N&lt;/sup&gt; markers
+        /// after the body text. Without this they land inline as a bare " 1" (and, depending on the
+        /// glyph's extraction order, sometimes even ahead of the operand: "1 ADD r/m8"). Body runs
+        /// are ordered top-to-bottom then left-to-right, and no space is inserted before a leading
+        /// punctuation run.
+        /// </summary>
+        private static string RenderCellText(List<PdfTextElement> texts)
+        {
+            if (texts.Count == 0) return string.Empty;
+
+            double bodyHeight = texts.Max(t => t.Height);
+
+            var body = new List<PdfTextElement>();
+            var marks = new List<string>();
+            foreach (var t in texts)
+            {
+                string s = t.GetText();
+                if (IsFootnoteSuperscript(t, bodyHeight, s))
+                    marks.Add(s);
+                else
+                    body.Add(t);
+            }
+
+            var sb = new StringBuilder();
+            foreach (var t in body.OrderByDescending(t => t.Y1).ThenBy(t => t.X0))
+            {
+                string s = t.GetText();
+                if (s.Length == 0) continue;
+                if (sb.Length > 0 && !(s[0] is ',' or '.' or ';' or ':' or ')'))
+                    sb.Append(' ');
+                sb.Append(s);
+            }
+
+            // A superscript that sat between two runs can leave a stray space before punctuation
+            // ("r/m8 ," -> "r/m8,").
+            string text = sb.ToString().Replace(" ,", ",").Replace(" ;", ";").Replace(" .", ".");
+
+            // Footnote markers after the body; collapse repeats (the same note referenced for
+            // several operands shows as one "<sup>1</sup>", not "<sup>1</sup><sup>1</sup>").
+            foreach (string m in marks.Distinct())
+                text += $"<sup>{m}</sup>";
+
+            return text;
+        }
+
+        /// <summary>
+        /// True when <paramref name="t"/> is a footnote-reference superscript: a 1-2 digit number
+        /// rendered clearly smaller than the cell's body text.
+        /// </summary>
+        private static bool IsFootnoteSuperscript(PdfTextElement t, double bodyHeight, string s)
+        {
+            if (s.Length is 0 or > 2) return false;
+            foreach (char c in s)
+                if (c < '0' || c > '9') return false;
+            return t.Height < bodyHeight - 1.0;
         }
 
         /// <summary>
@@ -966,72 +1187,78 @@ namespace AsmAnnotate
                 // Escape markdown special characters
                 content = content.Replace("#", "\\#").Replace("*", "\\*");
 
-                // Check for em-dash (instruction header)
-                if (content.Contains("—"))
+                // Running header / footer line: "MNEMONIC<sep>Description" (the instruction
+                // title repeated at the top/bottom of every page). Detected by a mnemonic-like
+                // token before the first separator. The tall NeoSansIntelMedium copy at the top
+                // of the first page is emitted as the bold title; every other copy (the small
+                // footer, the repeated header on continuation pages) is dropped — mirroring the
+                // Python "em-dash + height<10 -> continue" footer skip, generalised to the hyphen
+                // separator that recent SDM revisions use.
                 {
-                    if (text.Height >= 10.0) // Not a footer
+                    string rawLine = text.GetText();
+                    int sepIdx = IndexOfTitleSeparator(rawLine);
+                    bool headerLike = sepIdx > 0 && LooksLikeMnemonic(rawLine[..sepIdx].Trim());
+                    if (headerLike)
                     {
-                        var (instruction, description) = GetInstruction();
-                        if (instruction != null)
+                        bool isTitle = text.Height >= TitleMinHeight
+                                       && !string.IsNullOrEmpty(text.FontName)
+                                       && text.FontName.EndsWith("NeoSansIntelMedium");
+                        if (isTitle)
                         {
-                            state.TypeNext = "title";
-                            string instructionText = instruction.Replace("/", " / ");
-                            sb.AppendLine($"<b>{instructionText}</b> — {description}");
-                            counter++;
-                            continue;
+                            var (instruction, description) = GetInstruction();
+                            if (instruction != null)
+                            {
+                                state.TypeNext = "title";
+                                string instructionText = instruction.Replace("/", " / ");
+                                sb.AppendLine($"<b>{instructionText}</b> — {description}");
+                                counter++;
+                                continue;
+                            }
                         }
+                        // Not the title (footer / continuation header) — skip it entirely.
+                        continue;
                     }
                 }
 
-                // Check for section headers
+                // Check for section headers. Headers are appended as "\n### X\n" (Python _header)
+                // — note Append, not AppendLine, to avoid an extra trailing blank line.
                 if (content == "Description" || content == "IA-32 Architecture Compatibility")
                 {
                     state.TypeNext = "description";
-                    sb.AppendLine($"\n### {content}\n");
+                    sb.Append($"\n### {content}\n");
                 }
                 else if (content == "Instruction Operand Encoding")
                 {
                     state.TypeNext = "encoding";
-                    sb.AppendLine($"\n### {content}\n");
+                    sb.Append($"\n### {content}\n");
                 }
                 else if (content == "Operation")
                 {
+                    // The ```java fence is opened lazily by the first body line (StartCode),
+                    // exactly like the Python _start_code, so empty operation blocks never open.
+                    // Operation alone gets an extra blank line after the header (Python `_header + '\n'`).
                     state.TypeNext = "operation";
-                    sb.AppendLine($"\n### {content}\n");
-                    sb.AppendLine("```java");
+                    sb.Append($"\n### {content}\n\n");
                 }
                 else if (content == "Flags Affected" || content == "FPU Flags Affected")
                 {
-                    if (state.CodeMode)
-                    {
-                        sb.AppendLine("```");
-                        state.CodeMode = false;
-                    }
+                    CloseCode(sb, state);
                     state.TypeNext = "flags";
-                    sb.AppendLine($"\n### {content}\n");
+                    sb.Append($"\n### {content}\n");
                 }
                 else if (content == "Intel C/C++ Compiler Intrinsic Equivalent" ||
                          content == "C/C++ Compiler Intrinsic Equivalent")
                 {
-                    if (state.CodeMode)
-                    {
-                        sb.AppendLine("```");
-                        state.CodeMode = false;
-                    }
+                    CloseCode(sb, state);
                     state.TypeNext = "intrinsics";
-                    sb.AppendLine($"\n### {content}\n");
-                    sb.AppendLine("```c");
-                    state.CodeMode = true;
+                    sb.Append($"\n### {content}\n");
+                    StartCode(sb, state, "c");
                 }
                 else if (IsExceptionHeader(content))
                 {
-                    if (state.CodeMode)
-                    {
-                        sb.AppendLine("```");
-                        state.CodeMode = false;
-                    }
+                    CloseCode(sb, state);
                     state.TypeNext = "exceptions";
-                    sb.AppendLine($"\n### {content}\n");
+                    sb.Append($"\n### {content}\n");
                 }
                 else
                 {
@@ -1055,21 +1282,27 @@ namespace AsmAnnotate
                     {
                         if (!string.IsNullOrEmpty(text.FontName) && text.FontName.EndsWith("NeoSansIntelMedium"))
                         {
-                            sb.AppendLine("```");
+                            // A bold sub-heading inside Operation: close the current code block,
+                            // emit a #### heading, reopen a fresh java block (Python _close_code /
+                            // _start_code). content is the escaped/trimmed heading text.
+                            CloseCode(sb, state);
                             sb.AppendLine($"\n#### {content}\n");
-                            sb.AppendLine("```java");
-                            state.CodeMode = true;
+                            StartCode(sb, state, "java");
                         }
                         else
                         {
-                            string indent = CreateIndent(text.X0);
-                            sb.Append(indent);
-                            sb.AppendLine(content.Replace("", "←"));
+                            // Code line: open the java fence lazily, then emit the RAW (unescaped)
+                            // text so '#'/'*' stay literal, mapping the Intel assignment operator
+                            // (":=" in recent SDM revisions) to '←'. Indent comes from the x-position.
+                            StartCode(sb, state, "java");
+                            sb.Append(CreateIndent(text.X0));
+                            sb.AppendLine(text.GetText().Replace(":=", "←"));
                         }
                     }
                     else if (state.Type == "intrinsics")
                     {
-                        sb.AppendLine(content);
+                        // Intrinsics is a ```c code block (opened by the section header) — keep raw text.
+                        sb.AppendLine(text.GetText());
                     }
                     else if (state.Type == "flags")
                     {
@@ -1080,10 +1313,13 @@ namespace AsmAnnotate
                     }
                     else if (state.Type == "exceptions")
                     {
-                        // Handle special characters in exceptions
-                        if (content.Contains("#") && !content.Contains("(#"))
+                        // The content is markdown-escaped, so a '#' exception code appears as "\#".
+                        // Turn a leading exception code into "<p>#..." (Python replaces '\#' -> '<p>#'),
+                        // but leave "(\#...)" parenthetical references alone. Replacing the full "\#"
+                        // (not just '#') is what drops the stray backslash from the output.
+                        if (content.Contains("\\#") && !content.Contains("(\\#"))
                         {
-                            content = content.Replace("#", "<p>#");
+                            content = content.Replace("\\#", "<p>#");
                         }
                         double heightDiff = previousHeight - text.Y1;
                         if (heightDiff > 15)
@@ -1105,6 +1341,31 @@ namespace AsmAnnotate
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>Opens a fenced code block if one isn't already open (Python _start_code).</summary>
+        private static void StartCode(StringBuilder sb, MarkdownState state, string language)
+        {
+            if (!state.CodeMode)
+            {
+                sb.AppendLine("```" + language);
+                state.CodeMode = true;
+            }
+        }
+
+        /// <summary>
+        /// Closes the current fenced code block if one is open (Python _close_code). Emits the
+        /// closing fence WITHOUT a trailing newline — every caller follows it with text that
+        /// begins with '\n' (a "\n### header" or "\n#### header"), which terminates the fence
+        /// line. Adding a newline here would double it into a stray blank line.
+        /// </summary>
+        private static void CloseCode(StringBuilder sb, MarkdownState state)
+        {
+            if (state.CodeMode)
+            {
+                sb.Append("```");
+                state.CodeMode = false;
+            }
         }
 
         private bool IsExceptionHeader(string content)
@@ -1256,22 +1517,58 @@ namespace AsmAnnotate
         }
 
         /// <summary>
+        /// Number of pages in the PDF.
+        /// </summary>
+        public int GetPageCount()
+        {
+            using var pdfDocument = new PdfDocument(new PdfReader(_filePath));
+            return pdfDocument.GetNumberOfPages();
+        }
+
+        /// <summary>
         /// Parses all pages in the PDF and returns ContentPile objects.
         /// Each pile represents a logical section (table or paragraph).
         /// </summary>
-        public List<ContentPile> ParseDocument()
+        public List<ContentPile> ParseDocument() => ParseDocument(1, int.MaxValue);
+
+        /// <summary>
+        /// Parses pages in the inclusive range [<paramref name="startPage"/>, <paramref name="endPage"/>]
+        /// (1-based) and returns ContentPile objects. Useful for iterating on a few instructions
+        /// without processing the whole ~5000-page manual.
+        /// </summary>
+        public List<ContentPile> ParseDocument(int startPage, int endPage)
         {
             var allPiles = new List<ContentPile>();
 
             try
             {
-                using (var pdfDocument = new PdfDocument(new PdfReader(_filePath)))
+                using var pdfDocument = new PdfDocument(new PdfReader(_filePath));
+                int last = Math.Min(endPage, pdfDocument.GetNumberOfPages());
+
+                // Page-sequence-aware filter. We keep only instruction-reference pages:
+                //  - a page with a tall title starts a new instruction (becomes "current");
+                //  - a page with only the small running header/footer is kept ONLY when that
+                //    footer names the *current* instruction (a genuine continuation, e.g. AAA's
+                //    2nd page that holds just the Compatibility/64-Bit Mode Exceptions);
+                //  - everything else is Vol 1/3/4 descriptive text and is dropped, so it can't
+                //    accumulate into the last-opened file (the 50k-line "ERESUME.md" blobs).
+                string current = null;
+                for (int pageNum = Math.Max(1, startPage); pageNum <= last; pageNum++)
                 {
-                    for (int pageNum = 1; pageNum <= pdfDocument.GetNumberOfPages(); pageNum++)
+                    var piles = ParsePage(pdfDocument, pageNum);
+
+                    string titled = piles.Select(p => p.GetInstruction().Mnemonic).FirstOrDefault(m => m != null);
+                    if (titled != null)
                     {
-                        var piles = ParsePage(pdfDocument, pageNum);
+                        current = titled;
                         allPiles.AddRange(piles);
+                        continue;
                     }
+
+                    string running = piles.Select(p => p.GetRunningTitleMnemonic()).FirstOrDefault(m => m != null);
+                    if (running != null && running == current)
+                        allPiles.AddRange(piles); // continuation of the current instruction
+                    // else: not part of the current instruction — drop the page
                 }
             }
             catch (Exception ex)
@@ -1283,6 +1580,28 @@ namespace AsmAnnotate
         }
 
         /// <summary>
+        /// Extracts the raw (un-split) text elements and snapped border lines for a single page.
+        /// Intended for diagnostics — lets callers inspect exactly what itext handed us before
+        /// the table/paragraph splitting heuristics run.
+        /// </summary>
+        public ContentPile ExtractRawPage(int pageNum)
+        {
+            using var pdfDocument = new PdfDocument(new PdfReader(_filePath));
+            var page = pdfDocument.GetPage(pageNum);
+            var pageBox = page.GetMediaBox();
+            var pile = new ContentPile();
+
+            // Lines first, so the column boundaries are known before text is grouped.
+            foreach (var line in ExtractLines(page, pageBox))
+                pile.AddLineSnapped(line);
+
+            var fragments = new PdfPageTextExtractor().ExtractFragments(page, pageBox);
+            pile.TextElements.AddRange(PdfPageTextExtractor.GroupIntoLines(fragments, pile.VerticalLines));
+
+            return pile;
+        }
+
+        /// <summary>
         /// Parses a single page and extracts text/lines into ContentPile objects.
         /// </summary>
         private List<ContentPile> ParsePage(PdfDocument pdfDocument, int pageNum)
@@ -1291,32 +1610,24 @@ namespace AsmAnnotate
             var page = pdfDocument.GetPage(pageNum);
             var pageBox = page.GetMediaBox();
 
-            // Extract text using custom strategy
+            // Extract text + vector lines. Lines are extracted and snapped FIRST so their
+            // x-positions can keep the text grouper from merging across table columns.
             try
             {
-                var textExtractor = new PdfPageTextExtractor();
-                var textElements = textExtractor.ExtractText(page, pageBox);
-                pile.TextElements.AddRange(textElements);
-
-                // Extract vector lines (borders)
-                var lineElements = ExtractLines(page, pageBox);
-                foreach (var line in lineElements)
+                // Vector lines (borders), snapping near-coincident grid lines together so the
+                // table-grid math (CalcCoordinates / LineExists) lines up.
+                foreach (var line in ExtractLines(page, pageBox))
                 {
-                    if (line.IsVertical)
-                    {
-                        pile.VerticalLines.Add(line);
-                    }
-                    else if (line.IsHorizontal)
-                    {
-                        pile.HorizontalLines.Add(line);
-                    }
+                    pile.AddLineSnapped(line);
                 }
 
-                // Fallback: If no lines extracted, use heuristic detection from text positions
-                if (pile.VerticalLines.Count == 0 && pile.HorizontalLines.Count == 0)
-                {
-                    pile.DetectTableBoundariesFromTextPositions();
-                }
+                // Text, grouped into per-line runs that never straddle a column border.
+                var fragments = new PdfPageTextExtractor().ExtractFragments(page, pageBox);
+                pile.TextElements.AddRange(PdfPageTextExtractor.GroupIntoLines(fragments, pile.VerticalLines));
+
+                // NOTE: no heuristic text-position fallback here. pdfminer (and thus the Python
+                // reference) only ever sees real vector borders; synthesizing fake grid lines on
+                // paragraph-only pages would invent tables that the reference output never has.
             }
             catch (Exception ex)
             {
@@ -1352,20 +1663,19 @@ namespace AsmAnnotate
     }
 
     /// <summary>
-    /// Custom event listener for extracting graphics operators from PDF content streams.
-    /// Implements IEventListener to capture drawing commands (lines, rectangles) that form table borders.
+    /// Event listener that extracts table-border geometry (lines and thin rectangles)
+    /// from PDF content streams.
     ///
-    /// LIMITATION: itext7's C# API provides limited access to raw PDF operators.
-    /// PathRenderInfo doesn't expose the actual path coordinates or operator sequences.
-    /// This is a significant limitation compared to pdfminer (Python), which provides
-    /// detailed LTLine, LTRect, and other graphical primitives.
-    ///
-    /// WORKAROUND: For Intel PDFs, table borders can be detected via heuristic analysis
-    /// of text element positions instead. Text that aligns vertically or horizontally
-    /// with consistent spacing likely represents column/row boundaries.
-    ///
-    /// Alternative: Use a different PDF library or extract operators directly from
-    /// PDF content streams via low-level parsing.
+    /// This is the C# equivalent of what pdfminer hands the Python port as LTRect/LTLine.
+    /// itext fully exposes path geometry: <see cref="PathRenderInfo.GetPath"/> returns the
+    /// user-space <see cref="Path"/>, and <see cref="PathRenderInfo.GetCtm"/> the current
+    /// transformation matrix. We transform every sub-path point into page space, take the
+    /// sub-path's bounding box, and — mirroring pdfminer's rule used by the Python writer —
+    /// classify thin boxes as lines:
+    ///   width  &lt; 1.0  -> a vertical   line (a table column border)
+    ///   height &lt; 1.0  -> a horizontal line (a table row border)
+    /// Boxes that are thick in both axes (filled regions, glyphs-as-paths, big strokes)
+    /// are ignored, exactly as the Python code ignores non-thin LTRects.
     /// </summary>
     internal class PdfGraphicsOperatorListener : IEventListener
     {
@@ -1375,10 +1685,9 @@ namespace AsmAnnotate
 
         public void EventOccurred(IEventData data, EventType type)
         {
-            if (type == EventType.RENDER_PATH)
+            if (type == EventType.RENDER_PATH && data is PathRenderInfo info)
             {
-                // Attempt path extraction (limited by itext7 API)
-                HandlePathRenderEvent((PathRenderInfo)data);
+                HandlePathRenderEvent(info);
             }
         }
 
@@ -1386,11 +1695,57 @@ namespace AsmAnnotate
         {
             try
             {
-                // itext7's PathRenderInfo provides stroke/fill style info
-                // but does not expose the actual path geometry (coordinates)
-                // This is a limitation of the C# API binding
+                // Skip paths that only modify the clip region and paint nothing.
+                if (info.GetOperation() == PathRenderInfo.NO_OP)
+                    return;
+
+                Matrix ctm = info.GetCtm();
+                Path path = info.GetPath();
+                if (path == null)
+                    return;
+
+                foreach (Subpath subpath in path.GetSubpaths())
+                {
+                    if (subpath.IsEmpty())
+                        continue;
+
+                    // Piecewise-linear approximation gives the sub-path corners in user space.
+                    var points = subpath.GetPiecewiseLinearApproximation();
+                    if (points == null || points.Count < 2)
+                        continue;
+
+                    double minX = double.PositiveInfinity, minY = double.PositiveInfinity;
+                    double maxX = double.NegativeInfinity, maxY = double.NegativeInfinity;
+
+                    foreach (Point p in points)
+                    {
+                        // Transform the user-space point into page space via the CTM.
+                        Vector v = new Vector((float)p.GetX(), (float)p.GetY(), 1).Cross(ctm);
+                        double x = v.Get(Vector.I1);
+                        double y = v.Get(Vector.I2);
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+
+                    double width = maxX - minX;
+                    double height = maxY - minY;
+
+                    if (width < 1.0 && height >= 1.0)
+                    {
+                        // Vertical border: collapse X to the box's left edge.
+                        _lines.Add(new PdfLineElement { X0 = minX, X1 = minX, Y0 = minY, Y1 = maxY });
+                    }
+                    else if (height < 1.0 && width >= 1.0)
+                    {
+                        // Horizontal border: collapse Y to the box's bottom edge.
+                        _lines.Add(new PdfLineElement { X0 = minX, X1 = maxX, Y0 = minY, Y1 = minY });
+                    }
+                    // else: a thick box (fill/glyph/large stroke) — not a table border; ignore.
+                }
             }
-            catch { /* Ignore parsing errors */ }
+            catch { /* Ignore parsing errors for robustness on malformed paths */ }
         }
 
         public ICollection<EventType> GetSupportedEvents()
@@ -1495,23 +1850,152 @@ namespace AsmAnnotate
     /// </summary>
     internal class PdfPageTextExtractor
     {
-        public List<PdfTextElement> ExtractText(PdfPage page, Rectangle pageBox)
+        // Two fragments belong to the same visual line when their baselines (Y0) are within this.
+        private const double BaselineTolerance = 3.0;
+
+        // Within a line, a horizontal gap larger than this starts a new run. Bordered table
+        // columns are kept apart by the explicit grid-line check (ColumnBoundaryBetween); this
+        // gap handles the *border-less* pseudo-columns (exception "code | description" rows,
+        // indented "; comment" pseudocode). It must exceed a justified paragraph's inter-word
+        // space (~a few pt) yet stay below those pseudo-column gaps (~15pt+).
+        private const double RunGap = 10.0;
+
+        // When merging two fragments separated by more than this, insert a single space
+        // (covers spaces that were rendered as kerning rather than an actual space glyph).
+        private const double SpaceGap = 1.5;
+
+        /// <summary>
+        /// Extracts raw glyph-run fragments (one per RENDER_TEXT event) without grouping.
+        /// Callers group them with <see cref="GroupIntoLines"/>, supplying the page's vertical
+        /// grid lines so runs never merge across a table-column boundary.
+        /// </summary>
+        public List<PdfTextElement> ExtractFragments(PdfPage page, Rectangle pageBox)
         {
-            var elements = new List<PdfTextElement>();
+            var fragments = new List<PdfTextElement>();
 
             try
             {
-                // Use custom listener to extract text with position and font info
+                // itext raises RENDER_TEXT per text-showing operator, which on Intel PDFs is
+                // per glyph-run — far finer than pdfminer's per-line LTTextLineHorizontal.
                 var listener = new PdfTextOperatorListener();
                 PdfCanvasProcessor processor = new PdfCanvasProcessor(listener);
                 processor.ProcessPageContent(page);
 
-                elements.AddRange(listener.ExtractedTexts);
+                fragments.AddRange(listener.ExtractedTexts);
             }
             catch { /* Ignore extraction errors */ }
 
-            return elements;
+            return fragments;
         }
+
+        /// <summary>
+        /// Groups raw glyph-run fragments into per-line runs, reproducing pdfminer's
+        /// LTTextLineHorizontal granularity. Fragments are bucketed by baseline (Y0) and,
+        /// within a bucket, merged left-to-right until either a large horizontal gap or a
+        /// vertical grid line (<paramref name="columnXs"/>) separates them — so two table cells
+        /// in the same visual row never collapse into one run even when the column is narrow.
+        /// Raw <see cref="PdfTextElement.Content"/> is concatenated so the internal spacing the
+        /// PDF encodes (often a trailing space on a fragment) survives; only the final line is
+        /// trimmed by <see cref="PdfTextElement.GetText"/>.
+        /// </summary>
+        public static List<PdfTextElement> GroupIntoLines(List<PdfTextElement> fragments, IReadOnlyList<PdfLineElement> verticals)
+        {
+            var result = new List<PdfTextElement>();
+            if (fragments.Count == 0)
+                return result;
+
+            // Order top-to-bottom, then left-to-right.
+            var ordered = fragments
+                .OrderByDescending(f => f.Y0)
+                .ThenBy(f => f.X0)
+                .ToList();
+
+            // Bucket fragments into visual lines by baseline proximity.
+            var lines = new List<List<PdfTextElement>>();
+            var current = new List<PdfTextElement> { ordered[0] };
+            double lineY = ordered[0].Y0;
+            for (int i = 1; i < ordered.Count; i++)
+            {
+                if (Math.Abs(ordered[i].Y0 - lineY) <= BaselineTolerance)
+                {
+                    current.Add(ordered[i]);
+                }
+                else
+                {
+                    lines.Add(current);
+                    current = new List<PdfTextElement> { ordered[i] };
+                    lineY = ordered[i].Y0;
+                }
+            }
+            lines.Add(current);
+
+            // Within each line, merge left-to-right into runs split on column-sized gaps.
+            foreach (var line in lines)
+            {
+                line.Sort((a, b) => a.X0.CompareTo(b.X0));
+
+                PdfTextElement? run = null;
+                foreach (var frag in line)
+                {
+                    if (run == null)
+                    {
+                        run = Clone(frag);
+                        continue;
+                    }
+
+                    double gap = frag.X0 - run.X1;
+                    if (gap <= RunGap && !ColumnBoundaryBetween(run.X1, frag.X0, frag.Y0, verticals))
+                    {
+                        // Same run: append, inserting a space if the visual gap warrants one.
+                        string sep = (gap > SpaceGap
+                                      && !run.Content.EndsWith(' ')
+                                      && !frag.Content.StartsWith(' ')) ? " " : "";
+                        run.Content += sep + frag.Content;
+                        run.X1 = Math.Max(run.X1, frag.X1);
+                        run.Y0 = Math.Min(run.Y0, frag.Y0);
+                        run.Y1 = Math.Max(run.Y1, frag.Y1);
+                    }
+                    else
+                    {
+                        result.Add(run);
+                        run = Clone(frag);
+                    }
+                }
+                if (run != null)
+                    result.Add(run);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// True if a vertical grid line sits strictly between <paramref name="leftX"/> and
+        /// <paramref name="rightX"/> AND vertically spans <paramref name="y"/>, i.e. the two
+        /// fragments straddle a real table-column boundary at this row and must not be merged.
+        /// The Y check is essential: without it, a full-width paragraph line would be split by a
+        /// table's column line that merely shares an x-position higher up the page.
+        /// </summary>
+        private static bool ColumnBoundaryBetween(double leftX, double rightX, double y, IReadOnlyList<PdfLineElement> verticals)
+        {
+            const double eps = 0.5;
+            foreach (PdfLineElement v in verticals)
+            {
+                if (v.X0 > leftX + eps && v.X0 < rightX - eps
+                    && v.Y0 - eps <= y && y <= v.Y1 + eps)
+                    return true;
+            }
+            return false;
+        }
+
+        private static PdfTextElement Clone(PdfTextElement f) => new()
+        {
+            Content = f.Content,
+            X0 = f.X0,
+            Y0 = f.Y0,
+            X1 = f.X1,
+            Y1 = f.Y1,
+            FontName = f.FontName, // keep the first fragment's font (pdfminer uses _objs[0].fontname)
+        };
     }
 
     /// <summary>
@@ -1524,7 +2008,7 @@ namespace AsmAnnotate
         private readonly string _sourceInfo;
         private readonly string _outputDirectory;
 
-        public MarkdownGenerator(string outputDirectory = "./output", string sourceInfo = "Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (December 2020)")
+        public MarkdownGenerator(string outputDirectory = "./output", string sourceInfo = "Intel® 64 and IA-32 Architectures Software Developer's Manual, Combined Volumes (Order Number 325462)")
         {
             _outputDirectory = outputDirectory;
             _sourceInfo = sourceInfo;
@@ -1586,8 +2070,13 @@ namespace AsmAnnotate
         }
 
         /// <summary>
-        /// Finds if a previous pile (going backward) is an opcode table.
-        /// Stops searching if a different instruction is found.
+        /// Finds whether the opcode table immediately preceding this one (with no title in between)
+        /// is also an opcode table — i.e. the two should be merged into one HTML table.
+        /// Stops at ANY title pile: a different instruction's title obviously ends the search, but
+        /// so does the CURRENT instruction's own title — nothing before that belongs to this
+        /// instruction. Without the latter stop the scan runs into the PREVIOUS instruction's
+        /// opcode table and wrongly merges, dropping this table's header row and "&lt;table&gt;" tag
+        /// (the FBLD/FDIV/... bug).
         /// </summary>
         private bool FindPreviousOpcodeTable(int currentIndex, List<ContentPile> piles, string instructionCurrent)
         {
@@ -1596,9 +2085,9 @@ namespace AsmAnnotate
                 var pile = piles[j];
                 var (pileInstruction, _) = pile.GetInstruction();
 
-                if (pileInstruction != null && pileInstruction != instructionCurrent)
+                if (pileInstruction != null)
                 {
-                    return false; // Different instruction found
+                    return false; // reached a title (this instruction's or another's) — no merge across it
                 }
 
                 if (pile.GetType() == "table")
@@ -1611,8 +2100,10 @@ namespace AsmAnnotate
         }
 
         /// <summary>
-        /// Finds if a next pile (going forward) is an opcode table.
-        /// Stops searching if a different instruction is found.
+        /// Finds whether the opcode table immediately following this one (no title in between) is
+        /// also an opcode table — the symmetric partner of <see cref="FindPreviousOpcodeTable"/>.
+        /// Stops at ANY title pile so an instruction's opcode table never merges with the NEXT
+        /// instruction's table.
         /// </summary>
         private bool FindNextOpcodeTable(int currentIndex, List<ContentPile> piles, string instructionCurrent)
         {
@@ -1621,9 +2112,9 @@ namespace AsmAnnotate
                 var pile = piles[j];
                 var (pileInstruction, _) = pile.GetInstruction();
 
-                if (pileInstruction != null && pileInstruction != instructionCurrent)
+                if (pileInstruction != null)
                 {
-                    return false; // Different instruction found
+                    return false; // reached a title — no merge across it
                 }
 
                 if (pile.GetType() == "table")
@@ -1643,17 +2134,40 @@ namespace AsmAnnotate
         {
             if (string.IsNullOrEmpty(instruction)) return;
 
+            // Every real instruction-reference page has an OPCODE table (its header cell reads
+            // "Opcode" or "Opcode/Instruction"). A "title" without one is junk caught by the title
+            // font: a section heading ("IA-32 Memory Models", "RTM — Enabled Debugger Support",
+            // "VM — Exit Controls for MSRs"), an Appendix-B encoding table (header "Instruction and
+            // Format"), or a cross-reference stub. Requiring "Opcode" also prevents an Appendix-B
+            // page from OVERWRITING the real instruction's file (e.g. the real FYL2X is kept, the
+            // appendix FYL2X table is dropped).
+            if (!markdown.Contains("Opcode", StringComparison.Ordinal)) return;
+
+            // Normalise to LF FIRST. StringBuilder.AppendLine emits CRLF on Windows, but the
+            // CleanupHyphenation patterns are written with '\n' (e.g. "oper-\nands"); on CRLF text
+            // they would never match and the broken words ("oper- ands") would survive. Also strip
+            // any stray BOM/zero-width char. (Do NOT collapse blank runs — the reference puts two
+            // blank lines before some section headers, e.g. "</table>\n\n\n### ...".)
+            markdown = markdown.Replace("\r\n", "\n").Replace("﻿", "");
+
+            // Re-join words the PDF hyphenated across a line break (curated list, as in the Python).
             markdown = TextCleaner.CleanupHyphenation(markdown);
 
             string safeFileName = instruction.Replace("/", "_").Replace(" ", "_");
+            // Strip any remaining characters that are illegal in Windows file names
+            // (e.g. a stray ':' '>' '*' from an oddly-formatted heading) to avoid IOExceptions.
+            foreach (char bad in System.IO.Path.GetInvalidFileNameChars())
+                safeFileName = safeFileName.Replace(bad, '_');
             string filePath = System.IO.Path.Combine(_outputDirectory, $"{safeFileName}.md");
 
             var now = DateTime.Now;
             string generatedTime = $"{now.Day}-{now.Month}-{now.Year}";
             markdown += $"\n --- \n<p align=\"right\"><i>Source: {_sourceInfo}<br>Generated: {generatedTime}</i></p>\n";
 
+            // UTF-8 without a BOM (the reference files have no BOM).
+            var utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
             Console.WriteLine($"Writing {filePath}");
-            File.WriteAllText(filePath, markdown, Encoding.UTF8);
+            File.WriteAllText(filePath, markdown, utf8NoBom);
         }
     }
 
@@ -1678,6 +2192,60 @@ namespace AsmAnnotate
         /// - "single- precision" should be "single-precision" (space after hyphen is a PDF artifact)
         /// - "•\n" should be "\n * " (bullet points to markdown)
         /// </summary>
+        /// <summary>
+        /// Words the Intel PDF splits across a line break where the hyphen is an artifact and must
+        /// be DROPPED (a single word, e.g. "excep-tion" -> "exception"). Each entry is the broken
+        /// word with its single hyphen at the split point. Real compounds that must KEEP their
+        /// hyphen ("floating-point", "general-purpose", "64-bit", "machine-check") are deliberately
+        /// NOT listed — the general rule in <see cref="CleanupHyphenation"/> handles those.
+        /// Curated from the actual rev-091 SDM output (the Python tool kept an equivalent list).
+        /// </summary>
+        private static readonly string[] SplitWords =
+        [
+            // originally ported from the Python writer
+            "addi-tional", "combina-tion", "compar-ison", "compar-isons", "corre-sponding",
+            "documenta-tion", "destina-tion", "desti-nation", "infor-mation", "instruc-tions",
+            "instruc-tion", "regis-ters", "regis-ter", "oper-ands", "preci-sion", "loca-tions",
+            "loca-tion", "speci-fied", "unpre-dictable", "priv-ilege",
+            // extended from the SDM (combined volumes) output
+            "Soft-ware", "soft-ware", "hard-ware", "excep-tion", "excep-tions", "proces-sors",
+            "pro-cessor", "inter-rupt", "inter-rupts", "inter-rupted", "Inter-rupt", "oper-ation",
+            "oper-ations", "oper-ating", "oper-and", "oper-ates", "opera-tion", "opera-tions",
+            "Archi-tectures", "archi-tecture", "archi-tectural", "architec-ture", "architec-tures",
+            "architec-tural", "execu-tion", "perfor-mance", "Perfor-mance", "gener-ated",
+            "gener-ates", "gener-ation", "gener-ations", "align-ment", "condition-ally",
+            "condi-tionally", "respec-tively", "imme-diate", "immedi-ately", "spec-ified",
+            "proce-dure", "proce-dures", "deter-mine", "deter-mined", "deter-mines", "moni-toring",
+            "indi-cates", "indi-cated", "indi-cate", "avail-able", "appro-priate", "tech-nology",
+            "Tech-nology", "interme-diate", "inter-mediate", "inte-gers", "environ-ment",
+            "envi-ronment", "compar-ison", "transac-tional", "trans-actional", "struc-ture",
+            "struc-tures", "recom-mended", "recom-mends", "other-wise", "func-tion", "func-tions",
+            "expo-nent", "differ-ences", "attri-bute", "attri-butes", "write-mask", "double-word",
+            "double-words", "quad-word", "unde-fined", "subse-quent", "reg-ister", "phys-ical",
+            "partic-ular", "microarchi-tecture", "microarchitec-ture", "microar-chitecture",
+            "mecha-nism", "mecha-nisms", "mech-anism", "initializa-tion", "initial-ized",
+            "exten-sions", "exten-sion", "auto-matically", "applica-tion", "applica-tions",
+            "appli-cation", "appli-cable", "under-flow", "over-flow", "over-flows", "refer-ences",
+            "refer-ence", "incre-ments", "incre-mented", "incor-rect", "imple-mented",
+            "imple-mentation", "imple-mentations", "condi-tions", "compo-nents", "compo-nent",
+            "compati-bility", "associ-ated", "asso-ciated", "Optimi-zation", "optimi-zation",
+            "optimiza-tions", "transi-tions", "transla-tion", "trans-lation", "signifi-cand",
+            "repre-sented", "prop-erly", "opti-mized", "neces-sary", "modi-fied", "logi-cal",
+            "depen-dent", "config-ured", "config-uration", "capa-bilities", "arith-metic",
+            "Specifi-cally", "virtu-alization", "viola-tions", "subtrac-tion", "sema-phore",
+            "prob-lems", "plat-form", "out-side", "magni-tude", "identifi-cation", "iden-tify",
+            "illus-trated", "hier-archy", "granu-larity", "exec-utive", "distin-guished",
+            "defini-tions", "defi-nition", "compu-tations", "circum-stances", "authenti-cated",
+            "allo-cated", "accom-plished", "acces-sible", "There-fore", "band-width", "gath-ered",
+            "inter-face", "Devel-oper",
+            // added from a rev-091 corpus scan of the table-cell descriptions
+            "ele-ments", "val-ues", "han-dle", "permit-ted", "per-mitted", "mes-sage", "descrip-tor",
+            "mem-ory", "fea-ture", "sig-naling", "nonsig-naling", "nonsignal-ing", "ver-sion",
+            "regis-ter", "regis-ters", "comput-ed", "comput-es", "select-ed", "spec-ifies",
+            // mnemonic broken across a line in an opcode cell ("AES- ENCWIDE128KL")
+            "AES-DECWIDE128KL", "AES-DECWIDE256KL", "AES-ENCWIDE128KL", "AES-ENCWIDE256KL",
+        ];
+
         public static string CleanupHyphenation(string text)
         {
             if (string.IsNullOrEmpty(text)) return text;
@@ -1687,41 +2255,45 @@ namespace AsmAnnotate
             text = text.Replace("•\n", "\n * ");
             text = text.Replace("•", "\n * ");
 
-            // Word breaks with hyphen-newline pattern
-            // These are the most common in Intel docs
-            text = text.Replace("addi-\ntional", "additional\n");
-            text = text.Replace("combina-\ntion ", "combination\n");
-            text = text.Replace("compar-\nison)", "comparison)\n");
-            text = text.Replace("compar-\nisons", "comparisons\n");
-            text = text.Replace("corre-\nsponding", "corresponding\n");
-            text = text.Replace("documenta-\ntion", "documentation\n");
-            text = text.Replace("destina-\ntion", "destination\n");
-            text = text.Replace("desti-\nnation", "destination\n");
-            text = text.Replace("infor-\nmation", "information\n");
-            text = text.Replace("instruc-\ntions", "instructions\n");
-            text = text.Replace("instruc-\ntion", "instruction\n");
-            text = text.Replace("regis-\nters", "registers\n");
-            text = text.Replace("regis-\nter", "register\n");
-            text = text.Replace("oper-\nands", "operands\n");
-            text = text.Replace("oper-\nations", "operations\n");
-            text = text.Replace("preci-\nsion", "precision\n");
-            text = text.Replace("loca-\ntions", "locations\n");
-            text = text.Replace("loca-\ntion", "location\n");
-            text = text.Replace("speci-\nfied", "specified\n");
-            text = text.Replace("64-\nbit", "64-bit\n");
-            text = text.Replace("unpre-\ndictable", "\nunpredictable");
-            text = text.Replace("single-\nprecision", "\nsingle-precision");
-            text = text.Replace("priv-\nilege", "\nprivilege");
+            // A line break INSIDE a table cell renders a hyphenated word as "func- tions"
+            // (hyphen + space) instead of the paragraph form "func-\ntions" (hyphen + newline),
+            // because the cell joins its two visual lines with a space. Normalise that hyphen-space
+            // to the hyphen-newline form so the curated SplitWords list and the general rule below
+            // (which both expect "\n") handle cell text the same as paragraph text. Only a hyphen
+            // tight against the preceding letter is a word break (real " - " dashes have a space on
+            // BOTH sides and are not matched). The negative lookahead keeps elisions like
+            // "16- or 32-bit" / "8- to 64-bit" intact (the continuation is a conjunction, not the
+            // rest of the word).
+            text = Regex.Replace(text, @"([A-Za-z0-9])- +(?!(?:or|and|to|nor)\b)([A-Za-z])", "$1-\n$2");
 
-            // Space-hyphen patterns (hyphen with space after it, a PDF artifact)
-            text = text.Replace("single- precision", "single-precision");
-            text = text.Replace("no- operand", "no-operand");
-            text = text.Replace("no- operands", "no-operands");
-            text = text.Replace("general- purpose", "general-purpose");
-            text = text.Replace("general- protection", "general-protection");
-            text = text.Replace("excep- tion", "exception");
+            // De-hyphenate the curated single-word splits: "excep-\ntion" -> "exception".
+            foreach (string w in SplitWords)
+            {
+                int h = w.IndexOf('-');
+                if (h <= 0) continue;
+                string broken = string.Concat(w.AsSpan(0, h), "-\n", w.AsSpan(h + 1));
+                string joined = string.Concat(w.AsSpan(0, h), w.AsSpan(h + 1));
+                text = text.Replace(broken, joined);
+            }
 
-            // Edge case: extra space in instruction aliases
+            // Footnote artifact: a trademark glyph (®/™) extracted as its own line in the middle
+            // of a hyphenated word break ("Reg-\n®\nisters" -> "Registers"). A lone ®/™ on a line
+            // is always noise (a real one is attached, e.g. "Intel®"), so drop the glyph and the
+            // hyphen and rejoin the word.
+            text = Regex.Replace(text, @"([A-Za-z])-\n[®™]\n([a-z])", "$1$2");
+
+            // General rule for every remaining line-ending hyphen: pull the continuation up onto
+            // the same line but KEEP the hyphen. This removes the rendered "foo- bar" space and
+            // correctly preserves real compounds the curated list intentionally omits
+            // ("floating-\npoint" -> "floating-point", "64-\nbit" -> "64-bit",
+            // "general-\nprotection" -> "general-protection"). The lookahead keeps "16-\nor 32-bit"
+            // as an elision (renders "16- or 32-bit").
+            text = Regex.Replace(text, @"([A-Za-z0-9])-\n(?!(?:or|and|to|nor)\b)([A-Za-z0-9])", "$1-$2");
+
+            // (The old explicit "single- precision" etc. fixes are now covered by the hyphen-space
+            // normalisation above plus the general rule, which keeps the hyphen for those compounds.)
+
+            // Edge case: extra space in an instruction alias
             text = text.Replace("REP/REPE/REPZ /REPNE/REPNZ", "REP/REPE/REPZ/REPNE/REPNZ");
 
             return text;

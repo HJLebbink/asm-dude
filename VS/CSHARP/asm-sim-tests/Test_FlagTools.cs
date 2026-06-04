@@ -72,7 +72,8 @@ namespace unit_tests_asm_z3
                 BitVecExpr aExpr = ctx.MkBV(a, nBits);
                 BitVecExpr bExpr = ctx.MkBV(b, nBits);
 
-                BoolExpr resultExpr = ToolsFlags.Create_OF_Add(aExpr, bExpr, nBits, ctx).Simplify() as BoolExpr;
+                BoolExpr? resultExpr = ToolsFlags.Create_OF_Add(aExpr, bExpr, nBits, ctx).Simplify() as BoolExpr;
+                Assert.IsNotNull(resultExpr);
                 Assert.IsTrue(AsmTestTools.Calc_OF_Add(nBits, a, b) ? resultExpr.IsTrue : resultExpr.IsFalse);
             }
         }
@@ -87,7 +88,8 @@ namespace unit_tests_asm_z3
 
                 BitVecExpr aExpr = ctx.MkBV(a, nBits);
 
-                BoolExpr resultExpr = ToolsFlags.Create_ZF(aExpr, ctx).Simplify() as BoolExpr;
+                BoolExpr? resultExpr = ToolsFlags.Create_ZF(aExpr, ctx).Simplify() as BoolExpr;
+                Assert.IsNotNull(resultExpr);
                 Assert.IsTrue(AsmTestTools.Calc_ZF(a) ? resultExpr.IsTrue : resultExpr.IsFalse);
             }
         }

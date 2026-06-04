@@ -2403,7 +2403,6 @@ public enum Mnemonic
         /// <summary>This instruction is used to execute non-privileged Intel SGX leaf functions.</summary>
         ENCLU,
 
-        ENCLV,
         EADD,
         EAUG,
         EBLOCK,
@@ -2419,10 +2418,8 @@ public enum Mnemonic
         EMODPR,
         EMODT,
         EPA,
-        ERDINFO,
         EREMOVE,
         ETRACK,
-        ETRACKC,
         EWB,
         EACCEPT,
         EACCEPTCOPY,
@@ -2432,9 +2429,6 @@ public enum Mnemonic
         EMODPE,
         EREPORT,
         ERESUME,
-        EDECVIRTCHILD,
-        EINCVIRTCHILD,
-        ESETCONTEXT,
 
         EXITAC,
         PARAMETERS,
@@ -2461,6 +2455,409 @@ public enum Mnemonic
 
         VP2INTERSECTD,
         VP2INTERSECTQ,
+
+        #region Instructions added since SDM rev-070 (May 2019) — collected from the rev-091 (March 2026) wiki
+        /// <summary>Perform Ten Rounds of AES Decryption Flow With Key Locker Using 128-Bit</summary>
+        AESDEC128KL,
+        /// <summary>Perform 14 Rounds of AES Decryption Flow With Key Locker Using 256-Bit Key</summary>
+        AESDEC256KL,
+        /// <summary>Perform Ten Rounds of AES Decryption Flow With Key Locker on 8 Blocks</summary>
+        AESDECWIDE128KL,
+        /// <summary>Perform 14 Rounds of AES Decryption Flow With Key Locker on 8 Blocks</summary>
+        AESDECWIDE256KL,
+        /// <summary>Perform Ten Rounds of AES Encryption Flow With Key Locker Using 128-Bit Key</summary>
+        AESENC128KL,
+        /// <summary>Perform 14 Rounds of AES Encryption Flow With Key Locker Using 256-Bit Key</summary>
+        AESENC256KL,
+        /// <summary>Perform Ten Rounds of AES Encryption Flow With Key Locker on 8 Blocks</summary>
+        AESENCWIDE128KL,
+        /// <summary>Perform 14 Rounds of AES Encryption Flow With Key Locker on 8 Blocks</summary>
+        AESENCWIDE256KL,
+        /// <summary>Clear Busy Flag in a Supervisor Shadow Stack Token</summary>
+        CLRSSBSY,
+        /// <summary>Clear User Interrupt Flag</summary>
+        CLUI,
+        /// <summary>Compare and Add if Condition is Met</summary>
+        CMPBEXADD,
+        /// <summary>Compare and Add if Condition is Met</summary>
+        CMPBXADD,
+        /// <summary>Compare and Add if Condition is Met</summary>
+        CMPLEXADD,
+        /// <summary>Compare and Add if Condition is Met</summary>
+        CMPLXADD,
+        /// <summary>Compare and Add if Condition is Met</summary>
+        CMPNBEXADD,
+        /// <summary>Encode 128-Bit Key With Key Locker</summary>
+        ENCODEKEY128,
+        /// <summary>Encode 256-Bit Key With Key Locker</summary>
+        ENCODEKEY256,
+        /// <summary>Terminate an Indirect Branch in 32-bit and Compatibility Mode</summary>
+        ENDBR32,
+        /// <summary>Terminate an Indirect Branch in 64-bit Mode</summary>
+        ENDBR64,
+        /// <summary>Event Return to Supervisor</summary>
+        ERETS,
+        /// <summary>Event Return to User</summary>
+        ERETU,
+        /// <summary>History Reset</summary>
+        HRESET,
+        /// <summary>Increment Shadow Stack Pointer</summary>
+        INCSSPD,
+        /// <summary>Increment Shadow Stack Pointer</summary>
+        INCSSPQ,
+        /// <summary>Load Tile Configuration</summary>
+        LDTILECFG,
+        /// <summary>Load Kernel GS Base</summary>
+        LKGS,
+        /// <summary>Load Internal Wrapping Key With Key Locker</summary>
+        LOADIWKEY,
+        /// <summary>Platform Bind Key to Binary Large Object</summary>
+        PBNDKB,
+        /// <summary>Prefetch Code Into Caches</summary>
+        PREFETCHIT0,
+        /// <summary>Prefetch Code Into Caches</summary>
+        PREFETCHIT1,
+        /// <summary>Read List of Model Specific Registers</summary>
+        RDMSRLIST,
+        /// <summary>Read Shadow Stack Pointer</summary>
+        RDSSPD,
+        /// <summary>Read Shadow Stack Pointer</summary>
+        RDSSPQ,
+        /// <summary>Restore Saved Shadow Stack Pointer</summary>
+        RSTORSSP,
+        /// <summary>Save Previous Shadow Stack Pointer</summary>
+        SAVEPREVSSP,
+        /// <summary>Enter SEAM Root Operation</summary>
+        SEAMCALL,
+        /// <summary>Send User Interprocessor Interrupt</summary>
+        SENDUIPI,
+        /// <summary>Serialize Instruction Execution</summary>
+        SERIALIZE,
+        /// <summary>Mark Shadow Stack Busy</summary>
+        SETSSBSY,
+        /// <summary>Store Tile Configuration</summary>
+        STTILECFG,
+        /// <summary>Set User Interrupt Flag</summary>
+        STUI,
+        /// <summary>Matrix Multiplication of Complex Tiles Accumulated into</summary>
+        TCMMIMFP16PS,
+        /// <summary>Matrix Multiplication of Complex Tiles Accumulated into</summary>
+        TCMMRLFP16PS,
+        /// <summary>Call SEAM Module</summary>
+        TDCALL,
+        /// <summary>Dot Product of BF16 Tiles Accumulated into Packed Single Precision Tile</summary>
+        TDPBF16PS,
+        /// <summary>Dot Product of Signed/Unsigned Bytes with Dword</summary>
+        TDPBSSD,
+        /// <summary>Dot Product of Signed/Unsigned Bytes with Dword</summary>
+        TDPBSUD,
+        /// <summary>Dot Product of Signed/Unsigned Bytes with Dword</summary>
+        TDPBUSD,
+        /// <summary>Dot Product of Signed/Unsigned Bytes with Dword</summary>
+        TDPBUUD,
+        /// <summary>Dot Product of FP16 Tiles Accumulated into Packed Single Precision Tile</summary>
+        TDPFP16PS,
+        /// <summary>Determine User Interrupt Flag</summary>
+        TESTUI,
+        /// <summary>Load Tile</summary>
+        TILELOADD,
+        /// <summary>Load Tile</summary>
+        TILELOADDT1,
+        /// <summary>Release Tile</summary>
+        TILERELEASE,
+        /// <summary>Store Tile</summary>
+        TILESTORED,
+        /// <summary>Zero Tile</summary>
+        TILEZERO,
+        /// <summary>Undefined Instruction (raises invalid opcode #UD)</summary>
+        UD0,
+        /// <summary>User-Interrupt Return</summary>
+        UIRET,
+        /// <summary>Add Packed FP16 Values</summary>
+        VADDPH,
+        /// <summary>Add Scalar FP16 Values</summary>
+        VADDSH,
+        /// <summary>Load BF16 Element and Convert to FP32 Element With Broadcast</summary>
+        VBCSTNEBF162PS,
+        /// <summary>Load FP16 Element and Convert to FP32 Element with Broadcast</summary>
+        VBCSTNESH2PS,
+        /// <summary>Compare Packed FP16 Values</summary>
+        VCMPPH,
+        /// <summary>Compare Scalar FP16 Values</summary>
+        VCMPSH,
+        /// <summary>Compare Scalar Ordered FP16 Values and Set EFLAGS</summary>
+        VCOMISH,
+        /// <summary>Convert Packed Signed Doubleword Integers to Packed FP16 Values</summary>
+        VCVTDQ2PH,
+        /// <summary>Convert Even Elements of Packed BF16 Values to FP32 Values</summary>
+        VCVTNEEBF162PS,
+        /// <summary>Convert Even Elements of Packed FP16 Values to FP32 Values</summary>
+        VCVTNEEPH2PS,
+        /// <summary>Convert Odd Elements of Packed BF16 Values to FP32 Values</summary>
+        VCVTNEOBF162PS,
+        /// <summary>Convert Odd Elements of Packed FP16 Values to FP32 Values</summary>
+        VCVTNEOPH2PS,
+        /// <summary>Convert Packed Double Precision FP Values to Packed FP16 Values</summary>
+        VCVTPD2PH,
+        /// <summary>Convert Packed FP16 Values to Signed Doubleword Integers</summary>
+        VCVTPH2DQ,
+        /// <summary>Convert Packed FP16 Values to FP64 Values</summary>
+        VCVTPH2PD,
+        /// <summary>Convert Packed FP16 Values to Single Precision Floating-Point</summary>
+        VCVTPH2PSX,
+        /// <summary>Convert Packed FP16 Values to Signed Quadword Integer Values</summary>
+        VCVTPH2QQ,
+        /// <summary>Convert Packed FP16 Values to Unsigned Doubleword Integers</summary>
+        VCVTPH2UDQ,
+        /// <summary>Convert Packed FP16 Values to Unsigned Quadword Integers</summary>
+        VCVTPH2UQQ,
+        /// <summary>Convert Packed FP16 Values to Unsigned Word Integers</summary>
+        VCVTPH2UW,
+        /// <summary>Convert Packed FP16 Values to Signed Word Integers</summary>
+        VCVTPH2W,
+        /// <summary>Convert Packed Single Precision Floating-Point Values to Packed FP16 Values</summary>
+        VCVTPS2PHX,
+        /// <summary>Convert Packed Signed Quadword Integers to Packed FP16 Values</summary>
+        VCVTQQ2PH,
+        /// <summary>Convert Low FP64 Value to an FP16 Value</summary>
+        VCVTSD2SH,
+        /// <summary>Convert Low FP16 Value to an FP64 Value</summary>
+        VCVTSH2SD,
+        /// <summary>Convert Low FP16 Value to Signed Integer</summary>
+        VCVTSH2SI,
+        /// <summary>Convert Low FP16 Value to FP32 Value</summary>
+        VCVTSH2SS,
+        /// <summary>Convert Low FP16 Value to Unsigned Integer</summary>
+        VCVTSH2USI,
+        /// <summary>Convert a Signed Doubleword/Quadword Integer to an FP16 Value</summary>
+        VCVTSI2SH,
+        /// <summary>Convert Low FP32 Value to an FP16 Value</summary>
+        VCVTSS2SH,
+        /// <summary>Convert with Truncation Packed FP16 Values to Signed Doubleword Integers</summary>
+        VCVTTPH2DQ,
+        /// <summary>Convert with Truncation Packed FP16 Values to Signed Quadword Integers</summary>
+        VCVTTPH2QQ,
+        /// <summary>Convert with Truncation Packed FP16 Values to Unsigned Doubleword</summary>
+        VCVTTPH2UDQ,
+        /// <summary>Convert with Truncation Packed FP16 Values to Unsigned Quadword Integers</summary>
+        VCVTTPH2UQQ,
+        /// <summary>Convert Packed FP16 Values to Unsigned Word Integers</summary>
+        VCVTTPH2UW,
+        /// <summary>Convert Packed FP16 Values to Signed Word Integers</summary>
+        VCVTTPH2W,
+        /// <summary>Convert with Truncation Low FP16 Value to a Signed Integer</summary>
+        VCVTTSH2SI,
+        /// <summary>Convert with Truncation Low FP16 Value to an Unsigned Integer</summary>
+        VCVTTSH2USI,
+        /// <summary>Convert Packed Unsigned Doubleword Integers to Packed FP16 Values</summary>
+        VCVTUDQ2PH,
+        /// <summary>Convert Packed Unsigned Quadword Integers to Packed FP16 Values</summary>
+        VCVTUQQ2PH,
+        /// <summary>Convert Unsigned Doubleword Integer to an FP16 Value</summary>
+        VCVTUSI2SH,
+        /// <summary>Convert Packed Unsigned Word Integers to FP16 Values</summary>
+        VCVTUW2PH,
+        /// <summary>Convert Packed Signed Word Integers to FP16 Values</summary>
+        VCVTW2PH,
+        /// <summary>Divide Packed FP16 Values</summary>
+        VDIVPH,
+        /// <summary>Divide Scalar FP16 Values</summary>
+        VDIVSH,
+        /// <summary>Complex Multiply and Accumulate FP16 Values</summary>
+        VFCMADDCPH,
+        /// <summary>Complex Multiply and Accumulate Scalar FP16 Values</summary>
+        VFCMADDCSH,
+        /// <summary>Complex Multiply FP16 Values</summary>
+        VFCMULCPH,
+        /// <summary>Complex Multiply Scalar FP16 Values</summary>
+        VFCMULCSH,
+        /// <summary>Complex Multiply and Accumulate FP16 Values</summary>
+        VFMADDCPH,
+        /// <summary>Complex Multiply and Accumulate Scalar FP16 Values</summary>
+        VFMADDCSH,
+        /// <summary>Fused Multiply-Alternating</summary>
+        VFMADDSUB132PH,
+        /// <summary>Fused Multiply-Alternating</summary>
+        VFMADDSUB213PH,
+        /// <summary>Fused Multiply-Alternating</summary>
+        VFMADDSUB231PH,
+        /// <summary>Fused Multiply-Alternating</summary>
+        VFMSUBADD132PH,
+        /// <summary>Fused Multiply-Alternating</summary>
+        VFMSUBADD213PH,
+        /// <summary>Fused Multiply-Alternating</summary>
+        VFMSUBADD231PH,
+        /// <summary>Complex Multiply FP16 Values</summary>
+        VFMULCPH,
+        /// <summary>Complex Multiply Scalar FP16 Values</summary>
+        VFMULCSH,
+        /// <summary>Test Types of Packed FP16 Values</summary>
+        VFPCLASSPH,
+        /// <summary>Test Types of Scalar FP16 Values</summary>
+        VFPCLASSSH,
+        /// <summary>Convert Exponents of Packed FP16 Values to FP16 Values</summary>
+        VGETEXPPH,
+        /// <summary>Convert Exponents of Scalar FP16 Values to FP16 Values</summary>
+        VGETEXPSH,
+        /// <summary>Extract FP16 Vector of Normalized Mantissas from FP16 Vector</summary>
+        VGETMANTPH,
+        /// <summary>Extract FP16 of Normalized Mantissa from FP16 Scalar</summary>
+        VGETMANTSH,
+        /// <summary>Return Maximum of Packed FP16 Values</summary>
+        VMAXPH,
+        /// <summary>Return Maximum of Scalar FP16 Values</summary>
+        VMAXSH,
+        /// <summary>Return Minimum of Packed FP16 Values</summary>
+        VMINPH,
+        /// <summary>Return Minimum Scalar FP16 Value</summary>
+        VMINSH,
+        /// <summary>Move Scalar FP16 Value</summary>
+        VMOVSH,
+        /// <summary>Move Word</summary>
+        VMOVW,
+        /// <summary>Multiply Packed FP16 Values</summary>
+        VMULPH,
+        /// <summary>Multiply Scalar FP16 Values</summary>
+        VMULSH,
+        /// <summary>Compute Reciprocals of Packed FP16 Values</summary>
+        VRCPPH,
+        /// <summary>Compute Reciprocal of Scalar FP16 Value</summary>
+        VRCPSH,
+        /// <summary>Perform Reduction Transformation on Packed FP16 Values</summary>
+        VREDUCEPH,
+        /// <summary>Perform Reduction Transformation on Scalar FP16 Value</summary>
+        VREDUCESH,
+        /// <summary>Round Packed FP16 Values to Include a Given Number of Fraction Bits</summary>
+        VRNDSCALEPH,
+        /// <summary>Round Scalar FP16 Value to Include a Given Number of Fraction Bits</summary>
+        VRNDSCALESH,
+        /// <summary>Compute Reciprocals of Square Roots of Packed FP16 Values</summary>
+        VRSQRTPH,
+        /// <summary>Compute Approximate Reciprocal of Square Root of Scalar FP16 Value</summary>
+        VRSQRTSH,
+        /// <summary>Scale Packed FP16 Values with FP16 Values</summary>
+        VSCALEFPH,
+        /// <summary>Scale Scalar FP16 Values with FP16 Values</summary>
+        VSCALEFSH,
+        /// <summary>Perform an Intermediate Calculation for the Next Four SHA512 Message</summary>
+        VSHA512MSG1,
+        /// <summary>Perform a Final Calculation for the Next Four SHA512 Message Qwords</summary>
+        VSHA512MSG2,
+        /// <summary>Perform Two Rounds of SHA512 Operation</summary>
+        VSHA512RNDS2,
+        /// <summary>Perform Initial Calculation for the Next Four SM3 Message Words</summary>
+        VSM3MSG1,
+        /// <summary>Perform Final Calculation for the Next Four SM3 Message Words</summary>
+        VSM3MSG2,
+        /// <summary>Perform Two Rounds of SM3 Operation</summary>
+        VSM3RNDS2,
+        /// <summary>Perform Four Rounds of SM4 Key Expansion</summary>
+        VSM4KEY4,
+        /// <summary>Performs Four Rounds of SM4 Encryption</summary>
+        VSM4RNDS4,
+        /// <summary>Compute Square Root of Packed FP16 Values</summary>
+        VSQRTPH,
+        /// <summary>Compute Square Root of Scalar FP16 Value</summary>
+        VSQRTSH,
+        /// <summary>Subtract Packed FP16 Values</summary>
+        VSUBPH,
+        /// <summary>Subtract Scalar FP16 Value</summary>
+        VSUBSH,
+        /// <summary>Unordered Compare Scalar FP16 Values and Set EFLAGS</summary>
+        VUCOMISH,
+        /// <summary>Write List of Model Specific Registers</summary>
+        WRMSRLIST,
+        /// <summary>Non-Serializing Write to Model Specific Register</summary>
+        WRMSRNS,
+        /// <summary>Write to Shadow Stack</summary>
+        WRSSD,
+        /// <summary>Write to Shadow Stack</summary>
+        WRSSQ,
+        /// <summary>Write to User Shadow Stack</summary>
+        WRUSSD,
+        /// <summary>Write to User Shadow Stack</summary>
+        WRUSSQ,
+        /// <summary>Resume Tracking Load Addresses</summary>
+        XRESLDTRK,
+        /// <summary>Suspend Tracking Load Addresses</summary>
+        XSUSLDTRK,
+        /// <summary>SGX2 leaf (ENCLU): Decrements the TCS.CSSA field</summary>
+        EDECCSSA,
+        /// <summary>SGX leaf (ENCLS): Update the SVN of an EPC page</summary>
+        EUPDATESVN,
+        /// <summary>Fused Multiply-Add of Packed FP16 Values</summary>
+        VFMADD132PH,
+        /// <summary>Fused Multiply-Add of Packed FP16 Values</summary>
+        VFMADD213PH,
+        /// <summary>Fused Multiply-Add of Packed FP16 Values</summary>
+        VFMADD231PH,
+        /// <summary>Fused Multiply-Add of Packed FP16 Values</summary>
+        VFNMADD132PH,
+        /// <summary>Fused Multiply-Add of Packed FP16 Values</summary>
+        VFNMADD213PH,
+        /// <summary>Fused Multiply-Add of Packed FP16 Values</summary>
+        VFNMADD231PH,
+        /// <summary>Fused Multiply-Add of Scalar FP16 Values</summary>
+        VFMADD132SH,
+        /// <summary>Fused Multiply-Add of Scalar FP16 Values</summary>
+        VFMADD213SH,
+        /// <summary>Fused Multiply-Add of Scalar FP16 Values</summary>
+        VFMADD231SH,
+        /// <summary>Fused Multiply-Add of Scalar FP16 Values</summary>
+        VFNMADD132SH,
+        /// <summary>Fused Multiply-Add of Scalar FP16 Values</summary>
+        VFNMADD213SH,
+        /// <summary>Fused Multiply-Add of Scalar FP16 Values</summary>
+        VFNMADD231SH,
+        /// <summary>Fused Multiply-Subtract of Packed FP16 Values</summary>
+        VFMSUB132PH,
+        /// <summary>Fused Multiply-Subtract of Packed FP16 Values</summary>
+        VFMSUB213PH,
+        /// <summary>Fused Multiply-Subtract of Packed FP16 Values</summary>
+        VFMSUB231PH,
+        /// <summary>Fused Multiply-Subtract of Packed FP16 Values</summary>
+        VFNMSUB132PH,
+        /// <summary>Fused Multiply-Subtract of Packed FP16 Values</summary>
+        VFNMSUB213PH,
+        /// <summary>Fused Multiply-Subtract of Packed FP16 Values</summary>
+        VFNMSUB231PH,
+        /// <summary>Fused Multiply-Subtract of Scalar FP16 Values</summary>
+        VFMSUB132SH,
+        /// <summary>Fused Multiply-Subtract of Scalar FP16 Values</summary>
+        VFMSUB213SH,
+        /// <summary>Fused Multiply-Subtract of Scalar FP16 Values</summary>
+        VFMSUB231SH,
+        /// <summary>Fused Multiply-Subtract of Scalar FP16 Values</summary>
+        VFNMSUB132SH,
+        /// <summary>Fused Multiply-Subtract of Scalar FP16 Values</summary>
+        VFNMSUB231SH,
+        /// <summary>Fused Multiply-Subtract of Scalar FP16 Values</summary>
+        VFNMSUB213SH,
+        /// <summary>Multiply and Add Unsigned and Signed Bytes</summary>
+        VPDPBSSD,
+        /// <summary>Multiply and Add Unsigned and Signed Bytes</summary>
+        VPDPBSSDS,
+        /// <summary>Multiply and Add Unsigned and Signed Bytes</summary>
+        VPDPBSUD,
+        /// <summary>Multiply and Add Unsigned and Signed Bytes</summary>
+        VPDPBSUDS,
+        /// <summary>Multiply and Add Unsigned and Signed Bytes</summary>
+        VPDPBUUD,
+        /// <summary>Multiply and Add Unsigned and Signed Bytes</summary>
+        VPDPBUUDS,
+        /// <summary>Multiply and Add Unsigned and Signed Words</summary>
+        VPDPWSUD,
+        /// <summary>Multiply and Add Unsigned and Signed Words</summary>
+        VPDPWSUDS,
+        /// <summary>Multiply and Add Unsigned and Signed Words</summary>
+        VPDPWUSD,
+        /// <summary>Multiply and Add Unsigned and Signed Words</summary>
+        VPDPWUSDS,
+        /// <summary>Multiply and Add Unsigned and Signed Words</summary>
+        VPDPWUUD,
+        /// <summary>Multiply and Add Unsigned and Signed Words</summary>
+        VPDPWUUDS,
+        #endregion
     }
 
     /// <summary>

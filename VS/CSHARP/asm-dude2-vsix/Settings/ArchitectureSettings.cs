@@ -569,4 +569,195 @@ internal static class ArchitectureSettings
         {
             Description = "Undocumented instructions: SALC, ICEBP (INT1), LOADALL, undocumented opcodes — use at your own risk, behavior may vary between CPU revisions",
         };
+
+    // ── rev-091 / 2026 SDM additions (Order 130+) ────────────────
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchAVX10 { get; } =
+        new("archAVX10", "AVX10", ArchCategory, defaultValue: false)
+        {
+            Description = "AVX10 converged vector ISA (Granite Rapids / future). In the SDM nearly every EVEX instruction is now '(AVX512xx AND AVX512yy) OR AVX10.1'. Enabling AVX10 makes ALL of those instructions available regardless of the individual AVX-512 toggles, since AVX10.1 is a superset of AVX-512.",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchAVX512FP16 { get; } =
+        new("archAVX512FP16", "AVX-512 FP16", ArchCategory, defaultValue: false)
+        {
+            Description = "AVX-512 FP16 half-precision floating-point (Sapphire Rapids): VADDPH, VMULPH, VFMADD*PH/SH, VCVTPH2*, VCVTSH2*, VFCMADDCPH, VFMULCPH, VGETMANTPH, VRNDSCALEPH — full IEEE FP16 arithmetic in vectors",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchAVXVNNI { get; } =
+        new("archAVXVNNI", "AVX-VNNI", ArchCategory, defaultValue: false)
+        {
+            Description = "AVX-VNNI (Alder Lake): VEX-encoded VPDPBUSD, VPDPBUSDS, VPDPWSSD, VPDPWSSDS — INT8/INT16 dot-product on 128/256-bit vectors without requiring AVX-512",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchAVXVNNIINT { get; } =
+        new("archAVXVNNIINT", "AVX-VNNI-INT8/INT16", ArchCategory, defaultValue: false)
+        {
+            Description = "AVX-VNNI-INT8 / AVX-VNNI-INT16 (Sierra Forest, Arrow Lake): VPDPB[SU][SU]D[S], VPDPW[SU][SU]D[S] — signed/unsigned INT8 and INT16 dot-product variants",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchAVXNECONVERT { get; } =
+        new("archAVXNECONVERT", "AVX-NE-CONVERT", ArchCategory, defaultValue: false)
+        {
+            Description = "AVX-NE-CONVERT (Sierra Forest, Arrow Lake): VBCSTNEBF162PS, VBCSTNESH2PS, VCVTNE[OE]BF162PS, VCVTNE[OE]PH2PS, VCVTNEPS2BF16 — BF16/FP16 to FP32 conversions and broadcasts",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchAVXIFMA { get; } =
+        new("archAVXIFMA", "AVX-IFMA", ArchCategory, defaultValue: false)
+        {
+            Description = "AVX-IFMA (Sierra Forest, Arrow Lake): VEX-encoded VPMADD52LUQ, VPMADD52HUQ — 52-bit integer multiply-add on 128/256-bit vectors without AVX-512",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchAMX { get; } =
+        new("archAMX", "AMX (tiles)", ArchCategory, defaultValue: false)
+        {
+            Description = "Advanced Matrix Extensions (Sapphire Rapids): LDTILECFG, STTILECFG, TILELOADD, TILELOADDT1, TILESTORED, TILERELEASE, TILEZERO, TDPBSSD/SUD/USD/UUD, TDPBF16PS, TDPFP16PS, TCMMIMFP16PS, TCMMRLFP16PS — tile-register matrix multiply for AI",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchCMPCCXADD { get; } =
+        new("archCMPCCXADD", "CMPccXADD", ArchCategory, defaultValue: false)
+        {
+            Description = "Compare-and-add if condition met (Sierra Forest, Granite Rapids): CMPBEXADD, CMPBXADD, CMPLEXADD, CMPLXADD, CMPNBEXADD, CMPNBXADD, CMPNLEXADD, CMPNLXADD, CMPNOXADD, CMPNPXADD, CMPNSXADD, CMPNZXADD, CMPOXADD, CMPPXADD, CMPSXADD, CMPZXADD — atomic compare-and-add primitives for lock-free data structures",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchCETSS { get; } =
+        new("archCETSS", "CET Shadow Stack", ArchCategory, defaultValue: false)
+        {
+            Description = "Control-flow Enforcement Technology — shadow stack (Tiger Lake): CLRSSBSY, INCSSPD/Q, RDSSPD/Q, RSTORSSP, SAVEPREVSSP, SETSSBSY, WRSSD/Q, WRUSSD/Q — return-address protection",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchCETIBT { get; } =
+        new("archCETIBT", "CET Indirect Branch Tracking", ArchCategory, defaultValue: false)
+        {
+            Description = "Control-flow Enforcement Technology — indirect branch tracking (Tiger Lake): ENDBR32, ENDBR64 — forward-edge control-flow integrity",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchKEYLOCKER { get; } =
+        new("archKEYLOCKER", "Key Locker", ArchCategory, defaultValue: false)
+        {
+            Description = "Key Locker (Tiger Lake): ENCODEKEY128, ENCODEKEY256, LOADIWKEY, AESENC128KL, AESENC256KL, AESDEC128KL, AESDEC256KL, AESENCWIDE128KL, AESENCWIDE256KL, AESDECWIDE128KL, AESDECWIDE256KL — AES using wrapped keys that never expose the raw key",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchUINTR { get; } =
+        new("archUINTR", "User Interrupts", ArchCategory, defaultValue: false)
+        {
+            Description = "User Interrupts (Sapphire Rapids): CLUI, SENDUIPI, STUI, TESTUI, UIRET — deliver interrupts directly to user space without kernel transition",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchPBNDKB { get; } =
+        new("archPBNDKB", "PBNDKB (TSE)", ArchCategory, defaultValue: false)
+        {
+            Description = "Total Storage Encryption key binding: PBNDKB — bind a platform key for Total Storage Encryption",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchSMAP { get; } =
+        new("archSMAP", "SMAP", ArchCategory, defaultValue: false)
+        {
+            Description = "Supervisor-Mode Access Prevention (Broadwell): CLAC, STAC — clear/set the AC flag to guard against accidental supervisor access to user pages",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchSERIALIZE { get; } =
+        new("archSERIALIZE", "SERIALIZE", ArchCategory, defaultValue: false)
+        {
+            Description = "Serialize instruction execution (Sapphire Rapids, Alder Lake): SERIALIZE — architectural serialization without modifying registers/flags/memory",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchWBNOINVD { get; } =
+        new("archWBNOINVD", "WBNOINVD", ArchCategory, defaultValue: false)
+        {
+            Description = "Write Back and Do Not Invalidate Cache (Ice Lake server): WBNOINVD — write back modified cache lines without invalidating the cache",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchHRESET { get; } =
+        new("archHRESET", "HRESET", ArchCategory, defaultValue: false)
+        {
+            Description = "History Reset (Alder Lake): HRESET — reset selected processor history (e.g. Thread Director feedback) used by hardware prediction",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchMSRLIST { get; } =
+        new("archMSRLIST", "MSRLIST", ArchCategory, defaultValue: false)
+        {
+            Description = "Read/Write list of MSRs (Sierra Forest, Granite Rapids): RDMSRLIST, WRMSRLIST — read/write a list of model-specific registers in one instruction",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchWRMSRNS { get; } =
+        new("archWRMSRNS", "WRMSRNS", ArchCategory, defaultValue: false)
+        {
+            Description = "Non-Serializing Write to MSR (Sierra Forest, Granite Rapids): WRMSRNS — write an MSR without the serializing semantics of WRMSR",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchPTWRITE { get; } =
+        new("archPTWRITE", "PTWRITE", ArchCategory, defaultValue: false)
+        {
+            Description = "Write to Processor Trace (Kaby Lake, Goldmont Plus): PTWRITE — insert a software-defined value into the Intel Processor Trace packet stream",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchTSXLDTRK { get; } =
+        new("archTSXLDTRK", "TSXLDTRK", ArchCategory, defaultValue: false)
+        {
+            Description = "TSX Suspend Load Address Tracking (Sapphire Rapids): XSUSLDTRK, XRESLDTRK — suspend/resume load address tracking within a transactional region",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchPREFETCHI { get; } =
+        new("archPREFETCHI", "PREFETCHI", ArchCategory, defaultValue: false)
+        {
+            Description = "Instruction Prefetch (Granite Rapids): PREFETCHIT0, PREFETCHIT1 — prefetch code into the instruction cache hierarchy",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchSHA512 { get; } =
+        new("archSHA512", "SHA-512", ArchCategory, defaultValue: false)
+        {
+            Description = "SHA-512 New Instructions (Arrow Lake, Lunar Lake): VSHA512MSG1, VSHA512MSG2, VSHA512RNDS2 — hardware SHA-512 message schedule and rounds",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchSM3 { get; } =
+        new("archSM3", "SM3", ArchCategory, defaultValue: false)
+        {
+            Description = "SM3 Hash New Instructions (Arrow Lake, Lunar Lake): VSM3MSG1, VSM3MSG2, VSM3RNDS2 — hardware acceleration for the Chinese SM3 hash standard",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchSM4 { get; } =
+        new("archSM4", "SM4", ArchCategory, defaultValue: false)
+        {
+            Description = "SM4 Cipher New Instructions (Arrow Lake, Lunar Lake): VSM4KEY4, VSM4RNDS4 — hardware acceleration for the Chinese SM4 block cipher",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchMOVBE { get; } =
+        new("archMOVBE", "MOVBE", ArchCategory, defaultValue: false)
+        {
+            Description = "Move After Byte Swap (Atom, Haswell): MOVBE — load/store with endianness swap between memory and a GP register",
+        };
+
+    [VisualStudioContribution]
+    internal static Setting.Boolean ArchPKU { get; } =
+        new("archPKU", "PKU (Protection Keys)", ArchCategory, defaultValue: false)
+        {
+            Description = "Protection Keys for User pages / OSPKE (Skylake server): RDPKRU, WRPKRU — read/write the user page-protection key rights register (PKRU)",
+        };
 }

@@ -131,6 +131,8 @@ namespace unit_tests_asm_z3
                 state_backward = Runner.SimpleStep_Backward(line2, state_backward);
                 state_backward = Runner.SimpleStep_Backward(line1, state_backward);
 
+                Assert.IsNotNull(state_backward);
+                Assert.IsNotNull(state_forward);
                 AsmTestTools.AreEqual(state_backward, state_forward);
             }
         }
@@ -249,9 +251,13 @@ namespace unit_tests_asm_z3
             AsmTestTools.AreEqual(Flags.SF, AsmTestTools.ToTv5(AsmTestTools.Calc_SF(nBits, result)), state);
         }
 
+        /// <summary>
+        /// If rax is already 0, jump to label, if it is not yet 0, make it 0. Afterwards rax is ALWAYS 0.
+        /// </summary>
         [TestMethod]
         public void Test_Runner_Jmp_1()
         {
+
             string programStr =
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
@@ -265,9 +271,9 @@ namespace unit_tests_asm_z3
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.Create_EndState;
-            // if (logToDisplay) Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(staticFlow));
             if (LogToDisplay)
             {
+                Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(sFlow));
                 Console.WriteLine(state);
             }
 
@@ -275,6 +281,10 @@ namespace unit_tests_asm_z3
             AsmTestTools.AreEqual(Rn.RAX, 0, state);
         }
 
+
+        /// <summary>
+        /// If rax is 0, jump to label1, and set rbx 10, otherwise set rbx 10. Afterwards rbx is ALWAYS 10.
+        /// </summary>
         [TestMethod]
         public void Test_Runner_Jmp_2()
         {
@@ -317,7 +327,7 @@ namespace unit_tests_asm_z3
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
-            // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            // DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
             State state = dFlow.Create_EndState;
@@ -438,7 +448,7 @@ namespace unit_tests_asm_z3
             // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
-            State state0 = dFlow.Create_States_Before(0, 0);
+            State? state0 = dFlow.Create_States_Before(0, 0);
             Assert.IsNotNull(state0);
             State state = dFlow.Create_EndState;
             Assert.IsNotNull(state);
@@ -472,7 +482,7 @@ namespace unit_tests_asm_z3
             // var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
-            State state0 = dFlow.Create_States_Before(0, 0);
+            State? state0 = dFlow.Create_States_Before(0, 0);
             Assert.IsNotNull(state0);
             State state = dFlow.Create_EndState;
             Assert.IsNotNull(state);
@@ -1021,7 +1031,8 @@ namespace unit_tests_asm_z3
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            State state0 = dFlow.Create_States_Before(0, 0);
+            State? state0 = dFlow.Create_States_Before(0, 0);
+            Assert.IsNotNull(state0);
             State state = dFlow.Create_EndState;
 
             Microsoft.Z3.Expr rax = state0.Create(Rn.RAX).Translate(state.Ctx);
