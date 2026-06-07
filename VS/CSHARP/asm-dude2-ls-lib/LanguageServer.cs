@@ -417,7 +417,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             ? Path.Combine(Path.GetDirectoryName(assemblyLocation), "Resources")
             : "Resources";
         {
-            string filename_Regular = Path.Combine(path, "signature-may2019.txt");
+            string filename_Regular = Path.Combine(path, "signature-mar2026.txt");
             string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
             this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.options!);
             // WriteMnemonicUrlMapping removed — documentation links now handled by context menu command
@@ -1515,9 +1515,11 @@ private void UpdateInternals(string uri)
     ///  11: namespace (UserDefined3)
     /// </remarks>
     /// <example>
-    /// MapTokenType(AsmTokenType.Mnemonic) → 0
-    /// MapTokenType(AsmTokenType.Register) → 1
-    /// MapTokenType(AsmTokenType.Label) → 2
+    /// Indices are the standard VS/LSP token-type ordering (matching the SemanticTokensLegend):
+    /// MapTokenType(AsmTokenType.Mnemonic) → 15 (keyword)
+    /// MapTokenType(AsmTokenType.Register) → 8  (variable)
+    /// MapTokenType(AsmTokenType.Label)    → 1  (type)
+    /// MapTokenType(AsmTokenType.Jump)     → 12 (function)
     /// </example>
     /// <!-- LLM-ANNOTATION -->
     /// LLM KEYWORDS: semantic tokens, token type mapping, LSP protocol, type classification
@@ -1530,8 +1532,8 @@ private static int MapTokenType(AsmTokenType type)
          {
              AsmTokenType.Mnemonic => 15,    // keyword
              AsmTokenType.MnemonicOff => 15, // keyword (deprecated - will add modifier)
-             AsmTokenType.Register => 2,     // class
-             AsmTokenType.Label => 1,        // type
+             AsmTokenType.Register => 8,     // variable (registers) — must match legend index 8
+             AsmTokenType.Label => 1,        // type (labels)
              AsmTokenType.LabelDef => 1,     // type (definition)
              AsmTokenType.Jump => 12,        // function (jump target)
              AsmTokenType.Directive => 14,   // macro
@@ -2697,7 +2699,14 @@ private static int GetTokenModifiers(AsmTokenType type)
     }
 
     /// <summary>
-    /// Handle hover request. Returns VSInternalHover with styled content for mnemonics, registers, and labels.
+    /// The <see cref="MarkupKind"/> used for hover <see cref="MarkupContent"/>. Set at initialize from
+    /// the client's advertised <c>textDocument.hover.contentFormat</c> (Markdown when offered, else
+    /// PlainText). Defaults to Markdown for direct/test callers that don't go through initialize.
+    /// </summary>
+    internal MarkupKind HoverMarkupKind { get; set; } = MarkupKind.Markdown;
+
+    /// <summary>
+    /// Handle hover request. Returns a standard LSP Hover with MarkupContent for mnemonics, registers, and labels.
     /// </summary>
     /// <param name="parameter">Hover request with document URI and cursor position.</param>
     /// <returns>VSInternalHover with _vs_rawContent for styled text; null if no hover data available.</returns>
@@ -2743,6 +2752,33 @@ private static int GetTokenModifiers(AsmTokenType type)
         string[]? hoverContent = null;
         string? hoverKeyword = null; // keyword text for colored mnemonic display
         AsmTokenType tokenType = this.GetAsmTokenType(keyword_uppercase);
+
+        // Prefer the real parser's classification at this position — GetAsmTokenType is a string-only
+        // heuristic that can't recognise labels/constants, but the parsed document already tagged them.
+        if (this.parsedDocuments.TryGetValue(uri, out KeywordID[][]? parsedLines)
+            && (int)parameter.Position.Line < parsedLines.Length)
+        {
+            int ch = (int)parameter.Position.Character;
+            foreach (KeywordID kid in parsedLines[(int)parameter.Position.Line])
+            {
+                if ((kid.Start_Pos <= ch) && (ch < kid.End_Pos) && (kid.Type != AsmTokenType.UNKNOWN))
+                {
+                    tokenType = kid.Type;
+                    break;
+                }
+            }
+        }
+
+        // Fallback: a word immediately followed by ':' is a label definition (covers the case the
+        // per-line parse doesn't surface here).
+        if (tokenType == AsmTokenType.UNKNOWN)
+        {
+            string lineText = lines[(int)parameter.Position.Line];
+            if ((endPos < lineText.Length) && (lineText[endPos] == ':'))
+            {
+                tokenType = AsmTokenType.LabelDef;
+            }
+        }
 
         switch (tokenType)
         {
@@ -2846,12 +2882,30 @@ private static int GetTokenModifiers(AsmTokenType type)
                     }
                     break;
                 }
-            case AsmTokenType.Constant: //TODO
-                break;
-            case AsmTokenType.LabelDef: //TODO
-                break;
-            case AsmTokenType.Label: //TODO
-                break;
+            case AsmTokenType.Constant:
+                {
+                    (bool valid, ulong value, int nBits) = AsmTools.AsmSourceTools.Evaluate_Constant(keyword);
+                    hoverContent = valid
+                        ? [$"Constant {value}d = {value.ToString("X", CultureUI)}h = {AsmTools.AsmSourceTools.ToStringBin(value, nBits)}b"]
+                        : [$"Constant {keyword}"];
+                    break;
+                }
+            case AsmTokenType.LabelDef:
+                {
+                    // The cursor is ON the definition, so the definition line IS the current line.
+                    int defLine = (int)parameter.Position.Line;
+                    hoverContent = [
+                        $"Label definition {keyword}",
+                        $"Defined at line {defLine + 1}: {lines[defLine].Trim()}",
+                    ];
+                    break;
+                }
+            case AsmTokenType.Label:
+                {
+                    // A label reference; the definition line would need the label graph (future).
+                    hoverContent = [$"Label {keyword}"];
+                    break;
+                }
             case AsmTokenType.UNKNOWN:
                 {
                     string descr = this.asmDudeTools.Get_Description(keyword_uppercase);
@@ -3064,14 +3118,13 @@ private static int GetTokenModifiers(AsmTokenType type)
         {
             int line = (int)parameter.Position.Line;
 
-            // Hover uses _vs_rawContent for styled text (monospace + colored keywords).
-            // For mnemonics, also sets Contents to Markdown with a clickable doc link.
-            if (!string.IsNullOrEmpty(hoverKeyword) && (tokenType is AsmTokenType.Mnemonic or AsmTokenType.Jump))
-            {
-                return HoverBuilder.CreateMnemonicHover(hoverKeyword, hoverContent, line, startPos, endPos);
-            }
+            // Standard LSP Hover with MarkupContent (Markdown or PlainText per the client's advertised
+            // contentFormat, see HoverMarkupKind). For mnemonics/jumps append a clickable doc link.
+            string? docUrl = (!string.IsNullOrEmpty(hoverKeyword) && (tokenType is AsmTokenType.Mnemonic or AsmTokenType.Jump))
+                ? this.GetMnemonicUrl(hoverKeyword)
+                : null;
 
-            return HoverBuilder.CreateStackedHover(hoverContent, line, startPos, endPos);
+            return HoverBuilder.CreateHover(this.HoverMarkupKind, hoverContent, line, startPos, endPos, docUrl);
         }
         return null;
     }

@@ -46,8 +46,17 @@ dotnet run --project VS/CSHARP/intel-doc-2-data            # defaults below
 dotnet run --project VS/CSHARP/intel-doc-2-data -- <wikiDocDir> <outFile>
 ```
 Defaults: wiki = `C:/Source/Github/asm-dude.wiki/doc`,
-out = `…/asm-dude2-ls-lib/Resources/signature-mar2026.txt`. It also writes `overview.txt`
-(an HTML table linking each mnemonic to its wiki page) next to the output.
+out = `…/asm-dude2-ls-lib/Resources/signature-mar2026.txt`. It also writes `overview.txt` (the in-repo
+HTML index table) next to the output, and rewrites `asm-dude.wiki/Home.md` (preamble + that same table).
+
+> **Hard-coded paths:** the wiki dir and output file are hard-coded absolute `C:/Source/...` defaults
+> (override via the two args). Stage 1 (asm-annotate) uses relative paths; this stage does not.
+
+### Tests
+`intel-doc-2-data-tests` (xUnit) covers the generator: `Parse_Table`, `Cleanup_Parameters`,
+`AbbreviateDescription`, `Parse_Parameters`, and an end-to-end `To_Signature` (column detection →
+DNF arch `AVX512_VL+AVX512_F,AVX10` → abbreviated description). The methods + `Signature` struct are
+`internal` with `[InternalsVisibleTo("intel-doc-2-data-tests")]`.
 
 ## The `Mnemonic` enum — how instructions are defined
 
@@ -73,9 +82,11 @@ out = `…/asm-dude2-ls-lib/Resources/signature-mar2026.txt`. It also writes `ov
 3. **Regenerate the signature file** (this tool) → `signature-<month><year>.txt`. With the enum
    updated, the warnings should be (near) zero.
 4. **Wire the new file in** (it is NOT auto-discovered — two hard-coded references):
-   - `asm-dude2-ls-lib/LanguageServer.cs` (~line 420): change `"signature-may2019.txt"` to the new name.
-   - `asm-dude2-ls-lib/asm-dude2-ls-lib.csproj`: add `<None Remove>` + `<Content Include>` (CopyToOutputDirectory) entries for the new file (mirror the may2019 ones).
-   `signature-hand-1.txt` is a hand-maintained supplement loaded alongside — keep it.
+   - `asm-dude2-ls-lib/LanguageServer.cs` (~line 420): set the loaded file name.
+   - `asm-dude2-ls-lib/asm-dude2-ls-lib.csproj`: `<None Remove>` + `<Content Include>` (CopyToOutputDirectory) entries so it's bundled.
+   `signature-hand-1.txt` is a hand-maintained supplement loaded alongside (and it OVERRIDES the
+   regular file by `(Mnemonic, signature-label)` — used e.g. to backfill CMPXCHG=486) — keep it.
+   *(As of June 2026 the loaded file is `signature-mar2026.txt`; `signature-may2019.txt` is retired.)*
 
 ## Notes / quirks handled by this tool
 

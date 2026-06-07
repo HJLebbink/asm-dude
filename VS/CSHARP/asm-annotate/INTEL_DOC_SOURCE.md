@@ -64,8 +64,8 @@ Checking Intel SDM revision (document 325462, combined volumes)...
            https://cdrdv2-public.intel.com/<id>/325462-091-sdm-vol-1-2abcd-3abcd-4-v2.pdf
 ```
 
-The `extract-aaa` demo also calls the check first and prints a warning (but
-does **not** block) if a newer revision exists.
+`extract` also runs this check first and prints a warning (but does **not**
+block) if a newer revision exists.
 
 ## API quick reference
 

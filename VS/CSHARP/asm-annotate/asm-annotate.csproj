@@ -40,9 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="data\icelake.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <InternalsVisibleTo Include="asm-annotate-tests" />
   </ItemGroup>
 
 </Project>

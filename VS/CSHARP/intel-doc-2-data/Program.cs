@@ -193,7 +193,7 @@ namespace intel_doc_2_data
             return (Description, signatures);
         }
 
-        struct Signature
+        internal struct Signature
         {
             public Mnemonic mnemonic;
             public string parameters;
@@ -220,7 +220,7 @@ namespace intel_doc_2_data
             }
         }
 
-        static IList<Signature> To_Signature(IList<IList<string>> table)
+        internal static IList<Signature> To_Signature(IList<IList<string>> table)
         {
             #region Determine what is where
             int mnemonic_column = -2;
@@ -392,7 +392,7 @@ namespace intel_doc_2_data
             return Results;
         }
 
-        static (Mnemonic mnemonic, string Parameters, string Parameter_Descriptions) Parse_Parameters(string str)
+        internal static (Mnemonic mnemonic, string Parameters, string Parameter_Descriptions) Parse_Parameters(string str)
         {
             string parameters = "";
             string parameter_descriptions = "";
@@ -438,7 +438,7 @@ namespace intel_doc_2_data
             return (mnemonic, parameters, parameter_descriptions);
         }
 
-        static string Cleanup_Parameters(string str)
+        internal static string Cleanup_Parameters(string str)
         {
             // Normalise implicit-operand angle-bracket notation FIRST — before the digit-stripping
             // below, which would otherwise mangle "<XMM4-6>" into "<XMM-6>". Every implicit XMM
@@ -459,6 +459,9 @@ namespace intel_doc_2_data
                 Replace("K1", "K").Replace("K2", "K").Replace("K3", "K").
                 Replace("R32A", "R32").Replace("R32B", "R32").Replace("R64A", "R64").Replace("R64B", "R64");
             tmp = tmp.Replace("XYZZY", "IMM16");
+            // AMX tile operands: normalise TMM0..TMM7 -> TMM (the MM1/MM2 rules above already catch
+            // TMM1/TMM2, but TMM3 and higher need this).
+            tmp = Regex.Replace(tmp, "TMM[0-9]", "TMM");
             return tmp;
         }
 
@@ -469,7 +472,7 @@ namespace intel_doc_2_data
         /// revisions use ("single precision"), and the "hyphen-space" PDF artifact
         /// ("single- precision"), case-insensitively.
         /// </summary>
-        static string AbbreviateDescription(string description)
+        internal static string AbbreviateDescription(string description)
         {
             description = Regex.Replace(description, @"floating[- ]+point", "FP", RegexOptions.IgnoreCase);
             description = Regex.Replace(description, @"double[- ]+precision", "DP", RegexOptions.IgnoreCase);
@@ -485,7 +488,7 @@ namespace intel_doc_2_data
             return ArchTools.ParseArchExpression(str).Select(g => (IList<Arch>)g.ToList()).ToList();
         }
 
-        static IList<IList<string>> Parse_Table(string str)
+        internal static IList<IList<string>> Parse_Table(string str)
         {
             var results = new List<IList<string>>();
             // Drop footnote-reference superscripts ("imm32<sup>1</sup>" -> "imm32") and bold tags

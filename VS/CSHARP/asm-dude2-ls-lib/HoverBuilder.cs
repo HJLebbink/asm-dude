@@ -22,192 +22,73 @@
 
 #nullable enable
 
-using Microsoft.VisualStudio.LanguageServer.Protocol;
+using System.Linq;
+using System.Text;
 
-using System.Collections.Generic;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 namespace AsmDude2LS;
 
 /// <summary>
-/// Builds hover responses using VSInternalHover with _vs_rawContent for styled text.
+/// Builds a standard LSP <see cref="Hover"/> with <see cref="MarkupContent"/> that renders in every
+/// client. The markup <see cref="MarkupKind"/> is negotiated from the client's advertised
+/// <c>textDocument.hover.contentFormat</c> at initialize (Markdown when offered, PlainText otherwise)
+/// — see <c>LanguageServer.HoverMarkupKind</c>.
 ///
-/// VS's LSP client only supports PlainText in hover Contents (advertises contentFormat: ["plaintext"]).
-/// Markdown is NOT rendered. To get monospace font and colored text, we use the VS-specific
-/// _vs_rawContent property with ClassifiedTextElement/ClassifiedTextRun.
+/// For Markdown the body is wrapped in a <c>```text</c> fence (so the aligned performance table keeps
+/// its monospace columns) and a clickable `[Documentation](url)` link is appended. Markdown links —
+/// unlike the old `_vs_rawContent` NavigationAction — DO serialize over LSP, so the link is clickable
+/// in markdown-rendering clients (e.g. VS Code).
 ///
-/// Use "formal language" classification with UseClassificationFont style for monospace rendering.
-/// Use "keyword" classification for colored mnemonic names.
-///
-/// See VSInternalTypes.cs for why clickable links are not possible over LSP.
+/// IMPORTANT: Visual Studio's LSP client advertises <c>contentFormat:["plaintext"]</c> for hover
+/// (confirmed in the server log), so VS gets the PlainText branch: the body as-is with the URL on its
+/// own line — NOT a clickable link. Markdown (and the clickable link) only applies to clients that
+/// advertise Markdown.
 /// </summary>
 public static class HoverBuilder
 {
     /// <summary>
-    /// Monospace text style: "formal language" + UseClassificationFont = monospace font.
-    /// This matches how the old in-process VSIX rendered hover text.
+    /// Build a hover from a set of text sections (description, performance table, sim state, …).
+    /// Returns <c>null</c> only if there is nothing to show.
     /// </summary>
-    private const ClassifiedTextRunStyle MonospaceStyle = ClassifiedTextRunStyle.UseClassificationFont;
-
-    /// <summary>
-    /// Create a hover with a colored keyword followed by monospace description text.
-    /// Used for mnemonics/jumps where the keyword should be highlighted.
-    /// </summary>
-    public static VSInternalHover CreateKeywordHover(string keyword, string description, int line, int startChar, int endChar)
+    public static Hover? CreateHover(
+        MarkupKind kind, string[] sections, int line, int startChar, int endChar, string? docUrl = null)
     {
-        var runs = new List<ClassifiedTextRun>
-        {
-            // Keyword in color (uses VS's keyword classification color)
-            new(PredefinedClassificationTypeNames.Keyword, keyword, ClassifiedTextRunStyle.Bold),
-        };
+        string body = string.Join(
+            "\n",
+            sections.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.TrimEnd('\r', '\n')));
 
-        if (!string.IsNullOrEmpty(description))
+        if (string.IsNullOrWhiteSpace(body))
         {
-            // Description in monospace font
-            runs.Add(new(PredefinedClassificationTypeNames.FormalLanguage, " " + description, MonospaceStyle));
+            return null;
         }
 
-        return BuildHover(runs, line, startChar, endChar);
-    }
-
-    /// <summary>
-    /// Create a hover with all text in monospace font.
-    /// Used for registers, labels, directives, and other non-mnemonic tokens.
-    /// </summary>
-    public static VSInternalHover CreateMonospaceHover(string content, int line, int startChar, int endChar)
-    {
-        var runs = new List<ClassifiedTextRun>
+        var sb = new StringBuilder();
+        if (kind == MarkupKind.Markdown)
         {
-            new(PredefinedClassificationTypeNames.FormalLanguage, content, MonospaceStyle),
-        };
-
-        return BuildHover(runs, line, startChar, endChar);
-    }
-
-    /// <summary>
-    /// Create a hover with multiple sections stacked vertically, all in monospace.
-    /// Used when hover has description + performance data separated by newlines.
-    /// </summary>
-    public static VSInternalHover CreateStackedHover(string[] sections, int line, int startChar, int endChar)
-    {
-        var elements = new List<object>();
-
-        foreach (string section in sections)
-        {
-            if (string.IsNullOrEmpty(section))
+            sb.Append("```text\n").Append(body).Append("\n```");
+            if (!string.IsNullOrEmpty(docUrl))
             {
-                continue;
+                sb.Append("\n\n[Documentation](").Append(docUrl).Append(')');
             }
-
-            // Split each section into lines for proper stacking
-            string[] lines = section.Split('\n');
-            foreach (string sectionLine in lines)
-            {
-                if (string.IsNullOrEmpty(sectionLine))
-                {
-                    continue;
-                }
-
-                elements.Add(new ClassifiedTextElement(
-                    new ClassifiedTextRun(PredefinedClassificationTypeNames.FormalLanguage, sectionLine, MonospaceStyle)));
-            }
-        }
-
-        if (elements.Count == 0)
-        {
-            return CreateMonospaceHover("(no information)", line, startChar, endChar);
-        }
-
-        var container = new ContainerElement(ContainerElementStyle.Stacked, [.. elements]);
-
-        return new VSInternalHover
-        {
-            Contents = null,
-            Range = new Range
-            {
-                Start = new Position(line, startChar),
-                End = new Position(line, endChar),
-            },
-            RawContent = container,
-        };
-    }
-
-    /// <summary>
-    /// Create a mnemonic hover: colored keyword on first line, then stacked monospace description + performance.
-    /// </summary>
-    public static VSInternalHover CreateMnemonicHover(string keyword, string[] hoverSections, int line, int startChar, int endChar)
-    {
-        var elements = new List<object>();
-
-        // First element: colored keyword + first section (description) on same line
-        if (hoverSections.Length > 0 && !string.IsNullOrEmpty(hoverSections[0]))
-        {
-            string descr = hoverSections[0];
-            // Strip the mnemonic prefix if present — we add the keyword as a separate colored run
-            if (descr.StartsWith(keyword, System.StringComparison.OrdinalIgnoreCase))
-            {
-                descr = descr[keyword.Length..].TrimStart();
-            }
-
-            elements.Add(new ClassifiedTextElement(
-                new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, keyword, ClassifiedTextRunStyle.Bold),
-                new ClassifiedTextRun(PredefinedClassificationTypeNames.FormalLanguage, " " + descr, MonospaceStyle)));
         }
         else
         {
-            elements.Add(new ClassifiedTextElement(
-                new ClassifiedTextRun(PredefinedClassificationTypeNames.Keyword, keyword, ClassifiedTextRunStyle.Bold)));
-        }
-
-        // Remaining sections (e.g. performance data) as stacked monospace lines
-        for (int i = 1; i < hoverSections.Length; i++)
-        {
-            if (string.IsNullOrEmpty(hoverSections[i]))
+            sb.Append(body);
+            if (!string.IsNullOrEmpty(docUrl))
             {
-                continue;
-            }
-
-            string[] lines = hoverSections[i].Split('\n');
-            foreach (string sectionLine in lines)
-            {
-                if (string.IsNullOrEmpty(sectionLine))
-                {
-                    continue;
-                }
-
-                elements.Add(new ClassifiedTextElement(
-                    new ClassifiedTextRun(PredefinedClassificationTypeNames.FormalLanguage, sectionLine, MonospaceStyle)));
+                sb.Append('\n').Append(docUrl);
             }
         }
 
-        var container = new ContainerElement(ContainerElementStyle.Stacked, [.. elements]);
-
-        return new VSInternalHover
+        return new Hover
         {
-            Contents = null,
+            Contents = new MarkupContent { Kind = kind, Value = sb.ToString() },
             Range = new Range
             {
                 Start = new Position(line, startChar),
                 End = new Position(line, endChar),
             },
-            RawContent = container,
-        };
-    }
-
-    private static VSInternalHover BuildHover(List<ClassifiedTextRun> runs, int line, int startChar, int endChar)
-    {
-        var textElement = new ClassifiedTextElement([.. runs]);
-        var container = new ContainerElement(ContainerElementStyle.Stacked, textElement);
-
-        return new VSInternalHover
-        {
-            // Contents must be null when RawContent is set — VS renders both if both are present.
-            Contents = null,
-            Range = new Range
-            {
-                Start = new Position(line, startChar),
-                End = new Position(line, endChar),
-            },
-            RawContent = container,
         };
     }
 }

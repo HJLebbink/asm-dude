@@ -70,4 +70,7 @@ public enum Rn
         CR0, CR1, CR2, CR3, CR4, CR5, CR6, CR7, CR8,
         DR0, DR1, DR2, DR3, DR4, DR5, DR6, DR7,
         BND0, BND1, BND2, BND3,
+
+        // AMX tile registers (Advanced Matrix Extensions). A tile is up to 16 rows x 64 bytes.
+        TMM0, TMM1, TMM2, TMM3, TMM4, TMM5, TMM6, TMM7,
     }

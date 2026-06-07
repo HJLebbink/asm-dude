@@ -22,6 +22,8 @@
 
 namespace unit_tests
 {
+    using AsmSourceTools;
+
     using AsmTools;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -407,6 +409,39 @@ namespace unit_tests
             string s = ArchTools.ToStringDnf(dnf);
             Assert.AreEqual("AVX512_VL+AVX512_F,AVX10", s);
             Assert.AreEqual(NormalizeDnf(dnf), NormalizeDnf(ArchTools.ParseArchDnf(s, false, false)));
+        }
+
+        [TestMethod]
+        public void Test_RegisterTools_TileRegisters()
+        {
+            // Tile registers are parsed (reflective Register_cache_), classified, and arch-tagged.
+            Assert.AreEqual(Rn.TMM3, RegisterTools.ParseRn("TMM3", true), "TMM3 must parse");
+            Assert.AreEqual(Rn.TMM5, RegisterTools.ParseRn("tmm5", false), "lowercase tmm5 must parse");
+            Assert.IsTrue(RegisterTools.IsRn("TMM0", true));
+
+            Assert.AreEqual(Arch.ARCH_AMX, RegisterTools.GetArch(Rn.TMM0), "tiles belong to AMX");
+            Assert.AreEqual(RegisterType.TILE, RegisterTools.GetRegisterType(Rn.TMM7));
+            Assert.IsTrue(RegisterTools.IsTileRegister(Rn.TMM0));
+            Assert.IsFalse(RegisterTools.IsTileRegister(Rn.ZMM0), "a ZMM is not a tile");
+        }
+
+        [TestMethod]
+        public void Test_AsmSignatureTools_TileOperand()
+        {
+            // "TMM" (and digit-bearing variants the generator may leave) map to the TMMREG operand.
+            CollectionAssert.AreEqual(
+                new[] { AsmSignatureEnum.TMMREG },
+                AsmSignatureTools.Parse_Operand_Type_Enum("TMM", true));
+            CollectionAssert.AreEqual(
+                new[] { AsmSignatureEnum.TMMREG },
+                AsmSignatureTools.Parse_Operand_Type_Enum("TMM3", true));
+
+            // A tile register is allowed exactly where a TMMREG operand is expected (drives completion).
+            var tmmOperand = new HashSet<AsmSignatureEnum> { AsmSignatureEnum.TMMREG };
+            var zmmOperand = new HashSet<AsmSignatureEnum> { AsmSignatureEnum.ZMMREG };
+            Assert.IsTrue(AsmSignatureTools.Is_Allowed_Reg(Rn.TMM0, tmmOperand), "tile allowed for TMMREG");
+            Assert.IsFalse(AsmSignatureTools.Is_Allowed_Reg(Rn.ZMM0, tmmOperand), "ZMM not allowed for TMMREG");
+            Assert.IsFalse(AsmSignatureTools.Is_Allowed_Reg(Rn.TMM0, zmmOperand), "tile not allowed for ZMMREG");
         }
 
         [TestMethod]

@@ -122,6 +122,9 @@ using System.Text;
         /// <summary>Bound register</summary>
         BNDREG,
 
+        /// <summary>AMX tile register (TMM0-TMM7)</summary>
+        TMMREG,
+
         /// <summary>vector broadcasted from a 32-bit memory location</summary>
         M32BCST,
 
@@ -356,6 +359,14 @@ using System.Text;
                 case "ZMM{K}{Z}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
                 case "ZMM{SAE}": return [AsmSignatureEnum.ZMMREG, AsmSignatureEnum.SAE];
 
+                // AMX tile registers. Accept the digit-bearing forms too in case the generator
+                // leaves one in (TMM1/TMM2/...), so a tile operand always maps to TMMREG.
+                case "TMM":
+                case "TMM0":
+                case "TMM1":
+                case "TMM2":
+                case "TMM3": return [AsmSignatureEnum.TMMREG];
+                case "SIBMEM": return [AsmSignatureEnum.MEM];
                 #endregion
 
                 #region Misc
@@ -599,6 +610,7 @@ using System.Text;
                 case AsmSignatureEnum.XMMREG: return op.IsReg && RegisterTools.IsSseRegister(op.Rn);
                 case AsmSignatureEnum.YMMREG: return op.IsReg && RegisterTools.IsAvxRegister(op.Rn);
                 case AsmSignatureEnum.ZMMREG: return op.IsReg && RegisterTools.IsAvx512Register(op.Rn);
+                case AsmSignatureEnum.TMMREG: return op.IsReg && RegisterTools.IsTileRegister(op.Rn);
 
                 case AsmSignatureEnum.M32BCST: return op.IsMem && op.NBits == 32;
                 case AsmSignatureEnum.M64BCST: return op.IsMem && op.NBits == 64;
@@ -970,6 +982,13 @@ using System.Text;
                     break;
                 case RegisterType.BOUND:
                     if (allowedOperands.Contains(AsmSignatureEnum.BNDREG))
+                    {
+                        return true;
+                    }
+
+                     break;
+                case RegisterType.TILE:
+                    if (allowedOperands.Contains(AsmSignatureEnum.TMMREG))
                     {
                         return true;
                     }

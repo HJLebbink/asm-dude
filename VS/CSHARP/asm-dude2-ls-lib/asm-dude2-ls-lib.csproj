@@ -47,7 +47,7 @@
     <None Remove="Resources\Performance\Skylake.tsv" />
     <None Remove="Resources\Performance\SkylakeX.tsv" />
     <None Remove="Resources\signature-hand-1.txt" />
-    <None Remove="Resources\signature-may2019.txt" />
+    <None Remove="Resources\signature-mar2026.txt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AsmDudeData.xml">
@@ -74,7 +74,7 @@
     <Content Include="Resources\signature-hand-1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\signature-may2019.txt">
+    <Content Include="Resources\signature-mar2026.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

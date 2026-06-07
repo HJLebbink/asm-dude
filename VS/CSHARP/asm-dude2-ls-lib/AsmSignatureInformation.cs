@@ -95,4 +95,24 @@ public class AsmSignatureInformation
         }
         return false;
     }
+
+    // A signature form is identified by its mnemonic + its rendered signature label (e.g.
+    // "CMPXCHG R/M8,R8"). This gives MnemonicStore.Add value-based override semantics: an entry
+    // from the hand-crafted file (loaded after the regular file) with the same mnemonic+label
+    // REPLACES the generated one instead of adding a duplicate form. It also de-duplicates
+    // genuinely identical forms within a single file.
+    public override bool Equals(object? obj)
+    {
+        return obj is AsmSignatureInformation other
+            && (this.Mnemonic == other.Mnemonic)
+            && string.Equals(
+                this.SignatureInformation.Label ?? string.Empty,
+                other.SignatureInformation.Label ?? string.Empty,
+                StringComparison.Ordinal);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(this.Mnemonic, this.SignatureInformation.Label ?? string.Empty);
+    }
 }

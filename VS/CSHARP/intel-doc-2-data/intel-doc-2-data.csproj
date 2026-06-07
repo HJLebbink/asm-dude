@@ -16,4 +16,8 @@
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="intel-doc-2-data-tests" />
+  </ItemGroup>
+
 </Project>

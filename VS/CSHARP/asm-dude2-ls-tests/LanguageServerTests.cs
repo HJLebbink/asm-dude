@@ -278,16 +278,16 @@ public class LanguageServerTests
         // Act
         var result = this._server.GetHover(hoverParams);
 
-        // Assert — all hovers now return VSInternalHover with RawContent for monospace rendering
+        // Assert — standard LSP Hover with MarkupContent. Both VS and VS Code render MarkupContent
+        // hover, but the markup KIND is negotiated per client (see LanguageServer.HoverMarkupKind):
+        // Markdown for clients that advertise it (VS Code → clickable link, code fences), PlainText for
+        // those that don't (Visual Studio advertises contentFormat:["plaintext"], so it gets plain text).
+        // This test uses the in-process server's default (Markdown) and only checks the mnemonic appears.
         result.Should().NotBeNull("hover on MOV should return documentation");
-        result.Should().BeOfType<VSInternalHover>();
-        var hover = (VSInternalHover)result;
-        hover.RawContent.Should().NotBeNull("RawContent should contain classified text elements");
-        var container = hover.RawContent.Should().BeOfType<ContainerElement>().Subject;
-        container.Elements.Should().NotBeEmpty();
-        // First element should contain the keyword "MOV"
-        var firstElement = container.Elements[0].Should().BeOfType<ClassifiedTextElement>().Subject;
-        firstElement.Runs.Should().Contain(r => r.Text == "MOV", "first run should be the mnemonic keyword");
+        var hover = result.Should().BeOfType<Hover>().Subject;
+        hover.Contents.Should().NotBeNull();
+        var markup = (MarkupContent)hover.Contents!;
+        markup.Value.Should().Contain("MOV", "hover should mention the mnemonic");
     }
 
     [Fact]
@@ -316,16 +316,15 @@ public class LanguageServerTests
             Position = new Position { Line = 0, Character = 1 }
         });
 
-        // Assert — mnemonic hover uses VSInternalHover with colored keyword
-        // Note: clickable links are NOT possible over LSP (NavigationAction requires
-        // an Action delegate, which cannot be serialized over JSON-RPC).
-        result.Should().BeOfType<VSInternalHover>();
-        var hover = (VSInternalHover)result;
-        hover.RawContent.Should().NotBeNull();
-        var container = hover.RawContent.Should().BeOfType<ContainerElement>().Subject;
-        var firstElement = container.Elements[0].Should().BeOfType<ClassifiedTextElement>().Subject;
-        firstElement.Runs[0].ClassificationType.Should().Be("keyword", "mnemonic should use keyword classification");
-        firstElement.Runs[0].Text.Should().Be("MOV");
+        // Assert — standard Hover whose Markdown contains the mnemonic AND a `[Documentation](url)`
+        // link. The link is a real, serializable markdown link (unlike the old _vs_rawContent
+        // NavigationAction) so it is CLICKABLE in markdown-rendering clients (VS Code). In Visual
+        // Studio, which advertises plaintext hover, the URL is shown as plain text (not clickable).
+        // This in-process test uses the default Markdown kind, so the link markup is present.
+        var hover = result.Should().BeOfType<Hover>().Subject;
+        var markup = (MarkupContent)hover.Contents!;
+        markup.Value.Should().Contain("MOV");
+        markup.Value.Should().Contain("github.com/HJLebbink/asm-dude/wiki", "should include a documentation link");
     }
 
     [Fact]
@@ -345,13 +344,10 @@ public class LanguageServerTests
             Position = new Position { Line = 0, Character = 1 }
         });
 
-        // Assert — still VSInternalHover with monospace text, just no URL (which isn't clickable anyway)
-        result.Should().BeOfType<VSInternalHover>();
-        var hover = (VSInternalHover)result;
-        hover.RawContent.Should().NotBeNull();
-        var container = hover.RawContent.Should().BeOfType<ContainerElement>().Subject;
-        var firstElement = container.Elements[0].Should().BeOfType<ClassifiedTextElement>().Subject;
-        firstElement.Runs[0].Text.Should().Be("MOV");
+        // Assert — standard Hover with Markdown content mentioning the mnemonic
+        var hover = result.Should().BeOfType<Hover>().Subject;
+        var markup = (MarkupContent)hover.Contents!;
+        markup.Value.Should().Contain("MOV");
     }
 
     [Fact]
@@ -753,35 +749,6 @@ add rcx, rdx
         result.Should().NotBeNull();
         result.Data.Should().BeEmpty();
         result.ResultId.Should().NotBeNullOrEmpty("ResultId must be set even for empty documents");
-    }
-
-    [Fact]
-    public void GetSemanticTokens_FullDump_AllTokenTypes()
-    {
-        string[] typeNames = ["namespace","type","class","enum","interface","struct","typeParameter","parameter","variable","property","enumMember","event","function","method","macro","keyword","modifier","comment","string","number","regexp","operator"];
-        var text = ".intel_syntax noprefix\npop rax\n    VPAND ymm0, ymm1, ymm2\n    mov rax, rbx\nlabel1:\n    jmp label1\n; this is a comment\n    add rcx, 42\n";
-        var uri = "file:///test_fulldump.asm";
-        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
-        {
-            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = text }
-        });
-        var result = this._server.GetSemanticTokens(new SemanticTokensParams
-        {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
-        });
-        var lines = text.Split('\n');
-        var sb = new System.Text.StringBuilder($"\nTotal tokens: {result.Data.Length / 5}\n");
-        int absLine = 0, absChar = 0;
-        for (int i = 0; i + 4 < result.Data.Length; i += 5)
-        {
-            int dL = result.Data[i], dC = result.Data[i+1], len = result.Data[i+2], tt = result.Data[i+3], tm = result.Data[i+4];
-            absLine += dL;
-            absChar = dL > 0 ? dC : absChar + dC;
-            string tn = tt < typeNames.Length ? typeNames[tt] : $"?{tt}";
-            string tok = absLine < lines.Length && absChar + len <= lines[absLine].Length ? lines[absLine].Substring(absChar, len) : "OOB";
-            sb.AppendLine($"  L{absLine}:[{absChar,3}-{absChar+len,3}] {tn,-12} \"{tok}\"");
-        }
-        throw new System.Exception(sb.ToString());
     }
 
     [Fact]

@@ -1,8 +1,8 @@
 # Intel PDF → per-instruction Markdown extraction
 
 `asm-annotate` parses the Intel SDM PDF and writes one `*.md` file per instruction
-(`<MNEMONIC>.md`), reproducing the format of the original Python `intel-doc-2-md`
-tool (whose output is the `asm-dude.wiki/doc/*.md` reference set).
+(`<MNEMONIC>.md`), reproducing the format of the `asm-dude.wiki/doc/*.md` reference set
+(originally produced by a now-removed Python `intel-doc-2-md` tool that this C# port replaced).
 
 ## Usage
 
@@ -20,9 +20,13 @@ Instruction pages are scattered through the combined manual (the AVX/FMA "V" sec
 *before* the A-Z section), so the default `extract` walks the whole document; non-instruction
 pages simply yield no file.
 
-## How it works (and how it mirrors the Python/pdfminer pipeline)
+## How it works
 
-| Stage | Python (pdfminer) | C# (itext) — `PdfParser.cs` |
+The C# code is split across `PdfDocumentParser.cs` (iText I/O + the listeners below),
+`ContentPile.cs` (layout / table detection / instruction-title parsing), `MarkdownGenerator.cs`,
+`TextCleaner.cs`, and `PdfModels.cs`.
+
+| Stage | (orig. Python/pdfminer) | C# (itext) |
 |-------|-------------------|------------------------------|
 | Vector borders | `LTRect`/`LTLine` | `PdfGraphicsOperatorListener` transforms each sub-path by the CTM, emits thin boxes (w<1 → vertical, h<1 → horizontal) as `PdfLineElement` |
 | Text | `LTTextLineHorizontal` (per line) | `PdfTextOperatorListener` gives per-glyph-run fragments; `GroupIntoLines` rebuilds visual lines (bucket by baseline, split on a column gap **or** a vertical grid line that overlaps in Y) |

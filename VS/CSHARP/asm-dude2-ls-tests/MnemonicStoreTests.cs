@@ -20,6 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Linq;
+
+using AsmSourceTools;
+
 using AsmTools;
 
 using FluentAssertions;
@@ -41,7 +45,7 @@ public class MnemonicStoreTests
     {
         var testDir = Directory.GetCurrentDirectory();
         var resourceDir = Path.Combine(testDir, "..", "..", "..", "..", "asm-dude2-ls-lib", "Resources");
-        this._regularDataPath = Path.Combine(resourceDir, "signature-may2019.txt");
+        this._regularDataPath = Path.Combine(resourceDir, "signature-mar2026.txt");
         this._handcraftedDataPath = Path.Combine(resourceDir, "signature-hand-1.txt");
 
         var options = new AsmLanguageServerOptions
@@ -413,6 +417,58 @@ public class MnemonicStoreTests
             // This is acceptable if some mnemonics lack htmlRef entries
             this._store.HasElement(Mnemonic.MOV).Should().BeTrue("store should still be functional");
         }
+    }
+
+    #endregion
+
+    #region AMX tile registers
+
+    [Fact]
+    public void AmxTiles_AreSuggested_OnlyWhenAmxEnabled()
+    {
+        var resourceDir = Path.Combine(
+            Directory.GetCurrentDirectory(), "..", "..", "..", "..", "asm-dude2-ls-lib", "Resources");
+        var mar2026 = Path.Combine(resourceDir, "signature-mar2026.txt");
+
+        // AMX on: tile registers are offered, and an AMX instruction's tile operand expects TMMREG.
+        var storeOn = new MnemonicStore(
+            mar2026, this._handcraftedDataPath,
+            new AsmLanguageServerOptions { ARCH_X64 = true, ARCH_AMX = true });
+
+        storeOn.Get_Allowed_Registers().Should().Contain(Rn.TMM0, "tiles must be offered when AMX is on");
+
+        var tdpbssd = storeOn.GetSignatures(Mnemonic.TDPBSSD).ToList();
+        tdpbssd.Should().NotBeEmpty("TDPBSSD must have a signature in mar2026");
+        tdpbssd[0].Operands[0].Should().Contain(
+            AsmSignatureEnum.TMMREG, "TDPBSSD's first operand is a tile register");
+
+        // AMX off: tiles must not be offered.
+        var storeOff = new MnemonicStore(
+            mar2026, this._handcraftedDataPath,
+            new AsmLanguageServerOptions { ARCH_X64 = true });
+        storeOff.Get_Allowed_Registers().Should().NotContain(Rn.TMM0, "tiles are gated behind the AMX toggle");
+    }
+
+    #endregion
+
+    #region Hand-crafted backfill / override
+
+    [Fact]
+    public void Backfill_CMPXCHG_IsOverriddenWithCorrectArch()
+    {
+        // The SDM table for CMPXCHG has no CPUID column; the generator's heuristic mis-tags it and
+        // signature-may2019.txt even lists the r/m8 form with an empty arch (twice). The hand-crafted
+        // file backfills the correct value (486) and, via value-based equality on AsmSignatureInformation,
+        // REPLACES the regular form instead of adding a duplicate.
+        var rm8 = this._store.GetSignatures(Mnemonic.CMPXCHG)
+            .Where(s => s.SignatureInformation.Label == "CMPXCHG R/M8,R8")
+            .ToList();
+
+        rm8.Should().HaveCount(1, "the hand-crafted entry overrides (not duplicates) the regular form");
+
+        var archs = rm8[0].Arch.SelectMany(g => g).ToList();
+        archs.Should().Contain(Arch.ARCH_486, "CMPXCHG is a 486 instruction (backfilled)");
+        archs.Should().NotContain(Arch.ARCH_8086, "the incorrect heuristic value must be overridden");
     }
 
     #endregion

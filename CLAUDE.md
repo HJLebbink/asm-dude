@@ -165,9 +165,11 @@ dotnet test VS\CSHARP\asm-dude2-ls-tests\asm-dude2-ls-tests.csproj
 **Test Results Summary**:
 | Project | Passed | Skipped | Notes |
 |---------|--------|---------|-------|
-| asm-tools-tests | 27 | 0 | Core assembly tools |
+| asm-tools-tests | 31 | 0 | Core assembly tools (incl. arch DNF parse, tile/operand) |
 | asm-sim-tests | 178 | 3 | Z3 simulator (DynamicFlow merge crash FIXED; 3 skips unrelated) |
-| asm-dude2-ls-tests | 120 | 37 | Unit + AsmSim integration (6 pre-existing failures being triaged) |
+| asm-dude2-ls-tests | 126 | 37 | Unit + AsmSim integration; 5 pre-existing failures (hover/semantic-token, unrelated to signatures) |
+| asm-annotate-tests | 16 | 0 | **NEW** — stage-1 PDF→MD text/title heuristics |
+| intel-doc-2-data-tests | 14 | 0 | **NEW** — stage-2 MD→signature generator |
 
 **Note**: The DynamicFlow **branch-merge** Z3 context-lifecycle crash is **FIXED** (shared-context rewrite — see Known Issues); the 25 previously-skipped DynamicFlow tests are re-enabled and pass. Only 3 sim tests remain skipped for unrelated reasons. Run sim tests via `vstest.console.dll`, not `dotnet test`.
 
@@ -284,7 +286,17 @@ Useful for extension discovery and registration problems, rarely needed for runt
 
 - `AsmDudeData.xml`: Instruction descriptions and metadata (bundled with VSIX and LSP)
 - Performance data: TSV files in `asm-dude2-ls-lib\Resources\Performance\` (Haswell, Skylake, etc.)
-- Signature files: Hand-curated instruction signatures in `Resources\signature-*.txt`
+- Signature files in `Resources\signature-*.txt`. **The LSP server loads `signature-mar2026.txt`**
+  (generated from the wiki by `intel-doc-2-data`, rev-091/March 2026) **+ `signature-hand-1.txt`**
+  (hand-maintained, OVERRIDES the regular file by `(Mnemonic, signature-label)`). `signature-may2019.txt`
+  is retired/unreferenced. Loaded name is hard-coded in `LanguageServer.cs:~420` + bundled via the csproj.
+
+### Instruction-data pipeline (pdf → md → txt)
+`asm-annotate` (PDF→MD, stage 1) → copy `output/*.md` to `asm-dude.wiki/doc/` → `intel-doc-2-data`
+(MD→`signature-mar2026.txt` + `overview.txt` + wiki `Home.md`, stage 2) → LSP server (stage 3).
+The arch column is **DNF** (`+`=AND, `,`=OR, e.g. `AVX512_VL+AVX512_F,AVX10`); `Home.md`'s arch column
+is a flattened union. New ISA covered incl. AMX tile registers (`TMM0-7`), AVX10, FP16, Key Locker.
+Each stage has tests (`asm-annotate-tests`, `intel-doc-2-data-tests`, `asm-dude2-ls-tests`).
 
 ## Key Implementation Details
 
@@ -356,28 +368,37 @@ NasmOperator   → operator (5)
 
 ### Hover Tooltips (asm-dude2-ls-lib)
 
-**Implementation:** `VS\CSHARP\asm-dude2-ls-lib\`
+**Implementation:** `VS\CSHARP\asm-dude2-ls-lib\` (`HoverBuilder.cs`, `LanguageServer.GetHover`)
 
-All hover responses use `VSInternalHover` with `_vs_rawContent` for monospace font and colored text. This uses VS-specific JSON extensions (not standard LSP).
+Hover returns a **standard LSP `Hover` with `MarkupContent`** (works for any client — VS and VS Code).
+The markup **kind is negotiated** from the client's advertised `textDocument.hover.contentFormat` at
+`initialize` and stored in `LanguageServer.HoverMarkupKind`: **Markdown** when the client offers it,
+**PlainText** otherwise. `HoverBuilder.CreateHover(kind, sections, …, docUrl)` renders both:
+- **Markdown**: body in a ```` ```text ```` fence (keeps the perf table's monospace columns) + a
+  `[Documentation](url)` link.
+- **PlainText**: body as-is + the URL on its own line.
 
-**Key Files:**
-- `VSInternalTypes.cs` - Custom types matching VS's internal `ObjectContentConverter` format:
-  - `VSInternalHover` - Hover with `_vs_rawContent` property (Contents must be null when RawContent is set)
-  - `ClassifiedTextElement` - Contains `ClassifiedTextRun[]` with `_vs_type` discriminator
-  - `ClassifiedTextRun` - Text with classification type and style
-  - `ContainerElement` - Layout container (Stacked/Wrapped)
-  - Uses `"formal language"` classification + `UseClassificationFont` for monospace rendering
-- `HoverBuilder.cs` - Factory for hover responses:
-  - `CreateMnemonicHover()` - Colored keyword + monospace description + stacked performance data
-  - `CreateStackedHover()` - All-monospace stacked text (registers, labels, etc.)
-  - `CreateMonospaceHover()` / `CreateKeywordHover()` - Single-element variants
-- `LanguageServer.cs` - Dispatches to HoverBuilder based on token type
+`GetHover` classifies the hovered token from the **parsed document tokens** (`parsedDocuments`, real
+`AsmTokenType` incl. `LabelDef`/`Constant`), falling back to a string heuristic. Mnemonic/Jump,
+Register, Constant, Label and LabelDef all produce content; `null` is returned only for a genuinely
+unknown word (correct LSP semantics).
 
-**⚠ Clickable links in hover are NOT possible over LSP:**
-`ClassifiedTextRun.NavigationAction` is an `Action` delegate (C# callback), not a URL string. Delegates cannot be serialized over JSON-RPC. Even Roslyn explicitly sets `navigationActionFactory: null` in its LSP hover handler with the comment: "Build the classified text without navigation actions - they are not serializable." (See: `dotnet/roslyn src/LanguageServer/Protocol/Handler/Hover/HoverHandler.cs`)
+> **History (June 2026):** hover was rewritten from the VS-specific `VSInternalHover` + `_vs_rawContent`
+> (monospace/colored classified text) to the portable `Hover`/`MarkupContent` above, so VS Code is
+> supported too. `VSInternalTypes.cs` may still exist but is no longer used for hover.
 
-**Future: Clickable links via hybrid in-proc extension (VS 2026 only):**
-To add clickable links, the VSIX must convert to a hybrid VSSDK+VisualStudio.Extensibility extension with `RequiresInProcessHosting = true`. This enables MEF `IAsyncQuickInfoSource` which can create WPF `ClassifiedTextRun` with real `Action` delegates (`() => Process.Start(url)`). The LSP server already has `AsHtmlUrl()` which embeds URLs as `<a href=URL>NAME</a>` for client-side parsing. See `VS/CSHARP/old/asm-dude2-vsix-archived/QuickInfo/AsmQuickInfoSource.cs` for the old in-process implementation. This requires `net472` TFM for VS 2022 support, or `net8.0` for VS 2026 only.
+**Clickable links in hover — nuanced:**
+- Markdown `[text](url)` links **DO** serialize over LSP and **are clickable** in markdown-rendering
+  clients (**VS Code**). This supersedes the old blanket claim that hover links are impossible — that
+  was only true for the VS-specific `_vs_rawContent` path (`ClassifiedTextRun.NavigationAction` is an
+  unserializable `Action` delegate).
+- **Visual Studio advertises `contentFormat:["plaintext"]` for hover** (CONFIRMED in the server log
+  `%TEMP%\asmdude-execution.log` — `"hover":{"contentFormat":["plaintext"]}`, and the server logs
+  `Initialize: hover contentFormat -> PlainText`). So **in VS the doc URL is plain text, not a
+  clickable link.** Forcing Markdown for VS would render literal ```` ``` ```` fences and `[..](..)`.
+- To get a clickable doc link **in VS** specifically: a right-click "Open documentation" command, the
+  `textDocument/documentLink` Ctrl+Click path (was removed — spawned an unwanted tab), or a hybrid
+  in-proc `IAsyncQuickInfoSource` (heavyweight; see `VS/CSHARP/old/asm-dude2-vsix-archived/QuickInfo/`).
 
 ## Package Dependencies (Updated for VS 2026)
 

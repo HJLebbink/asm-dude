@@ -42,6 +42,7 @@ public enum RegisterType
         CONTROL,
         DEBUG,
         BOUND,
+        TILE,
     }
 
     public static partial class RegisterTools
@@ -154,6 +155,8 @@ public enum RegisterType
                 Rn.XMM0 or Rn.XMM1 or Rn.XMM2 or Rn.XMM3 or Rn.XMM4 or Rn.XMM5 or Rn.XMM6 or Rn.XMM7 or Rn.XMM8 or Rn.XMM9 or Rn.XMM10 or Rn.XMM11 or Rn.XMM12 or Rn.XMM13 or Rn.XMM14 or Rn.XMM15 or Rn.XMM16 or Rn.XMM17 or Rn.XMM18 or Rn.XMM19 or Rn.XMM20 or Rn.XMM21 or Rn.XMM22 or Rn.XMM23 or Rn.XMM24 or Rn.XMM25 or Rn.XMM26 or Rn.XMM27 or Rn.XMM28 or Rn.XMM29 or Rn.XMM30 or Rn.XMM31 => 128,
                 Rn.YMM0 or Rn.YMM1 or Rn.YMM2 or Rn.YMM3 or Rn.YMM4 or Rn.YMM5 or Rn.YMM6 or Rn.YMM7 or Rn.YMM8 or Rn.YMM9 or Rn.YMM10 or Rn.YMM11 or Rn.YMM12 or Rn.YMM13 or Rn.YMM14 or Rn.YMM15 or Rn.YMM16 or Rn.YMM17 or Rn.YMM18 or Rn.YMM19 or Rn.YMM20 or Rn.YMM21 or Rn.YMM22 or Rn.YMM23 or Rn.YMM24 or Rn.YMM25 or Rn.YMM26 or Rn.YMM27 or Rn.YMM28 or Rn.YMM29 or Rn.YMM30 or Rn.YMM31 => 256,
                 Rn.ZMM0 or Rn.ZMM1 or Rn.ZMM2 or Rn.ZMM3 or Rn.ZMM4 or Rn.ZMM5 or Rn.ZMM6 or Rn.ZMM7 or Rn.ZMM8 or Rn.ZMM9 or Rn.ZMM10 or Rn.ZMM11 or Rn.ZMM12 or Rn.ZMM13 or Rn.ZMM14 or Rn.ZMM15 or Rn.ZMM16 or Rn.ZMM17 or Rn.ZMM18 or Rn.ZMM19 or Rn.ZMM20 or Rn.ZMM21 or Rn.ZMM22 or Rn.ZMM23 or Rn.ZMM24 or Rn.ZMM25 or Rn.ZMM26 or Rn.ZMM27 or Rn.ZMM28 or Rn.ZMM29 or Rn.ZMM30 or Rn.ZMM31 => 512,
+                // A tile is configurable up to 16 rows x 64 bytes = 1024 bytes = 8192 bits.
+                Rn.TMM0 or Rn.TMM1 or Rn.TMM2 or Rn.TMM3 or Rn.TMM4 or Rn.TMM5 or Rn.TMM6 or Rn.TMM7 => 8192,
                 _ => 0,
             };
         }
@@ -492,6 +495,16 @@ public enum RegisterType
                 case Rn.BND2:
                 case Rn.BND3:
                     return RegisterType.BOUND;
+
+                case Rn.TMM0:
+                case Rn.TMM1:
+                case Rn.TMM2:
+                case Rn.TMM3:
+                case Rn.TMM4:
+                case Rn.TMM5:
+                case Rn.TMM6:
+                case Rn.TMM7:
+                    return RegisterType.TILE;
 
                 default:
                     break;
@@ -890,6 +903,7 @@ public enum RegisterType
                 Rn.ZMM0 or Rn.ZMM1 or Rn.ZMM2 or Rn.ZMM3 or Rn.ZMM4 or Rn.ZMM5 or Rn.ZMM6 or Rn.ZMM7 or Rn.ZMM8 or Rn.ZMM9 or Rn.ZMM10 or Rn.ZMM11 or Rn.ZMM12 or Rn.ZMM13 or Rn.ZMM14 or Rn.ZMM15 or Rn.ZMM16 or Rn.ZMM17 or Rn.ZMM18 or Rn.ZMM19 or Rn.ZMM20 or Rn.ZMM21 or Rn.ZMM22 or Rn.ZMM23 or Rn.ZMM24 or Rn.ZMM25 or Rn.ZMM26 or Rn.ZMM27 or Rn.ZMM28 or Rn.ZMM29 or Rn.ZMM30 or Rn.ZMM31 or Rn.K0 or Rn.K1 or Rn.K2 or Rn.K3 or Rn.K4 or Rn.K5 or Rn.K6 or Rn.K7 => Arch.ARCH_AVX512_F,
                 Rn.XMM16 or Rn.XMM17 or Rn.XMM18 or Rn.XMM19 or Rn.XMM20 or Rn.XMM21 or Rn.XMM22 or Rn.XMM23 or Rn.XMM24 or Rn.XMM25 or Rn.XMM26 or Rn.XMM27 or Rn.XMM28 or Rn.XMM29 or Rn.XMM30 or Rn.XMM31 or Rn.YMM17 or Rn.YMM18 or Rn.YMM19 or Rn.YMM20 or Rn.YMM21 or Rn.YMM22 or Rn.YMM23 or Rn.YMM24 or Rn.YMM25 or Rn.YMM26 or Rn.YMM27 or Rn.YMM28 or Rn.YMM29 or Rn.YMM30 or Rn.YMM31 => Arch.ARCH_AVX512_VL,
                 Rn.BND0 or Rn.BND1 or Rn.BND2 or Rn.BND3 => Arch.ARCH_MPX,
+                Rn.TMM0 or Rn.TMM1 or Rn.TMM2 or Rn.TMM3 or Rn.TMM4 or Rn.TMM5 or Rn.TMM6 or Rn.TMM7 => Arch.ARCH_AMX,
                 _ => Arch.ARCH_NONE,
             };
         }
@@ -909,6 +923,15 @@ public enum RegisterType
             return rn switch
             {
                 Rn.BND0 or Rn.BND1 or Rn.BND2 or Rn.BND3 => true,
+                _ => false,
+            };
+        }
+
+        public static bool IsTileRegister(Rn rn)
+        {
+            return rn switch
+            {
+                Rn.TMM0 or Rn.TMM1 or Rn.TMM2 or Rn.TMM3 or Rn.TMM4 or Rn.TMM5 or Rn.TMM6 or Rn.TMM7 => true,
                 _ => false,
             };
         }

@@ -191,6 +191,14 @@ public class LanguageServerTarget(LanguageServer server)
 
         server.Initialize(options);
 
+        // Pick the hover markup kind from what THIS client advertises (textDocument.hover.contentFormat):
+        // Markdown when offered (VS Code, modern VS), PlainText otherwise. No more hard-coded assumptions.
+        MarkupKind[]? hoverFormats = parameter.Capabilities?.TextDocument?.Hover?.ContentFormat;
+        server.HoverMarkupKind = (hoverFormats != null && System.Array.IndexOf(hoverFormats, MarkupKind.Markdown) >= 0)
+            ? MarkupKind.Markdown
+            : MarkupKind.PlainText;
+        AsmDudeLog.Info($"Initialize: hover contentFormat -> {server.HoverMarkupKind}");
+
         string backspaceStr = (char)8 + string.Empty;
         //string carriageReturnStr = (char)13 + string.Empty;
 
