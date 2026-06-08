@@ -1,47 +1,51 @@
-﻿using AsmTools;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+// Copyright (c) 2026 Henk-Jan Lebbink
+// Licensed under the MIT license.
 
-namespace intel_doc_2_data
+namespace asm_annotate
 {
-    class Program
-    {
-        [STAThread]
-        static void Main(string[] args)
-        {
-            // Executable to load the AsmDude wiki pages, and turn them into source files for AsmDude.
-            //   args[0] = wiki doc dir   (default: the local asm-dude.wiki/doc)
-            //   args[1] = output signature file (default: ...asm-dude2-ls-lib/Resources/signature-<sdm>.txt)
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Text.RegularExpressions;
 
+    using AsmTools;
+
+    /// <summary>
+    /// Stage 2 of the instruction-data pipeline (md→txt): loads the AsmDude wiki's HTML opcode tables
+    /// (produced from the Intel SDM by stage 1, <see cref="Extractor"/>) and turns them into the AsmDude
+    /// signature file (<c>signature-mar2026.txt</c>) + <c>overview.txt</c> + the wiki <c>Home.md</c>.
+    /// Invoked via the <c>gen-signatures</c> command. Previously the standalone <c>intel-doc-2-data</c>
+    /// project; folded into asm-annotate so the whole data toolchain (extract / gen-signatures / perf-uops)
+    /// lives in one tool.
+    /// </summary>
+    internal static class SignatureGenerator
+    {
+        /// <summary>
+        /// Reads every <c>*.md</c> in <paramref name="wikiDir"/> and writes the signature file to
+        /// <paramref name="outFile"/> (plus <c>overview.txt</c> beside it and the wiki <c>Home.md</c>).
+        /// </summary>
+        public static int Run(string wikiDir, string outFile)
+        {
             DateTime startTime = DateTime.Now;
 
-            string wikiDir = (args.Length > 0) ? args[0] : "C:/Source/Github/asm-dude.wiki/doc";
-            string outFile = (args.Length > 1) ? args[1]
-                : "C:/Source/Github/asm-dude/VS/CSHARP/asm-dude2-ls-lib/Resources/signature-mar2026.txt";
-
-            Payload(wikiDir, outFile);
+            if (!Payload(wikiDir, outFile))
+            {
+                return 1;
+            }
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
-            Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));
-
-            // Only wait for a key when running interactively (skip when piped/redirected).
-            if (!Console.IsInputRedirected)
-            {
-                Console.WriteLine(string.Format("Press any key to continue."));
-                Console.ReadKey();
-            }
+            Console.WriteLine("Elapsed time " + elapsedSec + " sec");
+            return 0;
         }
 
-        static void Payload(string path, string outFile)
+        private static bool Payload(string path, string outFile)
         {
             if (!Directory.Exists(path))
             {
                 Console.WriteLine("Could not find directory \"" + path + "\".");
-                return;
+                return false;
             }
 
             StringBuilder sb = new();
@@ -53,7 +57,6 @@ namespace intel_doc_2_data
 
             foreach (string filename in Directory.EnumerateFiles(path, "*.md", SearchOption.TopDirectoryOnly).OrderBy(f => f))
             {
-                //Console.WriteLine(filename);
                 StreamReader file_Stream = File.OpenText(filename);
                 string file_Content = file_Stream.ReadToEnd();
                 (string Description, IList<Signature> Signatures) = Parse(file_Content);
@@ -105,7 +108,7 @@ namespace intel_doc_2_data
             }
 
             // Write once, after processing every page (was re-writing the whole file each iteration).
-            string outDir = Path.GetDirectoryName(outFile);
+            string? outDir = Path.GetDirectoryName(outFile);
             if (!string.IsNullOrEmpty(outDir)) Directory.CreateDirectory(outDir);
             File.WriteAllText(outFile, sb.ToString());
             Console.WriteLine("Wrote " + sb.ToString().Split('\n').Length + " lines to " + outFile);
@@ -117,7 +120,7 @@ namespace intel_doc_2_data
             // Update it in place: keep whatever preamble it currently has (everything before the
             // first "<table>") and replace the table with the freshly generated one. `path` is the
             // wiki's doc/ dir, so Home.md sits in its parent.
-            string wikiRoot = Directory.GetParent(path)?.FullName;
+            string? wikiRoot = Directory.GetParent(path)?.FullName;
             if (wikiRoot != null)
             {
                 string homePath = Path.Combine(wikiRoot, "Home.md");
@@ -141,9 +144,11 @@ namespace intel_doc_2_data
                 }
                 Console.WriteLine("#endregion " + ArchTools.ToString(a));
             }
+
+            return true;
         }
 
-        static string Get_Arch_Str(IDictionary<Arch, ISet<Mnemonic>> dictionary, Mnemonic m)
+        private static string Get_Arch_Str(IDictionary<Arch, ISet<Mnemonic>> dictionary, Mnemonic m)
         {
             ISet<Arch> archs = new HashSet<Arch>();
             foreach (Arch a in dictionary.Keys) foreach (Mnemonic m2 in dictionary[a]) if (m == m2) archs.Add(a);
@@ -152,7 +157,7 @@ namespace intel_doc_2_data
             return archStr;
         }
 
-        static string Get_Arch_Str(IList<Signature> Signatures, Mnemonic m)
+        private static string Get_Arch_Str(IList<Signature> Signatures, Mnemonic m)
         {
             ISet<Arch> archs = new HashSet<Arch>();
             foreach (Signature s in Signatures) if (s.mnemonic == m) foreach (IList<Arch> group in s.archs) foreach (Arch a in group) archs.Add(a);
@@ -161,7 +166,7 @@ namespace intel_doc_2_data
             return archStr.TrimEnd();
         }
 
-        static (string Description, IList<Signature> Signatures) Parse(string content)
+        private static (string Description, IList<Signature> Signatures) Parse(string content)
         {
             //1] get everything before the first occurrence of "<table>"
             int pos_Start_Table = content.IndexOf("<table>");
@@ -283,7 +288,6 @@ namespace intel_doc_2_data
             else
             {
                 Console.WriteLine("WARNING: To_Signature: found header count " + header.Count + ".");
-                //Console.ReadKey();
             }
             #endregion
 
@@ -433,7 +437,6 @@ namespace intel_doc_2_data
             if (mnemonic == Mnemonic.NONE)
             {
                 Console.WriteLine("Could not find a mnemonic in string " + str);
-                //Console.ReadKey();
             }
             return (mnemonic, parameters, parameter_descriptions);
         }
@@ -483,7 +486,7 @@ namespace intel_doc_2_data
         // Parse the SDM "CPUID Feature Flag" cell into an architecture requirement in DNF
         // (list of OR-groups, each an AND-list). The boolean-expression parser lives in
         // ArchTools.ParseArchExpression so it is unit-testable from asm-tools-tests.
-        static IList<IList<Arch>> Parse_Archs(string str)
+        private static IList<IList<Arch>> Parse_Archs(string str)
         {
             return ArchTools.ParseArchExpression(str).Select(g => (IList<Arch>)g.ToList()).ToList();
         }
@@ -504,7 +507,7 @@ namespace intel_doc_2_data
             return results;
         }
 
-        static (IList<string> Row, string Remainder) Parse_Table_Row(string str)
+        private static (IList<string> Row, string Remainder) Parse_Table_Row(string str)
         {
             int pos_Tr_Begin = str.IndexOf("<tr>");
             int pos_Tr_End = str.IndexOf("</tr>");
@@ -516,7 +519,7 @@ namespace intel_doc_2_data
             return (Row, Remainder);
         }
 
-        static IList<string> Parse_Table_Cells(string str)
+        private static IList<string> Parse_Table_Cells(string str)
         {
             IList<string> Results = [];
             // Split on any opening <td ...> (cells may carry colspan/rowspan attributes), dropping
@@ -530,7 +533,7 @@ namespace intel_doc_2_data
             return Results;
         }
 
-        static int Find_First_Hyphen_Position(string str)
+        private static int Find_First_Hyphen_Position(string str)
         {
             int pos_Hyphen = str.IndexOf('—');
             if (pos_Hyphen == -1)

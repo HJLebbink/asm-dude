@@ -69,13 +69,24 @@ namespace asm_annotate
                     return UopsInfoImporter.Run(xml, outDir);
                 }
 
+                case "gen-signatures":
+                {
+                    // gen-signatures [wikiDocDir] [outFile]  — turn the wiki's HTML opcode tables (stage 1
+                    // output) into the AsmDude signature file (+ overview.txt + wiki Home.md). Stage 2.
+                    string wikiDir = args.Length > 1 ? args[1] : "C:/Source/Github/asm-dude.wiki/doc";
+                    string outFile = args.Length > 2 ? args[2]
+                        : "C:/Source/Github/asm-dude/VS/CSHARP/asm-dude2-ls-lib/Resources/signature-mar2026.txt";
+                    return SignatureGenerator.Run(wikiDir, outFile);
+                }
+
                 default:
                     Console.WriteLine("Usage: asm-annotate <command>");
-                    Console.WriteLine("  check-latest          verify the local SDM PDF is the latest revision");
-                    Console.WriteLine("  find <text>           locate the page(s) containing <text>");
-                    Console.WriteLine("  dump <page>           print raw text/line elements for one page");
-                    Console.WriteLine("  extract [start] [end] extract all instructions to .\\output");
-                    Console.WriteLine("  perf-uops <xml> [out] convert uops.info instructions.xml to per-arch perf TSVs");
+                    Console.WriteLine("  check-latest            verify the local SDM PDF is the latest revision");
+                    Console.WriteLine("  find <text>             locate the page(s) containing <text>");
+                    Console.WriteLine("  dump <page>             print raw text/line elements for one page");
+                    Console.WriteLine("  extract [start] [end]   extract all instructions to .\\output (stage 1: PDF->MD)");
+                    Console.WriteLine("  gen-signatures [dir] [out] wiki MD -> signature file (stage 2: MD->TXT)");
+                    Console.WriteLine("  perf-uops <xml> [out]   convert uops.info instructions.xml to per-arch perf TSVs");
                     return command.Length == 0 ? 0 : 1;
             }
 

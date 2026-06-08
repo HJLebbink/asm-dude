@@ -1,28 +1,28 @@
 // Copyright (c) 2026 Henk-Jan Lebbink
 // Licensed under the MIT license.
 
-namespace IntelDoc2Data.Tests;
+namespace AsmAnnotate.Tests;
 
 using System.Collections.Generic;
 
 using AsmTools;
 
-using intel_doc_2_data;
+using asm_annotate;
 
 using Xunit;
 
 /// <summary>
-/// Tests for the md→txt stage (intel-doc-2-data): the generator that turns the wiki's HTML opcode
-/// tables into AsmDude signature rows. These exercise the real production methods (Program.*, made
-/// internal for testing) — the table parser, the operand cleanup, the description abbreviation, and
-/// the column-detection + DNF-arch end-to-end path that was previously untested.
+/// Tests for the md→txt stage (<see cref="SignatureGenerator"/>, the `gen-signatures` command — formerly
+/// the standalone intel-doc-2-data tool): turning the wiki's HTML opcode tables into AsmDude signature
+/// rows. These exercise the real production methods — the table parser, the operand cleanup, the
+/// description abbreviation, and the column-detection + DNF-arch end-to-end path.
 /// </summary>
 public class GeneratorTests
 {
     [Fact]
     public void ParseTable_SplitsRowsAndCells_StrippingSupAndBoldAndColspan()
     {
-        var rows = Program.Parse_Table(
+        var rows = SignatureGenerator.Parse_Table(
             "<tr><td><b>Opcode</b></td><td>Instruction</td></tr>" +
             "<tr><td>imm32<sup>1</sup></td><td colspan=\"2\">VADDPS</td></tr>");
 
@@ -41,7 +41,7 @@ public class GeneratorTests
     [InlineData("R32,IMM16", "R32,IMM16")]                   // IMM16 must NOT be stripped to IMM
     public void CleanupParameters_NormalisesOperands(string input, string expected)
     {
-        Assert.Equal(expected, Program.Cleanup_Parameters(input));
+        Assert.Equal(expected, SignatureGenerator.Cleanup_Parameters(input));
     }
 
     [Theory]
@@ -50,14 +50,14 @@ public class GeneratorTests
     [InlineData("single-precision", "SP")] // hyphenated form too
     public void AbbreviateDescription_ShrinksPrecisionPhrases(string input, string expected)
     {
-        Assert.Equal(expected, Program.AbbreviateDescription(input));
+        Assert.Equal(expected, SignatureGenerator.AbbreviateDescription(input));
     }
 
     [Fact]
     public void ParseParameters_ExtractsMnemonicAndCleanedOperands()
     {
         var (mnemonic, parameters, _) =
-            Program.Parse_Parameters("VEX.128.0F.WIG 58 /r VADDPS xmm1, xmm2, xmm3/m128");
+            SignatureGenerator.Parse_Parameters("VEX.128.0F.WIG 58 /r VADDPS xmm1, xmm2, xmm3/m128");
 
         Assert.Equal(Mnemonic.VADDPS, mnemonic);
         Assert.Equal("XMM,XMM,XMM/M128", parameters);
@@ -81,7 +81,7 @@ public class GeneratorTests
             },
         };
 
-        var sigs = Program.To_Signature(table);
+        var sigs = SignatureGenerator.To_Signature(table);
 
         Assert.Single(sigs);
         var s = sigs[0];
@@ -100,6 +100,6 @@ public class GeneratorTests
     {
         // A 1-column "table" (a malformed/continuation fragment) must be skipped, not throw.
         var table = new List<IList<string>> { new List<string> { "Opcode" } };
-        Assert.Empty(Program.To_Signature(table));
+        Assert.Empty(SignatureGenerator.To_Signature(table));
     }
 }

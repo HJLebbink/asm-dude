@@ -114,9 +114,10 @@ The LSP server is split into two projects following the **library + executable p
 
 - **asm-sim-lib**: Assembly instruction simulator using Z3 solver (.NET 10.0 LTS)
 
-- **asm-annotate**: Utility for annotating assembly code
-
-- **intel-doc-2-data**: Processes Intel instruction documentation
+- **asm-annotate**: The instruction-data toolchain (CLI). Subcommands: `extract` (Intel SDM PDF→Markdown,
+  stage 1), `gen-signatures` (wiki Markdown→`signature-*.txt`, stage 2 — formerly the standalone
+  `intel-doc-2-data` project, folded in here), `perf-uops` (uops.info XML→perf TSVs), plus `check-latest`/
+  `find`/`dump`. Tested by `asm-annotate-tests`.
 
 ## Build Commands
 
@@ -169,7 +170,7 @@ dotnet test VS\CSHARP\asm-dude2-ls-tests\asm-dude2-ls-tests.csproj
 | asm-sim-tests | 178 | 3 | Z3 simulator (DynamicFlow merge crash FIXED; 3 skips unrelated) |
 | asm-dude2-ls-tests | 126 | 37 | Unit + AsmSim integration; 5 pre-existing failures (hover/semantic-token, unrelated to signatures) |
 | asm-annotate-tests | 16 | 0 | **NEW** — stage-1 PDF→MD text/title heuristics |
-| intel-doc-2-data-tests | 14 | 0 | **NEW** — stage-2 MD→signature generator |
+| asm-annotate-tests (gen-signatures) | 14 | 0 | stage-2 MD→signature generator (was intel-doc-2-data-tests, now folded into asm-annotate-tests) |
 
 **Note**: The DynamicFlow **branch-merge** Z3 context-lifecycle crash is **FIXED** (shared-context rewrite — see Known Issues); the 25 previously-skipped DynamicFlow tests are re-enabled and pass. Only 3 sim tests remain skipped for unrelated reasons. Run sim tests via `vstest.console.dll`, not `dotnet test`.
 
@@ -295,16 +296,18 @@ Useful for extension discovery and registration problems, rarely needed for runt
   csproj, so new arch files need no csproj edit. `PerformanceStore.ArchFiles` maps each `MicroArch` → file;
   the VS settings expose a **single-select** `perfArch` dropdown (the server stays multi-arch-capable for VS Code).
 - Signature files in `Resources\signature-*.txt`. **The LSP server loads `signature-mar2026.txt`**
-  (generated from the wiki by `intel-doc-2-data`, rev-091/March 2026) **+ `signature-hand-1.txt`**
-  (hand-maintained, OVERRIDES the regular file by `(Mnemonic, signature-label)`). `signature-may2019.txt`
-  is retired/unreferenced. Loaded name is hard-coded in `LanguageServer.cs:~420` + bundled via the csproj.
+  (generated from the wiki by `asm-annotate gen-signatures`, rev-091/March 2026) **+ `signature-hand-1.txt`**
+  (hand-maintained, OVERRIDES the regular file by `(Mnemonic, signature-label)`). (`signature-may2019.txt`
+  was retired and deleted.) Loaded name is hard-coded in `LanguageServer.cs:~420` + bundled via the csproj.
 
 ### Instruction-data pipeline (pdf → md → txt)
-`asm-annotate` (PDF→MD, stage 1) → copy `output/*.md` to `asm-dude.wiki/doc/` → `intel-doc-2-data`
-(MD→`signature-mar2026.txt` + `overview.txt` + wiki `Home.md`, stage 2) → LSP server (stage 3).
+`asm-annotate extract` (PDF→MD, stage 1) → copy `output/*.md` to `asm-dude.wiki/doc/` →
+`asm-annotate gen-signatures` (MD→`signature-mar2026.txt` + `overview.txt` + wiki `Home.md`, stage 2) →
+LSP server (stage 3). All stages are now subcommands of the one `asm-annotate` tool (the old
+`intel-doc-2-data` project was folded in as `gen-signatures`).
 The arch column is **DNF** (`+`=AND, `,`=OR, e.g. `AVX512_VL+AVX512_F,AVX10`); `Home.md`'s arch column
 is a flattened union. New ISA covered incl. AMX tile registers (`TMM0-7`), AVX10, FP16, Key Locker.
-Each stage has tests (`asm-annotate-tests`, `intel-doc-2-data-tests`, `asm-dude2-ls-tests`).
+Each stage has tests in `asm-annotate-tests` (+ `asm-dude2-ls-tests` for the server stage).
 
 ### Performance data pipeline (uops.info → TSV), separate from the SDM pipeline
 The latency/throughput TSVs are regenerated independently of the PDF/signature pipeline:

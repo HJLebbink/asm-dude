@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AsmDoc", "AsmDoc", "{8539E7E0-634A-459F-A5AF-25ECBD16DE13}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "intel-doc-2-data", "CSHARP\intel-doc-2-data\intel-doc-2-data.csproj", "{16019732-E6FC-4299-B075-4B5537A7FDB5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asm-annotate", "CSHARP\asm-annotate\asm-annotate.csproj", "{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{70DA876B-F391-4F59-B57C-C5A7B9DFBC2C}"
@@ -43,8 +39,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-options-lib", "CSHARP\a
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-annotate-tests", "CSHARP\asm-annotate-tests\asm-annotate-tests.csproj", "{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "intel-doc-2-data-tests", "CSHARP\intel-doc-2-data-tests\intel-doc-2-data-tests.csproj", "{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,18 +49,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Debug|x64.Build.0 = Debug|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Debug|x86.Build.0 = Debug|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|x64.ActiveCfg = Release|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|x64.Build.0 = Release|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|x86.ActiveCfg = Release|Any CPU
-		{16019732-E6FC-4299-B075-4B5537A7FDB5}.Release|x86.Build.0 = Release|Any CPU
 		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -227,24 +209,11 @@ Global
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB}.Release|x64.Build.0 = Release|Any CPU
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB}.Release|x86.ActiveCfg = Release|Any CPU
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB}.Release|x86.Build.0 = Release|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Debug|x64.Build.0 = Debug|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Debug|x86.Build.0 = Debug|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Release|x64.ActiveCfg = Release|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Release|x64.Build.0 = Release|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Release|x86.ActiveCfg = Release|Any CPU
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{16019732-E6FC-4299-B075-4B5537A7FDB5} = {8539E7E0-634A-459F-A5AF-25ECBD16DE13}
 		{57680B5B-28CC-4AAA-AF9D-874CFFD0F346} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 		{C8E7EF28-598E-45FD-905E-EC76486EAB90} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 		{D70EDAA2-616B-4B09-80DE-F66C7D7073D1} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
@@ -258,7 +227,6 @@ Global
 		{E7978D99-D610-4AB8-AABC-52F709B742FF} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 		{ED14711D-CBB9-48DE-8555-B651B9D36437} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
-		{44DD69E8-8DF6-41BF-97C7-1D83F8654CF9} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89D318BB-C529-4DDE-8EAF-DAEA3986256B}

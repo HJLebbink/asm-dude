@@ -26,18 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\AsmDudeData.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInExtension>true</IncludeInExtension>
-    </None>
-    <None Update="Resources\signature-hand-1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInExtension>true</IncludeInExtension>
-    </None>
-    <None Update="Resources\signature-may2019.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInExtension>true</IncludeInExtension>
-    </None>
+    <!-- The server's resources (AsmDudeData.xml, signature-*.txt, Performance\*.tsv) are bundled from the
+         LSP server build output below (the Server\** glob), NOT duplicated here. -->
     <None Update="AsmDude2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInExtension>true</IncludeInExtension>
@@ -56,14 +46,13 @@
     </Content>
   </ItemGroup>
 
-  <!-- Include LSP server in VSIX -->
+  <!-- Include the LSP server (and its Resources\, which carry the declared signature/perf data) in the
+       VSIX. The server build output already contains exactly the runtime resources, so a second glob over
+       the lib's Resources folder is intentionally NOT used — it would also drag in non-runtime artifacts
+       (overview.txt, retired signature-may2019.txt). -->
   <ItemGroup>
     <Content Include="..\asm-dude2-ls\bin\$(Configuration)\net10.0-windows\**\*.*">
       <Link>Server\%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\asm-dude2-ls-lib\Resources\**\*.*">
-      <Link>Server\Resources\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
