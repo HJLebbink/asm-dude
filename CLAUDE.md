@@ -65,7 +65,7 @@ The LSP server is split into two projects following the **library + executable p
 - Declares all dependencies (LSP protocol, logging, Z3 simulator)
 - Uses `InternalsVisibleTo` to expose internals to tests and fuzzer:
   - `asm-dude2-ls-tests` (unit tests via xUnit)
-  - `asm-fuzz` (fuzzing via QuickCheck)
+  - `asm-fuzz` (coverage-guided fuzzing via SharpFuzz + libFuzzer)
 - Platform-independent (no process/service hosting code)
 
 **asm-dude2-ls** (Executable - `VS/CSHARP/asm-dude2-ls/`)

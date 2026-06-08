@@ -9,7 +9,7 @@ public static class ParseMnemonicTarget
 {
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }

@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-options-lib", "CSHARP\a
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-annotate-tests", "CSHARP\asm-annotate-tests\asm-annotate-tests.csproj", "{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-fuzz-tests", "CSHARP\asm-fuzz-tests\asm-fuzz-tests.csproj", "{89DDC891-E33A-44AB-8068-525439F4DDFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +211,18 @@ Global
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB}.Release|x64.Build.0 = Release|Any CPU
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB}.Release|x86.ActiveCfg = Release|Any CPU
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB}.Release|x86.Build.0 = Release|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Debug|x64.Build.0 = Debug|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Debug|x86.Build.0 = Debug|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|x64.ActiveCfg = Release|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|x64.Build.0 = Release|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|x86.ActiveCfg = Release|Any CPU
+		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -227,6 +241,7 @@ Global
 		{E7978D99-D610-4AB8-AABC-52F709B742FF} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 		{ED14711D-CBB9-48DE-8555-B651B9D36437} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
+		{89DDC891-E33A-44AB-8068-525439F4DDFF} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89D318BB-C529-4DDE-8EAF-DAEA3986256B}

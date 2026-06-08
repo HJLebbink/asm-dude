@@ -2884,6 +2884,15 @@ public enum Mnemonic
             Mnemonic_cache_ = [];
             foreach (Mnemonic mnemonic in Enum.GetValues<Mnemonic>())
             {
+                // Skip the NONE sentinel: registering "NONE" as a key makes IsMnemonic("NONE") report true
+                // while ParseMnemonic("NONE") returns the not-a-mnemonic sentinel — an inconsistency between
+                // the two classifiers (surfaced by the asm-fuzz classifyconsistency invariant). "NONE" is not
+                // a real mnemonic; ParseMnemonic still returns NONE for it (cache miss → default).
+                if (mnemonic == Mnemonic.NONE)
+                {
+                    continue;
+                }
+
                 Mnemonic_cache_.Add(mnemonic.ToString(), mnemonic);
             }
         }

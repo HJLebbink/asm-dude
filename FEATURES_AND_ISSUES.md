@@ -504,9 +504,10 @@ Before implementing, decide:
   - ✅ 8 core parsing targets (parsememoperand, parseline, evaluateconstant, etc.)
   - ✅ 7 LSP protocol targets (getdefinition, sendreferences, getdocumentsymbols, etc.)
   - ✅ 1 document change target (documentchange)
-- **TODO** (documented in `asm-fuzz/TODO.md`):
-  - [ ] SendSettings — configuration changes
-  - [ ] AssemblerSyntax — MASM, NASM, AT&T syntax variants
+- **Recently added** (see `asm-fuzz/README.md`):
+  - ✅ settings — settings.json deserialization contract (incl. ColorJsonConverter)
+  - ✅ multisyntax — MASM, NASM, AT&T syntax variants
+- **Still TODO**:
   - [ ] ArchitectureSpecific — ARCH flags per document
   - [ ] RegisterEdgeCases — abbreviated vs. full register names
   - [ ] ComplexExpression — nested parentheses, operator precedence

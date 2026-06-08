@@ -11,20 +11,17 @@ namespace AsmFuzz.Targets;
 /// </summary>
 public static class GetDocumentHighlightsTarget
 {
-    private static int _docCounter;
-
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }
 
         string text = Encoding.UTF8.GetString(data);
-        var server = ServerFixture.GetServer();
+        using var server = ServerFixture.CreateServer();
 
-        int id = Interlocked.Increment(ref _docCounter);
-        string uri = $"file:///fuzz/hl{id}.asm";
+        string uri = "file:///fuzz/hl.asm";
         var docUri = new Uri(uri);
 
         var openParams = new DidOpenTextDocumentParams
@@ -37,51 +34,43 @@ public static class GetDocumentHighlightsTarget
                 Text = text,
             },
         };
+        server.OnTextDocumentOpened(openParams);
 
-        try
+        string[] serverLines = server.GetDocumentLinesForTest(docUri.ToString());
+        string[] lines = text.Split('\n');
+        for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
         {
-            server.OnTextDocumentOpened(openParams);
-        }
-        catch
-        {
-            return;
-        }
+            string line = lines[lineIdx];
 
-        try
-        {
-            string[] lines = text.Split('\n');
-            for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
+            // Test at multiple positions on each line
+            for (int charIdx = 0; charIdx <= line.Length; charIdx += Math.Max(1, line.Length / 5))
             {
-                string line = lines[lineIdx];
+                var position = new Position(lineIdx, charIdx);
+                var progress = new Progress<DocumentHighlight[]>(_ => { });
+                var highlights = server.GetDocumentHighlights(progress, position, uri, CancellationToken.None);
 
-                // Test at multiple positions on each line
-                for (int charIdx = 0; charIdx <= line.Length; charIdx += Math.Max(1, line.Length / 5))
+                // CONS: every returned highlight range must lie within the document.
+                if (highlights != null)
                 {
-                    var highlightParams = new TextDocumentPositionParams
+                    foreach (var h in highlights)
                     {
-                        TextDocument = new TextDocumentIdentifier { Uri = docUri },
-                        Position = new Position(lineIdx, charIdx),
-                    };
-
-                    try
-                    {
-                        var progress = new Progress<DocumentHighlight[]>(_ => { });
-                        server.GetDocumentHighlights(progress, highlightParams.Position, uri, CancellationToken.None);
-                    }
-                    catch
-                    {
-                        // Non-fatal — continue fuzzing
+                        Invariants.CheckRangeInDocument(h.Range, serverLines, "documentHighlight");
                     }
                 }
             }
         }
-        finally
+
+        var closeParams = new DidCloseTextDocumentParams
         {
-            var closeParams = new DidCloseTextDocumentParams
-            {
-                TextDocument = new TextDocumentIdentifier { Uri = docUri },
-            };
-            server.OnTextDocumentClosed(closeParams);
+            TextDocument = new TextDocumentIdentifier { Uri = docUri },
+        };
+        server.OnTextDocumentClosed(closeParams);
+
+        // DUAL invariant: no per-document state remains after close.
+        int residual = server.TrackedDocumentEntryCount();
+        if (residual != 0)
+        {
+            throw new InvariantViolation($"close did not restore baseline: {residual} per-document entries retained after close");
         }
     }
 }

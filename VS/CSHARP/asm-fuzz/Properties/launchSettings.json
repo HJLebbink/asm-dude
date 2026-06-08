@@ -1,0 +1,28 @@
+{
+  "profiles": {
+    "fuzz-all (coverage-guided round-robin)": {
+      "commandName": "Project",
+      "commandLineArgs": "fuzz-all --seconds 600 --workers 8"
+    },
+    "campaign: all (round-robin, in-process)": {
+      "commandName": "Project",
+      "commandLineArgs": "campaign all --seconds 60"
+    },
+    "campaign: parseline": {
+      "commandName": "Project",
+      "commandLineArgs": "campaign parseline --seconds 30"
+    },
+    "campaign: multisyntax": {
+      "commandName": "Project",
+      "commandLineArgs": "campaign multisyntax --seconds 30"
+    },
+    "campaign: settings": {
+      "commandName": "Project",
+      "commandLineArgs": "campaign settings --seconds 30"
+    },
+    "campaign: documentpipeline": {
+      "commandName": "Project",
+      "commandLineArgs": "campaign documentpipeline --seconds 30"
+    }
+  }
+}

@@ -11,21 +11,17 @@ namespace AsmFuzz.Targets;
 /// </summary>
 public static class GetDocumentSymbolsTarget
 {
-    private static int _docCounter;
-
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }
 
         string text = Encoding.UTF8.GetString(data);
-        var server = ServerFixture.GetServer();
+        using var server = ServerFixture.CreateServer();
 
-        int id = Interlocked.Increment(ref _docCounter);
-        string uri = $"file:///fuzz/sym{id}.asm";
-        var docUri = new Uri(uri);
+        var docUri = new Uri("file:///fuzz/sym.asm");
 
         var openParams = new DidOpenTextDocumentParams
         {
@@ -37,39 +33,38 @@ public static class GetDocumentSymbolsTarget
                 Text = text,
             },
         };
+        server.OnTextDocumentOpened(openParams);
 
-        try
+        var symbolParams = new DocumentSymbolParams
         {
-            server.OnTextDocumentOpened(openParams);
-        }
-        catch
-        {
-            return;
-        }
+            TextDocument = new TextDocumentIdentifier { Uri = docUri },
+        };
+        var symbols = server.GetDocumentSymbols(symbolParams);
 
-        try
+        // CONS: every document symbol's location must lie within the document.
+        if (symbols != null)
         {
-            var symbolParams = new DocumentSymbolParams
+            string[] serverLines = server.GetDocumentLinesForTest(docUri.ToString());
+            foreach (var sym in symbols)
             {
-                TextDocument = new TextDocumentIdentifier { Uri = docUri },
-            };
-
-            try
-            {
-                server.GetDocumentSymbols(symbolParams);
-            }
-            catch
-            {
-                // Non-fatal — continue fuzzing
+                if (sym.Location?.Range is { } symRange)
+                {
+                    Invariants.CheckRangeInDocument(symRange, serverLines, "documentSymbol");
+                }
             }
         }
-        finally
+
+        var closeParams = new DidCloseTextDocumentParams
         {
-            var closeParams = new DidCloseTextDocumentParams
-            {
-                TextDocument = new TextDocumentIdentifier { Uri = docUri },
-            };
-            server.OnTextDocumentClosed(closeParams);
+            TextDocument = new TextDocumentIdentifier { Uri = docUri },
+        };
+        server.OnTextDocumentClosed(closeParams);
+
+        // DUAL invariant: no per-document state remains after close.
+        int residual = server.TrackedDocumentEntryCount();
+        if (residual != 0)
+        {
+            throw new InvariantViolation($"close did not restore baseline: {residual} per-document entries retained after close");
         }
     }
 }

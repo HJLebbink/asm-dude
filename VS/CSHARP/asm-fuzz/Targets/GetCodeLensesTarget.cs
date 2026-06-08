@@ -11,21 +11,17 @@ namespace AsmFuzz.Targets;
 /// </summary>
 public static class GetCodeLensesTarget
 {
-    private static int _docCounter;
-
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }
 
         string text = Encoding.UTF8.GetString(data);
-        var server = ServerFixture.GetServer();
+        using var server = ServerFixture.CreateServer();
 
-        int id = Interlocked.Increment(ref _docCounter);
-        string uri = $"file:///fuzz/cl{id}.asm";
-        var docUri = new Uri(uri);
+        var docUri = new Uri("file:///fuzz/cl.asm");
 
         var openParams = new DidOpenTextDocumentParams
         {
@@ -37,39 +33,35 @@ public static class GetCodeLensesTarget
                 Text = text,
             },
         };
+        server.OnTextDocumentOpened(openParams);
 
-        try
+        var codeLensParams = new CodeLensParams
         {
-            server.OnTextDocumentOpened(openParams);
-        }
-        catch
-        {
-            return;
-        }
+            TextDocument = new TextDocumentIdentifier { Uri = docUri },
+        };
+        var codeLenses = server.GetCodeLenses(codeLensParams);
 
-        try
+        // CONS: every code-lens range must lie within the document.
+        if (codeLenses != null)
         {
-            var codeLensParams = new CodeLensParams
+            string[] serverLines = server.GetDocumentLinesForTest(docUri.ToString());
+            foreach (var lens in codeLenses)
             {
-                TextDocument = new TextDocumentIdentifier { Uri = docUri },
-            };
-
-            try
-            {
-                server.GetCodeLenses(codeLensParams);
-            }
-            catch
-            {
-                // Non-fatal — continue fuzzing
+                Invariants.CheckRangeInDocument(lens.Range, serverLines, "codeLens");
             }
         }
-        finally
+
+        var closeParams = new DidCloseTextDocumentParams
         {
-            var closeParams = new DidCloseTextDocumentParams
-            {
-                TextDocument = new TextDocumentIdentifier { Uri = docUri },
-            };
-            server.OnTextDocumentClosed(closeParams);
+            TextDocument = new TextDocumentIdentifier { Uri = docUri },
+        };
+        server.OnTextDocumentClosed(closeParams);
+
+        // DUAL invariant: no per-document state remains after close.
+        int residual = server.TrackedDocumentEntryCount();
+        if (residual != 0)
+        {
+            throw new InvariantViolation($"close did not restore baseline: {residual} per-document entries retained after close");
         }
     }
 }

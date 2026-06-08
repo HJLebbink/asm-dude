@@ -4,13 +4,12 @@ namespace AsmFuzz.Targets;
 
 /// <summary>
 /// Fuzz target for AsmSourceTools.Parse_Mem_Operand.
-/// Known bug: line 827 uses token.Length instead of s.Length in Substring call.
 /// </summary>
 public static class ParseMemOperandTarget
 {
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }

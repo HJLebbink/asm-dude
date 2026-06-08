@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -28,7 +29,12 @@ public class ColorJsonConverter : JsonConverter<Color>
             // Handle named colors (e.g., "Blue") and hex colors (e.g., "#FF0000")
             if (value.StartsWith('#'))
             {
-                int argb = Convert.ToInt32(value[1..], 16);
+                // Tolerate malformed hex (non-hex chars, too many digits) by falling back to Empty
+                // rather than letting Convert.ToInt32 throw — settings JSON is user-editable/fuzzable.
+                if (!int.TryParse(value[1..], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int argb))
+                {
+                    return Color.Empty;
+                }
                 if (value.Length == 7) // #RRGGBB
                 {
                     return Color.FromArgb(255, (argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
@@ -66,19 +72,26 @@ public class ColorJsonConverter : JsonConverter<Color>
                 switch (propertyName?.ToUpperInvariant())
                 {
                     case "R":
-                        r = reader.GetInt32();
+                        r = ReadComponent(ref reader);
                         break;
                     case "G":
-                        g = reader.GetInt32();
+                        g = ReadComponent(ref reader);
                         break;
                     case "B":
-                        b = reader.GetInt32();
+                        b = ReadComponent(ref reader);
                         break;
                     case "A":
-                        a = reader.GetInt32();
+                        a = ReadComponent(ref reader);
                         break;
                     case "NAME":
-                        name = reader.GetString() ?? name;
+                        if (reader.TokenType == JsonTokenType.String)
+                        {
+                            name = reader.GetString() ?? name;
+                        }
+                        else
+                        {
+                            reader.Skip();
+                        }
                         break;
                     default:
                         reader.Skip();
@@ -94,12 +107,32 @@ public class ColorJsonConverter : JsonConverter<Color>
                     return namedColor;
                 }
             }
-            return Color.FromArgb(a, r, g, b);
+
+            // Clamp to the valid [0,255] range so an out-of-range component (e.g. a typo or fuzzed
+            // value) yields a clamped color instead of Color.FromArgb throwing ArgumentException —
+            // which in production would otherwise reject the whole settings file.
+            return Color.FromArgb(Math.Clamp(a, 0, 255), Math.Clamp(r, 0, 255), Math.Clamp(g, 0, 255), Math.Clamp(b, 0, 255));
         }
 
         // Skip unknown token types gracefully
         reader.Skip();
         return Color.Empty;
+    }
+
+    /// <summary>
+    /// Reads an ARGB component value. Returns the integer when the current token is a number that fits
+    /// in <see cref="int"/>; otherwise (a string/object/array/oversized number) ignores it — consuming
+    /// any nested container — and returns 0, so a malformed component never throws.
+    /// </summary>
+    private static int ReadComponent(ref Utf8JsonReader reader)
+    {
+        if (reader.TokenType == JsonTokenType.Number && reader.TryGetInt32(out int v))
+        {
+            return v;
+        }
+
+        reader.Skip();
+        return 0;
     }
 
     public override void Write(Utf8JsonWriter writer, Color value, JsonSerializerOptions options)

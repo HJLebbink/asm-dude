@@ -452,6 +452,10 @@ using System.Text;
                             isFirstKeyword = false;
                         }
                         yield return (i, line.Length, AsmTokenType.Remark);
+                        // The remark consumes the rest of the line. Advance keywordBegin to the end too,
+                        // otherwise the post-loop yield emits a spurious (keywordBegin, line.Length) token
+                        // that overlaps the tokens just emitted. (Found by the asm-fuzz ordering invariant.)
+                        keywordBegin = line.Length;
                         i = line.Length;
                     }
                     else if (c.Equals('"'))

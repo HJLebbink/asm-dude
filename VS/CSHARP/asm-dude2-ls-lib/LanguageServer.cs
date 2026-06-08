@@ -410,25 +410,49 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.options = options;
     }
 
-    public void Initialized()
+    /// <summary>
+    /// The immutable, file-loaded reference data: instruction signatures (<see cref="MnemonicStore"/>),
+    /// performance tables (<see cref="PerformanceStore"/>) and instruction metadata
+    /// (<see cref="AsmDude2Tools"/>). It is read-only after load and is queried (never mutated) during
+    /// document processing — in production a single server already shares it across every document it
+    /// handles. Loading it from disk is the dominant startup cost (~200 ms), so it can be loaded once
+    /// and shared across multiple servers (e.g. by the fuzzer, which builds a fresh server per input
+    /// for state isolation — see asm-fuzz/ServerFixture).
+    /// </summary>
+    internal readonly record struct ReferenceData(MnemonicStore MnemonicStore, PerformanceStore PerformanceStore, AsmDude2Tools AsmDudeTools);
+
+    /// <summary>Loads the immutable <see cref="ReferenceData"/> from the bundled <c>Resources</c> directory.</summary>
+    internal static ReferenceData LoadReferenceData(AsmLanguageServerOptions options, TraceSource traceSource)
     {
         string? assemblyLocation = Assembly.GetExecutingAssembly().Location;
         string path = assemblyLocation != null && Path.GetDirectoryName(assemblyLocation) != null
             ? Path.Combine(Path.GetDirectoryName(assemblyLocation), "Resources")
             : "Resources";
-        {
-            string filename_Regular = Path.Combine(path, "signature-mar2026.txt");
-            string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
-            this.mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, this.options!);
-            // WriteMnemonicUrlMapping removed — documentation links now handled by context menu command
-        }
-        {
-            string path_performance = Path.Combine(path, "Performance");
-            this.performanceStore = new PerformanceStore(path_performance, this.options!);
-        }
-        {
-            this.asmDudeTools = AsmDude2Tools.Create(path, this.traceSource);
-        }
+
+        string filename_Regular = Path.Combine(path, "signature-mar2026.txt");
+        string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
+        var mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, options);
+        // WriteMnemonicUrlMapping removed — documentation links now handled by context menu command
+
+        string path_performance = Path.Combine(path, "Performance");
+        var performanceStore = new PerformanceStore(path_performance, options);
+
+        var asmDudeTools = AsmDude2Tools.Create(path, traceSource);
+
+        return new ReferenceData(mnemonicStore, performanceStore, asmDudeTools);
+    }
+
+    /// <summary>Applies already-loaded <see cref="ReferenceData"/> instead of reading it from disk.</summary>
+    internal void ApplyReferenceData(in ReferenceData data)
+    {
+        this.mnemonicStore = data.MnemonicStore;
+        this.performanceStore = data.PerformanceStore;
+        this.asmDudeTools = data.AsmDudeTools;
+    }
+
+    public void Initialized()
+    {
+        this.ApplyReferenceData(LoadReferenceData(this.options!, this.traceSource));
     }
 
 private void UpdateInternals(string uri)
@@ -584,8 +608,65 @@ private void UpdateInternals(string uri)
         this.labelGraphs.Remove(uri);
         this.labelGraphDirty.Remove(uri);
         this.simTokenVersions.Remove(uri);
+        // These two were previously NOT cleared on close — a per-document state leak (closed documents
+        // accumulated in a long-lived server). Surfaced by the asm-fuzz open/close roundtrip invariant.
+        this.foldingRanges.Remove(uri);
+        this._documentAssemblerTypes.Remove(uri);
         this.asmSimulator_.CancelAndRemove(new Uri(uri));
     }
+
+    /// <summary>
+    /// Test/fuzz seam — total number of per-document entries currently tracked across the internal
+    /// dictionaries. After a document is closed (and assuming no others are open) this returns to its
+    /// pre-open value, which is what the open/close roundtrip (DUAL) fuzz invariant asserts. A non-zero
+    /// residual after closing the only document indicates a state leak.
+    /// </summary>
+    internal int TrackedDocumentEntryCount()
+        => this.textDocuments.Count
+         + this.textDocumentLines.Count
+         + this.parsedDocuments.Count
+         + this.foldingRanges.Count
+         + this.labelGraphs.Count
+         + this.labelGraphDirty.Count
+         + this._documentAssemblerTypes.Count
+         + this.simTokenVersions.Count;
+
+    /// <summary>Test/fuzz seam — the server's own line model for a document (so callers can validate
+    /// position-based results, e.g. semantic-token ranges, against the exact lines the server used).</summary>
+    internal string[] GetDocumentLinesForTest(string uri) => this.GetLines(uri);
+
+    /// <summary>Test/fuzz seam — apply an edit SYNCHRONOUSLY. The production
+    /// <see cref="UpdateServerSideTextDocument"/> debounces the re-parse by 100 ms, which is
+    /// non-deterministic within a single fuzz iteration; this seam sets the new text/version, cancels any
+    /// pending debounced update for the uri, and runs the very same <c>UpdateInternals</c> parse the
+    /// debounce would have run — letting the RES invariant compare "edit → X" against a fresh "open(X)"
+    /// deterministically. It is the same parse path, not a re-implementation.</summary>
+    internal void ApplyEditForTest(string text, int version, string uri)
+    {
+        TextDocumentItem? document = this.GetTextDocument(uri);
+        if (document == null)
+        {
+            return;
+        }
+
+        document.Text = text;
+        document.Version = version;
+
+        lock (this.updateLock)
+        {
+            if (this.pendingUpdates.TryGetValue(uri, out var cts))
+            {
+                cts.Cancel();
+                this.pendingUpdates.Remove(uri);
+            }
+        }
+
+        this.UpdateInternals(uri);
+    }
+
+    /// <summary>Test/fuzz seam — the diagnostics produced for the most recent document update, so callers
+    /// can assert every diagnostic range lies within the document (CONS).</summary>
+    internal IReadOnlyList<Diagnostic> DiagnosticsForTest() => this.diagnostics;
 
     private void UpdateLabelGraph(string uri)
     {
@@ -1053,7 +1134,9 @@ private void UpdateInternals(string uri)
 
     public object[] SendReferences(ReferenceParams args, bool returnLocationsOnly, CancellationToken token)
     {
-        if (this.target.traceSetting == TraceSetting.Verbose)
+        // target/rpc are null when the server runs without an RPC connection (test/fuzz host) — guard
+        // the optional trace accesses so the handler doesn't NRE just because tracing isn't wired.
+        if (this.target?.traceSetting == TraceSetting.Verbose)
         {
             AsmDudeLog.Info($"Received: {System.Text.Json.JsonSerializer.Serialize(args)}");
         }
@@ -1091,7 +1174,7 @@ private void UpdateInternals(string uri)
                     if (locationsChunk.Count == this.referencesChunkSize)
                     {
                         Debug.WriteLine($"Reporting references of {referenceWord}");
-                        this.rpc.TraceSource.TraceEvent(TraceEventType.Information, 0, $"Report: {System.Text.Json.JsonSerializer.Serialize(locationsChunk)}");
+                        this.rpc?.TraceSource?.TraceEvent(TraceEventType.Information, 0, $"Report: {System.Text.Json.JsonSerializer.Serialize(locationsChunk)}");
                         progress.Report(locationsChunk.ToArray());
                         locationsChunk.Clear();
                     }

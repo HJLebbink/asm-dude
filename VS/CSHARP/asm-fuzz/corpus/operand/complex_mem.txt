@@ -1,1 +1,0 @@
-DWORD PTR [EAX+ECX*4+0x10]

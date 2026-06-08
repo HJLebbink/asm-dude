@@ -8,7 +8,6 @@
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
     <IsPackable>false</IsPackable>
-    <IsAotCompatible>true</IsAotCompatible>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>

@@ -36,6 +36,14 @@ public static class AsmDudeLog
     /// <summary>When true, log output goes to stderr (needed when stdout carries JSON-RPC).</summary>
     public static bool UseStdio { get; set; }
 
+    /// <summary>
+    /// When true, the on-disk log sink (<c>%TEMP%\asmdude-execution.log</c>) is skipped. The disk write is
+    /// a per-message <see cref="File.AppendAllText(string, string?)"/> (open+write+close each call); under
+    /// a fuzz/merge run that drives thousands of inputs/sec through the server it grew the log to multiple
+    /// GB and throttled throughput. The fuzzer (<c>ServerFixture</c>) sets this true.
+    /// </summary>
+    public static bool DisableFileLog { get; set; }
+
     /// <summary>Optional TraceSource for VS diagnostics integration.</summary>
     public static TraceSource? TraceSource { get; set; }
 
@@ -61,14 +69,17 @@ public static class AsmDudeLog
         try { ConsoleWriter.WriteLine(formatted); } catch { }
 
         // Disk
-        try
+        if (!DisableFileLog)
         {
-            lock (fileLock)
+            try
             {
-                File.AppendAllText(logPath, formatted + "\n");
+                lock (fileLock)
+                {
+                    File.AppendAllText(logPath, formatted + "\n");
+                }
             }
+            catch { }
         }
-        catch { }
 
         // VS TraceSource
         TraceEventType traceType = level switch

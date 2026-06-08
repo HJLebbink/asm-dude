@@ -55,6 +55,16 @@ public sealed class SettingsManager : IDisposable
     };
 
     /// <summary>
+    /// Deserializes settings-file JSON into options using the production converter set
+    /// (<see cref="JsonOptions"/>, including <see cref="ColorJsonConverter"/>). Returns null when the
+    /// top-level JSON value is null. Throws <see cref="JsonException"/> on malformed JSON; callers
+    /// handle that. Factored out so the initial load and the file-watch reload share one code path,
+    /// and so the settings contract can be fuzzed directly (see asm-fuzz SettingsTarget).
+    /// </summary>
+    internal static AsmLanguageServerOptions? DeserializeSettings(string json)
+        => JsonSerializer.Deserialize<AsmLanguageServerOptions>(json, JsonOptions);
+
+    /// <summary>
     /// Reads settings.json and merges over the provided defaults.
     /// If the file doesn't exist, creates it from defaults so the user can edit it.
     /// </summary>
@@ -70,7 +80,7 @@ public sealed class SettingsManager : IDisposable
             }
 
             string json = File.ReadAllText(SettingsFile);
-            var loaded = JsonSerializer.Deserialize<AsmLanguageServerOptions>(json, JsonOptions);
+            var loaded = DeserializeSettings(json);
             if (loaded != null)
             {
                 AsmDudeLog.Info($"SettingsManager: loaded user settings from {SettingsFile}");
@@ -119,7 +129,7 @@ public sealed class SettingsManager : IDisposable
             System.Threading.Thread.Sleep(200);
 
             string json = File.ReadAllText(SettingsFile);
-            var options = JsonSerializer.Deserialize<AsmLanguageServerOptions>(json, JsonOptions);
+            var options = DeserializeSettings(json);
             if (options != null)
             {
                 AsmDudeLog.Info("SettingsManager: settings changed, reloading");

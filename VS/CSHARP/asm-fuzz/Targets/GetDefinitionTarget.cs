@@ -11,21 +11,17 @@ namespace AsmFuzz.Targets;
 /// </summary>
 public static class GetDefinitionTarget
 {
-    private static int _docCounter;
-
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }
 
         string text = Encoding.UTF8.GetString(data);
-        var server = ServerFixture.GetServer();
+        using var server = ServerFixture.CreateServer();
 
-        int id = Interlocked.Increment(ref _docCounter);
-        string uri = $"file:///fuzz/def{id}.asm";
-        var docUri = new Uri(uri);
+        var docUri = new Uri("file:///fuzz/def.asm");
 
         var openParams = new DidOpenTextDocumentParams
         {
@@ -37,50 +33,44 @@ public static class GetDefinitionTarget
                 Text = text,
             },
         };
+        server.OnTextDocumentOpened(openParams);
 
-        try
+        string[] serverLines = server.GetDocumentLinesForTest(docUri.ToString());
+        string[] lines = text.Split('\n');
+        for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
         {
-            server.OnTextDocumentOpened(openParams);
-        }
-        catch
-        {
-            return;
-        }
+            string line = lines[lineIdx];
 
-        try
-        {
-            string[] lines = text.Split('\n');
-            for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
+            // Test at multiple positions on each line
+            for (int charIdx = 0; charIdx < line.Length; charIdx += Math.Max(1, line.Length / 5))
             {
-                string line = lines[lineIdx];
-
-                // Test at multiple positions on each line
-                for (int charIdx = 0; charIdx < line.Length; charIdx += Math.Max(1, line.Length / 5))
+                var definitionParams = new TextDocumentPositionParams
                 {
-                    var definitionParams = new TextDocumentPositionParams
-                    {
-                        TextDocument = new TextDocumentIdentifier { Uri = docUri },
-                        Position = new Position(lineIdx, charIdx),
-                    };
+                    TextDocument = new TextDocumentIdentifier { Uri = docUri },
+                    Position = new Position(lineIdx, charIdx),
+                };
 
-                    try
-                    {
-                        server.GetDefinition(definitionParams);
-                    }
-                    catch
-                    {
-                        // Non-fatal — continue fuzzing
-                    }
+                var definition = server.GetDefinition(definitionParams);
+
+                // CONS: the definition location must point within the document.
+                if (definition?.Range is { } defRange)
+                {
+                    Invariants.CheckRangeInDocument(defRange, serverLines, "definition");
                 }
             }
         }
-        finally
+
+        var closeParams = new DidCloseTextDocumentParams
         {
-            var closeParams = new DidCloseTextDocumentParams
-            {
-                TextDocument = new TextDocumentIdentifier { Uri = docUri },
-            };
-            server.OnTextDocumentClosed(closeParams);
+            TextDocument = new TextDocumentIdentifier { Uri = docUri },
+        };
+        server.OnTextDocumentClosed(closeParams);
+
+        // DUAL invariant: no per-document state remains after close.
+        int residual = server.TrackedDocumentEntryCount();
+        if (residual != 0)
+        {
+            throw new InvariantViolation($"close did not restore baseline: {residual} per-document entries retained after close");
         }
     }
 }

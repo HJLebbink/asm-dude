@@ -9,15 +9,15 @@ public static class SplitIntoKeywordsTarget
 {
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }
 
         string input = Encoding.UTF8.GetString(data);
-        foreach (var _ in AsmTools.AsmSourceTools.SplitIntoKeywordsType(input))
-        {
-            // Force enumeration of the lazy iterator
-        }
+
+        // CONS invariant: every keyword span must lie within the line (0 <= begin < end <= length).
+        // (CheckKeywordSpans also forces enumeration of the lazy iterator.)
+        Invariants.CheckKeywordSpans(input, AsmTools.AsmSourceTools.SplitIntoKeywordsType(input));
     }
 }

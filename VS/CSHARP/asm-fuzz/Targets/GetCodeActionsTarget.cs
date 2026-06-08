@@ -11,21 +11,17 @@ namespace AsmFuzz.Targets;
 /// </summary>
 public static class GetCodeActionsTarget
 {
-    private static int _docCounter;
-
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }
 
         string text = Encoding.UTF8.GetString(data);
-        var server = ServerFixture.GetServer();
+        using var server = ServerFixture.CreateServer();
 
-        int id = Interlocked.Increment(ref _docCounter);
-        string uri = $"file:///fuzz/ca{id}.asm";
-        var docUri = new Uri(uri);
+        var docUri = new Uri("file:///fuzz/ca.asm");
 
         var openParams = new DidOpenTextDocumentParams
         {
@@ -37,58 +33,45 @@ public static class GetCodeActionsTarget
                 Text = text,
             },
         };
+        server.OnTextDocumentOpened(openParams);
 
-        try
+        string[] lines = text.Split('\n');
+        for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
         {
-            server.OnTextDocumentOpened(openParams);
-        }
-        catch
-        {
-            return;
-        }
+            string line = lines[lineIdx];
 
-        try
-        {
-            string[] lines = text.Split('\n');
-            for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
+            // Test at multiple positions on each line
+            for (int charIdx = 0; charIdx < line.Length; charIdx += Math.Max(1, line.Length / 5))
             {
-                string line = lines[lineIdx];
-
-                // Test at multiple positions on each line
-                for (int charIdx = 0; charIdx < line.Length; charIdx += Math.Max(1, line.Length / 5))
+                var codeActionParams = new CodeActionParams
                 {
-                    var codeActionParams = new CodeActionParams
+                    TextDocument = new TextDocumentIdentifier { Uri = docUri },
+                    Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range
                     {
-                        TextDocument = new TextDocumentIdentifier { Uri = docUri },
-                        Range = new Microsoft.VisualStudio.LanguageServer.Protocol.Range
-                        {
-                            Start = new Position(lineIdx, charIdx),
-                            End = new Position(lineIdx, Math.Min(charIdx + 1, line.Length)),
-                        },
-                        Context = new CodeActionContext
-                        {
-                            Diagnostics = [],
-                        },
-                    };
+                        Start = new Position(lineIdx, charIdx),
+                        End = new Position(lineIdx, Math.Min(charIdx + 1, line.Length)),
+                    },
+                    Context = new CodeActionContext
+                    {
+                        Diagnostics = [],
+                    },
+                };
 
-                    try
-                    {
-                        server.GetCodeActions(codeActionParams);
-                    }
-                    catch
-                    {
-                        // Non-fatal — continue fuzzing
-                    }
-                }
+                FuzzGuard.Guard(() => server.GetCodeActions(codeActionParams));
             }
         }
-        finally
+
+        var closeParams = new DidCloseTextDocumentParams
         {
-            var closeParams = new DidCloseTextDocumentParams
-            {
-                TextDocument = new TextDocumentIdentifier { Uri = docUri },
-            };
-            server.OnTextDocumentClosed(closeParams);
+            TextDocument = new TextDocumentIdentifier { Uri = docUri },
+        };
+        server.OnTextDocumentClosed(closeParams);
+
+        // DUAL invariant: no per-document state remains after close.
+        int residual = server.TrackedDocumentEntryCount();
+        if (residual != 0)
+        {
+            throw new InvariantViolation($"close did not restore baseline: {residual} per-document entries retained after close");
         }
     }
 }

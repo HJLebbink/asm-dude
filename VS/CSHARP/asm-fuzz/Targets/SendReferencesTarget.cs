@@ -11,21 +11,17 @@ namespace AsmFuzz.Targets;
 /// </summary>
 public static class SendReferencesTarget
 {
-    private static int _docCounter;
-
     public static void Run(ReadOnlySpan<byte> data)
     {
-        if (data.Length > 4096)
+        if (data.Length > FuzzLimits.MaxInputLength)
         {
             return;
         }
 
         string text = Encoding.UTF8.GetString(data);
-        var server = ServerFixture.GetServer();
+        using var server = ServerFixture.CreateServer();
 
-        int id = Interlocked.Increment(ref _docCounter);
-        string uri = $"file:///fuzz/ref{id}.asm";
-        var docUri = new Uri(uri);
+        var docUri = new Uri("file:///fuzz/ref.asm");
 
         var openParams = new DidOpenTextDocumentParams
         {
@@ -37,51 +33,51 @@ public static class SendReferencesTarget
                 Text = text,
             },
         };
+        server.OnTextDocumentOpened(openParams);
 
-        try
+        string[] serverLines = server.GetDocumentLinesForTest(docUri.ToString());
+        string[] lines = text.Split('\n');
+        for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
         {
-            server.OnTextDocumentOpened(openParams);
-        }
-        catch
-        {
-            return;
-        }
+            string line = lines[lineIdx];
 
-        try
-        {
-            string[] lines = text.Split('\n');
-            for (int lineIdx = 0; lineIdx < lines.Length; lineIdx++)
+            // Test at multiple positions on each line
+            for (int charIdx = 0; charIdx < line.Length; charIdx += Math.Max(1, line.Length / 5))
             {
-                string line = lines[lineIdx];
-
-                // Test at multiple positions on each line
-                for (int charIdx = 0; charIdx < line.Length; charIdx += Math.Max(1, line.Length / 5))
+                var referenceParams = new ReferenceParams
                 {
-                    var referenceParams = new ReferenceParams
-                    {
-                        TextDocument = new TextDocumentIdentifier { Uri = docUri },
-                        Position = new Position(lineIdx, charIdx),
-                        Context = new ReferenceContext { IncludeDeclaration = true },
-                    };
+                    TextDocument = new TextDocumentIdentifier { Uri = docUri },
+                    Position = new Position(lineIdx, charIdx),
+                    Context = new ReferenceContext { IncludeDeclaration = true },
+                };
 
-                    try
+                var references = server.SendReferences(referenceParams, returnLocationsOnly: true, CancellationToken.None);
+
+                // CONS: every returned reference location must lie within the document.
+                if (references != null)
+                {
+                    foreach (var item in references)
                     {
-                        server.SendReferences(referenceParams, returnLocationsOnly: true, CancellationToken.None);
-                    }
-                    catch
-                    {
-                        // Non-fatal — continue fuzzing
+                        if (item is Location loc && loc.Range is { } refRange)
+                        {
+                            Invariants.CheckRangeInDocument(refRange, serverLines, "reference");
+                        }
                     }
                 }
             }
         }
-        finally
+
+        var closeParams = new DidCloseTextDocumentParams
         {
-            var closeParams = new DidCloseTextDocumentParams
-            {
-                TextDocument = new TextDocumentIdentifier { Uri = docUri },
-            };
-            server.OnTextDocumentClosed(closeParams);
+            TextDocument = new TextDocumentIdentifier { Uri = docUri },
+        };
+        server.OnTextDocumentClosed(closeParams);
+
+        // DUAL invariant: no per-document state remains after close.
+        int residual = server.TrackedDocumentEntryCount();
+        if (residual != 0)
+        {
+            throw new InvariantViolation($"close did not restore baseline: {residual} per-document entries retained after close");
         }
     }
 }

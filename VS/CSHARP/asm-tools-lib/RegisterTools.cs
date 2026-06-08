@@ -110,6 +110,15 @@ public enum RegisterType
         {
             foreach (Rn rn in Enum.GetValues<Rn>())
             {
+                // Skip the NOREG sentinel: registering "NOREG" as a key makes IsRn("NOREG") report true
+                // while ParseRn("NOREG") returns the not-a-register sentinel — an inconsistency between the
+                // two classifiers (surfaced by the asm-fuzz classifyconsistency invariant). "NOREG" is not a
+                // real register name; ParseRn still returns NOREG for it (cache miss → default).
+                if (rn == Rn.NOREG)
+                {
+                    continue;
+                }
+
                 Register_cache_[rn.ToString()] = rn;
             }
         }
