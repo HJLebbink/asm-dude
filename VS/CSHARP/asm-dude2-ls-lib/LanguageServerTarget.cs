@@ -92,9 +92,9 @@ public class LanguageServerTarget(LanguageServer server)
         AsmSim_Show_Register_In_Instruction_Tooltip = true,
         AsmSim_Show_Register_In_Register_Tooltip = true,
 
-        // Performance info - enabled by default
+        // Performance info - enabled by default. The VS UI selects a single microarchitecture (perfArch
+        // dropdown, default Skylake); this fallback matches when no settings file has been written yet.
         PerformanceInfo_On = true,
-        PerformanceInfo_Haswell_On = true,
         PerformanceInfo_Skylake_On = true,
     };
 

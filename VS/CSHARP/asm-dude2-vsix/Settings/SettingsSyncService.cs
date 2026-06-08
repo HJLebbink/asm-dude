@@ -72,6 +72,7 @@ internal class SettingsSyncService : ExtensionPart
     {
         string assembler = v.ValueOrDefault(AsmDudeSettings.AssemblerFlavor, "auto");
         string assemblerDisasm = v.ValueOrDefault(AsmDudeSettings.AssemblerFlavorDisassembly, "auto");
+        string perfArch = v.ValueOrDefault(AsmDudeSettings.PerfArch, PerfArchKeys.Skylake);
 
         // Build the SHARED, strongly-typed contract (not an anonymous object) so a renamed/removed
         // field is a compile error here instead of a silently-defaulted value on the server.
@@ -106,14 +107,37 @@ internal class SettingsSyncService : ExtensionPart
             IntelliSense_Show_Undefined_Includes = v.ValueOrDefault(AsmDudeSettings.ShowUndefinedIncludes, false),
             IntelliSense_Decorate_Undefined_Includes = v.ValueOrDefault(AsmDudeSettings.DecorateUndefinedIncludes, false),
 
-            // Performance Info
+            // Performance Info (uops.info data set). A single microarchitecture is selectable in the VS
+            // UI (perfArch dropdown); we set exactly that arch's flag. The server stays multi-arch-capable
+            // (the flags model is kept) so a non-VS client could still enable several at once.
             PerformanceInfo_On = v.ValueOrDefault(AsmDudeSettings.PerformanceInfoOn, true),
-            PerformanceInfo_IvyBridge_On = v.ValueOrDefault(AsmDudeSettings.PerfIvyBridge, false),
-            PerformanceInfo_Haswell_On = v.ValueOrDefault(AsmDudeSettings.PerfHaswell, true),
-            PerformanceInfo_Broadwell_On = v.ValueOrDefault(AsmDudeSettings.PerfBroadwell, false),
-            PerformanceInfo_Skylake_On = v.ValueOrDefault(AsmDudeSettings.PerfSkylake, true),
-            PerformanceInfo_SkylakeX_On = v.ValueOrDefault(AsmDudeSettings.PerfSkylakeX, false),
-            PerformanceInfo_KnightsLanding_On = v.ValueOrDefault(AsmDudeSettings.PerfKnightsLanding, false),
+            PerformanceInfo_Conroe_On = perfArch == PerfArchKeys.Conroe,
+            PerformanceInfo_Wolfdale_On = perfArch == PerfArchKeys.Wolfdale,
+            PerformanceInfo_Nehalem_On = perfArch == PerfArchKeys.Nehalem,
+            PerformanceInfo_Westmere_On = perfArch == PerfArchKeys.Westmere,
+            PerformanceInfo_SandyBridge_On = perfArch == PerfArchKeys.SandyBridge,
+            PerformanceInfo_IvyBridge_On = perfArch == PerfArchKeys.IvyBridge,
+            PerformanceInfo_Haswell_On = perfArch == PerfArchKeys.Haswell,
+            PerformanceInfo_Broadwell_On = perfArch == PerfArchKeys.Broadwell,
+            PerformanceInfo_Skylake_On = perfArch == PerfArchKeys.Skylake,
+            PerformanceInfo_SkylakeX_On = perfArch == PerfArchKeys.SkylakeX,
+            PerformanceInfo_Kabylake_On = perfArch == PerfArchKeys.Kabylake,
+            PerformanceInfo_CoffeeLake_On = perfArch == PerfArchKeys.CoffeeLake,
+            PerformanceInfo_Cannonlake_On = perfArch == PerfArchKeys.Cannonlake,
+            PerformanceInfo_CascadeLake_On = perfArch == PerfArchKeys.CascadeLake,
+            PerformanceInfo_Icelake_On = perfArch == PerfArchKeys.Icelake,
+            PerformanceInfo_Tigerlake_On = perfArch == PerfArchKeys.Tigerlake,
+            PerformanceInfo_RocketLake_On = perfArch == PerfArchKeys.RocketLake,
+            PerformanceInfo_EmeraldRapids_On = perfArch == PerfArchKeys.EmeraldRapids,
+            PerformanceInfo_Bonnell_On = perfArch == PerfArchKeys.Bonnell,
+            PerformanceInfo_Airmont_On = perfArch == PerfArchKeys.Airmont,
+            PerformanceInfo_Goldmont_On = perfArch == PerfArchKeys.Goldmont,
+            PerformanceInfo_GoldmontPlus_On = perfArch == PerfArchKeys.GoldmontPlus,
+            PerformanceInfo_Tremont_On = perfArch == PerfArchKeys.Tremont,
+            PerformanceInfo_Zen2_On = perfArch == PerfArchKeys.Zen2,
+            PerformanceInfo_Zen3_On = perfArch == PerfArchKeys.Zen3,
+            PerformanceInfo_Zen4_On = perfArch == PerfArchKeys.Zen4,
+            PerformanceInfo_Zen5_On = perfArch == PerfArchKeys.Zen5,
 
             // AsmSim
             AsmSim_On = v.ValueOrDefault(AsmDudeSettings.AsmSimOn, true),

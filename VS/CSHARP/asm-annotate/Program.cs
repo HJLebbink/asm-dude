@@ -60,12 +60,22 @@ namespace asm_annotate
                     break;
                 }
 
+                case "perf-uops":
+                {
+                    // perf-uops <instructions.xml> [outputDir]  — convert uops.info XML to per-arch TSVs.
+                    if (args.Length < 2) { Console.WriteLine("Usage: perf-uops <instructions.xml> [outputDir]"); return 1; }
+                    string xml = args[1];
+                    string outDir = args.Length > 2 ? args[2] : @".\output-perf";
+                    return UopsInfoImporter.Run(xml, outDir);
+                }
+
                 default:
                     Console.WriteLine("Usage: asm-annotate <command>");
                     Console.WriteLine("  check-latest          verify the local SDM PDF is the latest revision");
                     Console.WriteLine("  find <text>           locate the page(s) containing <text>");
                     Console.WriteLine("  dump <page>           print raw text/line elements for one page");
                     Console.WriteLine("  extract [start] [end] extract all instructions to .\\output");
+                    Console.WriteLine("  perf-uops <xml> [out] convert uops.info instructions.xml to per-arch perf TSVs");
                     return command.Length == 0 ? 0 : 1;
             }
 

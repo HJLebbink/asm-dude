@@ -54,18 +54,36 @@ public class AsmLanguageServerOptions : AsmSettingsData
             switch (microArch)
             {
                 case MicroArch.NONE: return false;
+
+                case MicroArch.Conroe: return this.PerformanceInfo_Conroe_On;
+                case MicroArch.Wolfdale: return this.PerformanceInfo_Wolfdale_On;
+                case MicroArch.Nehalem: return this.PerformanceInfo_Nehalem_On;
+                case MicroArch.Westmere: return this.PerformanceInfo_Westmere_On;
                 case MicroArch.SandyBridge: return this.PerformanceInfo_SandyBridge_On;
                 case MicroArch.IvyBridge: return this.PerformanceInfo_IvyBridge_On;
                 case MicroArch.Haswell: return this.PerformanceInfo_Haswell_On;
                 case MicroArch.Broadwell: return this.PerformanceInfo_Broadwell_On;
                 case MicroArch.Skylake: return this.PerformanceInfo_Skylake_On;
                 case MicroArch.SkylakeX: return this.PerformanceInfo_SkylakeX_On;
-                case MicroArch.Kabylake: return false;
-                case MicroArch.Cannonlake: return false;
-                case MicroArch.Icelake: return false;
-                case MicroArch.Tigerlake: return false;
-                case MicroArch.KnightsCorner: return false;
-                case MicroArch.KnightsLanding: return this.PerformanceInfo_KnightsLanding_On;
+                case MicroArch.Kabylake: return this.PerformanceInfo_Kabylake_On;
+                case MicroArch.CoffeeLake: return this.PerformanceInfo_CoffeeLake_On;
+                case MicroArch.Cannonlake: return this.PerformanceInfo_Cannonlake_On;
+                case MicroArch.CascadeLake: return this.PerformanceInfo_CascadeLake_On;
+                case MicroArch.Icelake: return this.PerformanceInfo_Icelake_On;
+                case MicroArch.Tigerlake: return this.PerformanceInfo_Tigerlake_On;
+                case MicroArch.RocketLake: return this.PerformanceInfo_RocketLake_On;
+                case MicroArch.EmeraldRapids: return this.PerformanceInfo_EmeraldRapids_On;
+
+                case MicroArch.Bonnell: return this.PerformanceInfo_Bonnell_On;
+                case MicroArch.Airmont: return this.PerformanceInfo_Airmont_On;
+                case MicroArch.Goldmont: return this.PerformanceInfo_Goldmont_On;
+                case MicroArch.GoldmontPlus: return this.PerformanceInfo_GoldmontPlus_On;
+                case MicroArch.Tremont: return this.PerformanceInfo_Tremont_On;
+
+                case MicroArch.Zen2: return this.PerformanceInfo_Zen2_On;
+                case MicroArch.Zen3: return this.PerformanceInfo_Zen3_On;
+                case MicroArch.Zen4: return this.PerformanceInfo_Zen4_On;
+                case MicroArch.Zen5: return this.PerformanceInfo_Zen5_On;
 
                 default:
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:AsmDudeToolsStatic::Is_MicroArch_Switched_On: unsupported arch {0}", microArch));

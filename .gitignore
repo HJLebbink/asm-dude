@@ -38,3 +38,4 @@ VS/CSHARP/asm-dude-vsix/Resources/Performance/instruction_tables.ods
 **/.idea/*
 /VS/CSHARP/asm-dude2-vsix/vsix/**
 .aider*
+tmp-uops/

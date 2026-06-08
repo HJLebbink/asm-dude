@@ -189,8 +189,49 @@ public class AsmSettingsData
         public bool PerformanceInfo_Broadwell_On;
         [DataMember]
         public bool PerformanceInfo_Skylake_On;
+        // Additional microarchitectures (uops.info data set). SkylakeX/IvyBridge/Haswell/Broadwell/Skylake/SandyBridge declared elsewhere in this file.
         [DataMember]
-        public bool PerformanceInfo_KnightsLanding_On;
+        public bool PerformanceInfo_Conroe_On;
+        [DataMember]
+        public bool PerformanceInfo_Wolfdale_On;
+        [DataMember]
+        public bool PerformanceInfo_Nehalem_On;
+        [DataMember]
+        public bool PerformanceInfo_Westmere_On;
+        [DataMember]
+        public bool PerformanceInfo_Kabylake_On;
+        [DataMember]
+        public bool PerformanceInfo_CoffeeLake_On;
+        [DataMember]
+        public bool PerformanceInfo_Cannonlake_On;
+        [DataMember]
+        public bool PerformanceInfo_CascadeLake_On;
+        [DataMember]
+        public bool PerformanceInfo_Icelake_On;
+        [DataMember]
+        public bool PerformanceInfo_Tigerlake_On;
+        [DataMember]
+        public bool PerformanceInfo_RocketLake_On;
+        [DataMember]
+        public bool PerformanceInfo_EmeraldRapids_On;
+        [DataMember]
+        public bool PerformanceInfo_Bonnell_On;
+        [DataMember]
+        public bool PerformanceInfo_Airmont_On;
+        [DataMember]
+        public bool PerformanceInfo_Goldmont_On;
+        [DataMember]
+        public bool PerformanceInfo_GoldmontPlus_On;
+        [DataMember]
+        public bool PerformanceInfo_Tremont_On;
+        [DataMember]
+        public bool PerformanceInfo_Zen2_On;
+        [DataMember]
+        public bool PerformanceInfo_Zen3_On;
+        [DataMember]
+        public bool PerformanceInfo_Zen4_On;
+        [DataMember]
+        public bool PerformanceInfo_Zen5_On;
         [DataMember]
         public bool KeywordHighlighting_BorderColor_On;
         [DataMember]

@@ -1688,8 +1688,9 @@ private static int GetTokenModifiers(AsmTokenType type)
                 {
                     int mnemonicEnd = mnemonicStart + mnemonic.ToString().Length;
                     var perfItems = this.performanceStore.GetPerformance(mnemonic, selectedArch);
-                    var firstPerf = perfItems.FirstOrDefault();
-                    if (!string.IsNullOrEmpty(firstPerf.latency_))
+                    // Pick the row whose operand shape matches the operands on this line, not an arbitrary form.
+                    var bestPerf = PerformanceDisplay.SelectBestMatch(perfItems, args);
+                    if (bestPerf is { } firstPerf && !string.IsNullOrEmpty(firstPerf.latency_))
                     {
                         hints.Add(new InlayHint
                         {
@@ -2796,36 +2797,50 @@ private static int GetTokenModifiers(AsmTokenType type)
                     bool performanceInfoAvailable = false;
                     if (this.options.PerformanceInfo_On)
                     {
-                        bool first = true;
-                        string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
+                        bool headerWritten = false;
+                        MicroArch currentArch = MicroArch.NONE;
+                        // 7 columns — the microarchitecture is shown once as a sub-header, not repeated per row.
+                        string format = "{0,-26}{1,-7}{2,-9}{3,-20}{4,-9}{5,-11}{6,-10}";
 
-                        MicroArch selectedMicroArchs = MicroArch.SkylakeX | MicroArch.Haswell;// Tools.Get_MicroArch_Switched_On();
-                        foreach (PerformanceItem item in this.performanceStore.GetPerformance(mnemonic, selectedMicroArchs))
+                        MicroArch selectedMicroArchs = this.options.Get_MicroArch_Switched_On();
+                        // uops.info has one row per operand form; collapse rows with identical timing so the
+                        // table stays a handful of lines instead of dozens per mnemonic.
+                        var collapsed = PerformanceDisplay.CollapseByTiming(this.performanceStore.GetPerformance(mnemonic, selectedMicroArchs));
+                        foreach ((PerformanceItem item, int formCount) in collapsed)
                         {
-                            if (first)
+                            if (!headerWritten)
                             {
-                                first = false;
+                                headerWritten = true;
                                 performanceInfoAvailable = true;
 
                                 string msg1 = string.Format(
                                     CultureUI,
                                     format,
-                                    string.Empty, string.Empty, "µOps", "µOps", "µOps", string.Empty, string.Empty, string.Empty);
+                                    string.Empty, "µOps", "µOps", "µOps", string.Empty, string.Empty, string.Empty);
 
                                 string msg2 = string.Format(
                                     CultureUI,
                                     "\n" + format,
-                                    "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", string.Empty);
+                                    "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", string.Empty);
 
                                 performanceStr = msg1;
                                 performanceStr += msg2;
                             }
 
+                            // Emit the microarchitecture once, as a sub-header, when it changes.
+                            if (item.microArch_ != currentArch)
+                            {
+                                currentArch = item.microArch_;
+                                performanceStr += "\n\n" + currentArch + ":";
+                            }
+
+                            // When several operand forms share this timing, show one and note how many more.
+                            string instrCol = item.instr_ + " " + item.args_ + (formCount > 1 ? $" (+{formCount - 1})" : string.Empty) + " ";
+
                             performanceStr += string.Format(
                                 CultureUI,
                                 "\n" + format,
-                                item.microArch_ + " ",
-                                item.instr_ + " " + item.args_ + " ",
+                                instrCol,
                                 item.mu_Ops_Fused_ + " ",
                                 item.mu_Ops_Merged_ + " ",
                                 item.mu_Ops_Port_ + " ",

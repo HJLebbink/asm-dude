@@ -285,7 +285,15 @@ Useful for extension discovery and registration problems, rarely needed for runt
 ## Data Files
 
 - `AsmDudeData.xml`: Instruction descriptions and metadata (bundled with VSIX and LSP)
-- Performance data: TSV files in `asm-dude2-ls-lib\Resources\Performance\` (Haswell, Skylake, etc.)
+- Performance data: one TSV per microarchitecture in `asm-dude2-ls-lib\Resources\Performance\`
+  (`Skylake.tsv`, `Haswell.tsv`, … 27 files: Conroe→Emerald Rapids, the Atom line, and AMD Zen2–Zen5).
+  **Generated from [uops.info](https://uops.info)** (`instructions.xml`, measured latency/throughput/ports/µOps,
+  XED-iform-keyed) by `asm-annotate`'s `perf-uops` command — see the pipeline note below. Format is 8
+  tab-separated columns: `Instruction  operands  µOps-fused  µOps-unfused  ports  latency  throughput  remark`;
+  the first column is a single mnemonic (`PerformanceStore` parses it directly — the old
+  `Instructions-Translations.tsv` name-map is gone). Bundled via a `Resources\Performance\*.tsv` glob in the
+  csproj, so new arch files need no csproj edit. `PerformanceStore.ArchFiles` maps each `MicroArch` → file;
+  the VS settings expose a **single-select** `perfArch` dropdown (the server stays multi-arch-capable for VS Code).
 - Signature files in `Resources\signature-*.txt`. **The LSP server loads `signature-mar2026.txt`**
   (generated from the wiki by `intel-doc-2-data`, rev-091/March 2026) **+ `signature-hand-1.txt`**
   (hand-maintained, OVERRIDES the regular file by `(Mnemonic, signature-label)`). `signature-may2019.txt`
@@ -297,6 +305,24 @@ Useful for extension discovery and registration problems, rarely needed for runt
 The arch column is **DNF** (`+`=AND, `,`=OR, e.g. `AVX512_VL+AVX512_F,AVX10`); `Home.md`'s arch column
 is a flattened union. New ISA covered incl. AMX tile registers (`TMM0-7`), AVX10, FP16, Key Locker.
 Each stage has tests (`asm-annotate-tests`, `intel-doc-2-data-tests`, `asm-dude2-ls-tests`).
+
+### Performance data pipeline (uops.info → TSV), separate from the SDM pipeline
+The latency/throughput TSVs are regenerated independently of the PDF/signature pipeline:
+```
+# 1. download the uops.info database (~140 MB; gitignored, keep under tmp-uops/)
+curl -sSL -o tmp-uops/instructions.xml https://uops.info/instructions.xml
+# 2. convert to one TSV per microarchitecture
+dotnet run --project VS/CSHARP/asm-annotate -- perf-uops tmp-uops/instructions.xml tmp-uops/out
+# 3. copy the generated TSVs over the bundled ones
+cp tmp-uops/out/*.tsv VS/CSHARP/asm-dude2-ls-lib/Resources/Performance/
+```
+`UopsInfoImporter` streams the XML, normalizes uops iclass suffixes to real mnemonics
+(`CALL_NEAR`→`CALL`, `ADD_LOCK`→`ADD` + "lock" remark, `CMPSD_XMM`→`CMPSD`), and maps the 27
+`architecture name=""` codes to file names. Rows with a mnemonic unknown to the `Mnemonic` enum are
+dropped by the loader with a warning. To add an arch: extend the enum, `PerformanceStore.ArchFiles`,
+`Is_MicroArch_Switched_On`, the `AsmSettingsData` field, the VSIX `perfArch` dropdown + `PerfArchKeys`,
+and `UopsInfoImporter.ArchToFile`. Tests: `UopsInfoImporterTests`, `PerformanceStoreTests`,
+`PerformanceDisplayTests`.
 
 ## Key Implementation Details
 

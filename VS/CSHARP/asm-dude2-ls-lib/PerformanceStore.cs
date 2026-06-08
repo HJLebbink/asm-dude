@@ -83,21 +83,56 @@ namespace AsmDude2LS
         private readonly IList<PerformanceItem> data_;
 
         /// <summary>
-    /// Constructor loads performance data from TSV files for selected microarchitectures.
+        /// Maps each supported microarchitecture to its performance TSV filename (in <c>Resources/Performance/</c>).
+        /// Filenames mirror the <see cref="MicroArch"/> member names. Data is generated from uops.info
+        /// (see asm-annotate's <c>perf-uops</c> command).
+        /// </summary>
+        private static readonly IReadOnlyList<(MicroArch arch, string file)> ArchFiles =
+        [
+            (MicroArch.Conroe, "Conroe.tsv"),
+            (MicroArch.Wolfdale, "Wolfdale.tsv"),
+            (MicroArch.Nehalem, "Nehalem.tsv"),
+            (MicroArch.Westmere, "Westmere.tsv"),
+            (MicroArch.SandyBridge, "SandyBridge.tsv"),
+            (MicroArch.IvyBridge, "IvyBridge.tsv"),
+            (MicroArch.Haswell, "Haswell.tsv"),
+            (MicroArch.Broadwell, "Broadwell.tsv"),
+            (MicroArch.Skylake, "Skylake.tsv"),
+            (MicroArch.SkylakeX, "SkylakeX.tsv"),
+            (MicroArch.Kabylake, "Kabylake.tsv"),
+            (MicroArch.CoffeeLake, "CoffeeLake.tsv"),
+            (MicroArch.Cannonlake, "Cannonlake.tsv"),
+            (MicroArch.CascadeLake, "CascadeLake.tsv"),
+            (MicroArch.Icelake, "Icelake.tsv"),
+            (MicroArch.Tigerlake, "Tigerlake.tsv"),
+            (MicroArch.RocketLake, "RocketLake.tsv"),
+            (MicroArch.EmeraldRapids, "EmeraldRapids.tsv"),
+            (MicroArch.Bonnell, "Bonnell.tsv"),
+            (MicroArch.Airmont, "Airmont.tsv"),
+            (MicroArch.Goldmont, "Goldmont.tsv"),
+            (MicroArch.GoldmontPlus, "GoldmontPlus.tsv"),
+            (MicroArch.Tremont, "Tremont.tsv"),
+            (MicroArch.Zen2, "Zen2.tsv"),
+            (MicroArch.Zen3, "Zen3.tsv"),
+            (MicroArch.Zen4, "Zen4.tsv"),
+            (MicroArch.Zen5, "Zen5.tsv"),
+        ];
+
+        /// <summary>
+    /// Constructor loads performance data from the uops.info-derived TSV files for the selected
+    /// microarchitectures (one file per arch, see <see cref="ArchFiles"/>).
     /// </summary>
-    /// <param name="path">Directory containing performance data TSV files (IvyBridge.tsv, Haswell.tsv, etc.).</param>
+    /// <param name="path">Directory containing the performance TSV files (Haswell.tsv, Skylake.tsv, …).</param>
     /// <param name="options">AsmLanguageServerOptions with PerformanceInfo_On flag and selected microarchitectures.</param>
     /// <remarks>
-    /// Loads performance data for each enabled microarchitecture:
-    ///   - IvyBridge.tsv, Haswell.tsv, Broadwell.tsv, Skylake.tsv, SkylakeX.tsv
-    /// 
-    /// If PerformanceInfo_On is false or no microarchitectures selected, data_ remains empty.
-    /// Load_Instruction_Translation() is called first to get instruction name translations.
+    /// If PerformanceInfo_On is false or no microarchitectures are selected, data_ remains empty.
+    /// Each TSV row's first column is a single mnemonic (the importer already normalized it), so it is
+    /// parsed directly — no name-translation table is needed.
     /// </remarks>
     /// <!-- LLM-ANNOTATION -->
-    /// LLM KEYWORDS: performance data loading, instruction translations, microarchitecture, TSV parsing
+    /// LLM KEYWORDS: performance data loading, microarchitecture, TSV parsing, uops.info
     /// USED IN: LanguageServer.Initialize
-    /// SEE ALSO: GetPerformance, AddData, Load_Instruction_Translation
+    /// SEE ALSO: GetPerformance, AddData
     public PerformanceStore(string path, AsmLanguageServerOptions options)
         {
             this.options = options;
@@ -108,30 +143,12 @@ namespace AsmDude2LS
                 MicroArch selectedMicroarchitures = this.options.Get_MicroArch_Switched_On();
                 if (selectedMicroarchitures != MicroArch.NONE)
                 {
-                    IDictionary<string, IList<Mnemonic>> translations = this.Load_Instruction_Translation(Path.Combine(path, "Instructions-Translations.tsv"));
-                    if (selectedMicroarchitures.HasFlag(MicroArch.IvyBridge))
+                    foreach ((MicroArch arch, string file) in ArchFiles)
                     {
-                        this.AddData(MicroArch.IvyBridge, Path.Combine(path, "IvyBridge.tsv"), translations);
-                    }
-
-                    if (selectedMicroarchitures.HasFlag(MicroArch.Haswell))
-                    {
-                        this.AddData(MicroArch.Haswell, Path.Combine(path, "Haswell.tsv"), translations);
-                    }
-
-                    if (selectedMicroarchitures.HasFlag(MicroArch.Broadwell))
-                    {
-                        this.AddData(MicroArch.Broadwell, Path.Combine(path, "Broadwell.tsv"), translations);
-                    }
-
-                    if (selectedMicroarchitures.HasFlag(MicroArch.Skylake))
-                    {
-                        this.AddData(MicroArch.Skylake, Path.Combine(path, "Skylake.tsv"), translations);
-                    }
-
-                    if (selectedMicroarchitures.HasFlag(MicroArch.SkylakeX))
-                    {
-                        this.AddData(MicroArch.SkylakeX, Path.Combine(path, "SkylakeX.tsv"), translations);
+                        if (selectedMicroarchitures.HasFlag(arch))
+                        {
+                            this.AddData(arch, Path.Combine(path, file));
+                        }
                     }
                 }
             }
@@ -169,134 +186,62 @@ namespace AsmDude2LS
         }
 
         #region Private Methods
-        private void AddData(MicroArch microArch, string filename, IDictionary<string, IList<Mnemonic>> translations)
+
+        /// <summary>
+        /// Reads one 8-column TSV (Instruction, operands, µOps-fused, µOps-unfused, ports, latency,
+        /// throughput, remark) and appends a <see cref="PerformanceItem"/> per row. The first column is a
+        /// single mnemonic; rows whose mnemonic is unknown to <see cref="Mnemonic"/> are skipped with a warning.
+        /// </summary>
+        private void AddData(MicroArch microArch, string filename)
         {
-            //Tools.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
             try
             {
-                StreamReader file = new(filename);
+                using StreamReader file = new(filename);
                 string? line;
-                int lineNumber = 0;
 
                 while ((line = file.ReadLine()) is not null)
                 {
-                    if ((line.Trim().Length > 0) && (!line.StartsWith(';')))
+                    if ((line.Trim().Length == 0) || line.StartsWith(';'))
                     {
-                        string[] columns = line.Split('\t');
-                        if (columns.Length == 8)
-                        {
-                            { // handle instruction
-                                string mnemonicKey = columns[0].Trim();
-                                if (!translations.TryGetValue(mnemonicKey, out IList<Mnemonic>? mnemonics))
-                                {
-                                    mnemonics = [];
-                                    foreach (string mnemonicStr in mnemonicKey.Split(' '))
-                                    {
-                                        Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr, false);
-                                        if (mnemonic == Mnemonic.NONE)
-                                        { // check if the mnemonicStr can be translated to a list of mnemonics
-                                            if (translations.TryGetValue(mnemonicStr, out IList<Mnemonic>? mnemonics2))
-                                            {
-                                                foreach (Mnemonic m in mnemonics2)
-                                                {
-                                                    mnemonics.Add(m);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                AsmDudeLog.Warning("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line " + lineNumber + " with content \"" + line + "\".");
-                                            }
-                                        }
-                                        else
-                                        {
-                                            mnemonics.Add(mnemonic);
-                                        }
-                                    }
-                                }
-                                foreach (Mnemonic m in mnemonics)
-                                {
-                                    this.data_.Add(new PerformanceItem()
-                                    {
-                                        microArch_ = microArch,
-                                        instr_ = m,
-                                        args_ = columns[1],
-                                        mu_Ops_Fused_ = columns[2],
-                                        mu_Ops_Merged_ = columns[3],
-                                        mu_Ops_Port_ = columns[4],
-                                        latency_ = columns[5],
-                                        throughput_ = columns[6],
-                                        remark_ = columns[7],
-                                    });
-                                }
-                            }
-                        }
-                        else
-                        {
-                            AsmDudeLog.Warning("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
-                        }
+                        continue;
                     }
-                    lineNumber++;
+
+                    string[] columns = line.Split('\t');
+                    if (columns.Length != 8)
+                    {
+                        AsmDudeLog.Warning("PerformanceStore:AddData: expected 8 columns, found " + columns.Length + " in line: " + line);
+                        continue;
+                    }
+
+                    Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0].Trim(), false);
+                    if (mnemonic == Mnemonic.NONE)
+                    {
+                        AsmDudeLog.Warning("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic \"" + columns[0].Trim() + "\" in line: " + line);
+                        continue;
+                    }
+
+                    this.data_.Add(new PerformanceItem()
+                    {
+                        microArch_ = microArch,
+                        instr_ = mnemonic,
+                        args_ = columns[1],
+                        mu_Ops_Fused_ = columns[2],
+                        mu_Ops_Merged_ = columns[3],
+                        mu_Ops_Port_ = columns[4],
+                        latency_ = columns[5],
+                        throughput_ = columns[6],
+                        remark_ = columns[7],
+                    });
                 }
-                file.Close();
             }
             catch (FileNotFoundException)
             {
-                AsmDudeLog.Error("PerformanceStore:LoadData: could not find file \"" + filename + "\".");
+                AsmDudeLog.Error("PerformanceStore:AddData: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                AsmDudeLog.Error("PerformanceStore:LoadData: error while reading file \"" + filename + "\"." + e);
+                AsmDudeLog.Error("PerformanceStore:AddData: error while reading file \"" + filename + "\"." + e);
             }
-        }
-
-        private IDictionary<string, IList<Mnemonic>> Load_Instruction_Translation(string filename)
-        {
-            Dictionary<string, IList<Mnemonic>> translations = [];
-            try
-            {
-                StreamReader file = new(filename);
-                string? line;
-                while ((line = file.ReadLine()) is not null)
-                {
-                    if ((line.Trim().Length > 0) && (!line.StartsWith(';')))
-                    {
-                        string[] columns = line.Split('\t');
-                        if (columns.Length == 2)
-                        {
-                            string key = columns[0].Trim();
-
-                            IList<Mnemonic> values = [];
-                            foreach (string mnemonicStr in columns[1].Trim().Split(' '))
-                            {
-                                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr, false);
-                                if (mnemonic == Mnemonic.NONE)
-                                {
-                                    AsmDudeLog.Warning("PerformanceStore:Load_Instruction_Translation: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
-                                }
-                                else
-                                {
-                                    values.Add(mnemonic);
-                                }
-                            }
-                            //LanguageServer.LogInfo("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
-                            if (!translations.TryAdd(key, values))
-                            {
-                                AsmDudeLog.Warning("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line + " already used");
-                            }
-                        }
-                    }
-                }
-                file.Close();
-            }
-            catch (FileNotFoundException)
-            {
-                AsmDudeLog.Error("PerformanceStore:Load_Instruction_Translation: could not find file \"" + filename + "\".");
-            }
-            catch (Exception e)
-            {
-                AsmDudeLog.Error("PerformanceStore:Load_Instruction_Translation: error while reading file \"" + filename + "\"." + e);
-            }
-            return translations;
         }
         #endregion
     }

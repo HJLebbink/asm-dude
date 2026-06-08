@@ -164,35 +164,45 @@ internal static class AsmDudeSettings
     internal static Setting.Boolean PerformanceInfoOn { get; } =
         new("performanceInfoOn", "Enable performance info", PerformanceCategory, defaultValue: true);
 
+    // Performance data is from uops.info. A single microarchitecture is shown at a time; the enum
+    // values match the keys mapped in SettingsSyncService. Entries are ordered chronologically.
     [VisualStudioContribution]
-    internal static Setting.Boolean PerfIvyBridge { get; } =
-        new("perfIvyBridge", "Ivy Bridge (Intel 3rd gen Core)", PerformanceCategory, defaultValue: false)
-        { EnabledWhen = SettingRule.Equal(PerformanceInfoOn, true) };
-
-    [VisualStudioContribution]
-    internal static Setting.Boolean PerfHaswell { get; } =
-        new("perfHaswell", "Haswell (Intel 4th gen Core)", PerformanceCategory, defaultValue: true)
-        { EnabledWhen = SettingRule.Equal(PerformanceInfoOn, true) };
-
-    [VisualStudioContribution]
-    internal static Setting.Boolean PerfBroadwell { get; } =
-        new("perfBroadwell", "Broadwell (Intel 5th gen Core)", PerformanceCategory, defaultValue: false)
-        { EnabledWhen = SettingRule.Equal(PerformanceInfoOn, true) };
-
-    [VisualStudioContribution]
-    internal static Setting.Boolean PerfSkylake { get; } =
-        new("perfSkylake", "Skylake (Intel 6th gen Core)", PerformanceCategory, defaultValue: true)
-        { EnabledWhen = SettingRule.Equal(PerformanceInfoOn, true) };
-
-    [VisualStudioContribution]
-    internal static Setting.Boolean PerfSkylakeX { get; } =
-        new("perfSkylakeX", "Skylake-X (Intel 7th gen Core)", PerformanceCategory, defaultValue: false)
-        { EnabledWhen = SettingRule.Equal(PerformanceInfoOn, true) };
-
-    [VisualStudioContribution]
-    internal static Setting.Boolean PerfKnightsLanding { get; } =
-        new("perfKnightsLanding", "Knights Landing (Xeon Phi)", PerformanceCategory, defaultValue: false)
-        { EnabledWhen = SettingRule.Equal(PerformanceInfoOn, true) };
+    internal static Setting.Enum PerfArch { get; } =
+        new("perfArch", "Microarchitecture", PerformanceCategory,
+            [
+                new(PerfArchKeys.Conroe, "Conroe (Intel Core 2, 2006)"),
+                new(PerfArchKeys.Wolfdale, "Wolfdale (Intel Core 2, 45nm, 2007)"),
+                new(PerfArchKeys.Nehalem, "Nehalem (Intel 1st gen Core, 2008)"),
+                new(PerfArchKeys.Westmere, "Westmere (Intel 1st gen Core, 32nm, 2010)"),
+                new(PerfArchKeys.SandyBridge, "Sandy Bridge (Intel 2nd gen Core, 2011)"),
+                new(PerfArchKeys.IvyBridge, "Ivy Bridge (Intel 3rd gen Core, 2012)"),
+                new(PerfArchKeys.Haswell, "Haswell (Intel 4th gen Core, 2013)"),
+                new(PerfArchKeys.Broadwell, "Broadwell (Intel 5th gen Core, 2014)"),
+                new(PerfArchKeys.Skylake, "Skylake (Intel 6th gen Core, 2015)"),
+                new(PerfArchKeys.SkylakeX, "Skylake-X / Skylake server (2017)"),
+                new(PerfArchKeys.Kabylake, "Kaby Lake (Intel 7th gen Core, 2016)"),
+                new(PerfArchKeys.CoffeeLake, "Coffee Lake (Intel 8th/9th gen Core, 2017)"),
+                new(PerfArchKeys.Cannonlake, "Cannon Lake (2018)"),
+                new(PerfArchKeys.CascadeLake, "Cascade Lake (Xeon, 2019)"),
+                new(PerfArchKeys.Icelake, "Ice Lake (Intel 10th gen Core, 2019)"),
+                new(PerfArchKeys.Tigerlake, "Tiger Lake (Intel 11th gen Core, 2020)"),
+                new(PerfArchKeys.RocketLake, "Rocket Lake (Intel 11th gen Core desktop, 2021)"),
+                new(PerfArchKeys.EmeraldRapids, "Emerald Rapids (Intel 5th gen Xeon, 2023)"),
+                new(PerfArchKeys.Bonnell, "Bonnell (Intel Atom, 2008)"),
+                new(PerfArchKeys.Airmont, "Airmont (Intel Atom, 2015)"),
+                new(PerfArchKeys.Goldmont, "Goldmont (Intel Atom, 2016)"),
+                new(PerfArchKeys.GoldmontPlus, "Goldmont Plus (Intel Atom, 2017)"),
+                new(PerfArchKeys.Tremont, "Tremont (Intel Atom, 2020)"),
+                new(PerfArchKeys.Zen2, "AMD Zen 2 (2019)"),
+                new(PerfArchKeys.Zen3, "AMD Zen 3 (2020)"),
+                new(PerfArchKeys.Zen4, "AMD Zen 4 (2022)"),
+                new(PerfArchKeys.Zen5, "AMD Zen 5 (2024)"),
+            ],
+            defaultValue: PerfArchKeys.Skylake)
+        {
+            Description = "Which CPU microarchitecture's latency/throughput to show in hover tooltips and inlay hints",
+            EnabledWhen = SettingRule.Equal(PerformanceInfoOn, true),
+        };
 
     // ═══════════════════════════════════════════════════════════════
     // Assembly Simulator (Order=3)
