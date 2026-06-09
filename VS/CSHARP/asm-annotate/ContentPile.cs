@@ -206,7 +206,7 @@ namespace AsmAnnotate
         /// ("Instruction Operand Encoding") are ~10.3pt and body text ~9.3pt, so a 11.5pt floor
         /// isolates the title. (The 2018 PDF used &gt;14.5pt; 11.5 covers both old and new.)
         /// </summary>
-        public (string Mnemonic, string Description) GetInstruction()
+        public (string? Mnemonic, string? Description) GetInstruction()
         {
             // Title-font lines, top-to-bottom. A very long multi-form title wraps, putting the
             // mnemonic part (ending with the '-' separator) on one line and the description on the
@@ -268,7 +268,7 @@ namespace AsmAnnotate
         /// mentions of "IA-32 ..." don't qualify. The caller pairs this with the current instruction
         /// to decide whether the page is a genuine continuation.
         /// </summary>
-        public string GetRunningTitleMnemonic()
+        public string? GetRunningTitleMnemonic()
         {
             foreach (PdfTextElement text in TextElements)
             {
@@ -524,7 +524,7 @@ namespace AsmAnnotate
         /// </summary>
         private void AdjustToClose(PdfLineElement line, List<PdfLineElement> existingLines, double searchDistance)
         {
-            PdfLineElement closest = null;
+            PdfLineElement? closest = null;
             double closestDistance = searchDistance;
 
             foreach (PdfLineElement existing in existingLines)
@@ -695,7 +695,7 @@ namespace AsmAnnotate
         /// Returns the first text element in this pile, or null if empty.
         /// Used for sorting piles by position.
         /// </summary>
-        private PdfTextElement GetFirstElement()
+        private PdfTextElement? GetFirstElement()
         {
             if (TextElements.Count > 0) return TextElements[0];
             if (Images.Count > 0) return null; // Images don't have PdfTextElement

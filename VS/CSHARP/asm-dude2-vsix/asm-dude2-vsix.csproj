@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <ExtensionName>AsmDude2</ExtensionName>
     <ExtensionVersion>1.0.0.0</ExtensionVersion>
-    <NoWarn>VSEXTPREVIEW_LSP;VSEXTPREVIEW_SETTINGS;VSEXTPREVIEW_CODELENS;VSEXTPREVIEW_TAGGERS</NoWarn>
+    <!-- CEE0027: Extensibility "localize this string" analyzer; AsmDude2 is single-locale. -->
+    <NoWarn>VSEXTPREVIEW_LSP;VSEXTPREVIEW_SETTINGS;VSEXTPREVIEW_CODELENS;VSEXTPREVIEW_TAGGERS;CEE0027</NoWarn>
     <ExtensionDeploymentRootSuffix>Exp</ExtensionDeploymentRootSuffix>
   </PropertyGroup>
 

@@ -89,7 +89,6 @@ namespace AsmDude2LS
             /// Shown as CodeLens BELOW the instruction line (= above key+1).
             /// </summary>
             internal readonly Dictionary<int, string?> lineStringsWriteLabels = [];
-            internal readonly List<AsmSimState> ownedStates = [];
             internal readonly List<SimDiagnostic> diagnostics = [];
 
             internal string? GetBeforeState(int lineNumber) => this.lineStringsBefore.TryGetValue(lineNumber, out var s) ? s : null;
@@ -133,10 +132,11 @@ namespace AsmDude2LS
                 // Bump version: any in-flight thread with the old version will stop writing.
                 version = this.simVersion_.TryGetValue(uri, out long v) ? v + 1 : 1;
                 this.simVersion_[uri] = version;
-                // Put a fresh (empty) cache entry immediately so stale data from the
-                // previous simulation is invisible while the new one runs.
-                if (this.cache_.TryGetValue(uri, out DocCache? old))
-                    DisposeList(old.ownedStates);
+                // Put a fresh (empty) cache entry immediately so stale data from the previous simulation
+                // is invisible while the new one runs. The cache holds only strings; the Z3 states of the
+                // previous run are owned and disposed by that run's own RunSimulation finally (the bumped
+                // version + cancelled token make it stop writing and unwind), so there is nothing to
+                // dispose here.
                 this.cache_[uri] = new DocCache();
             }
 
@@ -168,11 +168,9 @@ namespace AsmDude2LS
                     this.pendingTasks_.Remove(uri);
                 }
                 this.simVersion_.Remove(uri);
-                if (this.cache_.TryGetValue(uri, out DocCache? entry))
-                {
-                    DisposeList(entry.ownedStates);
-                    this.cache_.Remove(uri);
-                }
+                // Cancelling the token above makes the in-flight RunSimulation (if any) unwind and dispose
+                // its own Z3 states in its finally; the cache itself holds only strings.
+                this.cache_.Remove(uri);
             }
         }
 
@@ -553,6 +551,9 @@ namespace AsmDude2LS
         private void RunSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
         {
             Log($"[THREAD] RunSimulation started for {uri}, {lines.Count} lines");
+
+            // Declared OUTSIDE the try so the finally can dispose them on EVERY exit path (see finally).
+            var ownedStates = new List<AsmSimState>();
             try
             {
                 var settings = new Dictionary<string, string>
@@ -584,7 +585,6 @@ namespace AsmDude2LS
                 tools.Quiet = true;
 
                 var newDiagnostics = new List<SimDiagnostic>();
-                var ownedStates = new List<AsmSimState>();
                 int linesWritten = 0;
 
                 // Memoize ComputeStateString per state instance: multiple lines sharing the same
@@ -604,8 +604,7 @@ namespace AsmDude2LS
                     if (ct.IsCancellationRequested)
                     {
                         Log($"[THREAD] Cancellation requested at line {i}");
-                        DisposeList(ownedStates);
-                        return;
+                        return; // finally disposes ownedStates
                     }
 
                     string line = lines[i].Trim();
@@ -783,23 +782,22 @@ namespace AsmDude2LS
                     Log($"[THREAD] Line {i}: {mnemonic} done");
                 }
 
-                // Finalize. The per-line state STRINGS were already written to the cache
-                // incrementally; the read paths (GetCachedString / GetSimStatesSummary) use ONLY those
-                // strings and never touch the live AsmSimState objects again. Each AsmSimState owns a
-                // heavy Z3 native Context, so retaining one per line kept the whole document's worth of
-                // Z3 contexts alive for as long as the document was open — GiBs of *native* memory that
-                // the GC can't see (observed ~18 GiB for a ~140-line file, idle overnight). Dispose them
-                // now; the cached strings remain valid (plain managed strings, independent of Z3).
+                // Finalize. The per-line state STRINGS were already written to the cache incrementally;
+                // the read paths (GetCachedString / GetSimStatesSummary) use ONLY those strings and never
+                // touch the live AsmSimState objects again. Each AsmSimState owns a heavy Z3 native Context,
+                // so retaining one per line would keep the whole document's worth of Z3 contexts alive —
+                // GiBs of *native* memory the GC can't see (observed ~18 GiB for a ~140-line file, idle
+                // overnight). The states are disposed in the finally below on ALL exit paths; the cached
+                // strings remain valid (plain managed strings, independent of Z3).
                 bool stillCurrent;
                 lock (this.lockObj_)
                 {
                     stillCurrent = !ct.IsCancellationRequested
                         && this.simVersion_.TryGetValue(uri, out long curVer) && curVer == version;
-                    DisposeList(ownedStates);
                 }
                 if (!stillCurrent)
                 {
-                    return;
+                    return; // finally disposes ownedStates
                 }
 
                 Log($"[THREAD] SUCCESS: {linesWritten} lines written, {newDiagnostics.Count} diagnostics");
@@ -815,6 +813,21 @@ namespace AsmDude2LS
             {
                 Log($"[THREAD] EXCEPTION: {ex.GetType().Name}: {ex.Message}");
                 this.logger_.LogWarning("LspAsmSimulator: simulation failed for {Uri}: {Ex}", uri, ex.Message);
+            }
+            finally
+            {
+                // Dispose EVERY Z3 state on EVERY exit path: success, in-loop cancellation, OR an
+                // exception. Several Z3 calls run OUTSIDE the per-line try (ComputeStateString,
+                // InstantiateOpcode, ComputeReadLabel/ComputeWriteLabel); if any of them throws, the
+                // outer catch would otherwise return without freeing the document's worth of native Z3
+                // contexts — and because the document is re-simulated on every edit, each failed run
+                // leaked another full set, accumulating to GiBs that persist while the editor sits idle.
+                // The cached strings are independent of these states, so disposing here never invalidates
+                // a hover/inlay/CodeLens result.
+                lock (this.lockObj_)
+                {
+                    DisposeList(ownedStates);
+                }
             }
         }
 
@@ -935,10 +948,8 @@ namespace AsmDude2LS
                 this.pendingTasks_.Clear();
                 this.simVersion_.Clear();
 
-                foreach (DocCache entry in this.cache_.Values)
-                {
-                    DisposeList(entry.ownedStates);
-                }
+                // Each in-flight RunSimulation disposes its own Z3 states in its finally once its token is
+                // cancelled (above); the cache holds only strings, so just drop it.
                 this.cache_.Clear();
             }
         }

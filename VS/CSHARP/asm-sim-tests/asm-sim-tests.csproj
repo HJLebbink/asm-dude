@@ -13,6 +13,10 @@
     <IsAotCompatible>true</IsAotCompatible>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
+    <!-- Match asm-sim-lib's nullable-warning policy: the tests pass the simulator's deliberately
+         nullable Z3 API (HeadKey/TailKey string?, `as BitVecExpr` casts) back into it; the lib NoWarns
+         the same set. -->
+    <NoWarn>$(NoWarn);CS0162;CS8600;CS8602;CS8603;CS8604;CS8618;CS8619;CS8620;CS8625</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

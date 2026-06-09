@@ -252,7 +252,7 @@ public class LanguageServerTests
         result?.Should().NotBeNull();
         result?.Items.Should().NotBeEmpty("ZMM registers should be available");
         result?.Items.Should().OnlyContain(
-            i => i.FilterText.StartsWith("Z", StringComparison.OrdinalIgnoreCase),
+            i => i.FilterText != null && i.FilterText.StartsWith("Z", StringComparison.OrdinalIgnoreCase),
             "typing 'Z' should only return Z-prefixed completions, not YMM/XMM");
     }
 

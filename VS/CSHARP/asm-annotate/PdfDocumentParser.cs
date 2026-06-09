@@ -89,12 +89,12 @@ namespace AsmAnnotate
                 //    2nd page that holds just the Compatibility/64-Bit Mode Exceptions);
                 //  - everything else is Vol 1/3/4 descriptive text and is dropped, so it can't
                 //    accumulate into the last-opened file (the 50k-line "ERESUME.md" blobs).
-                string current = null;
+                string? current = null;
                 for (int pageNum = Math.Max(1, startPage); pageNum <= last; pageNum++)
                 {
                     var piles = ParsePage(pdfDocument, pageNum);
 
-                    string titled = piles.Select(p => p.GetInstruction().Mnemonic).FirstOrDefault(m => m != null);
+                    string? titled = piles.Select(p => p.GetInstruction().Mnemonic).FirstOrDefault(m => m != null);
                     if (titled != null)
                     {
                         current = titled;
@@ -102,7 +102,7 @@ namespace AsmAnnotate
                         continue;
                     }
 
-                    string running = piles.Select(p => p.GetRunningTitleMnemonic()).FirstOrDefault(m => m != null);
+                    string? running = piles.Select(p => p.GetRunningTitleMnemonic()).FirstOrDefault(m => m != null);
                     if (running != null && running == current)
                         allPiles.AddRange(piles); // continuation of the current instruction
                     // else: not part of the current instruction — drop the page
@@ -309,7 +309,6 @@ namespace AsmAnnotate
     {
         private readonly List<PdfTextElement> _texts = [];
         private string _currentFontName = "";
-        private float _currentFontSize = 12;
 
         public List<PdfTextElement> ExtractedTexts => _texts;
 

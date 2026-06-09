@@ -58,7 +58,7 @@ namespace AsmAnnotate
         /// <summary>
         /// The raw text content from PDF
         /// </summary>
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
 
         /// <summary>
         /// Left edge X coordinate
@@ -93,7 +93,7 @@ namespace AsmAnnotate
         /// <summary>
         /// Font name (e.g., "NeoSansIntelMedium")
         /// </summary>
-        public string FontName { get; set; }
+        public string FontName { get; set; } = string.Empty;
 
         /// <summary>
         /// Returns trimmed content
@@ -144,12 +144,12 @@ namespace AsmAnnotate
         /// <summary>
         /// Current section type: title, description, encoding, operation, flags, exceptions, intrinsics, etc.
         /// </summary>
-        public string Type { get; set; } = null;
+        public string? Type { get; set; }
 
         /// <summary>
         /// Next section type (used for state transitions)
         /// </summary>
-        public string TypeNext { get; set; } = null;
+        public string? TypeNext { get; set; }
 
         /// <summary>
         /// Whether the previous pile was an opcode table
@@ -173,12 +173,12 @@ namespace AsmAnnotate
     /// </summary>
     internal class PdfTextInfo
     {
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
         public double X { get; set; }
         public double Y { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
-        public string FontName { get; set; }
+        public string FontName { get; set; } = string.Empty;
     }
 
 

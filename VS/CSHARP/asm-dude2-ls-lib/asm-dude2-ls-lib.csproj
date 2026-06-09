@@ -5,12 +5,11 @@
     <Nullable>enable</Nullable>
     <SignAssembly>false</SignAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>CA1001,CA1305,CA1307,CA1721,CA1724,CA1801,CA1822,CA2007,CA2213,CS1591,CS1668</NoWarn>
+    <NoWarn>CA1001,CA1305,CA1307,CA1721,CA1724,CA1801,CA1822,CA2007,CA2213,CS1591,CS1668,CS0162</NoWarn>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <PlatformTarget>x64</PlatformTarget>
     <IsPackable>false</IsPackable>
-    <IsAotCompatible>true</IsAotCompatible>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>

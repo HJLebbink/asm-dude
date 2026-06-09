@@ -9,9 +9,11 @@
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
 		<PlatformTarget>x64</PlatformTarget>
-		<IsAotCompatible>true</IsAotCompatible>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<AnalysisLevel>latest</AnalysisLevel>
+		<!-- xUnit1051: advisory "pass TestContext.Current.CancellationToken" on Task.Delay/Flush waits in
+		     the integration tests; not worth threading a token through every await. -->
+		<NoWarn>$(NoWarn);xUnit1051</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

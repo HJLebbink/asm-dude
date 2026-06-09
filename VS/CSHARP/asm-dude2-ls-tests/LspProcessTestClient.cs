@@ -460,7 +460,10 @@ public sealed class LspProcessTestClient : IAsyncDisposable
 
     private async Task SendMessageAsync(object message)
     {
+        // Serialize-to-string has no meaningful async form (SerializeAsync targets streams); the write is async below.
+#pragma warning disable VSTHRD103
         var json = JsonSerializer.Serialize(message, this._jsonOptions);
+#pragma warning restore VSTHRD103
         var contentLength = Encoding.UTF8.GetByteCount(json);
         var header = $"Content-Length: {contentLength}\r\n\r\n";
 

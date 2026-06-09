@@ -62,11 +62,11 @@ namespace AsmAnnotate
         {
             if (piles.Count == 0) return;
 
-            string instructionCurrent = null;
-            string descriptionCurrent = null;
+            string? instructionCurrent;
+            string? descriptionCurrent;
             (instructionCurrent, descriptionCurrent) = piles[0].GetInstruction();
 
-            string instructionPrev = instructionCurrent;
+            string? instructionPrev = instructionCurrent;
 
             var state = new MarkdownState();
             var markdown = new StringBuilder();
@@ -118,7 +118,7 @@ namespace AsmAnnotate
         /// opcode table and wrongly merges, dropping this table's header row and "&lt;table&gt;" tag
         /// (the FBLD/FDIV/... bug).
         /// </summary>
-        private bool FindPreviousOpcodeTable(int currentIndex, List<ContentPile> piles, string instructionCurrent)
+        private bool FindPreviousOpcodeTable(int currentIndex, List<ContentPile> piles, string? instructionCurrent)
         {
             for (int j = currentIndex - 1; j >= 0; j--)
             {
@@ -145,7 +145,7 @@ namespace AsmAnnotate
         /// Stops at ANY title pile so an instruction's opcode table never merges with the NEXT
         /// instruction's table.
         /// </summary>
-        private bool FindNextOpcodeTable(int currentIndex, List<ContentPile> piles, string instructionCurrent)
+        private bool FindNextOpcodeTable(int currentIndex, List<ContentPile> piles, string? instructionCurrent)
         {
             for (int j = currentIndex + 1; j < piles.Count; j++)
             {
@@ -170,7 +170,7 @@ namespace AsmAnnotate
         /// Writes markdown to a file for the given instruction.
         /// Applies hyphenation cleanup and adds generation metadata.
         /// </summary>
-        private void CloseFile(string instruction, string markdown)
+        private void CloseFile(string? instruction, string markdown)
         {
             if (string.IsNullOrEmpty(instruction)) return;
 

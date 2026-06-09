@@ -122,14 +122,14 @@ namespace unit_tests_asm_z3
                 string line3 = mnemonic + " rax, rbx";
 
                 State state_forward = this.CreateState(tools);
-                state_forward = Runner.SimpleStep_Forward(line1, state_forward);
-                state_forward = Runner.SimpleStep_Forward(line2, state_forward);
-                state_forward = Runner.SimpleStep_Forward(line3, state_forward);
+                state_forward = AsmTestTools.Step_Forward(line1, state_forward);
+                state_forward = AsmTestTools.Step_Forward(line2, state_forward);
+                state_forward = AsmTestTools.Step_Forward(line3, state_forward);
 
                 State state_backward = this.CreateState(tools);
-                state_backward = Runner.SimpleStep_Backward(line3, state_backward);
-                state_backward = Runner.SimpleStep_Backward(line2, state_backward);
-                state_backward = Runner.SimpleStep_Backward(line1, state_backward);
+                state_backward = AsmTestTools.Step_Backward(line3, state_backward);
+                state_backward = AsmTestTools.Step_Backward(line2, state_backward);
+                state_backward = AsmTestTools.Step_Backward(line1, state_backward);
 
                 Assert.IsNotNull(state_backward);
                 Assert.IsNotNull(state_forward);

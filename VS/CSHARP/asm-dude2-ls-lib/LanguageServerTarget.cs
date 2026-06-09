@@ -43,8 +43,6 @@ public class LanguageServerTarget(LanguageServer server)
     public TraceSetting traceSetting;
     private SettingsManager? settingsManager;
 
-    public event EventHandler? OnInitializeCompletion;
-
     public event EventHandler? OnInitialized;
 
     internal static AsmLanguageServerOptions CreateDefaultOptions() => new()

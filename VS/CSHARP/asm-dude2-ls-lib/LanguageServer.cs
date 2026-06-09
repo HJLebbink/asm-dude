@@ -74,7 +74,6 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     private readonly int referencesDelayMs = 10;
 
     private readonly int highlightChunkSize = 10; // number of highlights returned before going to sleep for some delay
-    private readonly int highlightsDelayMs = 10; // delay between highlight results returned
 
     private readonly object updateLock = new();
     private readonly Dictionary<string, CancellationTokenSource> pendingUpdates = [];
@@ -85,13 +84,15 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     private readonly TraceSource traceSource;
 
-    private AsmDude2Tools? asmDudeTools;
-    public MnemonicStore? mnemonicStore;
+    // Two-phase init: set in Initialize()/ApplyReferenceData(), not the ctor. `= null!` keeps them
+    // non-nullable (no CS8602 on the post-init dereferences) without changing runtime behavior.
+    private AsmDude2Tools asmDudeTools = null!;
+    public MnemonicStore mnemonicStore = null!;
 
     private readonly LspAsmSimulator asmSimulator_;
     private readonly SimStatePipeServer simStatePipeServer_;
-    public PerformanceStore? performanceStore;
-    public AsmLanguageServerOptions? options;
+    public PerformanceStore performanceStore = null!;
+    public AsmLanguageServerOptions options = null!;
 
     public static LanguageServer Create(Stream sender, Stream reader)
     {
@@ -148,7 +149,6 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.rpc.StartListening();
         AsmDudeLog.Info("LanguageServer: RPC listener started");
 
-        this.target.OnInitializeCompletion += this.OnTargetInitializeCompletion;
         this.target.OnInitialized += this.OnTargetInitialized;
         this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
         this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_)
@@ -308,7 +308,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         string message,
         DiagnosticSeverity severity,
         Range range,
-        VSTextDocumentIdentifier vsTextDocumentIdentifier)
+        VSTextDocumentIdentifier? vsTextDocumentIdentifier)
     {
         //AsmDudeLog.Info($"ScheduleDiagnosticMessage {message}");
 
@@ -353,11 +353,6 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler? ShowWindow;
 
-    private void OnTargetInitializeCompletion(object sender, EventArgs e)
-    {
-        AsmDudeLog.Info("LanguageServer: OnTargetInitializeCompletion");
-    }
-
     /// <summary>
     /// Called when initialization is complete. This is called directly instead of using
     /// the OnInitializeCompletion event because StreamJsonRpc proxies events as notifications.
@@ -388,7 +383,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 },
             ],
         });
-        registrationTask.ContinueWith(t =>
+        _ = registrationTask.ContinueWith(t =>
         {
             if (t.IsFaulted)
                 AsmDudeLog.Warning($"[OnInitializeComplete] client/registerCapability failed: {t.Exception?.GetBaseException().Message}");
@@ -397,7 +392,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         }, System.Threading.Tasks.TaskScheduler.Default);
     }
 
-    private void OnTargetInitialized(object sender, EventArgs e)
+    private void OnTargetInitialized(object? sender, EventArgs e)
     {
         AsmDudeLog.Info("LanguageServer: OnTargetInitialized");
         this.OnInitialized?.Invoke(this, EventArgs.Empty);
@@ -425,9 +420,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     internal static ReferenceData LoadReferenceData(AsmLanguageServerOptions options, TraceSource traceSource)
     {
         string? assemblyLocation = Assembly.GetExecutingAssembly().Location;
-        string path = assemblyLocation != null && Path.GetDirectoryName(assemblyLocation) != null
-            ? Path.Combine(Path.GetDirectoryName(assemblyLocation), "Resources")
-            : "Resources";
+        string? assemblyDir = assemblyLocation != null ? Path.GetDirectoryName(assemblyLocation) : null;
+        string path = assemblyDir != null ? Path.Combine(assemblyDir, "Resources") : "Resources";
 
         string filename_Regular = Path.Combine(path, "signature-mar2026.txt");
         string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
@@ -790,7 +784,7 @@ private void UpdateInternals(string uri)
                 this.pendingUpdates[uri] = newCts;
 
                 // Schedule update after 100ms of inactivity
-                Task.Delay(100, newCts.Token).ContinueWith(_ =>
+                _ = Task.Delay(100, newCts.Token).ContinueWith(_ =>
                 {
                     if (!newCts.IsCancellationRequested)
                     {
@@ -1999,7 +1993,7 @@ private static int GetTokenModifiers(AsmTokenType type)
         return completions;
     }
 
-    private IEnumerable<CompletionItem> Label_Completions(LabelGraph labelGraph, bool useCapitals, bool addSpecialKeywords)
+    private IEnumerable<CompletionItem> Label_Completions(LabelGraph? labelGraph, bool useCapitals, bool addSpecialKeywords)
     {
         if (addSpecialKeywords)
         {
@@ -2021,6 +2015,11 @@ private static int GetTokenModifiers(AsmTokenType type)
                 SortText = "\tNEAR", // use a tab to get on top when sorting
                 Documentation = string.Empty
             };
+        }
+
+        if (labelGraph == null)
+        {
+            yield break; // no label graph yet (document not analyzed) — only the special keywords above
         }
 
         AssemblerEnum usedAssembler = this.options.Used_Assembler;
@@ -3655,7 +3654,7 @@ private static int GetTokenModifiers(AsmTokenType type)
         return null;
     }
 
-    private void OnRpcDisconnected(object sender, JsonRpcDisconnectedEventArgs e)
+    private void OnRpcDisconnected(object? sender, JsonRpcDisconnectedEventArgs e)
     {
         AsmDudeLog.Warning($"OnRpcDisconnected: Reason={e.Reason}, Description={e.Description}, Exception={e.Exception?.Message}");
         if (e.Exception != null)
@@ -3691,7 +3690,7 @@ private static int GetTokenModifiers(AsmTokenType type)
     {
         if (this.rpc == null)
         {
-            return Task.FromResult<TOut>(default);
+            return Task.FromResult<TOut>(default!);
         }
         return this.rpc.InvokeWithParameterObjectAsync<TOut>(methodName, param);
     }

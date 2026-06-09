@@ -182,68 +182,68 @@ namespace unit_tests_asm_z3
             {
                 State state = this.CreateState(tools);
 
-                state = Runner.SimpleStep_Forward(line0, state);
-                state = Runner.SimpleStep_Forward(line1, state);
+                state = AsmTestTools.Step_Forward(line0, state);
+                state = AsmTestTools.Step_Forward(line1, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line2, state);
+                state = AsmTestTools.Step_Forward(line2, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line3, state);
+                state = AsmTestTools.Step_Forward(line3, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line4, state);
+                state = AsmTestTools.Step_Forward(line4, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line5, state);
+                state = AsmTestTools.Step_Forward(line5, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line6, state);
+                state = AsmTestTools.Step_Forward(line6, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line7, state);
+                state = AsmTestTools.Step_Forward(line7, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line7 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line8, state);
+                state = AsmTestTools.Step_Forward(line8, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line9, state);
+                state = AsmTestTools.Step_Forward(line9, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line9 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line10, state);
+                state = AsmTestTools.Step_Forward(line10, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line10 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line11, state);
+                state = AsmTestTools.Step_Forward(line11, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line11 + "\", we know:\n" + state);
@@ -314,25 +314,25 @@ namespace unit_tests_asm_z3
                 BitVecExpr rax0 = state.Create(Rn.RAX);
                 BitVecExpr rbx0 = state.Create(Rn.RBX);
 
-                state = Runner.SimpleStep_Forward(line1, state);
+                state = AsmTestTools.Step_Forward(line1, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line2, state);
+                state = AsmTestTools.Step_Forward(line2, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line3, state);
+                state = AsmTestTools.Step_Forward(line3, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line4, state);
+                state = AsmTestTools.Step_Forward(line4, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
@@ -425,7 +425,7 @@ namespace unit_tests_asm_z3
                     state.Solver.Assert(state.Ctx.MkNot(ToolsFlags.Create_OF_Sub(rax0, rbx0, rax0.SortSize, ctx))); // this code only works when there is no overflow in line1
                 }
                 { // line 1
-                    state = Runner.SimpleStep_Forward(line1, state);
+                    state = AsmTestTools.Step_Forward(line1, state);
                     // retrieve the overflow after line 1, OF has to be zero for the code to work
                     state.Solver.AssertAndTrack(ctx.MkNot(state.Create(Flags.OF)), ctx.MkBoolConst("OF-ZERO"));
                     Assert.AreEqual(Status.SATISFIABLE, state.Solver.Check());
@@ -435,19 +435,19 @@ namespace unit_tests_asm_z3
                     }
                 }
                 { // line 2
-                    state = Runner.SimpleStep_Forward(line2, state);
+                    state = AsmTestTools.Step_Forward(line2, state);
                     // if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                     BoolExpr t2 = ctx.MkEq(state.Create(Rn.RDX), ctx.MkITE(ctx.MkBVSGT(rax0, rbx0), ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, 64), ctx.MkBV(0, 64)));
                     // Assert.AreEqual(Tv5.ONE, ToolsZ3.GetTv5(t2, state.Solver, state.Ctx));
                 }
                 {
-                    state = Runner.SimpleStep_Forward(line3, state);
+                    state = AsmTestTools.Step_Forward(line3, state);
                     // if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                     // BoolExpr t2 = ctx.MkEq(state.Get(Rn.RDX), ctx.MkITE(ctx.MkBVSGT(rax0, rbx0), ctx.MkBV(0, 64), ctx.MkBVSub(rax0, rbx0)));
                     // Assert.AreEqual(Tv5.ONE, ToolsZ3.GetTv5(t2, state.Solver, state.Ctx));
                 }
                 {
-                    state = Runner.SimpleStep_Forward(line4, state);
+                    state = AsmTestTools.Step_Forward(line4, state);
                     if (LogToDisplay)
                     {
                         Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
@@ -538,16 +538,16 @@ namespace unit_tests_asm_z3
 
                 if (false)
                 { // line 1
-                    state = Runner.SimpleStep_Forward(line1, state);
+                    state = AsmTestTools.Step_Forward(line1, state);
                     // if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
-                state = Runner.SimpleStep_Forward(line2, state);
+                state = AsmTestTools.Step_Forward(line2, state);
                 // if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-                state = Runner.SimpleStep_Forward(line3, state);
+                state = AsmTestTools.Step_Forward(line3, state);
                 // if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
-                state = Runner.SimpleStep_Forward(line4, state);
+                state = AsmTestTools.Step_Forward(line4, state);
                 // if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
-                state = Runner.SimpleStep_Forward(line5, state);
+                state = AsmTestTools.Step_Forward(line5, state);
                 // if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
 
                 Context ctx = state.Ctx;
@@ -626,41 +626,41 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 BitVecExpr bytes = state.Create(Rn.RBX);
 
-                state = Runner.SimpleStep_Forward(line1, state);
-                state = Runner.SimpleStep_Forward(line2, state);
+                state = AsmTestTools.Step_Forward(line1, state);
+                state = AsmTestTools.Step_Forward(line2, state);
                 if (false)
                 {
-                    state = Runner.SimpleStep_Forward(line3, state);
+                    state = AsmTestTools.Step_Forward(line3, state);
                     if (LogToDisplay)
                     {
                         Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                     }
                 }
-                state = Runner.SimpleStep_Forward(line4a, state);
+                state = AsmTestTools.Step_Forward(line4a, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line4a + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line4b, state);
+                state = AsmTestTools.Step_Forward(line4b, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line4b + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line5, state);
+                state = AsmTestTools.Step_Forward(line5, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line6, state);
+                state = AsmTestTools.Step_Forward(line6, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line7, state);
+                state = AsmTestTools.Step_Forward(line7, state);
                 if (LogToDisplay)
                 {
                     Console.WriteLine("After \"" + line7 + "\", we know:\n" + state);

@@ -168,7 +168,10 @@ internal sealed class SimStatePipeServer : IDisposable
             {
                 lock (this.writerLock_)
                     this.clientWriter_ = null;
-                pipe?.Dispose();
+                if (pipe != null)
+                {
+                    await pipe.DisposeAsync().ConfigureAwait(false);
+                }
             }
 
             // Brief pause before accepting the next connection
@@ -179,6 +182,9 @@ internal sealed class SimStatePipeServer : IDisposable
         AsmDudeLog.Debug("[SimStatePipeServer] Accept loop ended");
     }
 
+    // VSTHRD103: the response writes are intentionally synchronous — serialized by writerLock_ (shared with
+    // the background NotifySimStateUpdated push), and you cannot await inside a lock.
+#pragma warning disable VSTHRD103
     private async Task ServeClientAsync(NamedPipeServerStream pipe, StreamReader reader, StreamWriter writer)
     {
         while (!this.cts_.Token.IsCancellationRequested && pipe.IsConnected)
@@ -258,4 +264,5 @@ internal sealed class SimStatePipeServer : IDisposable
 
         AsmDudeLog.Debug("[SimStatePipeServer] Client disconnected");
     }
+#pragma warning restore VSTHRD103
 }

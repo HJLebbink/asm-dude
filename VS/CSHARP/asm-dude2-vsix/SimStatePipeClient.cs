@@ -251,7 +251,11 @@ internal sealed class SimStatePipeClient : IDisposable
                 this.writer_ = null;
                 this.pendingResponse_?.TrySetCanceled();
                 this.pendingResponse_ = null;
-                pipe?.Dispose();
+                if (pipe != null)
+                {
+                    await pipe.DisposeAsync().ConfigureAwait(false);
+                }
+
                 this.pipe_ = null;
             }
 

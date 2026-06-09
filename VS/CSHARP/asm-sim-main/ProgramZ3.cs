@@ -38,6 +38,14 @@ namespace AsmSim
     {
         private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
 
+        // Demo helpers: SimpleStep_* return State? (null on halt/unknown opcode); these scratch routines drive
+        // known-good instructions, so assert non-null and keep the demo code null-clean.
+        private static State Step_Forward(string line, State state)
+            => Runner.SimpleStep_Forward(line, state) ?? throw new InvalidOperationException($"SimpleStep_Forward returned null for: {line}");
+
+        private static State Step_Backward(string line, State state)
+            => Runner.SimpleStep_Backward(line, state) ?? throw new InvalidOperationException($"SimpleStep_Backward returned null for: {line}");
+
         [STAThread]
         private static void Main()
         {
@@ -174,9 +182,9 @@ namespace AsmSim
                 string rootKey = "!0";
                 State state = new(tools, rootKey, rootKey);
 
-                state = Runner.SimpleStep_Forward(line1, state);
+                state = Step_Forward(line1, state);
                 Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-                state = Runner.SimpleStep_Forward(line2, state);
+                state = Step_Forward(line2, state);
                 Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
             }
         }
@@ -255,14 +263,14 @@ namespace AsmSim
 
             BitVecExpr retrieve_mem_method_LOCAL(Context ctx, ArrayExpr mem1, BitVecExpr rax1)
             {
-                BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
-                BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
-                BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
-                BitVecExpr y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
-                BitVecExpr y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
-                BitVecExpr y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
-                BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
-                BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
+                BitVecExpr y0 = (BitVecExpr)ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1));
+                BitVecExpr y1 = (BitVecExpr)ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1));
+                BitVecExpr y2 = (BitVecExpr)ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1));
+                BitVecExpr y3 = (BitVecExpr)ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1));
+                BitVecExpr y4 = (BitVecExpr)ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1));
+                BitVecExpr y5 = (BitVecExpr)ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1));
+                BitVecExpr y6 = (BitVecExpr)ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1));
+                BitVecExpr y7 = (BitVecExpr)ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1));
                 BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
                 return y;
             }
@@ -881,13 +889,13 @@ namespace AsmSim
                     string rootKey = "!INIT";
                     State state = new(tools, rootKey, rootKey);
 
-                    state = Runner.SimpleStep_Forward(line1, state);
-                    state = Runner.SimpleStep_Forward(line2, state);
-                    state = Runner.SimpleStep_Forward(line3, state);
-                    state = Runner.SimpleStep_Forward(line4, state);
+                    state = Step_Forward(line1, state);
+                    state = Step_Forward(line2, state);
+                    state = Step_Forward(line3, state);
+                    state = Step_Forward(line4, state);
 
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
-                    state = Runner.SimpleStep_Forward(line5, state);
+                    state = Step_Forward(line5, state);
                     Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
                 }
             }
@@ -906,7 +914,7 @@ namespace AsmSim
 
             (string, string, string) keys = ("dummy1", "dummy2", "dummy3");
 
-            Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, ["rbx", "ptr qword [rax + rcx]"], keys, tools);
+            Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, ["rbx", "ptr qword [rax + rcx]"], keys, tools)!;
             SortedSet<Rn> read = new(opcode.RegsReadStatic);
             SortedSet<Rn> write = new(opcode.RegsWriteStatic);
 
@@ -940,9 +948,9 @@ namespace AsmSim
                     State state = new(tools, rootKey, rootKey);
 
                     Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
-                    state = Runner.SimpleStep_Forward(line1, state);
+                    state = Step_Forward(line1, state);
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-                    state = Runner.SimpleStep_Forward(line2, state);
+                    state = Step_Forward(line2, state);
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
 
                     Console.WriteLine("IsConsistent=" + state.IsConsistent);
@@ -976,19 +984,19 @@ namespace AsmSim
                         Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
                     }
 
-                    state = Runner.SimpleStep_Backward(line3, state);
+                    state = Step_Backward(line3, state);
                     if (logToDisplay)
                     {
                         Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
                     }
 
-                    state = Runner.SimpleStep_Backward(line2, state);
+                    state = Step_Backward(line2, state);
                     if (logToDisplay)
                     {
                         Console.WriteLine("After line 2 with \"" + line2 + "\", we know:\n" + state);
                     }
 
-                    state = Runner.SimpleStep_Backward(line1, state);
+                    state = Step_Backward(line1, state);
                     if (logToDisplay)
                     {
                         Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
@@ -1010,9 +1018,9 @@ namespace AsmSim
                 string rootKey = "!0";
                 State state = new(tools, rootKey, rootKey);
 
-                state = Runner.SimpleStep_Forward(line1, state);
-                state = Runner.SimpleStep_Forward(line2, state);
-                state = Runner.SimpleStep_Forward(line3, state);
+                state = Step_Forward(line1, state);
+                state = Step_Forward(line2, state);
+                state = Step_Forward(line3, state);
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
             if (false)
@@ -1028,11 +1036,11 @@ namespace AsmSim
                 State state = new(tools, rootKey, rootKey);
 
                 Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
-                state = Runner.SimpleStep_Backward(line3, state);
+                state = Step_Backward(line3, state);
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
-                state = Runner.SimpleStep_Backward(line2, state);
+                state = Step_Backward(line2, state);
                 Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-                state = Runner.SimpleStep_Backward(line1, state);
+                state = Step_Backward(line1, state);
                 Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
             }
             if (false)
@@ -1054,7 +1062,7 @@ namespace AsmSim
                 state.Update_Forward(updateState);
                 // if (logToDisplay) Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
 
-                state = Runner.SimpleStep_Forward(line1, state);
+                state = Step_Forward(line1, state);
                 Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
                 Console.WriteLine(ToolsZ3.ToStringBin(state.GetTvArray(Rn.AL)));
@@ -1911,13 +1919,13 @@ namespace AsmSim
             { // forward
                 State state = CreateState(tools);
 
-                state = Runner.SimpleStep_Forward(line1, state);
+                state = Step_Forward(line1, state);
                 if (logToDisplay)
                 {
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                state = Runner.SimpleStep_Forward(line2, state);
+                state = Step_Forward(line2, state);
                 if (logToDisplay)
                 {
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);

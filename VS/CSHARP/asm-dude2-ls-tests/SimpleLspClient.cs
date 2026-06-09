@@ -5,7 +5,8 @@ using StreamJsonRpc;
 
 class SimpleLspClient
 {
-    static async Task Main()
+    // Manual debug client (not an entry point — this is a test assembly; xUnit owns Main).
+    static async Task RunAsync()
     {
         Console.WriteLine("=== AsmDude LSP Simple Client ===\n");
 

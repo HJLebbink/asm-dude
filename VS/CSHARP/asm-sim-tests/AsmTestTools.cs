@@ -41,6 +41,25 @@ namespace unit_tests_asm_z3
 #endif
         public const int DEFAULT_TIMEOUT = 10000; // 60000;
 
+        /// <summary>
+        /// Forward step for tests: asserts <see cref="Runner.SimpleStep_Forward"/> produced a state (it can
+        /// return null on halt/unknown opcode) and returns it non-null, so tests stay null-clean.
+        /// </summary>
+        public static State Step_Forward(string line, State state)
+        {
+            State? next = Runner.SimpleStep_Forward(line, state);
+            Assert.IsNotNull(next, $"SimpleStep_Forward returned null for line: \"{line}\"");
+            return next;
+        }
+
+        /// <summary>Backward counterpart of <see cref="Step_Forward"/>; asserts a non-null result.</summary>
+        public static State Step_Backward(string line, State state)
+        {
+            State? prev = Runner.SimpleStep_Backward(line, state);
+            Assert.IsNotNull(prev, $"SimpleStep_Backward returned null for line: \"{line}\"");
+            return prev;
+        }
+
         public static ulong RandUlong(int nBits, Random rand)
         {
             ArgumentNullException.ThrowIfNull(rand);

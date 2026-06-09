@@ -68,7 +68,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov ptr qword [rax], 10";
 
             using State state1 = this.CreateState(tools);
-            State state2 = Runner.SimpleStep_Forward(line1, state1);
+            State state2 = AsmTestTools.Step_Forward(line1, state1);
             if (LogToDisplay)
             {
                 Console.WriteLine("After \"" + line1 + "\", we know:\n" + state2);
@@ -76,7 +76,7 @@ namespace unit_tests_asm_z3
 
             string key1 = state2.HeadKey;
 
-            State state3 = Runner.SimpleStep_Forward(line2, state2);
+            State state3 = AsmTestTools.Step_Forward(line2, state2);
             if (LogToDisplay)
             {
                 Console.WriteLine("After \"" + line2 + "\", we know:\n" + state3);
@@ -100,7 +100,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov ptr qword [rax], rbx";
 
             State state = this.CreateState(tools);
-            state = Runner.SimpleStep_Forward(line1, state);
+            state = AsmTestTools.Step_Forward(line1, state);
             if (LogToDisplay)
             {
                 Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -108,7 +108,7 @@ namespace unit_tests_asm_z3
 
             string key1 = state.HeadKey;
 
-            state = Runner.SimpleStep_Forward(line2, state);
+            state = AsmTestTools.Step_Forward(line2, state);
             if (LogToDisplay)
             {
                 Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -134,8 +134,8 @@ namespace unit_tests_asm_z3
             string line2 = "mov ptr byte [rax], bl";
 
             State state = this.CreateState(tools);
-            state = Runner.SimpleStep_Forward(line0, state);
-            state = Runner.SimpleStep_Forward(line1, state);
+            state = AsmTestTools.Step_Forward(line0, state);
+            state = AsmTestTools.Step_Forward(line1, state);
             if (LogToDisplay)
             {
                 Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -143,7 +143,7 @@ namespace unit_tests_asm_z3
 
             string key1 = state.HeadKey;
 
-            state = Runner.SimpleStep_Forward(line2, state);
+            state = AsmTestTools.Step_Forward(line2, state);
             if (LogToDisplay)
             {
                 Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
