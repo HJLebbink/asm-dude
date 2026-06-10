@@ -3142,7 +3142,7 @@ namespace AsmSim
             }
 
             public override Flags FlagsWriteStatic { get { return Flags.CF | Flags.OF; } }
-            
+
             //TODO is this also possible? and would that be more efficient?
             //public static Flags FlagsWriteStatic => Flags.CF | Flags.OF;
         }
@@ -3168,7 +3168,7 @@ namespace AsmSim
         {
             public override void Execute()
             {
-                (BitVecExpr shiftCount, BoolExpr _)  = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
+                (BitVecExpr shiftCount, BoolExpr _) = GetShiftCount(this.Op2Value, this.op1_.NBits, this.ctx_);
                 (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount, this.Get(Flags.CF), this.keys_.prevKey, this.ctx_);
                 this.UpdateFlagsRotate(result, cf, shiftCount, true);
                 this.RegularUpdate.Set(this.op1_, result);

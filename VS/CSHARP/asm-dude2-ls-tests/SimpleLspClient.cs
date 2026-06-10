@@ -1,8 +1,3 @@
-using AsmDude2LS;
-using System;
-using System.IO;
-using StreamJsonRpc;
-
 class SimpleLspClient
 {
     // Manual debug client (not an entry point — this is a test assembly; xUnit owns Main).
@@ -13,7 +8,7 @@ class SimpleLspClient
         // Create a pipe for communication
         var serverStdIn = new FileStream("nul", FileMode.Append); // placeholder
         var serverStdOut = Console.OpenStandardOutput();
-        
+
         // Start LSP server in a separate process
         var psi = new System.Diagnostics.ProcessStartInfo
         {
@@ -24,7 +19,7 @@ class SimpleLspClient
             UseShellExecute = false,
             CreateNoWindow = true
         };
-        
+
         var process = System.Diagnostics.Process.Start(psi);
         if (process == null)
         {
@@ -35,7 +30,7 @@ class SimpleLspClient
         Console.WriteLine("LSP server started (PID: " + process.Id + ")");
         Console.WriteLine("To test, send LSP JSON-RPC messages to stdin");
         Console.WriteLine("Example: textDocument/didOpen for an .asm file\n");
-        
+
         Console.WriteLine("Press Ctrl+C to exit\n");
 
         // Read server output and display

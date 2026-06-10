@@ -22,14 +22,14 @@
 
 namespace asm_annotate
 {
+    using AsmTools;
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Xml;
     using System.Xml.Linq;
-
-    using AsmTools;
 
     /// <summary>
     /// Converts the uops.info <c>instructions.xml</c> database into the 8-column TSV format

@@ -23,69 +23,69 @@
 namespace AsmTools;
 
 public readonly struct KeywordID
+{
+    private readonly ulong data;
+
+    public KeywordID(int lineNumber, int fileID, int startPos, int endPos, AsmTokenType type = AsmTokenType.UNKNOWN)
     {
-        private readonly ulong data;
+        this.data = ((ulong)lineNumber & 0xFFFFFF) // 24 bits for linenumber
+            | ((ulong)(fileID & 0xFF) << 24)  // 8 bits for fileID
+            | ((ulong)(startPos & 0x3FFF) << 32)  // 14 bits for startPos
+            | ((ulong)(endPos & 0x3FFF) << 46)  // 14 bits for endPos
+            | ((ulong)(type) << 60); // 4 bits for type
+    }
 
-        public KeywordID(int lineNumber, int fileID, int startPos, int endPos, AsmTokenType type = AsmTokenType.UNKNOWN)
+    public int LineNumber
+    {
+        get
         {
-            this.data = ((ulong)lineNumber & 0xFFFFFF) // 24 bits for linenumber
-                | ((ulong)(fileID & 0xFF) << 24)  // 8 bits for fileID
-                | ((ulong)(startPos & 0x3FFF) << 32)  // 14 bits for startPos
-                | ((ulong)(endPos & 0x3FFF) << 46)  // 14 bits for endPos
-                | ((ulong)(type) << 60); // 4 bits for type
-        }
-
-        public int LineNumber
-        {
-            get
-            {
-                return (int)(this.data & 0x00FFFFFF);
-            }
-        }
-
-        public int File_Id
-        {
-            get
-            {
-                return (int)((this.data >> 24) & 0xFF);
-            }
-        }
-
-        public int Start_Pos
-        {
-            get
-            {
-                return (int)((this.data >> 32) & 0x3FFF);
-            }
-
-        }
-
-        public int End_Pos
-        {
-            get
-            {
-                return (int)((this.data >> 46) & 0x3FFF);
-            }
-        }
-
-        public AsmTokenType Type
-        {
-            get
-            {
-                return (AsmTokenType)((this.data >> 60) & 0xF);
-            }
-        }
-
-        public bool Is_From_Main_File
-        {
-            get
-            {
-                return this.File_Id == 0;
-            }
-        }
-
-        public override string ToString()
-        {
-            return $"KeywordID({this.LineNumber}, {this.File_Id}, {this.Start_Pos}, {this.End_Pos}, {this.Type})";
+            return (int)(this.data & 0x00FFFFFF);
         }
     }
+
+    public int File_Id
+    {
+        get
+        {
+            return (int)((this.data >> 24) & 0xFF);
+        }
+    }
+
+    public int Start_Pos
+    {
+        get
+        {
+            return (int)((this.data >> 32) & 0x3FFF);
+        }
+
+    }
+
+    public int End_Pos
+    {
+        get
+        {
+            return (int)((this.data >> 46) & 0x3FFF);
+        }
+    }
+
+    public AsmTokenType Type
+    {
+        get
+        {
+            return (AsmTokenType)((this.data >> 60) & 0xF);
+        }
+    }
+
+    public bool Is_From_Main_File
+    {
+        get
+        {
+            return this.File_Id == 0;
+        }
+    }
+
+    public override string ToString()
+    {
+        return $"KeywordID({this.LineNumber}, {this.File_Id}, {this.Start_Pos}, {this.End_Pos}, {this.Type})";
+    }
+}

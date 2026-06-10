@@ -3,14 +3,14 @@
 
 namespace asm_annotate
 {
+    using AsmTools;
+
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
-
-    using AsmTools;
 
     /// <summary>
     /// Stage 2 of the instruction-data pipeline (md→txt): loads the AsmDude wiki's HTML opcode tables

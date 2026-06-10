@@ -429,6 +429,288 @@ mov rax, rbx";
 
     #endregion
 
+    #region Performance-table alignment Tests
+
+
+    // The performance hover renders a monospaced columnar table (Instruction | µOps Fused | µOps
+    // Unfused | µOps Port | Latency | Throughput | remark). The columns are space-padded, so they only
+    // line up if every data cell starts at exactly the character offset of its header. A previous
+    // fixed-width layout (hard-coded 26-char instruction column) broke this for AVX-512 forms whose
+    // "instr + operands" overflowed 26 chars, shoving the numeric columns past their headers and making
+    // them ragged from row to row. These tests retrieve the real hover and verify the alignment.
+
+    // "mov" — every operand form fits in a short instruction column.
+    // "vfixupimmps" — operand forms run to ~40 chars, the case that used to overflow and misalign.
+    [Theory]
+    [InlineData("mov rax, rbx", 1)]
+    [InlineData("vfixupimmps zmm0, zmm1, zmm2, 0", 1)]
+    public void GetHover_PerformanceTable_ColumnsAreAligned(string sourceLine, int hoverCharacter)
+    {
+        // Arrange — a server with the perf info and the microarchitectures these mnemonics have data for.
+        var server = new LanguageServer();
+        server.Initialize(new AsmLanguageServerOptions
+        {
+            ARCH_8086 = true,
+            ARCH_186 = true,
+            ARCH_286 = true,
+            ARCH_386 = true,
+            ARCH_X64 = true,
+            ARCH_AVX = true,
+            ARCH_AVX2 = true,
+            ARCH_AVX512_F = true,
+            ARCH_AVX512_VL = true,
+            ARCH_AVX512_DQ = true,
+            ARCH_AVX512_BW = true,
+            AsmDoc_On = true,
+            PerformanceInfo_On = true,
+            PerformanceInfo_Skylake_On = true,
+            PerformanceInfo_SkylakeX_On = true,
+        });
+        server.Initialized();
+
+        var uri = "file:///test.asm";
+        server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = sourceLine }
+        });
+
+        // Act
+        var result = server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = hoverCharacter }
+        });
+
+        // Assert
+        var hover = result.Should().BeOfType<Hover>().Subject;
+        var text = ((MarkupContent)hover.Contents!).Value;
+        AssertPerformanceTableColumnsAligned(text);
+    }
+
+    // The compact header packs the first column: "Performance:" shares the µOps-spanner line, and the
+    // microarchitecture shares the "Fused/Unfused/…" label line (no separate "Instruction" label, no
+    // standalone arch line). This pins that layout.
+    [Fact]
+    public void GetHover_PerformanceTable_ArchitectureFollowsPerformanceHeader()
+    {
+        var server = new LanguageServer();
+        server.Initialize(new AsmLanguageServerOptions
+        {
+            ARCH_8086 = true,
+            ARCH_186 = true,
+            ARCH_286 = true,
+            ARCH_386 = true,
+            ARCH_X64 = true,
+            AsmDoc_On = true,
+            PerformanceInfo_On = true,
+            PerformanceInfo_Skylake_On = true,
+        });
+        server.Initialized();
+
+        var uri = "file:///test.asm";
+        server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        var hover = server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 1 }
+        }).Should().BeOfType<Hover>().Subject;
+
+        var lines = ((MarkupContent)hover.Contents!).Value
+            .Replace("\r\n", "\n")
+            .Split('\n')
+            .Select(l => l.TrimEnd())
+            .ToList();
+
+        // No "Instruction" column label anywhere in the table.
+        lines.Should().NotContain(l => l.StartsWith("Instruction"), "the instruction column header was dropped");
+
+        // "Performance:" shares its line with the µOps spanner (first column = title).
+        int perfIdx = lines.FindIndex(l => l.StartsWith("Performance:"));
+        perfIdx.Should().BeGreaterThanOrEqualTo(0, "the table starts with a 'Performance:' spanner line");
+        lines[perfIdx].Should().Contain("µOps", "the µOps spanner shares the 'Performance:' line");
+
+        // The very next line is the architecture sharing the Fused/Unfused/… label line (first column = arch).
+        string labelLine = lines[perfIdx + 1];
+        labelLine.TrimStart().Should().StartWith("Skylake", "the architecture sits in the first column of the label line");
+        labelLine.Should().Contain("Fused").And.Contain("Unfused").And.Contain("Throughput",
+            "the column labels share the architecture line");
+    }
+
+    // Visual Studio advertises contentFormat:["plaintext"] for hover and renders plaintext in a
+    // PROPORTIONAL font, so a space-padded table never lines up. For that client the server must instead
+    // return a VSInternalHover whose _vs_rawContent is classified "formal language" + UseClassificationFont
+    // (the only way to force a fixed-pitch font in a VS hover). This test pins that contract and verifies
+    // the monospace lines are still column-aligned.
+    [Fact]
+    public void GetHover_VisualStudioClient_UsesMonospaceRawContent()
+    {
+        // Arrange — a VS-like client: plaintext hover (HoverMarkupKind is set from contentFormat).
+        var server = new LanguageServer();
+        server.Initialize(new AsmLanguageServerOptions
+        {
+            ARCH_8086 = true,
+            ARCH_186 = true,
+            ARCH_286 = true,
+            ARCH_386 = true,
+            ARCH_X64 = true,
+            AsmDoc_On = true,
+            PerformanceInfo_On = true,
+            PerformanceInfo_Skylake_On = true,
+        });
+        server.Initialized();
+        server.HoverMarkupKind = MarkupKind.PlainText; // what LanguageServerTarget sets for a VS client
+
+        var uri = "file:///test.asm";
+        server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        // Act
+        var result = server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 1 }
+        });
+
+        // Assert — a VSInternalHover with a stacked ContainerElement of monospace runs.
+        var hover = result.Should().BeOfType<VSInternalHover>().Subject;
+        var container = hover.RawContent.Should().BeOfType<ContainerElement>().Subject;
+        container.Style.Should().HaveFlag(ContainerElementStyle.Stacked);
+
+        var runs = container.Elements
+            .OfType<ClassifiedTextElement>()
+            .SelectMany(e => e.Runs)
+            .ToList();
+        runs.Should().NotBeEmpty();
+
+        // Every run must be classified for a fixed-pitch font — otherwise VS draws it proportional and
+        // the columns drift (the bug this whole path exists to fix).
+        runs.Should().OnlyContain(
+            r => r.ClassificationType == PredefinedClassificationTypeNames.FormalLanguage
+                 && r.Style.HasFlag(ClassifiedTextRunStyle.UseClassificationFont),
+            "VS only renders hover text monospace via 'formal language' + UseClassificationFont");
+
+        // Reconstruct the rendered text (one element per line) and re-check column alignment.
+        var body = string.Join(
+            "\n",
+            container.Elements.OfType<ClassifiedTextElement>().Select(e => string.Concat(e.Runs.Select(r => r.Text))));
+        AssertPerformanceTableColumnsAligned(body);
+
+        // Pin the on-the-wire shape VS deserializes (Roslyn's ObjectContentConverter): the VS-specific
+        // _vs_rawContent property, the _vs_type discriminators, and the monospace classification/style.
+        // Explicit [JsonPropertyName]s make this independent of the serializer's naming policy; enums
+        // serialize as numbers, so UseClassificationFont (0x8) is 8.
+        var json = System.Text.Json.JsonSerializer.Serialize(hover);
+        json.Should().Contain("\"_vs_rawContent\"");
+        json.Should().Contain("\"_vs_type\":\"ContainerElement\"");
+        json.Should().Contain("\"_vs_type\":\"ClassifiedTextElement\"");
+        json.Should().Contain("\"ClassificationTypeName\":\"formal language\"");
+        json.Should().Contain("\"Style\":8");
+    }
+
+    /// <summary>
+    /// Parses the performance table out of a hover body and asserts every numeric column (µOps Fused /
+    /// Unfused / Port / Latency / Throughput) in every data row lines up under its header: each non-empty
+    /// cell starts at exactly the header's column offset and is a single whitespace-free token (so a long
+    /// instruction column can't bleed into the numeric columns). The Instruction column is excluded from
+    /// the single-token check because it legitimately contains spaces ("MOV AX, Moffs16").
+    /// </summary>
+    private static void AssertPerformanceTableColumnsAligned(string hoverBody)
+    {
+        // Split into lines, dropping the markdown ```text fence and the trailing [Documentation] link.
+        var lines = hoverBody
+            .Replace("\r\n", "\n")
+            .Split('\n')
+            .Where(l => l != "```text" && l != "```" && !l.StartsWith("[Documentation]"))
+            .ToList();
+
+        // The two header rows: a "µOps" spanner line then the column labels. (The instruction column has
+        // no label — it's self-evident — so the header row is identified by the numeric column names.)
+        int labelRow = lines.FindIndex(l => l.Contains("Fused") && l.Contains("Unfused") && l.Contains("Throughput"));
+        labelRow.Should().BeGreaterThanOrEqualTo(0, "the perf table must have a 'Fused … Unfused … Throughput' header row");
+        string header = lines[labelRow];
+
+        // Column start offsets, taken from the header labels themselves.
+        (string name, int offset)[] numericCols =
+        [
+            ("Fused", header.IndexOf("Fused", StringComparison.Ordinal)),
+            ("Unfused", header.IndexOf("Unfused", StringComparison.Ordinal)),
+            ("Port", header.IndexOf("Port", StringComparison.Ordinal)),
+            ("Latency", header.IndexOf("Latency", StringComparison.Ordinal)),
+            ("Throughput", header.IndexOf("Throughput", StringComparison.Ordinal)),
+        ];
+        foreach (var (name, offset) in numericCols)
+        {
+            offset.Should().BeGreaterThanOrEqualTo(0, $"header should contain the '{name}' column");
+        }
+
+        // The "µOps" spanner sits directly over the three µOps columns (Fused/Unfused/Port).
+        string spanner = lines[labelRow - 1];
+        foreach (var (name, offset) in numericCols.Take(3))
+        {
+            spanner.Length.Should().BeGreaterThan(offset);
+            spanner.Substring(offset, 4).Should().Be("µOps", $"the µOps spanner should sit above the '{name}' column");
+        }
+
+        // Data rows: everything after the header that actually reaches the numeric columns. This skips
+        // blank lines and the short microarchitecture sub-headers (e.g. "SkylakeX") that can appear
+        // between sections when more than one arch is shown.
+        int firstNumericOffset = numericCols[0].offset;
+        var dataRows = lines
+            .Skip(labelRow + 1)
+            .Where(l => l.Length > firstNumericOffset)
+            .ToList();
+        dataRows.Should().NotBeEmpty("the perf table must have at least one data row");
+
+        // For every data row and every numeric column: the column must be separated from whatever is to
+        // its left (so a long instruction can't bleed into it — the old overflow bug). For the four
+        // columns with a known right edge (the next numeric column) also verify the cell holds a single
+        // token that begins exactly at the header offset, so values sit under their headers. Throughput
+        // is the last numeric column (the remark follows it), so only its left boundary is checked.
+        for (int c = 0; c < numericCols.Length; c++)
+        {
+            (string name, int start) = numericCols[c];
+            foreach (string row in dataRows)
+            {
+                if (row.Length <= start)
+                {
+                    continue; // row ends before this column — an absent (empty) trailing cell, fine.
+                }
+
+                row[start - 1].Should().Be(
+                    ' ',
+                    $"column '{name}' (header offset {start}) must be separated from the column to its left; " +
+                    $"a non-space here means a previous column overflowed into it. Row:\n{row}");
+
+                if (c + 1 >= numericCols.Length)
+                {
+                    continue; // Throughput: right edge is the remark, not a fixed column — left check suffices.
+                }
+
+                int end = numericCols[c + 1].offset;
+                string cell = row.Substring(start, Math.Min(end, row.Length) - start);
+                if (cell.Trim().Length == 0)
+                {
+                    continue; // genuinely empty cell (e.g. a missing latency value).
+                }
+
+                cell[0].Should().NotBe(
+                    ' ',
+                    $"column '{name}' value must begin exactly at its header offset {start}. Row:\n{row}");
+                cell.Trim().Should().NotContain(
+                    " ",
+                    $"column '{name}' must hold a single token; a value spanning the boundary means a previous column overflowed. Row:\n{row}");
+            }
+        }
+    }
+
+    #endregion
+
     #region Signature Help Tests
 
     [Fact]

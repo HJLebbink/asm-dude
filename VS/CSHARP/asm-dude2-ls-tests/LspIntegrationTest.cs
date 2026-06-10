@@ -1,10 +1,8 @@
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Pipes;
-using System.Text.Json;
-using System.Threading.Tasks;
 using AsmDude2LS;
+
+using System.Diagnostics;
+using System.Text.Json;
+
 using Xunit;
 
 namespace AsmDude2.Tests;

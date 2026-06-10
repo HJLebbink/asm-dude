@@ -22,10 +22,11 @@
 
 namespace AsmDude2LS;
 
+using AsmTools;
+
 using System;
 using System.IO;
 using System.Text.Json;
-using AsmTools;
 
 /// <summary>
 /// Manages AsmDude2 user settings stored in %APPDATA%\AsmDude2\settings.json.

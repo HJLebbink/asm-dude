@@ -3,8 +3,6 @@
 
 namespace AsmDude2LS.Tests;
 
-using System.Collections.Generic;
-
 using AsmSourceTools;
 
 using AsmTools;
@@ -12,6 +10,8 @@ using AsmTools;
 using FluentAssertions;
 
 using Microsoft.VisualStudio.LanguageServer.Protocol;
+
+using System.Collections.Generic;
 
 using Xunit;
 

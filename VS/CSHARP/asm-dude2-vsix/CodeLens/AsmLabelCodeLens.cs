@@ -3,10 +3,11 @@
 
 namespace AsmDude2;
 
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
+
+using System.Threading;
+using System.Threading.Tasks;
 
 #pragma warning disable VSEXTPREVIEW_CODELENS // Type is for evaluation purposes only and is subject to change or removal in future updates.
 

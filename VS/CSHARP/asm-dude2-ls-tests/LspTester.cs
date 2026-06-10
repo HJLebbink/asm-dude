@@ -1,8 +1,3 @@
-using AsmDude2LS;
-using System;
-using System.IO;
-using StreamJsonRpc;
-
 class LspTester
 {
     // static void Main()
@@ -13,10 +8,10 @@ class LspTester
 
     //     // Create LSP server in stdio mode
     //     var server = LanguageServer.Create(stdout, stdin);
-        
+
     //     // Start the server (this blocks)
     //     Console.WriteLine("LSP Server started. Waiting for LSP messages...");
-        
+
     //     // Keep server alive
     //     while (true)
     //     {

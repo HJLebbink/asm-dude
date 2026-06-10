@@ -22,12 +22,13 @@
 
 namespace AsmDude2LS
 {
+    using AsmTools;
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-
-    using AsmTools;
+    using System.Text;
 
     /// <summary>
     /// Presentation helpers for the (now per-operand-form, uops.info-sourced) performance data.
@@ -41,6 +42,130 @@ namespace AsmDude2LS
     /// </summary>
     internal static class PerformanceDisplay
     {
+        /// <summary>
+        /// Renders the hover performance table for one mnemonic, including its <c>Performance:</c> title.
+        /// The instruction column (operand form) and every numeric column are sized to the WIDEST cell
+        /// actually present, so the headers and every data row line up regardless of how long an operand
+        /// form is. The previous fixed-width format (a hard-coded 26-char instruction column) broke
+        /// alignment for AVX-512 forms whose <c>instr + args</c> overflowed 26 characters, shoving the
+        /// µOps / latency / throughput values past their headers and making them ragged from row to row.
+        ///
+        /// Layout:
+        /// <code>
+        /// Performance:         µOps   µOps     µOps
+        ///   Skylake            Fused  Unfused  Port              Latency  Throughput
+        ///   MOV AX, Moffs16    1      2        1*p0156+1*p23     3        1.00        I86
+        /// </code>
+        /// The first column packs the section title / microarchitecture / instruction: <c>Performance:</c>
+        /// shares the line with the <c>µOps</c> spanner, the microarchitecture shares the line with the
+        /// <c>Fused/Unfused/Port/Latency/Throughput</c> labels, and the per-form rows (indented two spaces
+        /// under the arch) follow. Columns are left-aligned, separated by two spaces, with the raw remark
+        /// appended. A second microarchitecture repeats the label line (blank-line separated) with its own
+        /// rows; the <c>Performance:</c>/<c>µOps</c> spanner is shown once at the top. Returns the empty
+        /// string when there are no items (caller then shows no performance section).
+        /// </summary>
+        public static string BuildPerformanceTable(IEnumerable<(PerformanceItem item, int formCount)> collapsed)
+        {
+            List<(PerformanceItem item, int formCount)> list = collapsed as List<(PerformanceItem item, int formCount)> ?? [.. collapsed];
+            if (list.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            // Columns 0..5 are padded; the remark (row[6]) is appended raw after them. Column 0 carries the
+            // title ("Performance:") on the spanner line, the arch on the label line, and the (two-space
+            // indented) instruction on data lines.
+            const int ColCount = 6;
+            const string Indent = "  ";
+            string[] spannerCells = ["Performance:", "µOps", "µOps", "µOps", string.Empty, string.Empty];
+            string[] labelCells = [string.Empty, "Fused", "Unfused", "Port", "Latency", "Throughput"];
+
+            List<string[]> rows = [];
+            foreach ((PerformanceItem item, int formCount) in list)
+            {
+                string instr = item.instr_ + " " + item.args_ + (formCount > 1 ? $" (+{formCount - 1})" : string.Empty);
+                rows.Add([
+                    Indent + instr,
+                    item.mu_Ops_Fused_ ?? string.Empty,
+                    item.mu_Ops_Merged_ ?? string.Empty,
+                    item.mu_Ops_Port_ ?? string.Empty,
+                    item.latency_ ?? string.Empty,
+                    item.throughput_ ?? string.Empty,
+                    item.remark_ ?? string.Empty,
+                ]);
+            }
+
+            // Each column is as wide as the widest of its header label and every data cell.
+            int[] width = new int[ColCount];
+            for (int c = 0; c < ColCount; c++)
+            {
+                width[c] = Math.Max(spannerCells[c].Length, labelCells[c].Length);
+                foreach (string[] row in rows)
+                {
+                    width[c] = Math.Max(width[c], row[c].Length);
+                }
+            }
+
+            // Column 0 also carries each "  <arch>" label line, so it must fit the widest arch name.
+            foreach ((PerformanceItem item, int _) in list)
+            {
+                width[0] = Math.Max(width[0], Indent.Length + item.microArch_.ToString().Length);
+            }
+
+            StringBuilder sb = new();
+            AppendRow(sb, spannerCells, null, width);
+
+            MicroArch currentArch = MicroArch.NONE;
+            bool firstArch = true;
+            for (int r = 0; r < list.Count; r++)
+            {
+                MicroArch arch = list[r].item.microArch_;
+                if (arch != currentArch)
+                {
+                    currentArch = arch;
+
+                    // The arch label line directly follows the spanner for the first arch; later arches are
+                    // separated by a blank line.
+                    sb.Append(firstArch ? "\n" : "\n\n");
+                    firstArch = false;
+                    string[] labelLine = [Indent + currentArch, "Fused", "Unfused", "Port", "Latency", "Throughput"];
+                    AppendRow(sb, labelLine, null, width);
+                }
+
+                sb.Append('\n');
+                AppendRow(sb, rows[r], rows[r][6], width);
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Appends one table line: each of the six padded columns (left-aligned to <paramref name="width"/>,
+        /// separated by two spaces) followed by the optional raw <paramref name="remark"/>. Trailing
+        /// whitespace is trimmed so header/empty cells don't leave a ragged right edge.
+        /// </summary>
+        private static void AppendRow(StringBuilder sb, string[] cells, string? remark, int[] width)
+        {
+            StringBuilder line = new();
+            for (int c = 0; c < width.Length; c++)
+            {
+                line.Append(cells[c].PadRight(width[c])).Append("  ");
+            }
+
+            if (!string.IsNullOrEmpty(remark))
+            {
+                line.Append(remark);
+            }
+
+            int end = line.Length;
+            while (end > 0 && line[end - 1] == ' ')
+            {
+                end--;
+            }
+
+            sb.Append(line.ToString(0, end));
+        }
+
         private enum OpCat { Reg, Mem, Imm, Other }
 
         private enum RegClass { None, Gpr, Simd, Mmx, Mask, Other }

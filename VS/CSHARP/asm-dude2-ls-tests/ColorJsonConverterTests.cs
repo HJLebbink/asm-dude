@@ -3,12 +3,12 @@
 
 namespace AsmDude2LS.Tests;
 
-using System.Drawing;
-using System.Text.Json;
-
 using AsmTools;
 
 using FluentAssertions;
+
+using System.Drawing;
+using System.Text.Json;
 
 using Xunit;
 

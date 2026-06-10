@@ -1,5 +1,3 @@
-using AsmFuzz;
-
 using Xunit;
 
 namespace AsmFuzz.Tests;

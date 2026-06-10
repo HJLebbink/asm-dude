@@ -3,11 +3,11 @@
 
 namespace AsmAnnotate.Tests;
 
-using System.Collections.Generic;
+using asm_annotate;
 
 using AsmTools;
 
-using asm_annotate;
+using System.Collections.Generic;
 
 using Xunit;
 

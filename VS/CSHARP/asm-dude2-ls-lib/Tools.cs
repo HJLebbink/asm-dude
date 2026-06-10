@@ -22,7 +22,6 @@
 
 using AsmTools;
 
-using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -31,92 +30,92 @@ namespace AsmDude2LS;
 public static partial class Tools
 {
     public static TraceSource CreateTraceSource()
+    {
+        var traceSource = new TraceSource("AsmDude2", SourceLevels.Verbose | SourceLevels.ActivityTracing);
+        var traceFileDirectoryPath = Path.Combine(Path.GetTempPath(), "VSLogs", "AsmDude2");
+        Directory.CreateDirectory(traceFileDirectoryPath);
+        var logFilePath = Path.Combine(traceFileDirectoryPath, "log.svclog");
+        var traceListener = new XmlWriterTraceListener(logFilePath);
+        traceSource.Listeners.Add(traceListener);
+        Trace.AutoFlush = true;
+        return traceSource;
+    }
+
+
+
+    /// <summary>
+    /// Cleans the provided line by removing multiple white spaces and cropping if the line is too long
+    /// </summary>
+    public static string Cleanup(string line)
+    {
+        string cleanedString = MyRegex().Replace(line, " ");
+        if (cleanedString.Length > LanguageServer.MaxNumberOfCharsInToolTips)
         {
-            var traceSource = new TraceSource("AsmDude2", SourceLevels.Verbose | SourceLevels.ActivityTracing);
-            var traceFileDirectoryPath = Path.Combine(Path.GetTempPath(), "VSLogs", "AsmDude2");
-            Directory.CreateDirectory(traceFileDirectoryPath);
-            var logFilePath = Path.Combine(traceFileDirectoryPath, "log.svclog");
-            var traceListener = new XmlWriterTraceListener(logFilePath);
-            traceSource.Listeners.Add(traceListener);
-            Trace.AutoFlush = true;
-            return traceSource;
+            return cleanedString[..(LanguageServer.MaxNumberOfCharsInToolTips - 3)] + "...";
         }
-
-
-
-        /// <summary>
-        /// Cleans the provided line by removing multiple white spaces and cropping if the line is too long
-        /// </summary>
-        public static string Cleanup(string line)
+        else
         {
-            string cleanedString = MyRegex().Replace(line, " ");
-            if (cleanedString.Length > LanguageServer.MaxNumberOfCharsInToolTips)
+            return cleanedString;
+        }
+    }
+
+    public static string Make_Full_Qualified_Label(string? prefix, string label2, AssemblerEnum assembler)
+    {
+        if (assembler.HasFlag(AssemblerEnum.MASM))
+        {
+            if ((prefix != null) && (prefix.Length > 0))
             {
-                return cleanedString[..(LanguageServer.MaxNumberOfCharsInToolTips - 3)] + "...";
+                return "[" + prefix + "]" + label2;
             }
             else
             {
-                return cleanedString;
+                return label2;
             }
         }
-
-        public static string Make_Full_Qualified_Label(string? prefix, string label2, AssemblerEnum assembler)
+        else if (assembler.HasFlag(AssemblerEnum.NASM_INTEL))
         {
-            if (assembler.HasFlag(AssemblerEnum.MASM))
+            if ((prefix != null) && (prefix.Length > 0))
             {
-                if ((prefix != null) && (prefix.Length > 0))
-                {
-                    return "[" + prefix + "]" + label2;
-                }
-                else
-                {
-                    return label2;
-                }
+                return prefix + label2;
             }
-            else if (assembler.HasFlag(AssemblerEnum.NASM_INTEL))
+            else
             {
-                if ((prefix != null) && (prefix.Length > 0))
-                {
-                    return prefix + label2;
-                }
-                else
-                {
-                    return label2;
-                }
+                return label2;
             }
-            return prefix + label2;
         }
+        return prefix + label2;
+    }
 
-        public static string Retrieve_Regular_Label(string label, AssemblerEnum assembler)
+    public static string Retrieve_Regular_Label(string label, AssemblerEnum assembler)
+    {
+        if (assembler.HasFlag(AssemblerEnum.MASM))
         {
-            if (assembler.HasFlag(AssemblerEnum.MASM))
+            if ((label.Length > 0) && label[0].Equals('['))
             {
-                if ((label.Length > 0) && label[0].Equals('['))
-                {
-                    for (int i = 1; i < label.Length; ++i)
-                    {
-                        char c = label[i];
-                        if (c.Equals(']'))
-                        {
-                            return label[(i + 1)..];
-                        }
-                    }
-                }
-            }
-            else if (assembler.HasFlag(AssemblerEnum.NASM_INTEL))
-            {
-                for (int i = 0; i < label.Length; ++i)
+                for (int i = 1; i < label.Length; ++i)
                 {
                     char c = label[i];
-                    if (c.Equals('.'))
+                    if (c.Equals(']'))
                     {
-                        return label[i..];
+                        return label[(i + 1)..];
                     }
                 }
             }
-            return label;
         }
+        else if (assembler.HasFlag(AssemblerEnum.NASM_INTEL))
+        {
+            for (int i = 0; i < label.Length; ++i)
+            {
+                char c = label[i];
+                if (c.Equals('.'))
+                {
+                    return label[i..];
+                }
+            }
+        }
+        return label;
+    }
 
-        [System.Text.RegularExpressions.GeneratedRegex(@"\s+")]
-        private static partial System.Text.RegularExpressions.Regex MyRegex();
+    [System.Text.RegularExpressions.GeneratedRegex(@"\s+")]
+    private static partial System.Text.RegularExpressions.Regex MyRegex();
 }

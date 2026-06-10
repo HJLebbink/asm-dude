@@ -5,13 +5,14 @@
 
 namespace AsmDude2.Settings;
 
+using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Settings;
+
 using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Settings;
 
 /// <summary>
 /// Subscribes to VS.Extensibility settings changes and writes them to

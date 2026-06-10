@@ -22,7 +22,7 @@
 
 namespace AsmSim
 {
-using System;
+    using System;
 
     [Flags]
     public enum Tv

@@ -22,11 +22,13 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
+    using Microsoft.Z3;
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using AsmTools;
-    using Microsoft.Z3;
 
     public class Tools
     {

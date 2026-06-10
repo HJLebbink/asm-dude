@@ -119,21 +119,21 @@ namespace AsmDude2LS
         ];
 
         /// <summary>
-    /// Constructor loads performance data from the uops.info-derived TSV files for the selected
-    /// microarchitectures (one file per arch, see <see cref="ArchFiles"/>).
-    /// </summary>
-    /// <param name="path">Directory containing the performance TSV files (Haswell.tsv, Skylake.tsv, …).</param>
-    /// <param name="options">AsmLanguageServerOptions with PerformanceInfo_On flag and selected microarchitectures.</param>
-    /// <remarks>
-    /// If PerformanceInfo_On is false or no microarchitectures are selected, data_ remains empty.
-    /// Each TSV row's first column is a single mnemonic (the importer already normalized it), so it is
-    /// parsed directly — no name-translation table is needed.
-    /// </remarks>
-    /// <!-- LLM-ANNOTATION -->
-    /// LLM KEYWORDS: performance data loading, microarchitecture, TSV parsing, uops.info
-    /// USED IN: LanguageServer.Initialize
-    /// SEE ALSO: GetPerformance, AddData
-    public PerformanceStore(string path, AsmLanguageServerOptions options)
+        /// Constructor loads performance data from the uops.info-derived TSV files for the selected
+        /// microarchitectures (one file per arch, see <see cref="ArchFiles"/>).
+        /// </summary>
+        /// <param name="path">Directory containing the performance TSV files (Haswell.tsv, Skylake.tsv, …).</param>
+        /// <param name="options">AsmLanguageServerOptions with PerformanceInfo_On flag and selected microarchitectures.</param>
+        /// <remarks>
+        /// If PerformanceInfo_On is false or no microarchitectures are selected, data_ remains empty.
+        /// Each TSV row's first column is a single mnemonic (the importer already normalized it), so it is
+        /// parsed directly — no name-translation table is needed.
+        /// </remarks>
+        /// <!-- LLM-ANNOTATION -->
+        /// LLM KEYWORDS: performance data loading, microarchitecture, TSV parsing, uops.info
+        /// USED IN: LanguageServer.Initialize
+        /// SEE ALSO: GetPerformance, AddData
+        public PerformanceStore(string path, AsmLanguageServerOptions options)
         {
             this.options = options;
             this.data_ = [];

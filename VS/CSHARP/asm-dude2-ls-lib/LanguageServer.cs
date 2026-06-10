@@ -449,139 +449,139 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.ApplyReferenceData(LoadReferenceData(this.options!, this.traceSource));
     }
 
-private void UpdateInternals(string uri)
+    private void UpdateInternals(string uri)
+    {
+        AsmDudeLog.Debug($"[UpdateInternals] ENTRY uri={uri}");
+        try
         {
-            AsmDudeLog.Debug($"[UpdateInternals] ENTRY uri={uri}");
-            try
+            var document = this.GetTextDocument(uri);
+            if (document is not TextDocumentItem)
             {
-                var document = this.GetTextDocument(uri);
-                if (document is not TextDocumentItem)
-                {
-                    AsmDudeLog.Debug($"[UpdateInternals] document not found for uri={uri}");
-                    return;
-                }
+                AsmDudeLog.Debug($"[UpdateInternals] document not found for uri={uri}");
+                return;
+            }
 
-                var newLines = document.Text.Split(separator, StringSplitOptions.None);
-                AsmDudeLog.Debug($"[UpdateInternals] split into {newLines.Length} lines");
+            var newLines = document.Text.Split(separator, StringSplitOptions.None);
+            AsmDudeLog.Debug($"[UpdateInternals] split into {newLines.Length} lines");
 
-                // Detect assembler type for this document
-                AssemblerEnum assemblerType = AssemblerEnum.UNKNOWN;
-                if (this.options != null && this.options.useAssemblerAutoDetect)
+            // Detect assembler type for this document
+            AssemblerEnum assemblerType = AssemblerEnum.UNKNOWN;
+            if (this.options != null && this.options.useAssemblerAutoDetect)
+            {
+                // Simple heuristic: check for MASM/NASM specific directives in first few lines
+                int linesToCheck = Math.Min(20, newLines.Length);
+                for (int i = 0; i < linesToCheck; i++)
                 {
-                    // Simple heuristic: check for MASM/NASM specific directives in first few lines
-                    int linesToCheck = Math.Min(20, newLines.Length);
-                    for (int i = 0; i < linesToCheck; i++)
+                    string line = newLines[i].Trim().ToUpperInvariant();
+                    if (line.Length == 0) continue;
+
+                    // Check for MASM-specific indicators
+                    if (line.StartsWith("PROC") || line.StartsWith("ENDP") || line.StartsWith("MACRO") ||
+                        line.StartsWith("ENDM") || line.StartsWith("SEGMENT") || line.StartsWith("ENDS") ||
+                        line.StartsWith("ASSUME") || line.StartsWith("ORG") || line.Contains(" PTR ") ||
+                        line.StartsWith("EXTERN") || line.StartsWith("EXTRN") || line.StartsWith("PUBLIC"))
                     {
-                        string line = newLines[i].Trim().ToUpperInvariant();
-                        if (line.Length == 0) continue;
+                        assemblerType |= AssemblerEnum.MASM;
+                        break;
+                    }
 
-                        // Check for MASM-specific indicators
-                        if (line.StartsWith("PROC") || line.StartsWith("ENDP") || line.StartsWith("MACRO") ||
-                            line.StartsWith("ENDM") || line.StartsWith("SEGMENT") || line.StartsWith("ENDS") ||
-                            line.StartsWith("ASSUME") || line.StartsWith("ORG") || line.Contains(" PTR ") ||
-                            line.StartsWith("EXTERN") || line.StartsWith("EXTRN") || line.StartsWith("PUBLIC"))
-                        {
-                            assemblerType |= AssemblerEnum.MASM;
-                            break;
-                        }
-
-                        // Check for NASM-specific indicators
-                        if (line.StartsWith("SECTION") || line.StartsWith("SEGMENT") || line.StartsWith("ABSOLUTE") ||
-                            line.StartsWith("EXTERN") || line.StartsWith("GLOBAL") || line.StartsWith("COMMON") ||
-                            line.StartsWith("CPU") || line.StartsWith("GROUP") || line.Contains(" EQU ") ||
-                            line.StartsWith("RES") || line.StartsWith("TIMES") || line.StartsWith("%include") ||
-                            line.StartsWith("%define") || line.StartsWith("%ifdef") || line.StartsWith("%ifndef"))
-                        {
-                            assemblerType |= (AssemblerEnum.NASM_INTEL | AssemblerEnum.NASM_ATT);
-                            break;
-                        }
+                    // Check for NASM-specific indicators
+                    if (line.StartsWith("SECTION") || line.StartsWith("SEGMENT") || line.StartsWith("ABSOLUTE") ||
+                        line.StartsWith("EXTERN") || line.StartsWith("GLOBAL") || line.StartsWith("COMMON") ||
+                        line.StartsWith("CPU") || line.StartsWith("GROUP") || line.Contains(" EQU ") ||
+                        line.StartsWith("RES") || line.StartsWith("TIMES") || line.StartsWith("%include") ||
+                        line.StartsWith("%define") || line.StartsWith("%ifdef") || line.StartsWith("%ifndef"))
+                    {
+                        assemblerType |= (AssemblerEnum.NASM_INTEL | AssemblerEnum.NASM_ATT);
+                        break;
                     }
                 }
+            }
 
-                // Store the detected assembler type for this document
-                this._documentAssemblerTypes[uri] = assemblerType;
-                AsmDudeLog.Debug($"[UpdateInternals] detected assembler={assemblerType}");
+            // Store the detected assembler type for this document
+            this._documentAssemblerTypes[uri] = assemblerType;
+            AsmDudeLog.Debug($"[UpdateInternals] detected assembler={assemblerType}");
 
-                string[] oldLines;
-                if (this.textDocumentLines.TryGetValue(uri, out var cachedLines) && cachedLines.SequenceEqual(newLines))
+            string[] oldLines;
+            if (this.textDocumentLines.TryGetValue(uri, out var cachedLines) && cachedLines.SequenceEqual(newLines))
+            {
+                AsmDudeLog.Debug($"[UpdateInternals] lines unchanged, skipping");
+                return;
+            }
+            else
+            {
+                oldLines = cachedLines ?? [];
+            }
+
+            this.textDocumentLines.Remove(uri);
+            this.textDocumentLines.Add(uri, newLines);
+
+            KeywordID[][] lineData;
+            if (this.parsedDocuments.TryGetValue(uri, out var oldParsed) && oldParsed.Length == newLines.Length)
+            {
+                lineData = new KeywordID[newLines.Length][];
+                for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
                 {
-                    AsmDudeLog.Debug($"[UpdateInternals] lines unchanged, skipping");
-                    return;
-                }
-                else
-                {
-                    oldLines = cachedLines ?? [];
-                }
-
-                this.textDocumentLines.Remove(uri);
-                this.textDocumentLines.Add(uri, newLines);
-
-                KeywordID[][] lineData;
-                if (this.parsedDocuments.TryGetValue(uri, out var oldParsed) && oldParsed.Length == newLines.Length)
-                {
-                    lineData = new KeywordID[newLines.Length][];
-                    for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
+                    if (lineNumber < oldParsed.Length && oldLines[lineNumber] == newLines[lineNumber] && oldParsed[lineNumber] != null)
                     {
-                        if (lineNumber < oldParsed.Length && oldLines[lineNumber] == newLines[lineNumber] && oldParsed[lineNumber] != null)
-                        {
-                            lineData[lineNumber] = oldParsed[lineNumber];
-                        }
-                        else
-                        {
-                            int fileID = 0;
-                            lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID, assemblerType).keywords;
-                        }
+                        lineData[lineNumber] = oldParsed[lineNumber];
                     }
-                }
-                else
-                {
-                    lineData = new KeywordID[newLines.Length][];
-                    int fileID = 0;
-                    for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
+                    else
                     {
+                        int fileID = 0;
                         lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID, assemblerType).keywords;
                     }
                 }
-
-                this.parsedDocuments.Remove(uri);
-                this.parsedDocuments.Add(uri, lineData);
-
-                this.diagnostics.Clear();
-                AsmDudeLog.Debug($"[UpdateInternals] parsing complete, updating folding ranges");
-                this.UpdateFoldingRanges(uri);
-                this.labelGraphDirty.Add(uri);
-
-                AsmDudeLog.Debug($"[UpdateInternals] starting AsmSim simulation");
-                try
+            }
+            else
+            {
+                lineData = new KeywordID[newLines.Length][];
+                int fileID = 0;
+                for (int lineNumber = 0; lineNumber < newLines.Length; ++lineNumber)
                 {
-                    this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
-                        onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()),
-                        onProgress: progressUri =>
-                        {
-                            AsmDudeLog.Debug($"[UpdateInternals] sending {Methods.WorkspaceInlayHintRefreshName} + pipe notify");
-                            _ = this.SendMethodNotificationAsync<object?>(Methods.WorkspaceInlayHintRefreshName, null);
-                            this.simStatePipeServer_.NotifySimStateUpdated(progressUri);
-                        });
+                    lineData[lineNumber] = AsmTools.AsmSourceTools.ParseLine(newLines[lineNumber], lineNumber, fileID, assemblerType).keywords;
                 }
-                catch (Exception ex)
-                {
-                    AsmDudeLog.Warning($"[UpdateInternals] InvalidateAndSimulate failed: {ex.GetType().Name}: {ex.Message}");
-                }
+            }
 
-                if (false)
-                {
-#pragma warning disable CS0162 // Unreachable code detected
-                    this.UpdateSymbols(uri);
-#pragma warning restore CS0162 // Unreachable code detected
-                }
-                this.SendDiagnostics(uri);
-                AsmDudeLog.Debug($"[UpdateInternals] EXIT uri={uri}");
+            this.parsedDocuments.Remove(uri);
+            this.parsedDocuments.Add(uri, lineData);
+
+            this.diagnostics.Clear();
+            AsmDudeLog.Debug($"[UpdateInternals] parsing complete, updating folding ranges");
+            this.UpdateFoldingRanges(uri);
+            this.labelGraphDirty.Add(uri);
+
+            AsmDudeLog.Debug($"[UpdateInternals] starting AsmSim simulation");
+            try
+            {
+                this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
+                    onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()),
+                    onProgress: progressUri =>
+                    {
+                        AsmDudeLog.Debug($"[UpdateInternals] sending {Methods.WorkspaceInlayHintRefreshName} + pipe notify");
+                        _ = this.SendMethodNotificationAsync<object?>(Methods.WorkspaceInlayHintRefreshName, null);
+                        this.simStatePipeServer_.NotifySimStateUpdated(progressUri);
+                    });
             }
             catch (Exception ex)
             {
-                AsmDudeLog.Error($"[UpdateInternals] EXCEPTION: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+                AsmDudeLog.Warning($"[UpdateInternals] InvalidateAndSimulate failed: {ex.GetType().Name}: {ex.Message}");
             }
+
+            if (false)
+            {
+#pragma warning disable CS0162 // Unreachable code detected
+                this.UpdateSymbols(uri);
+#pragma warning restore CS0162 // Unreachable code detected
+            }
+            this.SendDiagnostics(uri);
+            AsmDudeLog.Debug($"[UpdateInternals] EXIT uri={uri}");
         }
+        catch (Exception ex)
+        {
+            AsmDudeLog.Error($"[UpdateInternals] EXCEPTION: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+        }
+    }
 
     public void OnTextDocumentOpened(DidOpenTextDocumentParams messageParams)
     {
@@ -816,10 +816,10 @@ private void UpdateInternals(string uri)
         {
             DiagnosticSeverity severity = sd.Kind switch
             {
-                SimDiagnosticKind.SyntaxError    => DiagnosticSeverity.Error,
+                SimDiagnosticKind.SyntaxError => DiagnosticSeverity.Error,
                 SimDiagnosticKind.NotImplemented => DiagnosticSeverity.Information,
-                SimDiagnosticKind.Unreachable    => DiagnosticSeverity.Warning,  // full wavy underline under entire instruction
-                _                                => DiagnosticSeverity.Warning,
+                SimDiagnosticKind.Unreachable => DiagnosticSeverity.Warning,  // full wavy underline under entire instruction
+                _ => DiagnosticSeverity.Warning,
             };
 
             // Use the actual line content to compute precise start/end character positions:
@@ -848,10 +848,10 @@ private void UpdateInternals(string uri)
                 Source = "AsmDude2",
                 Code = sd.Kind switch
                 {
-                    SimDiagnosticKind.SyntaxError    => "SIM-E001",
+                    SimDiagnosticKind.SyntaxError => "SIM-E001",
                     SimDiagnosticKind.NotImplemented => "SIM-I001",
-                    SimDiagnosticKind.Unreachable    => "SIM-W001",
-                    _                                => "SIM-W002",
+                    SimDiagnosticKind.Unreachable => "SIM-W001",
+                    _ => "SIM-W002",
                 },
                 Range = new Range
                 {
@@ -1602,35 +1602,35 @@ private void UpdateInternals(string uri)
     /// LLM KEYWORDS: semantic tokens, token type mapping, LSP protocol, type classification
     /// USED IN: GetSemanticTokens, LanguageServerTarget.GetSemanticTokensFull
     /// SEE ALSO: GetTokenModifiers, SemanticTokensLegend, AsmTokenType
-private static int MapTokenType(AsmTokenType type)
-     {
-         // Indices must match VS's fixed client token type ordering (not our legend order).
-         return type switch
-         {
-             AsmTokenType.Mnemonic => 15,    // keyword
-             AsmTokenType.MnemonicOff => 15, // keyword (deprecated - will add modifier)
-             AsmTokenType.Register => 8,     // variable (registers) — must match legend index 8
-             AsmTokenType.Label => 1,        // type (labels)
-             AsmTokenType.LabelDef => 1,     // type (definition)
-             AsmTokenType.Jump => 12,        // function (jump target)
-             AsmTokenType.Directive => 14,   // macro
-             AsmTokenType.Constant => 19,    // number
-             AsmTokenType.Remark => 17,      // comment
-             AsmTokenType.Misc => 21,        // operator (memory operands, brackets, etc.)
-             // MASM/NASM-specific types mapped to standard equivalents
-             AsmTokenType.MasmDirective => 14, // macro
-             AsmTokenType.NasmDirective => 14, // macro
-             AsmTokenType.MasmOperator => 21,  // operator
-             AsmTokenType.NasmOperator => 21,  // operator
-             AsmTokenType.MasmPseudoOp => 14,  // macro
-             AsmTokenType.NasmPseudoOp => 14,  // macro
-             // User-defined token types
-             AsmTokenType.UserDefined1 => 9,   // property
-             AsmTokenType.UserDefined2 => 10,  // enumMember
-             AsmTokenType.UserDefined3 => 0,   // namespace
-             _ => -1, // Skip UNKNOWN tokens
-         };
-     }
+    private static int MapTokenType(AsmTokenType type)
+    {
+        // Indices must match VS's fixed client token type ordering (not our legend order).
+        return type switch
+        {
+            AsmTokenType.Mnemonic => 15,    // keyword
+            AsmTokenType.MnemonicOff => 15, // keyword (deprecated - will add modifier)
+            AsmTokenType.Register => 8,     // variable (registers) — must match legend index 8
+            AsmTokenType.Label => 1,        // type (labels)
+            AsmTokenType.LabelDef => 1,     // type (definition)
+            AsmTokenType.Jump => 12,        // function (jump target)
+            AsmTokenType.Directive => 14,   // macro
+            AsmTokenType.Constant => 19,    // number
+            AsmTokenType.Remark => 17,      // comment
+            AsmTokenType.Misc => 21,        // operator (memory operands, brackets, etc.)
+                                            // MASM/NASM-specific types mapped to standard equivalents
+            AsmTokenType.MasmDirective => 14, // macro
+            AsmTokenType.NasmDirective => 14, // macro
+            AsmTokenType.MasmOperator => 21,  // operator
+            AsmTokenType.NasmOperator => 21,  // operator
+            AsmTokenType.MasmPseudoOp => 14,  // macro
+            AsmTokenType.NasmPseudoOp => 14,  // macro
+                                              // User-defined token types
+            AsmTokenType.UserDefined1 => 9,   // property
+            AsmTokenType.UserDefined2 => 10,  // enumMember
+            AsmTokenType.UserDefined3 => 0,   // namespace
+            _ => -1, // Skip UNKNOWN tokens
+        };
+    }
 
     /// <summary>
     /// Get token modifiers based on token type
@@ -1655,23 +1655,23 @@ private static int MapTokenType(AsmTokenType type)
     /// LLM KEYWORDS: semantic tokens, token modifiers, LSP protocol, bit flags
     /// USED IN: GetSemanticTokens
     /// SEE ALSO: MapTokenType, TokenModifiers
-private static int GetTokenModifiers(AsmTokenType type)
-     {
-         return type switch
-         {
-             AsmTokenType.LabelDef => 0x3,    // declaration + definition
-             AsmTokenType.MnemonicOff => 0x4, // deprecated
-             AsmTokenType.Constant => 0x8,    // readonly
-             // MASM/NASM-specific token types (no special modifiers by default)
-             AsmTokenType.MasmDirective => 0,
-             AsmTokenType.NasmDirective => 0,
-             AsmTokenType.MasmOperator => 0,
-             AsmTokenType.NasmOperator => 0,
-             AsmTokenType.MasmPseudoOp => 0,
-             AsmTokenType.NasmPseudoOp => 0,
-             _ => 0,
-         };
-     }
+    private static int GetTokenModifiers(AsmTokenType type)
+    {
+        return type switch
+        {
+            AsmTokenType.LabelDef => 0x3,    // declaration + definition
+            AsmTokenType.MnemonicOff => 0x4, // deprecated
+            AsmTokenType.Constant => 0x8,    // readonly
+                                             // MASM/NASM-specific token types (no special modifiers by default)
+            AsmTokenType.MasmDirective => 0,
+            AsmTokenType.NasmDirective => 0,
+            AsmTokenType.MasmOperator => 0,
+            AsmTokenType.NasmOperator => 0,
+            AsmTokenType.MasmPseudoOp => 0,
+            AsmTokenType.NasmPseudoOp => 0,
+            _ => 0,
+        };
+    }
 
     /// <summary>
     /// Get inlay hints for a document range (LSP 3.17).
@@ -2165,7 +2165,7 @@ private static int GetTokenModifiers(AsmTokenType type)
 #if DEBUG
             bool extraLogging = false;
 #else
-                bool extraLogging = false;
+            bool extraLogging = false;
 #endif
 
             if (!this.options.CodeCompletion_On)
@@ -2879,62 +2879,21 @@ private static int GetTokenModifiers(AsmTokenType type)
                     bool performanceInfoAvailable = false;
                     if (this.options.PerformanceInfo_On)
                     {
-                        bool headerWritten = false;
-                        MicroArch currentArch = MicroArch.NONE;
-                        // 7 columns — the microarchitecture is shown once as a sub-header, not repeated per row.
-                        string format = "{0,-26}{1,-7}{2,-9}{3,-20}{4,-9}{5,-11}{6,-10}";
-
                         MicroArch selectedMicroArchs = this.options.Get_MicroArch_Switched_On();
                         // uops.info has one row per operand form; collapse rows with identical timing so the
-                        // table stays a handful of lines instead of dozens per mnemonic.
+                        // table stays a handful of lines instead of dozens per mnemonic. BuildPerformanceTable
+                        // sizes each column to its widest cell so the headers and rows line up even when an
+                        // operand form is long (see PerformanceDisplay for the previous fixed-width bug).
                         var collapsed = PerformanceDisplay.CollapseByTiming(this.performanceStore.GetPerformance(mnemonic, selectedMicroArchs));
-                        foreach ((PerformanceItem item, int formCount) in collapsed)
-                        {
-                            if (!headerWritten)
-                            {
-                                headerWritten = true;
-                                performanceInfoAvailable = true;
-
-                                string msg1 = string.Format(
-                                    CultureUI,
-                                    format,
-                                    string.Empty, "µOps", "µOps", "µOps", string.Empty, string.Empty, string.Empty);
-
-                                string msg2 = string.Format(
-                                    CultureUI,
-                                    "\n" + format,
-                                    "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", string.Empty);
-
-                                performanceStr = msg1;
-                                performanceStr += msg2;
-                            }
-
-                            // Emit the microarchitecture once, as a sub-header, when it changes.
-                            if (item.microArch_ != currentArch)
-                            {
-                                currentArch = item.microArch_;
-                                performanceStr += "\n\n" + currentArch + ":";
-                            }
-
-                            // When several operand forms share this timing, show one and note how many more.
-                            string instrCol = item.instr_ + " " + item.args_ + (formCount > 1 ? $" (+{formCount - 1})" : string.Empty) + " ";
-
-                            performanceStr += string.Format(
-                                CultureUI,
-                                "\n" + format,
-                                instrCol,
-                                item.mu_Ops_Fused_ + " ",
-                                item.mu_Ops_Merged_ + " ",
-                                item.mu_Ops_Port_ + " ",
-                                item.latency_ + " ",
-                                item.throughput_ + " ",
-                                item.remark_);
-                        }
+                        performanceStr = PerformanceDisplay.BuildPerformanceTable(collapsed);
+                        performanceInfoAvailable = performanceStr.Length > 0;
                     }
 
                     hoverContent = [
                         full_Descr,
-                        (performanceInfoAvailable) ? "\nPerformance:\n" + performanceStr : "",
+                        // BuildPerformanceTable already emits the "Performance:" title (in the spanner's
+                        // first column); just separate it from the description with a blank line.
+                        performanceInfoAvailable ? "\n" + performanceStr : "",
                     ];
                     break;
                 }
@@ -2969,7 +2928,7 @@ private static int GetTokenModifiers(AsmTokenType type)
                         {
                             var sb = new System.Text.StringBuilder("\n");
                             if (simBefore != null) sb.Append($"Before: {simBefore}\n");
-                            if (simAfter != null)  sb.Append($"After : {simAfter}");
+                            if (simAfter != null) sb.Append($"After : {simAfter}");
                             simSuffix = sb.ToString();
                         }
 

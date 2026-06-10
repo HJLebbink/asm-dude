@@ -399,22 +399,34 @@ NasmOperator   → operator (5)
 
 **Implementation:** `VS\CSHARP\asm-dude2-ls-lib\` (`HoverBuilder.cs`, `LanguageServer.GetHover`)
 
-Hover returns a **standard LSP `Hover` with `MarkupContent`** (works for any client — VS and VS Code).
-The markup **kind is negotiated** from the client's advertised `textDocument.hover.contentFormat` at
-`initialize` and stored in `LanguageServer.HoverMarkupKind`: **Markdown** when the client offers it,
-**PlainText** otherwise. `HoverBuilder.CreateHover(kind, sections, …, docUrl)` renders both:
-- **Markdown**: body in a ```` ```text ```` fence (keeps the perf table's monospace columns) + a
-  `[Documentation](url)` link.
-- **PlainText**: body as-is + the URL on its own line.
+Hover (`HoverBuilder.CreateHover(kind, sections, …, docUrl)`, returns `object?`) **branches by client**,
+chosen from `LanguageServer.HoverMarkupKind` (negotiated from the client's advertised
+`textDocument.hover.contentFormat` at `initialize`: **Markdown** when offered, **PlainText** otherwise):
+- **Markdown clients (VS Code):** standard LSP `Hover` + `MarkupContent` — body in a ```` ```text ````
+  fence (keeps the perf table's monospace columns) + a clickable `[Documentation](url)` link.
+- **Visual Studio (PlainText):** a **`VSInternalHover`** whose `_vs_rawContent` stacks one
+  `ClassifiedTextElement` per line, each a `ClassifiedTextRun("formal language", text,
+  UseClassificationFont)`. **This is required:** VS draws plaintext hover in the *proportional*
+  environment font, so a space-padded table does NOT line up (verified by pixel-measuring a real VS
+  screenshot). `"formal language"` + `UseClassificationFont` is the only way to force a fixed-pitch font
+  in a VS hover. The doc URL is a plain line (links unserializable over LSP — see below).
+
+The performance table itself is built by `PerformanceDisplay.BuildPerformanceTable(collapsed)`, which
+sizes **every column to its widest cell** (header + all rows) so long operand forms (e.g. AVX-512
+`VFIXUPIMMPS ZMM, K, ZMM, M32_1to16, I8`) can't overflow a fixed column and shove the numeric columns
+past their headers. Tested by `GetHover_PerformanceTable_ColumnsAreAligned` and
+`GetHover_VisualStudioClient_UsesMonospaceRawContent` in `LanguageServerTests.cs`.
 
 `GetHover` classifies the hovered token from the **parsed document tokens** (`parsedDocuments`, real
 `AsmTokenType` incl. `LabelDef`/`Constant`), falling back to a string heuristic. Mnemonic/Jump,
 Register, Constant, Label and LabelDef all produce content; `null` is returned only for a genuinely
 unknown word (correct LSP semantics).
 
-> **History (June 2026):** hover was rewritten from the VS-specific `VSInternalHover` + `_vs_rawContent`
-> (monospace/colored classified text) to the portable `Hover`/`MarkupContent` above, so VS Code is
-> supported too. `VSInternalTypes.cs` may still exist but is no longer used for hover.
+> **History:** June 2026 hover was rewritten from `VSInternalHover`/`_vs_rawContent` to the portable
+> `Hover`/`MarkupContent` for VS Code support — but that dropped VS's monospace tables (proportional font
+> misaligns space padding). It was then re-split into the **dual path above**: VS Code keeps
+> `MarkupContent`, VS gets `VSInternalHover`/`_vs_rawContent` (monospace) again. `VSInternalTypes.cs`
+> holds the hand-rolled serialization types and IS used for the VS path.
 
 **Clickable links in hover — nuanced:**
 - Markdown `[text](url)` links **DO** serialize over LSP and **are clickable** in markdown-rendering

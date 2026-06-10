@@ -22,39 +22,37 @@
 
 namespace AsmTools;
 
-using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
-
 using System;
 
-    [Flags]
-    public enum AssemblerEnum
-    {
-        UNKNOWN = 0,
-        MASM = 1 << 0,
-        NASM_INTEL = 1 << 1,
-        NASM_ATT = 1 << 2,
-        ALL = NASM_INTEL | NASM_ATT | MASM,
-        AUTO_DETECT = 1 << 3,
-    }
+[Flags]
+public enum AssemblerEnum
+{
+    UNKNOWN = 0,
+    MASM = 1 << 0,
+    NASM_INTEL = 1 << 1,
+    NASM_ATT = 1 << 2,
+    ALL = NASM_INTEL | NASM_ATT | MASM,
+    AUTO_DETECT = 1 << 3,
+}
 
-    public static partial class AsmSourceTools
+public static partial class AsmSourceTools
+{
+    public static AssemblerEnum ParseAssembler(string? str, bool strIsCapitals)
     {
-        public static AssemblerEnum ParseAssembler(string? str, bool strIsCapitals)
+        if (string.IsNullOrEmpty(str))
         {
-            if (string.IsNullOrEmpty(str))
-            {
-                return AssemblerEnum.UNKNOWN;
-            }
-            AssemblerEnum result = AssemblerEnum.UNKNOWN;
+            return AssemblerEnum.UNKNOWN;
+        }
+        AssemblerEnum result = AssemblerEnum.UNKNOWN;
 
-            foreach (string str2 in ToCapitals(str, strIsCapitals).Split(','))
+        foreach (string str2 in ToCapitals(str, strIsCapitals).Split(','))
+        {
+            switch (str2.Trim())
             {
-                switch (str2.Trim())
-                {
-                    case "MASM": result |= AssemblerEnum.MASM; break;
-                    case "NASM": result |= AssemblerEnum.NASM_INTEL; break;
-                }
+                case "MASM": result |= AssemblerEnum.MASM; break;
+                case "NASM": result |= AssemblerEnum.NASM_INTEL; break;
             }
-            return result;
+        }
+        return result;
     }
 }

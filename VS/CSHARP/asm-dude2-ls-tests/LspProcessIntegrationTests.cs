@@ -110,10 +110,14 @@ public class LspProcessIntegrationTests : IAsyncLifetime
         // Act
         var result = await this._client.HoverAsync("file:///test.asm", line: 0, character: 1);
 
-        // Assert
+        // Assert. This client advertises no hover contentFormat (empty capabilities), which the server
+        // treats like Visual Studio → PlainText, so it returns a VS-style rich hover under
+        // `_vs_rawContent` (monospace classified text) rather than standard `contents`. Either way the
+        // mnemonic description must be present in the payload.
         result.Should().NotBeNull("hover on MOV should return documentation");
-        var contents = result!["contents"];
-        contents.Should().NotBeNull();
+        result!["_vs_rawContent"].Should().NotBeNull(
+            "a plaintext client (like VS) gets the monospace _vs_rawContent hover");
+        result.ToJsonString().Should().Contain("MOV", "the hover payload should mention the mnemonic");
     }
 
     [Fact]

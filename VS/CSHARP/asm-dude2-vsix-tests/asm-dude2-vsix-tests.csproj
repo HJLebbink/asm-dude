@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<RootNamespace>AsmDude2.Vsix.Tests</RootNamespace>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>14</LangVersion>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
+		<PackageReference Include="xunit.v3" Version="3.2.2" />
+	</ItemGroup>
+
+	<!-- Compile the pure planner SOURCE directly (the tagger calls this same code, so the tests
+	     exercise production logic — not a copy). The VSIX itself targets net10.0-windows8.0 + the
+	     VS.Extensibility SDK; the planner has no VS dependencies, so we link only the one file and
+	     avoid referencing the whole extension. -->
+	<ItemGroup>
+		<Compile Include="..\asm-dude2-vsix\CodeLens\CodeLensPublishPlanner.cs" Link="CodeLensPublishPlanner.cs" />
+	</ItemGroup>
+
+</Project>

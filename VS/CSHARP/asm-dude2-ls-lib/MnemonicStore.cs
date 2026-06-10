@@ -230,21 +230,21 @@ namespace AsmDude2LS
             Dictionary<Mnemonic, string> htmlRef = [];
             Dictionary<Mnemonic, string> description = [];
 
-        /// <summary>
-        /// Add (and overwrite) return true if an existing signature element is overwritten;
-        /// </summary>
-        /// <param name="asmSignatureElement">AsmSignatureInformation to add or overwrite.</param>
-        /// <param name="data">Dictionary of mnemonic to signature list (passed by ref for update).</param>
-        /// <returns>true if existing signature was overwritten; false if new entry was added.</returns>
-        /// <remarks>
-        /// Helper closure used during data loading to manage signature dictionaries.
-        /// Removes existing signature if present, then adds the new one.
-        /// </remarks>
-        /// <!-- LLM-ANNOTATION -->
-        /// LLM KEYWORDS: signature management, dictionary update, overwrite logic, helper closure
-        /// USED IN: CalcSignatureInformation.LoadRegularData, LoadHandcraftedData
-        /// SEE ALSO: CreateAsmSignatureElement, GetSignatures
-        bool Add(AsmSignatureInformation asmSignatureElement, ref Dictionary<Mnemonic, List<AsmSignatureInformation>> data)
+            /// <summary>
+            /// Add (and overwrite) return true if an existing signature element is overwritten;
+            /// </summary>
+            /// <param name="asmSignatureElement">AsmSignatureInformation to add or overwrite.</param>
+            /// <param name="data">Dictionary of mnemonic to signature list (passed by ref for update).</param>
+            /// <returns>true if existing signature was overwritten; false if new entry was added.</returns>
+            /// <remarks>
+            /// Helper closure used during data loading to manage signature dictionaries.
+            /// Removes existing signature if present, then adds the new one.
+            /// </remarks>
+            /// <!-- LLM-ANNOTATION -->
+            /// LLM KEYWORDS: signature management, dictionary update, overwrite logic, helper closure
+            /// USED IN: CalcSignatureInformation.LoadRegularData, LoadHandcraftedData
+            /// SEE ALSO: CreateAsmSignatureElement, GetSignatures
+            bool Add(AsmSignatureInformation asmSignatureElement, ref Dictionary<Mnemonic, List<AsmSignatureInformation>> data)
             {
                 //AsmDudeLog.Info($"MnemonicStore: Add: {asmSignatureElement.SignatureInformation.Label}; number of elements before {this.data_.Count}");
                 bool result = false;

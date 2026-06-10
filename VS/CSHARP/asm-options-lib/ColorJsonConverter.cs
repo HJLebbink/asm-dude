@@ -1,7 +1,6 @@
 // Copyright (c) 2026 Henk-Jan Lebbink
 // Licensed under the MIT license.
 
-using System;
 using System.Drawing;
 using System.Globalization;
 using System.Text.Json;

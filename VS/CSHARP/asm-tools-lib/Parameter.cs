@@ -23,21 +23,21 @@
 namespace AsmTools;
 
 public class AsmParameters
+{
+    public bool assume_initial_known_mem { get; private set; }
+
+    public bool mode_64bit { get; set; }
+
+    public bool mode_32bit { get; set; }
+
+    public bool Mode_16bit { get; set; }
+
+    public AsmParameters()
     {
-        public bool assume_initial_known_mem { get; private set; }
-
-        public bool mode_64bit { get; set; }
-
-        public bool mode_32bit { get; set; }
-
-        public bool Mode_16bit { get; set; }
-
-        public AsmParameters()
-        {
-            // default values
-            this.assume_initial_known_mem = true;
-            this.mode_64bit = true;
-            this.mode_32bit = false;
-            this.Mode_16bit = false;
-        }
+        // default values
+        this.assume_initial_known_mem = true;
+        this.mode_64bit = true;
+        this.mode_32bit = false;
+        this.Mode_16bit = false;
     }
+}

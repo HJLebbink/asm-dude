@@ -3,12 +3,13 @@
 
 namespace AsmDude2;
 
+using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Editor;
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Editor;
 
 #pragma warning disable VSEXTPREVIEW_TAGGERS // Type is for evaluation purposes only
 #pragma warning disable VSEXTPREVIEW_CODELENS // Type is for evaluation purposes only

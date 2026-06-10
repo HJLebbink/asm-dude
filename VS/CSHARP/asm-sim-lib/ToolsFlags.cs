@@ -142,7 +142,7 @@ namespace AsmSim
         {
             ArgumentNullException.ThrowIfNull(value);
             ArgumentNullException.ThrowIfNull(ctx);
-            
+
             // Modernize with better variable naming and structure
             BitVecExpr b0 = ToolsZ3.GetBit_BV(value, 0, ctx);
             BitVecExpr b1 = ToolsZ3.GetBit_BV(value, 1, ctx);
@@ -152,16 +152,16 @@ namespace AsmSim
             BitVecExpr b5 = ToolsZ3.GetBit_BV(value, 5, ctx);
             BitVecExpr b6 = ToolsZ3.GetBit_BV(value, 6, ctx);
             BitVecExpr b7 = ToolsZ3.GetBit_BV(value, 7, ctx);
-            
+
             BitVecExpr v01 = ctx.MkBVAdd(b0, b1);
             BitVecExpr v23 = ctx.MkBVAdd(b2, b3);
             BitVecExpr v45 = ctx.MkBVAdd(b4, b5);
             BitVecExpr v67 = ctx.MkBVAdd(b6, b7);
-            
+
             BitVecExpr v0123 = ctx.MkBVAdd(v01, v23);
             BitVecExpr v4567 = ctx.MkBVAdd(v45, v67);
             BitVecExpr v01234567 = ctx.MkBVAdd(v0123, v4567);
-            
+
             return ctx.MkEq(v01234567, ctx.MkBV(0, 1));
         }
 

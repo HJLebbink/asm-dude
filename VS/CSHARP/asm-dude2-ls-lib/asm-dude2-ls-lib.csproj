@@ -58,7 +58,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
     <PackageReference Include="Microsoft.VisualStudio.Language.StandardClassification" Version="18.9.28" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.9.2" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol.Extensions" Version="18.9.2" />

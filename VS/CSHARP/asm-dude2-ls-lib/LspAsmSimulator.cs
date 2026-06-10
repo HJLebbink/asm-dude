@@ -31,7 +31,6 @@ namespace AsmDude2LS
 
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -72,6 +71,16 @@ namespace AsmDude2LS
         /// Prevents a Z3 thread from launching on every keystroke.
         /// </summary>
         private const int DebounceMs = 3000;
+
+        /// <summary>
+        /// Minimum interval between in-loop <c>onProgress</c> notifications during a single
+        /// simulation pass. Without this, the simulator notifies the client once per simulated
+        /// line, and each notification makes the VS CodeLens tagger re-tag the WHOLE document
+        /// (full <c>UpdateTagsAsync</c>), invalidating every lens across the OOP boundary every
+        /// few hundred ms. Coalescing keeps the client's lens cache warm so scrolling hits it.
+        /// The unconditional final flush after the loop guarantees the last state is published.
+        /// </summary>
+        private const long ProgressNotifyThrottleMs = 400;
 
         private readonly ILogger logger_;
 
@@ -312,7 +321,7 @@ namespace AsmDude2LS
 
                 // Collect all distinct display positions
                 var allPositions = new HashSet<int>();
-                foreach (int k in entry.lineStringsReadLabels.Keys)  allPositions.Add(k);
+                foreach (int k in entry.lineStringsReadLabels.Keys) allPositions.Add(k);
                 foreach (int k in entry.lineStringsWriteLabels.Keys) allPositions.Add(k + 1);
 
                 var result = new Dictionary<int, string>(allPositions.Count);
@@ -345,11 +354,11 @@ namespace AsmDude2LS
                 foreach (string token in commaPart.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                 {
                     int colon = token.IndexOf(':');
-                    int eq    = token.IndexOf('=');
+                    int eq = token.IndexOf('=');
                     if (colon < 0 || eq <= colon + 1) continue;
                     string prefix = token[..(colon + 1)];   // "w:", "r:", "rw:"
-                    string name   = token[(colon + 1)..eq]; // "ZF", "RAX"
-                    string value  = token[(eq + 1)..];      // "1", "0x10", "?"
+                    string name = token[(colon + 1)..eq]; // "ZF", "RAX"
+                    string value = token[(eq + 1)..];      // "1", "0x10", "?"
                     if (name.Length > 0)
                         list.Add((prefix, name, value));
                 }
@@ -365,11 +374,11 @@ namespace AsmDude2LS
         private static string? MergeCompactLabels(string? writeCompact, string? readCompact)
         {
             if (string.IsNullOrEmpty(writeCompact) && string.IsNullOrEmpty(readCompact)) return null;
-            if (string.IsNullOrEmpty(readCompact))  return writeCompact;
+            if (string.IsNullOrEmpty(readCompact)) return writeCompact;
             if (string.IsNullOrEmpty(writeCompact)) return readCompact;
 
             var writeItems = ParseCompactItems(writeCompact);
-            var readItems  = ParseCompactItems(readCompact);
+            var readItems = ParseCompactItems(readCompact);
 
             // Build name → item lookup for the read side
             var readByName = new Dictionary<string, (string prefix, string value)>(StringComparer.OrdinalIgnoreCase);
@@ -587,6 +596,12 @@ namespace AsmDude2LS
                 var newDiagnostics = new List<SimDiagnostic>();
                 int linesWritten = 0;
 
+                // Coalesce per-line progress notifications (see ProgressNotifyThrottleMs). The
+                // negative seed lets the first simulated line notify immediately; the rest are
+                // throttled. The unconditional final flush after the loop publishes the last state.
+                var progressClock = System.Diagnostics.Stopwatch.StartNew();
+                long lastProgressNotifyMs = -ProgressNotifyThrottleMs;
+
                 // Memoize ComputeStateString per state instance: multiple lines sharing the same
                 // state (blank/comment) reuse the pre-computed string without re-running Z3.
                 var stateToString = new Dictionary<AsmSimState, string?>(ReferenceEqualityComparer.Instance);
@@ -749,8 +764,8 @@ namespace AsmDude2LS
                     // Reads of instruction i → shown ABOVE line i (r: prefix, before-state values)
                     // Writes of instruction i → shown BELOW line i (w: prefix, after-state values)
                     //   stored at key i; GetSimStatesSummary places them at display position i+1.
-                    string? readLabel  = ComputeReadLabel (stateBeforeStep, readRegsOfThis,  readFlagsOfThis);
-                    string? writeLabel = ComputeWriteLabel(state,           writtenRegs,      writtenFlags);
+                    string? readLabel = ComputeReadLabel(stateBeforeStep, readRegsOfThis, readFlagsOfThis);
+                    string? writeLabel = ComputeWriteLabel(state, writtenRegs, writtenFlags);
 
                     // ── Write to cache incrementally so hover and diagnostics are visible immediately ──
                     bool hadNewDiag = false;
@@ -762,8 +777,8 @@ namespace AsmDude2LS
                             && this.cache_.TryGetValue(uri, out DocCache? entry))
                         {
                             if (beforeStr != null) entry.lineStringsBefore[i] = beforeStr;
-                            if (afterStr != null)  entry.lineStringsAfter[i]  = afterStr;
-                            if (readLabel  != null) entry.lineStringsReadLabels[i]  = readLabel;
+                            if (afterStr != null) entry.lineStringsAfter[i] = afterStr;
+                            if (readLabel != null) entry.lineStringsReadLabels[i] = readLabel;
                             if (writeLabel != null) entry.lineStringsWriteLabels[i] = writeLabel;
                             if (lineDiags.Count > 0)
                             {
@@ -776,8 +791,13 @@ namespace AsmDude2LS
                     }
                     // Publish diagnostics immediately so squiggles appear without waiting for full simulation.
                     if (hadNewDiag) onCompleted?.Invoke(uri);
-                    // Notify the client to re-request inlay hints for the visible range.
-                    if (shouldRefresh) onProgress?.Invoke(uri);
+                    // Notify the client to re-request inlay hints for the visible range. Throttled
+                    // so a long sim pass doesn't re-tag the whole document once per line.
+                    if (shouldRefresh && progressClock.ElapsedMilliseconds - lastProgressNotifyMs >= ProgressNotifyThrottleMs)
+                    {
+                        lastProgressNotifyMs = progressClock.ElapsedMilliseconds;
+                        onProgress?.Invoke(uri);
+                    }
 
                     Log($"[THREAD] Line {i}: {mnemonic} done");
                 }
@@ -835,8 +855,8 @@ namespace AsmDude2LS
         {
             try
             {
-(AsmTools.KeywordID[] _, string _label, Mnemonic mnemonic, string[] args, string _remark)
-                     = AsmTools.AsmSourceTools.ParseLine(line, -1, -1, AssemblerEnum.UNKNOWN);
+                (AsmTools.KeywordID[] _, string _label, Mnemonic mnemonic, string[] args, string _remark)
+                                     = AsmTools.AsmSourceTools.ParseLine(line, -1, -1, AssemblerEnum.UNKNOWN);
 
                 if (mnemonic == Mnemonic.NONE)
                     return;

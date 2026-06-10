@@ -1,8 +1,9 @@
+using AsmAnnotate;
+
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AsmAnnotate;
 
 namespace asm_annotate
 {
@@ -20,64 +21,64 @@ namespace asm_annotate
             switch (command)
             {
                 case "check-latest":
-                {
-                    // Verify the local Intel SDM PDF is the latest revision Intel publishes.
-                    bool upToDate = await IntelDocChecker.CheckAndReportAsync(DataDir).ConfigureAwait(false);
-                    Console.WriteLine("\nDone!");
-                    return upToDate ? 0 : 1;
-                }
+                    {
+                        // Verify the local Intel SDM PDF is the latest revision Intel publishes.
+                        bool upToDate = await IntelDocChecker.CheckAndReportAsync(DataDir).ConfigureAwait(false);
+                        Console.WriteLine("\nDone!");
+                        return upToDate ? 0 : 1;
+                    }
 
                 case "find":
-                {
-                    // find <text>  — locate the page(s) containing <text> in the local PDF.
-                    (string? pdf, _) = IntelDocChecker.FindLocalPdf(DataDir);
-                    if (pdf == null) { Console.WriteLine($"❌ No 325462-*.pdf in {DataDir}"); return 1; }
-                    string needle = string.Join(' ', args.Skip(1));
-                    if (needle.Length == 0) { Console.WriteLine("Usage: find <text>"); return 1; }
-                    Diagnostics.FindText(pdf, needle);
-                    break;
-                }
+                    {
+                        // find <text>  — locate the page(s) containing <text> in the local PDF.
+                        (string? pdf, _) = IntelDocChecker.FindLocalPdf(DataDir);
+                        if (pdf == null) { Console.WriteLine($"❌ No 325462-*.pdf in {DataDir}"); return 1; }
+                        string needle = string.Join(' ', args.Skip(1));
+                        if (needle.Length == 0) { Console.WriteLine("Usage: find <text>"); return 1; }
+                        Diagnostics.FindText(pdf, needle);
+                        break;
+                    }
 
                 case "dump":
-                {
-                    // dump <page>  — print raw text elements + extracted lines for one page.
-                    (string? pdf, _) = IntelDocChecker.FindLocalPdf(DataDir);
-                    if (pdf == null) { Console.WriteLine($"❌ No 325462-*.pdf in {DataDir}"); return 1; }
-                    if (args.Length < 2 || !int.TryParse(args[1], out int page)) { Console.WriteLine("Usage: dump <page>"); return 1; }
-                    Diagnostics.DumpPage(pdf, page);
-                    break;
-                }
+                    {
+                        // dump <page>  — print raw text elements + extracted lines for one page.
+                        (string? pdf, _) = IntelDocChecker.FindLocalPdf(DataDir);
+                        if (pdf == null) { Console.WriteLine($"❌ No 325462-*.pdf in {DataDir}"); return 1; }
+                        if (args.Length < 2 || !int.TryParse(args[1], out int page)) { Console.WriteLine("Usage: dump <page>"); return 1; }
+                        Diagnostics.DumpPage(pdf, page);
+                        break;
+                    }
 
                 case "extract":
-                {
-                    // extract [startPage] [endPage]  — run the full pipeline to ./output.
-                    (string? pdf, int? rev) = IntelDocChecker.FindLocalPdf(DataDir);
-                    if (pdf == null) { Console.WriteLine($"❌ No 325462-*.pdf in {DataDir}"); return 1; }
-                    int start = (args.Length > 1 && int.TryParse(args[1], out int s)) ? s : 1;
-                    int end = (args.Length > 2 && int.TryParse(args[2], out int e)) ? e : int.MaxValue;
-                    Console.WriteLine($"Using {Path.GetFileName(pdf)} (revision {rev:000}).\n");
-                    Extractor.Run(pdf, @".\output", start, end);
-                    break;
-                }
+                    {
+                        // extract [startPage] [endPage]  — run the full pipeline to ./output.
+                        (string? pdf, int? rev) = IntelDocChecker.FindLocalPdf(DataDir);
+                        if (pdf == null) { Console.WriteLine($"❌ No 325462-*.pdf in {DataDir}"); return 1; }
+                        int start = (args.Length > 1 && int.TryParse(args[1], out int s)) ? s : 1;
+                        int end = (args.Length > 2 && int.TryParse(args[2], out int e)) ? e : int.MaxValue;
+                        Console.WriteLine($"Using {Path.GetFileName(pdf)} (revision {rev:000}).\n");
+                        Extractor.Run(pdf, @".\output", start, end);
+                        break;
+                    }
 
                 case "perf-uops":
-                {
-                    // perf-uops <instructions.xml> [outputDir]  — convert uops.info XML to per-arch TSVs.
-                    if (args.Length < 2) { Console.WriteLine("Usage: perf-uops <instructions.xml> [outputDir]"); return 1; }
-                    string xml = args[1];
-                    string outDir = args.Length > 2 ? args[2] : @".\output-perf";
-                    return UopsInfoImporter.Run(xml, outDir);
-                }
+                    {
+                        // perf-uops <instructions.xml> [outputDir]  — convert uops.info XML to per-arch TSVs.
+                        if (args.Length < 2) { Console.WriteLine("Usage: perf-uops <instructions.xml> [outputDir]"); return 1; }
+                        string xml = args[1];
+                        string outDir = args.Length > 2 ? args[2] : @".\output-perf";
+                        return UopsInfoImporter.Run(xml, outDir);
+                    }
 
                 case "gen-signatures":
-                {
-                    // gen-signatures [wikiDocDir] [outFile]  — turn the wiki's HTML opcode tables (stage 1
-                    // output) into the AsmDude signature file (+ overview.txt + wiki Home.md). Stage 2.
-                    string wikiDir = args.Length > 1 ? args[1] : "C:/Source/Github/asm-dude.wiki/doc";
-                    string outFile = args.Length > 2 ? args[2]
-                        : "C:/Source/Github/asm-dude/VS/CSHARP/asm-dude2-ls-lib/Resources/signature-mar2026.txt";
-                    return SignatureGenerator.Run(wikiDir, outFile);
-                }
+                    {
+                        // gen-signatures [wikiDocDir] [outFile]  — turn the wiki's HTML opcode tables (stage 1
+                        // output) into the AsmDude signature file (+ overview.txt + wiki Home.md). Stage 2.
+                        string wikiDir = args.Length > 1 ? args[1] : "C:/Source/Github/asm-dude.wiki/doc";
+                        string outFile = args.Length > 2 ? args[2]
+                            : "C:/Source/Github/asm-dude/VS/CSHARP/asm-dude2-ls-lib/Resources/signature-mar2026.txt";
+                        return SignatureGenerator.Run(wikiDir, outFile);
+                    }
 
                 default:
                     Console.WriteLine("Usage: asm-annotate <command>");

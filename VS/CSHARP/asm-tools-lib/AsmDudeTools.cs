@@ -22,8 +22,6 @@
 
 namespace AsmTools;
 
-using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,385 +29,387 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 
-    public sealed class AsmDude2Tools : IDisposable
+using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
+
+public sealed class AsmDude2Tools : IDisposable
+{
+    private readonly TraceSource traceSource;
+    private readonly XmlDocument xmlData_;
+    private readonly Dictionary<string, AsmTokenType> type_;
+    private readonly Dictionary<string, AssemblerEnum> assembler_;
+    private readonly Dictionary<string, Arch> arch_;
+    private readonly Dictionary<string, string> description_;
+
+    public static AsmDude2Tools Create(string path, TraceSource traceSource)
     {
-        private readonly TraceSource traceSource;
-        private readonly XmlDocument xmlData_;
-        private readonly Dictionary<string, AsmTokenType> type_;
-        private readonly Dictionary<string, AssemblerEnum> assembler_;
-        private readonly Dictionary<string, Arch> arch_;
-        private readonly Dictionary<string, string> description_;
-
-        public static AsmDude2Tools Create(string path, TraceSource traceSource)
+        if (Instance == null)
         {
-            if (Instance == null)
-            {
-                Instance = new AsmDude2Tools(traceSource);
-                Instance.Init_Data(path);
-            }
-            return Instance;
+            Instance = new AsmDude2Tools(traceSource);
+            Instance.Init_Data(path);
         }
+        return Instance;
+    }
 
-        private static AsmDude2Tools? Instance { get; set; }
+    private static AsmDude2Tools? Instance { get; set; }
 
-        /// <summary>
-        /// Singleton pattern: use AsmDudeTools.Instance for the instance of this class
-        /// </summary>
-        private AsmDude2Tools(TraceSource traceSource)
+    /// <summary>
+    /// Singleton pattern: use AsmDudeTools.Instance for the instance of this class
+    /// </summary>
+    private AsmDude2Tools(TraceSource traceSource)
+    {
+        this.traceSource = traceSource;
+        this.xmlData_ = new XmlDocument() { XmlResolver = null };
+        this.type_ = [];
+        this.arch_ = [];
+        this.assembler_ = [];
+        this.description_ = [];
+    }
+
+    #region Public Methods
+
+    public AsmTokenType Get_Token_Type_Att(string keyword)
+    {
+        Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
+
+        int length = keyword.Length;
+        Debug.Assert(length > 0);
+
+        char firstChar = keyword[0];
+
+        #region Test if keyword is a register
+        if (firstChar == '%')
         {
-            this.traceSource = traceSource;
-            this.xmlData_ = new XmlDocument() { XmlResolver = null };
-            this.type_ = [];
-            this.arch_ = [];
-            this.assembler_ = [];
-            this.description_ = [];
+            string keyword2 = keyword[1..];
+            Rn reg = RegisterTools.ParseRn(keyword2, true);
+            if (reg != Rn.NOREG)
+            {
+                // return (this.RegisterSwitchedOn(reg))
+                //    ? AsmTokenType.Register
+                //    : AsmTokenType.Register; //TODO
+                return AsmTokenType.Register; //TODO
+            }
         }
-
-        #region Public Methods
-
-        public AsmTokenType Get_Token_Type_Att(string keyword)
+        #endregion
+        #region Test if keyword is an imm
+        if (firstChar == '$')
         {
-            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
-
-            int length = keyword.Length;
-            Debug.Assert(length > 0);
-
-            char firstChar = keyword[0];
-
-            #region Test if keyword is a register
-            if (firstChar == '%')
-            {
-                string keyword2 = keyword[1..];
-                Rn reg = RegisterTools.ParseRn(keyword2, true);
-                if (reg != Rn.NOREG)
-                {
-                    // return (this.RegisterSwitchedOn(reg))
-                    //    ? AsmTokenType.Register
-                    //    : AsmTokenType.Register; //TODO
-                    return AsmTokenType.Register; //TODO
-                }
-            }
-            #endregion
-            #region Test if keyword is an imm
-            if (firstChar == '$')
-            {
-                return AsmTokenType.Constant;
-            }
-            #endregion
-            #region Test if keyword is an instruction
-            {
-                (Mnemonic mnemonic, _) = AsmSourceToolsAlias.ParseMnemonic_Att(keyword, true);
-                if (mnemonic != Mnemonic.NONE)
-                {
-                    //TODO
-                    // return (this.MnemonicSwitchedOn(mnemonic))
-                    //     ? AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
-                    //     : AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
-
-                    return AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
-                }
-            }
-            #endregion
-
-            return this.type_.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
+            return AsmTokenType.Constant;
         }
-
-        public AsmTokenType Get_Token_Type_Intel(string keyword)
+        #endregion
+        #region Test if keyword is an instruction
         {
-            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
-
-            Mnemonic mnemonic = AsmSourceToolsAlias.ParseMnemonic(keyword, true);
+            (Mnemonic mnemonic, _) = AsmSourceToolsAlias.ParseMnemonic_Att(keyword, true);
             if (mnemonic != Mnemonic.NONE)
             {
                 //TODO
-                //return (this.MnemonicSwitchedOn(mnemonic))
-                //    ? AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
-                //    : AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
+                // return (this.MnemonicSwitchedOn(mnemonic))
+                //     ? AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
+                //     : AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
 
                 return AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
-            Rn reg = RegisterTools.ParseRn(keyword, true);
-            if (reg != Rn.NOREG)
+        }
+        #endregion
+
+        return this.type_.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
+    }
+
+    public AsmTokenType Get_Token_Type_Intel(string keyword)
+    {
+        Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
+
+        Mnemonic mnemonic = AsmSourceToolsAlias.ParseMnemonic(keyword, true);
+        if (mnemonic != Mnemonic.NONE)
+        {
+            //TODO
+            //return (this.MnemonicSwitchedOn(mnemonic))
+            //    ? AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
+            //    : AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
+
+            return AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+        }
+        Rn reg = RegisterTools.ParseRn(keyword, true);
+        if (reg != Rn.NOREG)
+        {
+            return AsmTokenType.Register;
+        }
+        return this.type_.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
+    }
+
+    public AssemblerEnum Get_Assembler(string keyword)
+    {
+        Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
+
+        return this.assembler_.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
+    }
+
+    /// <summary>
+    /// get description for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an description. Keyword has to be in CAPITALS
+    /// </summary>
+    public string Get_Description(string keyword)
+    {
+        Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
+
+        return this.description_.TryGetValue(keyword, out string description) ? description : string.Empty;
+    }
+
+    /// <summary>Get the collection of Keywords (in CAPITALS), but NOT mnemonics and registers</summary>
+    public IEnumerable<string> Get_Keywords()
+    {
+        return this.type_.Keys;
+    }
+
+    /// <summary>
+    /// Get architecture of the provided keyword. Keyword has to be in CAPITALS
+    /// </summary>
+    public Arch Get_Architecture(string keyword)
+    {
+        Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
+
+        return this.arch_.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
+    }
+
+
+    #endregion Public Methods
+
+    #region Private Methods
+
+    private static void LogInfo(string msg)
+    {
+        Instance.traceSource?.TraceEvent(TraceEventType.Information, 0, msg);
+        Console.WriteLine($"INFO: {msg}");
+    }
+
+    private static void LogWarning(string msg)
+    {
+        Instance.traceSource?.TraceEvent(TraceEventType.Warning, 0, msg);
+        Console.WriteLine($"WARNING: {msg}");
+    }
+
+    private static void LogError(string msg)
+    {
+        Instance.traceSource?.TraceEvent(TraceEventType.Error, 0, msg);
+        Console.WriteLine($"ERROR: {msg}");
+    }
+
+    private void Init_Data(string path)
+    {
+        if (this.xmlData_ == null)
+        {
+            return;
+        }
+
+        // fill the dictionary with keywords
+        {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getXmlData", this.ToString()));
+            string filename = Path.Combine(path, "AsmDudeData.xml");
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: AsmDudeTools:getXmlData: going to load file \"{0}\"", filename));
+            try
             {
-                return AsmTokenType.Register;
+                StringReader stringReader = new(File.ReadAllText(filename));
+                using XmlReader reader = XmlReader.Create(stringReader, new XmlReaderSettings() { XmlResolver = null });
+                this.xmlData_.Load(reader);
             }
-            return this.type_.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
-        }
-
-        public AssemblerEnum Get_Assembler(string keyword)
-        {
-            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
-
-            return this.assembler_.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
-        }
-
-        /// <summary>
-        /// get description for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an description. Keyword has to be in CAPITALS
-        /// </summary>
-        public string Get_Description(string keyword)
-        {
-            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
-
-            return this.description_.TryGetValue(keyword, out string description) ? description : string.Empty;
-        }
-
-        /// <summary>Get the collection of Keywords (in CAPITALS), but NOT mnemonics and registers</summary>
-        public IEnumerable<string> Get_Keywords()
-        {
-            return this.type_.Keys;
-        }
-
-        /// <summary>
-        /// Get architecture of the provided keyword. Keyword has to be in CAPITALS
-        /// </summary>
-        public Arch Get_Architecture(string keyword)
-        {
-            Debug.Assert(keyword == keyword.ToUpperInvariant(), "keyword must be upper-case");
-
-            return this.arch_.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
-        }
-
-
-        #endregion Public Methods
-
-        #region Private Methods
-
-        private static void LogInfo(string msg)
-        {
-            Instance.traceSource?.TraceEvent(TraceEventType.Information, 0, msg);
-            Console.WriteLine($"INFO: {msg}");
-        }
-
-        private static void LogWarning(string msg)
-        {
-            Instance.traceSource?.TraceEvent(TraceEventType.Warning, 0, msg);
-            Console.WriteLine($"WARNING: {msg}");
-        }
-
-        private static void LogError(string msg)
-        {
-            Instance.traceSource?.TraceEvent(TraceEventType.Error, 0, msg);
-            Console.WriteLine($"ERROR: {msg}");
-        }
-
-        private void Init_Data(string path)
-        {
-            if (this.xmlData_ == null)
+            catch (FileNotFoundException)
             {
+                LogError("AsmDudeTools:Init_Data: could not find file \"" + filename + "\".");
                 return;
             }
-
-            // fill the dictionary with keywords
+            catch (XmlException)
             {
-                //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getXmlData", this.ToString()));
-                string filename = Path.Combine(path, "AsmDudeData.xml");
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: AsmDudeTools:getXmlData: going to load file \"{0}\"", filename));
-                try
-                {
-                    StringReader stringReader = new(File.ReadAllText(filename));
-                    using XmlReader reader = XmlReader.Create(stringReader, new XmlReaderSettings() { XmlResolver = null });
-                    this.xmlData_.Load(reader);
-                }
-                catch (FileNotFoundException)
-                {
-                    LogError("AsmDudeTools:Init_Data: could not find file \"" + filename + "\".");
-                    return;
-                }
-                catch (XmlException)
-                {
-                    LogError("AsmDudeTools:Init_Data: xml error while reading file \"" + filename + "\".");
-                    return;
-                }
-                catch (Exception e)
-                {
-                    LogError("AsmDudeTools:Init_Data: error while reading file \"" + filename + "\"." + e);
-                    return;
-                }
+                LogError("AsmDudeTools:Init_Data: xml error while reading file \"" + filename + "\".");
+                return;
             }
-
-
-            foreach (XmlNode? node in this.xmlData_.SelectNodes("//misc"))
+            catch (Exception e)
             {
-                if (node.Attributes != null)
-                {
-                    XmlAttribute nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null)
-                    {
-                        LogWarning("AsmDudeTools:Init_Data: found misc with no name");
-                    }
-                    else
-                    {
-                        string name = nameAttribute.Value.ToUpperInvariant();
-                        this.type_[name] = AsmTokenType.Misc;
-                        this.arch_[name] = Retrieve_Arch(node);
-                        this.description_[name] = Retrieve_Description(node);
-                    }
-                }
-            }
-            foreach (XmlNode node in this.xmlData_.SelectNodes("//directive"))
-            {
-                if (node.Attributes != null)
-                {
-                    XmlAttribute nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null)
-                    {
-                        LogWarning("AsmDudeTools:Init_Data: found directive with no name");
-                    }
-                    else
-                    {
-                        string name = nameAttribute.Value.ToUpperInvariant();
-                        this.type_[name] = AsmTokenType.Directive;
-                        this.arch_[name] = Retrieve_Arch(node);
-                        this.assembler_[name] = Retrieve_Assembler(node);
-                        this.description_[name] = Retrieve_Description(node);
-                    }
-                }
-            }
-            foreach (XmlNode node in this.xmlData_.SelectNodes("//register"))
-            {
-                if (node.Attributes != null)
-                {
-                    XmlAttribute nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null)
-                    {
-                        LogWarning("AsmDudeTools:Init_Data: found register with no name");
-                    }
-                    else
-                    {
-                        string name = nameAttribute.Value.ToUpperInvariant();
-                        //this.type_[name] = AsmTokenType.Register; //TODO why is this line removed?
-                        this.arch_[name] = Retrieve_Arch(node);
-                        this.description_[name] = Retrieve_Description(node);
-                    }
-                }
-            }
-            foreach (XmlNode node in this.xmlData_.SelectNodes("//userdefined1"))
-            {
-                if (node.Attributes != null)
-                {
-                    XmlAttribute nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null)
-                    {
-                        LogWarning("AsmDudeTools:Init_Data: found user defined1 with no name");
-                    }
-                    else
-                    {
-                        string name = nameAttribute.Value.ToUpperInvariant();
-                        this.type_[name] = AsmTokenType.UserDefined1;
-                        this.description_[name] = Retrieve_Description(node);
-                    }
-                }
-            }
-            foreach (XmlNode node in this.xmlData_.SelectNodes("//userdefined2"))
-            {
-                if (node.Attributes != null)
-                {
-                    XmlAttribute nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null)
-                    {
-                        LogWarning("AsmDudeTools:Init_Data: found user defined2 with no name");
-                    }
-                    else
-                    {
-                        string name = nameAttribute.Value.ToUpperInvariant();
-                        this.type_[name] = AsmTokenType.UserDefined2;
-                        this.description_[name] = Retrieve_Description(node);
-                    }
-                }
-            }
-            foreach (XmlNode node in this.xmlData_.SelectNodes("//userdefined3"))
-            {
-                if (node.Attributes != null)
-                {
-                    XmlAttribute nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null)
-                    {
-                        LogWarning("AsmDudeTools:Init_Data: found user defined3 with no name");
-                    }
-                    else
-                    {
-                        string name = nameAttribute.Value.ToUpperInvariant();
-                        this.type_[name] = AsmTokenType.UserDefined3;
-                        this.description_[name] = Retrieve_Description(node);
-                    }
-                }
+                LogError("AsmDudeTools:Init_Data: error while reading file \"" + filename + "\"." + e);
+                return;
             }
         }
 
-        private static Arch Retrieve_Arch(XmlNode node)
+
+        foreach (XmlNode? node in this.xmlData_.SelectNodes("//misc"))
         {
-            ArgumentNullException.ThrowIfNull(node);
-
-            try
+            if (node.Attributes != null)
             {
-                XmlAttribute archAttribute = node.Attributes["arch"];
-                return (archAttribute == null) ? Arch.ARCH_NONE : ArchTools.ParseArch(archAttribute.Value, false, true);
-            }
-            catch (Exception)
-            {
-                return Arch.ARCH_NONE;
-            }
-        }
-
-        private static AssemblerEnum Retrieve_Assembler(XmlNode node)
-        {
-            try
-            {
-                if (node != null)
+                XmlAttribute nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
                 {
-                    var attColl = node.Attributes;
-                    if (attColl != null)
-                    {
-                        XmlAttribute archAttribute = attColl["tool"];
-                        if (archAttribute != null)
-                        {
-                            return AsmSourceToolsAlias.ParseAssembler(archAttribute.Value, false);
-                        }
-                    }
+                    LogWarning("AsmDudeTools:Init_Data: found misc with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpperInvariant();
+                    this.type_[name] = AsmTokenType.Misc;
+                    this.arch_[name] = Retrieve_Arch(node);
+                    this.description_[name] = Retrieve_Description(node);
                 }
             }
-            catch (Exception)
-            {
-                // do nothing
-            }
-            return AssemblerEnum.UNKNOWN;
         }
-
-        private static string Retrieve_Description(XmlNode node)
+        foreach (XmlNode node in this.xmlData_.SelectNodes("//directive"))
         {
-            try
+            if (node.Attributes != null)
             {
-                XmlNode? node2 = node.SelectSingleNode("./description");
-                return (node2 == null) ? string.Empty : node2.InnerText.Trim();
+                XmlAttribute nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
+                {
+                    LogWarning("AsmDudeTools:Init_Data: found directive with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpperInvariant();
+                    this.type_[name] = AsmTokenType.Directive;
+                    this.arch_[name] = Retrieve_Arch(node);
+                    this.assembler_[name] = Retrieve_Assembler(node);
+                    this.description_[name] = Retrieve_Description(node);
+                }
             }
-            catch (Exception)
+        }
+        foreach (XmlNode node in this.xmlData_.SelectNodes("//register"))
+        {
+            if (node.Attributes != null)
             {
-                return string.Empty;
+                XmlAttribute nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
+                {
+                    LogWarning("AsmDudeTools:Init_Data: found register with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpperInvariant();
+                    //this.type_[name] = AsmTokenType.Register; //TODO why is this line removed?
+                    this.arch_[name] = Retrieve_Arch(node);
+                    this.description_[name] = Retrieve_Description(node);
+                }
             }
         }
-        #endregion
-
-        #region IDisposable Support
-
-        public void Dispose()
+        foreach (XmlNode node in this.xmlData_.SelectNodes("//userdefined1"))
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~AsmDude2Tools()
-        {
-            this.Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
+            if (node.Attributes != null)
             {
-                // free managed resources
-                //this.threadPool_.Dispose();
+                XmlAttribute nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
+                {
+                    LogWarning("AsmDudeTools:Init_Data: found user defined1 with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpperInvariant();
+                    this.type_[name] = AsmTokenType.UserDefined1;
+                    this.description_[name] = Retrieve_Description(node);
+                }
             }
-            // free native resources if there are any.
         }
-        #endregion
+        foreach (XmlNode node in this.xmlData_.SelectNodes("//userdefined2"))
+        {
+            if (node.Attributes != null)
+            {
+                XmlAttribute nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
+                {
+                    LogWarning("AsmDudeTools:Init_Data: found user defined2 with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpperInvariant();
+                    this.type_[name] = AsmTokenType.UserDefined2;
+                    this.description_[name] = Retrieve_Description(node);
+                }
+            }
+        }
+        foreach (XmlNode node in this.xmlData_.SelectNodes("//userdefined3"))
+        {
+            if (node.Attributes != null)
+            {
+                XmlAttribute nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
+                {
+                    LogWarning("AsmDudeTools:Init_Data: found user defined3 with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpperInvariant();
+                    this.type_[name] = AsmTokenType.UserDefined3;
+                    this.description_[name] = Retrieve_Description(node);
+                }
+            }
+        }
     }
+
+    private static Arch Retrieve_Arch(XmlNode node)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+
+        try
+        {
+            XmlAttribute archAttribute = node.Attributes["arch"];
+            return (archAttribute == null) ? Arch.ARCH_NONE : ArchTools.ParseArch(archAttribute.Value, false, true);
+        }
+        catch (Exception)
+        {
+            return Arch.ARCH_NONE;
+        }
+    }
+
+    private static AssemblerEnum Retrieve_Assembler(XmlNode node)
+    {
+        try
+        {
+            if (node != null)
+            {
+                var attColl = node.Attributes;
+                if (attColl != null)
+                {
+                    XmlAttribute archAttribute = attColl["tool"];
+                    if (archAttribute != null)
+                    {
+                        return AsmSourceToolsAlias.ParseAssembler(archAttribute.Value, false);
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // do nothing
+        }
+        return AssemblerEnum.UNKNOWN;
+    }
+
+    private static string Retrieve_Description(XmlNode node)
+    {
+        try
+        {
+            XmlNode? node2 = node.SelectSingleNode("./description");
+            return (node2 == null) ? string.Empty : node2.InnerText.Trim();
+        }
+        catch (Exception)
+        {
+            return string.Empty;
+        }
+    }
+    #endregion
+
+    #region IDisposable Support
+
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~AsmDude2Tools()
+    {
+        this.Dispose(false);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            // free managed resources
+            //this.threadPool_.Dispose();
+        }
+        // free native resources if there are any.
+    }
+    #endregion
+}

@@ -27,195 +27,196 @@ using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
 using System;
 using System.Globalization;
 using System.Linq;
+
 #if NET10_0_OR_GREATER
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 #endif
 
-    public static class ExpressionEvaluator
+public static class ExpressionEvaluator
+{
+    /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
+    public static (bool valid, ulong value, int nBits) Parse_Constant(string str, bool isCapitals = false)
     {
-        /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
-        public static (bool valid, ulong value, int nBits) Parse_Constant(string str, bool isCapitals = false)
+        string token2;
+        bool isHex = false;
+        bool isBinary = false;
+        bool isDecimal = false;
+        bool isOctal = false;
+        bool isNegative = false;
+
+        // Console.WriteLine("AsmSourceTools:ToConstant token=" + token);
+
+        str = str.Replace("_", string.Empty);
+
+        if (!isCapitals)
         {
-            string token2;
-            bool isHex = false;
-            bool isBinary = false;
-            bool isDecimal = false;
-            bool isOctal = false;
-            bool isNegative = false;
+            str = str.ToUpperInvariant();
+        }
+        str = str.Trim();
 
-            // Console.WriteLine("AsmSourceTools:ToConstant token=" + token);
+        if (str.StartsWith("-", StringComparison.Ordinal))
+        {
+            token2 = str;
+            isDecimal = true;
+            isNegative = true;
+        }
 
-            str = str.Replace("_", string.Empty);
-
-            if (!isCapitals)
+        // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
+        else if (str.EndsWith("H", StringComparison.Ordinal))
+        {
+            token2 = str.Substring(0, str.Length - 1);
+            isHex = true;
+        }
+        else if (str.StartsWith("0H", StringComparison.Ordinal) || str.StartsWith("0X", StringComparison.Ordinal) || str.StartsWith("$0", StringComparison.Ordinal))
+        {
+            token2 = str.Substring(2);
+            isHex = true;
+        }
+        else if (str.StartsWith("0O", StringComparison.Ordinal) || str.StartsWith("0Q", StringComparison.Ordinal))
+        {
+            token2 = str.Substring(2);
+            isOctal = true;
+        }
+        else if (str.EndsWith("Q", StringComparison.Ordinal) || str.EndsWith("O", StringComparison.Ordinal))
+        {
+            token2 = str.Substring(0, str.Length - 1);
+            isOctal = true;
+        }
+        else if (str.StartsWith("0D", StringComparison.Ordinal))
+        {
+            token2 = str.Substring(2);
+            isDecimal = true;
+        }
+        else if (str.EndsWith("D", StringComparison.Ordinal))
+        {
+            token2 = str;
+            isDecimal = true;
+        }
+        else if (str.StartsWith("0B", StringComparison.Ordinal) || str.StartsWith("0Y", StringComparison.Ordinal))
+        {
+            token2 = str.Substring(2);
+            isBinary = true;
+        }
+        else if (str.EndsWith("Y", StringComparison.Ordinal))
+        {
+            token2 = str.Substring(0, str.Length - 1);
+            isBinary = true;
+        }
+        else
+        {
+            // special case with trailing B: either this B is from a hex number of the Binary
+            if (str.EndsWith("B", StringComparison.Ordinal))
             {
-                str = str.ToUpperInvariant();
-            }
-            str = str.Trim();
-
-            if (str.StartsWith("-", StringComparison.Ordinal))
-            {
-                token2 = str;
-                isDecimal = true;
-                isNegative = true;
-            }
-
-            // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
-            else if (str.EndsWith("H", StringComparison.Ordinal))
-            {
-                token2 = str.Substring(0, str.Length - 1);
-                isHex = true;
-            }
-            else if (str.StartsWith("0H", StringComparison.Ordinal) || str.StartsWith("0X", StringComparison.Ordinal) || str.StartsWith("$0", StringComparison.Ordinal))
-            {
-                token2 = str.Substring(2);
-                isHex = true;
-            }
-            else if (str.StartsWith("0O", StringComparison.Ordinal) || str.StartsWith("0Q", StringComparison.Ordinal))
-            {
-                token2 = str.Substring(2);
-                isOctal = true;
-            }
-            else if (str.EndsWith("Q", StringComparison.Ordinal) || str.EndsWith("O", StringComparison.Ordinal))
-            {
-                token2 = str.Substring(0, str.Length - 1);
-                isOctal = true;
-            }
-            else if (str.StartsWith("0D", StringComparison.Ordinal))
-            {
-                token2 = str.Substring(2);
-                isDecimal = true;
-            }
-            else if (str.EndsWith("D", StringComparison.Ordinal))
-            {
-                token2 = str;
-                isDecimal = true;
-            }
-            else if (str.StartsWith("0B", StringComparison.Ordinal) || str.StartsWith("0Y", StringComparison.Ordinal))
-            {
-                token2 = str.Substring(2);
-                isBinary = true;
-            }
-            else if (str.EndsWith("Y", StringComparison.Ordinal))
-            {
-                token2 = str.Substring(0, str.Length - 1);
-                isBinary = true;
-            }
-            else
-            {
-                // special case with trailing B: either this B is from a hex number of the Binary
-                if (str.EndsWith("B", StringComparison.Ordinal))
+                bool parsedSuccessfully_tmp = ulong.TryParse(str, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out _);
+                if (parsedSuccessfully_tmp)
                 {
-                    bool parsedSuccessfully_tmp = ulong.TryParse(str, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out _);
-                    if (parsedSuccessfully_tmp)
-                    {
-                        isHex = true;
-                        token2 = str;
-                    }
-                    else
-                    {
-                        token2 = str.Substring(0, str.Length - 1);
-                        isBinary = true;
-                    }
-                }
-                else
-                { // assume decimal
+                    isHex = true;
                     token2 = str;
-                    isDecimal = true;
-                }
-            }
-            ulong value = 0;
-            bool parsedSuccessfully;
-            if (isHex)
-            {
-                parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value);
-            }
-            else if (isOctal)
-            {
-                try
-                {
-                    value = Convert.ToUInt64(token2, 8);
-                    parsedSuccessfully = true;
-                }
-                catch
-                {
-                    parsedSuccessfully = false;
-                }
-            }
-            else if (isBinary)
-            {
-                try
-                {
-                    value = Convert.ToUInt64(token2, 2);
-                    parsedSuccessfully = true;
-                }
-                catch
-                {
-                    parsedSuccessfully = false;
-                }
-            }
-            else if (isDecimal)
-            {
-                if (isNegative)
-                {
-                    parsedSuccessfully = long.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out long signedValue);
-                    value = (ulong)signedValue;
-                    // Console.WriteLine("AsmSourceTools:ToConstant token2=" + token2 + "; signed value = " + Convert.ToString(signedValue, 16) + "; unsigned value = " + string.Format(AsmDudeToolsStatic.CultureUI, "{0:X}", value));
                 }
                 else
                 {
-                    parsedSuccessfully = ulong.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out value);
-                    if (!parsedSuccessfully)
-                    {
-                        parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value);
-                    }
+                    token2 = str.Substring(0, str.Length - 1);
+                    isBinary = true;
                 }
             }
             else
+            { // assume decimal
+                token2 = str;
+                isDecimal = true;
+            }
+        }
+        ulong value = 0;
+        bool parsedSuccessfully;
+        if (isHex)
+        {
+            parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value);
+        }
+        else if (isOctal)
+        {
+            try
             {
-                // unreachable
+                value = Convert.ToUInt64(token2, 8);
+                parsedSuccessfully = true;
+            }
+            catch
+            {
                 parsedSuccessfully = false;
             }
-
-            int nBits = parsedSuccessfully ? AsmSourceToolsAlias.NBitsStorageNeeded(value, isNegative) : -1;
-            return (valid: parsedSuccessfully, value, nBits);
         }
+        else if (isBinary)
+        {
+            try
+            {
+                value = Convert.ToUInt64(token2, 2);
+                parsedSuccessfully = true;
+            }
+            catch
+            {
+                parsedSuccessfully = false;
+            }
+        }
+        else if (isDecimal)
+        {
+            if (isNegative)
+            {
+                parsedSuccessfully = long.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out long signedValue);
+                value = (ulong)signedValue;
+                // Console.WriteLine("AsmSourceTools:ToConstant token2=" + token2 + "; signed value = " + Convert.ToString(signedValue, 16) + "; unsigned value = " + string.Format(AsmDudeToolsStatic.CultureUI, "{0:X}", value));
+            }
+            else
+            {
+                parsedSuccessfully = ulong.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out value);
+                if (!parsedSuccessfully)
+                {
+                    parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value);
+                }
+            }
+        }
+        else
+        {
+            // unreachable
+            parsedSuccessfully = false;
+        }
+
+        int nBits = parsedSuccessfully ? AsmSourceToolsAlias.NBitsStorageNeeded(value, isNegative) : -1;
+        return (valid: parsedSuccessfully, value, nBits);
+    }
 
 #if NET10_0_OR_GREATER
-        public static (bool valid, ulong value, int nBits) Evaluate_Constant(string str, bool isCapitals = false)
+    public static (bool valid, ulong value, int nBits) Evaluate_Constant(string str, bool isCapitals = false)
+    {
+        // 1] test whether str has digits, if it has none it is not a constant
+        if (!str.Any(char.IsDigit))
         {
-            // 1] test whether str has digits, if it has none it is not a constant
-            if (!str.Any(char.IsDigit))
-            {
-                return (valid: false, value: 0, nBits: -1);
-            }
-
-            // 2] test whether str is a constant
-            (bool valid, ulong value, int nBits) v = Parse_Constant(str, isCapitals);
-            if (v.valid)
-            {
-                return v;
-            }
-
-            // 3] check if str contains operators
-            if (str.Contains('+') || str.Contains('-') || str.Contains('*') || str.Contains('/') ||
-                str.Contains("<<") || str.Contains(">>"))
-            {
-                // second: if str is not a constant, test whether evaluating it yields a ulong
-                try
-                {
-                    System.Threading.Tasks.Task<ulong> t = CSharpScript.EvaluateAsync<ulong>(str);
-                    ulong value = t.Result;
-                    bool isNegative = false;
-                    return (valid: true, value, nBits: AsmSourceToolsAlias.NBitsStorageNeeded(value, isNegative));
-                }
-                catch (Exception)
-                {
-                    // Do nothing
-                }
-            }
-            // 4] don't know what it is but it is not likely to be a constant.
             return (valid: false, value: 0, nBits: -1);
         }
-#endif
+
+        // 2] test whether str is a constant
+        (bool valid, ulong value, int nBits) v = Parse_Constant(str, isCapitals);
+        if (v.valid)
+        {
+            return v;
+        }
+
+        // 3] check if str contains operators
+        if (str.Contains('+') || str.Contains('-') || str.Contains('*') || str.Contains('/') ||
+            str.Contains("<<") || str.Contains(">>"))
+        {
+            // second: if str is not a constant, test whether evaluating it yields a ulong
+            try
+            {
+                System.Threading.Tasks.Task<ulong> t = CSharpScript.EvaluateAsync<ulong>(str);
+                ulong value = t.Result;
+                bool isNegative = false;
+                return (valid: true, value, nBits: AsmSourceToolsAlias.NBitsStorageNeeded(value, isNegative));
+            }
+            catch (Exception)
+            {
+                // Do nothing
+            }
+        }
+        // 4] don't know what it is but it is not likely to be a constant.
+        return (valid: false, value: 0, nBits: -1);
     }
+#endif
+}

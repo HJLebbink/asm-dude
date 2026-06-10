@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-annotate-tests", "CSHAR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-fuzz-tests", "CSHARP\asm-fuzz-tests\asm-fuzz-tests.csproj", "{89DDC891-E33A-44AB-8068-525439F4DDFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude2-vsix-tests", "CSHARP\asm-dude2-vsix-tests\asm-dude2-vsix-tests.csproj", "{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -223,6 +225,18 @@ Global
 		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|x64.Build.0 = Release|Any CPU
 		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|x86.ActiveCfg = Release|Any CPU
 		{89DDC891-E33A-44AB-8068-525439F4DDFF}.Release|x86.Build.0 = Release|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Debug|x64.Build.0 = Debug|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Debug|x86.Build.0 = Debug|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Release|x64.ActiveCfg = Release|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Release|x64.Build.0 = Release|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Release|x86.ActiveCfg = Release|Any CPU
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -242,6 +256,7 @@ Global
 		{ED14711D-CBB9-48DE-8555-B651B9D36437} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 		{03F3DA54-54D4-4EC8-B0F5-293CBB8FDDAB} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 		{89DDC891-E33A-44AB-8068-525439F4DDFF} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
+		{7EF3EBB1-9373-4CE9-86E6-02D5C192FE9C} = {B41BF331-FCCB-2ADF-CDB6-767964B34647}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89D318BB-C529-4DDE-8EAF-DAEA3986256B}

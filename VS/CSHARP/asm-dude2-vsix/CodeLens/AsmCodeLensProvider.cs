@@ -3,10 +3,11 @@
 
 namespace AsmDude2;
 
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
+
+using System.Threading;
+using System.Threading.Tasks;
 
 #pragma warning disable VSEXTPREVIEW_CODELENS // Type is for evaluation purposes only
 
@@ -26,6 +27,10 @@ internal class AsmCodeLensProvider : ExtensionPart, ICodeLensProvider
 
     public Task<CodeLens?> TryCreateCodeLensAsync(CodeElement codeElement, CodeElementContext codeElementContext, CancellationToken token)
     {
+        // [Conditional("DEBUG")] — fires whenever VS materializes a lens; a burst here on scroll is
+        // the tell-tale of VS re-creating lenses over the OOP boundary. Off in Release.
+        AsmCodeLensTagger.TaggerLogVerbose($"[provider] TryCreateCodeLensAsync: kind={codeElement.Kind}, id={codeElement.UniqueIdentifier}");
+
         if (codeElement.Kind == AsmCodeLensTagger.AsmLabelKind)
             return Task.FromResult<CodeLens?>(new AsmLabelCodeLens(codeElement, this.Extensibility));
 

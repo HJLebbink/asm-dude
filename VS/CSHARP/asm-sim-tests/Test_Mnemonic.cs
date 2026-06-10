@@ -23,7 +23,6 @@
 namespace unit_tests_asm_z3
 {
     using AsmSim;
-    using AsmSim.Mnemonics;
 
     using AsmTools;
 
@@ -34,8 +33,6 @@ namespace unit_tests_asm_z3
     using System.Collections.Generic;
     using System.Globalization;
     using System.Numerics; // for BigInt
-
-    using static Microsoft.CodeAnalysis.CSharp.SyntaxTokenParser;
 
     [TestClass]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
@@ -1558,14 +1555,14 @@ namespace unit_tests_asm_z3
                 state = AsmTestTools.Step_Forward(line2, state);
                 if (LogToDisplay)
                 {
-                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
                 AsmTestTools.AreEqual(Rn.RCX, 0, state);
                 AsmTestTools.AreEqual(Rn.RAX, undef, state);
-                AsmTestTools.AreEqual(Flags.ZF, Tv.ONE, state); 
-                AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state); 
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
                 AsmTestTools.AreEqual(Flags.PF, Tv.UNDEFINED, state);
-                AsmTestTools.AreEqual(Flags.SF, Tv.UNDEFINED, state); 
+                AsmTestTools.AreEqual(Flags.SF, Tv.UNDEFINED, state);
                 /////
                 state = AsmTestTools.Step_Forward(line3, state);
                 if (LogToDisplay)
@@ -1588,7 +1585,7 @@ namespace unit_tests_asm_z3
                 AsmTestTools.AreEqual(Flags.ZF, Tv.UNDEFINED, state);
                 AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state); // NOTE: inc does not touch CF
                 AsmTestTools.AreEqual(Flags.PF, Tv.UNDEFINED, state);
-                AsmTestTools.AreEqual(Flags.SF, Tv.UNDEFINED, state); 
+                AsmTestTools.AreEqual(Flags.SF, Tv.UNDEFINED, state);
             }
         }
         [TestMethod]

@@ -141,7 +141,7 @@ public class LanguageServerTarget(LanguageServer server)
 #if DEBUG
         this.traceSetting = TraceSetting.Verbose;
 #else
-            traceSetting = TraceSetting.Off;
+        traceSetting = TraceSetting.Off;
 #endif
 
         AsmDudeLog.Info($"Initialize: traceSetting={this.traceSetting}");
@@ -256,16 +256,16 @@ public class LanguageServerTarget(LanguageServer server)
                     Range = false,
                     Legend = new SemanticTokensLegend
                     {
-// Legend indices MUST match VS's client token type ordering.
-                         // VS ignores the server legend and uses its own fixed indices:
-                         //   0=namespace 1=type 2=class 3=enum 4=interface 5=struct
-                         //   6=typeParameter 7=parameter 8=variable 9=property
-                         //   10=enumMember 11=event 12=function 13=method 14=macro
-                         //   15=keyword 16=modifier 17=comment 18=string 19=number
-                         //   20=regexp 21=operator
-                         // Token type indices in LanguageServer.MapTokenType() must use
-                         // these client indices directly.
-                         TokenTypes =
+                        // Legend indices MUST match VS's client token type ordering.
+                        // VS ignores the server legend and uses its own fixed indices:
+                        //   0=namespace 1=type 2=class 3=enum 4=interface 5=struct
+                        //   6=typeParameter 7=parameter 8=variable 9=property
+                        //   10=enumMember 11=event 12=function 13=method 14=macro
+                        //   15=keyword 16=modifier 17=comment 18=string 19=number
+                        //   20=regexp 21=operator
+                        // Token type indices in LanguageServer.MapTokenType() must use
+                        // these client indices directly.
+                        TokenTypes =
                          [
                              "namespace",        // 0
                              "type",             // 1: labels

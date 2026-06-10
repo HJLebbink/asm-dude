@@ -27,77 +27,77 @@ using System.Collections.Generic;
 using System.Text;
 
 public class StopWatch
+{
+    private readonly IDictionary<string, long> startTimeTicks_;
+    private readonly IDictionary<string, double> totalTimeInSec_;
+
+    /// <summary> Constructor </summary>
+    public StopWatch()
     {
-        private readonly IDictionary<string, long> startTimeTicks_;
-        private readonly IDictionary<string, double> totalTimeInSec_;
+        this.On = true;
+        this.startTimeTicks_ = new Dictionary<string, long>();
+        this.totalTimeInSec_ = new Dictionary<string, double>();
+    }
+    public bool On { get; set; }
 
-        /// <summary> Constructor </summary>
-        public StopWatch()
+    public void Reset()
+    {
+        this.startTimeTicks_.Clear();
+        this.totalTimeInSec_.Clear();
+    }
+
+    public void Start(string key)
+    {
+        if (this.On)
         {
-            this.On = true;
-            this.startTimeTicks_ = new Dictionary<string, long>();
-            this.totalTimeInSec_ = new Dictionary<string, double>();
+            this.startTimeTicks_[key] = DateTime.Now.Ticks;
         }
-        public bool On { get; set; }
+    }
 
-        public void Reset()
+    public void Stop(string key)
+    {
+        if (this.On)
         {
-            this.startTimeTicks_.Clear();
-            this.totalTimeInSec_.Clear();
-        }
-
-        public void Start(string key)
-        {
-            if (this.On)
+            double elapsedSec = 0;
+            if (this.startTimeTicks_.TryGetValue(key, out long value))
             {
-                this.startTimeTicks_[key] = DateTime.Now.Ticks;
+                elapsedSec = (double)(DateTime.Now.Ticks - value) / 10000000;
             }
-        }
-
-        public void Stop(string key)
-        {
-            if (this.On)
+            if (this.totalTimeInSec_.TryGetValue(key, out double sum))
             {
-                double elapsedSec = 0;
-                if (this.startTimeTicks_.TryGetValue(key, out long value))
-                {
-                    elapsedSec = (double)(DateTime.Now.Ticks - value) / 10000000;
-                }
-                if (this.totalTimeInSec_.TryGetValue(key, out double sum))
-                {
-                    this.totalTimeInSec_[key] = sum + elapsedSec;
-                }
-                else
-                {
-                    this.totalTimeInSec_[key] = elapsedSec;
-                }
-            }
-        }
-
-        public override string ToString()
-        {
-            double totalTime = 0;
-            StringBuilder sb = new();
-            if (this.On)
-            {
-                if (this.totalTimeInSec_.Count == 0)
-                {
-                    sb.Append("StopWatch: no entries");
-                }
-                else
-                {
-                    foreach (KeyValuePair<string, double> entry in this.totalTimeInSec_)
-                    {
-                        totalTime += entry.Value;
-                        sb.Append("StopWatch: ").Append(entry.Key).Append(": ").Append(entry.Value).AppendLine(" sec.");
-                    }
-                    sb.Append("StopWatch: Total Time: ").Append(totalTime).AppendLine(" sec.");
-                }
+                this.totalTimeInSec_[key] = sum + elapsedSec;
             }
             else
             {
-                sb.Append("StopWatch is switched off");
+                this.totalTimeInSec_[key] = elapsedSec;
             }
-            return sb.ToString();
         }
     }
+
+    public override string ToString()
+    {
+        double totalTime = 0;
+        StringBuilder sb = new();
+        if (this.On)
+        {
+            if (this.totalTimeInSec_.Count == 0)
+            {
+                sb.Append("StopWatch: no entries");
+            }
+            else
+            {
+                foreach (KeyValuePair<string, double> entry in this.totalTimeInSec_)
+                {
+                    totalTime += entry.Value;
+                    sb.Append("StopWatch: ").Append(entry.Key).Append(": ").Append(entry.Value).AppendLine(" sec.");
+                }
+                sb.Append("StopWatch: Total Time: ").Append(totalTime).AppendLine(" sec.");
+            }
+        }
+        else
+        {
+            sb.Append("StopWatch is switched off");
+        }
+        return sb.ToString();
+    }
+}

@@ -25,29 +25,29 @@ namespace AsmTools;
 using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
 
 public enum NumerationEnum
-    {
-        UNKNOWN,
-        HEX,
-        BIN,
-        DEC,
-        OCT,
-    }
+{
+    UNKNOWN,
+    HEX,
+    BIN,
+    DEC,
+    OCT,
+}
 
-    public static partial class AsmSourceTools
+public static partial class AsmSourceTools
+{
+    public static NumerationEnum ParseNumeration(string str, bool strIsCapitals)
     {
-        public static NumerationEnum ParseNumeration(string str, bool strIsCapitals)
+        if (string.IsNullOrEmpty(str))
         {
-            if (string.IsNullOrEmpty(str))
-            {
-                return NumerationEnum.UNKNOWN;
-            }
-            return AsmSourceToolsAlias.ToCapitals(str, strIsCapitals).Trim() switch
-            {
-                "HEX" => NumerationEnum.HEX,
-                "BIN" => NumerationEnum.BIN,
-                "DEC" => NumerationEnum.DEC,
-                "OCT" => NumerationEnum.OCT,
-                _ => NumerationEnum.UNKNOWN,
-            };
+            return NumerationEnum.UNKNOWN;
+        }
+        return AsmSourceToolsAlias.ToCapitals(str, strIsCapitals).Trim() switch
+        {
+            "HEX" => NumerationEnum.HEX,
+            "BIN" => NumerationEnum.BIN,
+            "DEC" => NumerationEnum.DEC,
+            "OCT" => NumerationEnum.OCT,
+            _ => NumerationEnum.UNKNOWN,
+        };
     }
 }

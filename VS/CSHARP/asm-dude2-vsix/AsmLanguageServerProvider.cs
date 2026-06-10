@@ -3,17 +3,19 @@
 
 namespace AsmDude2;
 
+using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Editor;
+using Microsoft.VisualStudio.Extensibility.LanguageServer;
+using Microsoft.VisualStudio.RpcContracts.LanguageServerProvider;
+
+using Nerdbank.Streams;
+
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Editor;
-using Microsoft.VisualStudio.Extensibility.LanguageServer;
-using Microsoft.VisualStudio.RpcContracts.LanguageServerProvider;
-using Nerdbank.Streams;
 
 // ARCHITECTURE NOTE — Hover Tooltips & Clickable Links
 //
@@ -69,10 +71,10 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
             DocumentFilter.FromDocumentType(SDocumentType),
         ]);
 
-public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
-        {
-            string extensionDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-            string serverExe = Path.Combine(extensionDir, "Server", LanguageServerConstants.ExecutableName);
+    public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
+    {
+        string extensionDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        string serverExe = Path.Combine(extensionDir, "Server", LanguageServerConstants.ExecutableName);
 
         try
         {
