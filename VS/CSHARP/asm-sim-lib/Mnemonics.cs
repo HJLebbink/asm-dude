@@ -285,14 +285,14 @@ namespace AsmSim
                         case Ot1.UNKNOWN:
                         default:
                             {
-                                Console.WriteLine("WARNING: OpcodeBase:OpValue. unknown operand type, unknown what to do.");
+                                AsmLog.Warn("SIM", "OpcodeBase:OpValue. unknown operand type, unknown what to do.");
                                 return null;
                             }
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("ERROR: OpcodeBase:OpValue: op=" + operand.ToString() + ": exception " + e.ToString());
+                    AsmLog.Error("SIM", "OpcodeBase:OpValue: op=" + operand.ToString() + ": exception " + e.ToString());
                     return null;
                 }
             }
@@ -4050,7 +4050,7 @@ namespace AsmSim
                         case 4: return Rn.EAX;
                         case 8: return Rn.RAX;
                         default:
-                            Console.WriteLine("WARNING: StringOperationAbstract: AccumulatorReg: nBytes has invalid value " + this.nBytes_ + ".");
+                            AsmLog.Warn("SIM", "StringOperationAbstract: AccumulatorReg: nBytes has invalid value " + this.nBytes_ + ".");
                             return Rn.AL;
                     }
                 }

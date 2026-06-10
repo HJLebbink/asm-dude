@@ -287,6 +287,9 @@ public enum Arch
     /// <summary> Cache Line DEMOTE (CPUID.(EAX=0x7, ECX=0):ECX[bit25])</summary>
     ARCH_CLDEMOTE,
 
+    /// <summary> Cache Line Write Back: CLWB (CPUID.(EAX=0x7, ECX=0):EBX[bit24])</summary>
+    ARCH_CLWB,
+
     /// <summary> Direct store instructions – Direct store using write combining (WC) for 64B (CPUID.(EAX=?, ECX=?):ECX[bit?])</summary>
     ARCH_MOVDIR64B,
 
@@ -396,6 +399,8 @@ public static class ArchTools
             case "AESKLE":
             case "KL":
             case "WIDEKL":
+            case "AESWIDE":         // wide Key Locker "AES_WIDE" CPUID flag (AES{ENC,DEC}WIDE*KL)
+            case "KEYLOCK":         // repairs the "KEY_LOCK ER" PDF line-wrap artifact (LOADIWKEY)
             case "KEYLOCKER": return Arch.ARCH_KEYLOCKER;
             case "UINTR": return Arch.ARCH_UINTR;
             case "PBNDKB": return Arch.ARCH_PBNDKB;
@@ -466,9 +471,12 @@ public static class ArchTools
             case "SHA": return Arch.ARCH_SHA;
             case "RTM": return Arch.ARCH_RTM;
             case "PREFETCHWT1": return Arch.ARCH_PREFETCHWT1;
+            case "PREFETCHW":               // SDM "PREFETCHW" CPUID-flag cell == the PRFCHW feature
             case "PRFCHW": return Arch.ARCH_PRFCHW;
+            case "CLWB": return Arch.ARCH_CLWB;
 
             case "SGX1": return Arch.ARCH_SGX1;
+            case "EDECCSSA":            // SGX2 enhancement leaf (ENCLU[EDECCSSA]); SDM lists its own CPUID flag
             case "SGX2": return Arch.ARCH_SGX2;
             case "SMX": return Arch.ARCH_SMX;
 
@@ -983,6 +991,7 @@ public static class ArchTools
             case Arch.ARCH_SGX2: return "SGX2";
             case Arch.ARCH_SMX: return "SMX";
             case Arch.ARCH_CLDEMOTE: return "CLDEMOTE";
+            case Arch.ARCH_CLWB: return "CLWB";
             case Arch.ARCH_MOVDIR64B: return "MOVDIR64B";
             case Arch.ARCH_MOVDIRI: return "MOVDIRI";
             case Arch.ARCH_PCONFIG: return "PCONFIG";

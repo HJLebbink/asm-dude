@@ -25,7 +25,6 @@ internal class SettingsSyncService : ExtensionPart
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AsmDude2");
 
     private static readonly string SettingsFile = Path.Combine(SettingsDir, "settings.json");
-    private static readonly string DiagLogFile = Path.Combine(Path.GetTempPath(), "AsmDude2-extension-diag.log");
 
     private IDisposable? subscription;
 
@@ -298,8 +297,8 @@ internal class SettingsSyncService : ExtensionPart
         base.Dispose(isDisposing);
     }
 
-    private static void Log(string message)
-    {
-        try { File.AppendAllText(DiagLogFile, $"[{DateTime.Now:HH:mm:ss.fff}] {message}\n"); } catch { }
-    }
+    private static void Log(string message,
+        [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+        => AsmTools.AsmLog.Log(AsmTools.AsmLogLevel.Debug, "Settings", message, member, line);
 }

@@ -143,17 +143,17 @@ namespace AsmSim
 
             #endregion
 
-            Console.WriteLine(ToString(this._solver));
+            AsmLog.Trace("SIM", ToString(this._solver));
             if (this._solver.Check() == Status.SATISFIABLE)
             {
                 this.GetAllModels(this._solver, ctx);
             }
             else
             {
-                Console.WriteLine("INFO: No code exists that implements the target constraints.");
+                AsmLog.Info("SIM", "No code exists that implements the target constraints.");
                 foreach (BoolExpr b in this._solver.UnsatCore)
                 {
-                    Console.WriteLine(b);
+                    AsmLog.Trace("SIM", b.ToString());
                 }
             }
         }
@@ -168,9 +168,7 @@ namespace AsmSim
         {
             if (false)
             {
-                Console.Write("GetMostModels2: entering: freeLines=");
-                foreach (int i in freeLines) Console.Write(i + ",");
-                Console.WriteLine();
+                AsmLog.Trace("SIM", "GetMostModels2: entering: freeLines=" + string.Join(",", freeLines));
             }
 
             foreach (int lineNumber in freeLines)
@@ -188,10 +186,10 @@ namespace AsmSim
                             solver.Push();
 
                             this._validPrograms.Add(programId);
-                            Console.WriteLine("-----------------\ncount " + counter);
+                            AsmLog.Debug("SIM", "-----------------\ncount " + counter);
                             counter++;
-                            Console.Write(programStr);
-                            Console.WriteLine(this.ToString(solver.Model));
+                            AsmLog.Trace("SIM", programStr);
+                            AsmLog.Trace("SIM", this.ToString(solver.Model));
                             //Console.WriteLine(ToString_Constants(solver.Model));
                             //return;
 
@@ -214,9 +212,7 @@ namespace AsmSim
 
             if (false)
             {
-                Console.Write("GetMostModels2: exiting: freeLines=");
-                foreach (int i in freeLines) Console.Write(i + ",");
-                Console.WriteLine();
+                AsmLog.Trace("SIM", "GetMostModels2: exiting: freeLines=" + string.Join(",", freeLines));
             }
         }
 
@@ -936,8 +932,8 @@ namespace AsmSim
                     {
                         if (solver.Check() == Status.SATISFIABLE)
                         {
-                            Console.WriteLine(instruction_Switch + " = " + tv);
-                            Console.WriteLine(this.ToString(solver.Model));
+                            AsmLog.Trace("SIM", instruction_Switch + " = " + tv);
+                            AsmLog.Trace("SIM", this.ToString(solver.Model));
                         }
                     }
                     if (tv == Tv.ONE)

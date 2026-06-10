@@ -27,8 +27,6 @@ namespace AsmDude2LS
 
     using AsmTools;
 
-    using Microsoft.Extensions.Logging;
-
     using System;
     using System.Collections.Generic;
     using System.Text;
@@ -82,8 +80,6 @@ namespace AsmDude2LS
         /// </summary>
         private const long ProgressNotifyThrottleMs = 400;
 
-        private readonly ILogger logger_;
-
         internal sealed class DocCache
         {
             internal readonly Dictionary<int, string?> lineStringsAfter = [];
@@ -109,12 +105,15 @@ namespace AsmDude2LS
         private readonly Dictionary<Uri, long> simVersion_ = [];
         private readonly object lockObj_ = new();
 
-        internal LspAsmSimulator(ILogger logger)
+        internal LspAsmSimulator()
         {
-            this.logger_ = logger;
         }
 
-        private static void Log(string msg) => AsmDudeLog.Debug($"[ASMSIM] {msg}");
+        // Forwards the real caller's member:line so each ASMSIM line is greppable to its source.
+        private static void Log(string msg,
+            [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+            [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+            => AsmLog.Log(AsmLogLevel.Debug, "ASMSIM", msg, member, line);
 
         /// <summary>
         /// Trigger a background re-simulation for the given document.
@@ -666,7 +665,7 @@ namespace AsmDude2LS
                                 }
                                 catch (Exception ex)
                                 {
-                                    this.logger_.LogDebug("LspAsmSimulator: #pragma assume failed line {L}: {Ex}", i, ex.Message);
+                                    AsmLog.Debug("ASMSIM", $"#pragma assume failed line {i}: {ex.Message}");
                                 }
                             }
                         }
@@ -750,7 +749,7 @@ namespace AsmDude2LS
                     }
                     catch (Exception ex)
                     {
-                        this.logger_.LogDebug("LspAsmSimulator: line {Line}: {Ex}", i, ex.Message);
+                        AsmLog.Debug("ASMSIM", $"line {i}: {ex.Message}");
                     }
 
                     // ── After-state (full — for hover) ────────────────────────────
@@ -832,7 +831,7 @@ namespace AsmDude2LS
             catch (Exception ex)
             {
                 Log($"[THREAD] EXCEPTION: {ex.GetType().Name}: {ex.Message}");
-                this.logger_.LogWarning("LspAsmSimulator: simulation failed for {Uri}: {Ex}", uri, ex.Message);
+                AsmLog.Warn("ASMSIM", $"simulation failed for {uri}: {ex.Message}");
             }
             finally
             {
@@ -899,7 +898,7 @@ namespace AsmDude2LS
                 }
                 catch (Exception ex)
                 {
-                    this.logger_.LogDebug("LspAsmSimulator: IsConsistent failed line {L}: {Ex}", lineIndex, ex.Message);
+                    AsmLog.Debug("ASMSIM", $"IsConsistent failed line {lineIndex}: {ex.Message}");
                 }
 
                 // Usage of undefined: check flags and registers that this opcode reads
@@ -934,12 +933,12 @@ namespace AsmDude2LS
                 }
                 catch (Exception ex)
                 {
-                    this.logger_.LogDebug("LspAsmSimulator: usage-undefined check failed line {L}: {Ex}", lineIndex, ex.Message);
+                    AsmLog.Debug("ASMSIM", $"usage-undefined check failed line {lineIndex}: {ex.Message}");
                 }
             }
             catch (Exception ex)
             {
-                this.logger_.LogDebug("LspAsmSimulator: diagnostics collection failed line {L}: {Ex}", lineIndex, ex.Message);
+                AsmLog.Debug("ASMSIM", $"diagnostics collection failed line {lineIndex}: {ex.Message}");
             }
         }
 

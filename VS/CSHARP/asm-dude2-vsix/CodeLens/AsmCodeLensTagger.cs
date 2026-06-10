@@ -285,30 +285,16 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
         => sigByLine[line] = sigByLine.TryGetValue(line, out var existing) ? existing + ";" + fragment : fragment;
 
     // ── Diagnostic logging ──────────────────────────────────────────────────────────────────────
-    // Both loggers are [Conditional("DEBUG")]: in a Release build the calls AND their (interpolated)
-    // arguments are removed by the compiler, so there is zero logging overhead in shipped bits. F5
-    // deploys a Debug build, so the full trace is available while diagnosing. TaggerLog records the
-    // notable events (publishes, lifecycle); TaggerLogVerbose adds the high-frequency detail
-    // (per-request decisions, skips) — split so a future runtime switch can quiet the noisy channel
-    // without losing the notable one.
-    internal static readonly string TaggerLogPath = Path.Combine(Path.GetTempPath(), "asmdude-tagger.log");
-    private static readonly object TaggerLogLock = new();
+    // Routed through the shared AsmLog under category "CodeLens". Notable events log at Debug; the
+    // high-frequency per-request detail logs at Trace (suppressed unless the level threshold is
+    // lowered via ASMDUDE_LOGLEVEL / settings). The real call site (member:line) is preserved.
+    internal static void TaggerLog(string msg,
+        [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+        => AsmTools.AsmLog.Log(AsmTools.AsmLogLevel.Debug, "CodeLens", msg, member, line);
 
-    [System.Diagnostics.Conditional("DEBUG")]
-    internal static void TaggerLog(string msg) => WriteLog("I", msg);
-
-    [System.Diagnostics.Conditional("DEBUG")]
-    internal static void TaggerLogVerbose(string msg) => WriteLog("V", msg);
-
-    private static void WriteLog(string level, string msg)
-    {
-        try
-        {
-            lock (TaggerLogLock)
-            {
-                File.AppendAllText(TaggerLogPath, $"[{DateTime.Now:HH:mm:ss.fff}] [{level}] {msg}{Environment.NewLine}");
-            }
-        }
-        catch { }
-    }
+    internal static void TaggerLogVerbose(string msg,
+        [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+        => AsmTools.AsmLog.Log(AsmTools.AsmLogLevel.Trace, "CodeLens", msg, member, line);
 }

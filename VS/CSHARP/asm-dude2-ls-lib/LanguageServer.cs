@@ -114,6 +114,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.traceSource = Tools.CreateTraceSource();
         AsmDudeLog.TraceSource = this.traceSource;
 
+        // This is the live, connected server; the window-log sink forwards to it so AsmLog output
+        // (Info and up) shows up in Visual Studio's language-server output pane via window/logMessage.
+        Instance = this;
+        EnsureWindowLogSink();
+
         //AsmDudeLog.Info("LanguageServer: constructor"); // This lineNumber produces a crash
         this.target = new LanguageServerTarget(this);
         this.textDocuments = [];
@@ -150,7 +155,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         AsmDudeLog.Info("LanguageServer: RPC listener started");
 
         this.target.OnInitialized += this.OnTargetInitialized;
-        this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        this.asmSimulator_ = new LspAsmSimulator();
         this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_)
         {
             // Server owns label reference counting; the VSIX tagger fetches it over the pipe.
@@ -177,7 +182,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.foldingRanges = [];
         this.diagnostics = [];
         this.Symbols = [];
-        this.asmSimulator_ = new LspAsmSimulator(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+        this.asmSimulator_ = new LspAsmSimulator();
         this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_)
         {
             CodeLensDataProvider = this.GetCodeLensData,
@@ -3406,22 +3411,34 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         Instance?.MakeWindowVisible();
     }
 
-    public void LogMessage(object arg)
+    // Registers (once, process-wide) an AsmLog sink that mirrors Info+ events into Visual Studio's
+    // language-server output pane via LSP window/logMessage. It forwards to the current Instance so it
+    // survives reconnects and never accumulates per-instance (e.g. across unit-test servers).
+    private static int windowLogSinkRegistered_;
+
+    private static void EnsureWindowLogSink()
     {
-        this.LogMessage(arg, MessageType.Info);
+        if (System.Threading.Interlocked.Exchange(ref windowLogSinkRegistered_, 1) != 0) return;
+
+        AsmLog.AddSink(AsmLogSinks.MinLevel(AsmLogLevel.Info, entry =>
+        {
+            try { Instance?.SendWindowLog(entry); }
+            catch { /* connection not ready / torn down — file+stderr sinks still captured it */ }
+        }));
     }
 
-    public void LogMessage(object arg, MessageType messageType)
-    {
-        this.LogMessage(arg, "BLAH", messageType);
-    }
-
-    public void LogMessage(object arg, string message, MessageType messageType)
+    private void SendWindowLog(AsmLogEntry entry)
     {
         _ = this.SendMethodNotificationAsync(Methods.WindowLogMessageName, new LogMessageParams
         {
-            Message = message,
-            MessageType = messageType
+            // Clean columnar rendering (no call-site key) for the VS pane; the disk log keeps the detail.
+            Message = entry.ToDisplayString(),
+            MessageType = entry.Level switch
+            {
+                AsmLogLevel.Error => MessageType.Error,
+                AsmLogLevel.Warn => MessageType.Warning,
+                _ => MessageType.Info,
+            },
         });
     }
 

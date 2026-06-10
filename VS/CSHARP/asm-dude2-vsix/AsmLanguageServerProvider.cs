@@ -32,7 +32,6 @@ using System.Threading.Tasks;
 [VisualStudioContribution]
 internal class AsmLanguageServerProvider : LanguageServerProvider
 {
-    private static readonly string DiagLogFile = Path.Combine(Path.GetTempPath(), "AsmDude2-extension-diag.log");
 
     [VisualStudioContribution]
     public static DocumentTypeConfiguration AsmDocumentType => new("asm")
@@ -73,6 +72,10 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
 
     public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
     {
+        // Create the dedicated "AsmDude2" VS output pane and attach the Info+ sink (once, best-effort).
+        // Fire-and-forget so it never delays/affects the server connection; self-guarded inside.
+        _ = VsixLog.EnsureOutputChannelAsync(this.Extensibility, cancellationToken);
+
         string extensionDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         string serverExe = Path.Combine(extensionDir, "Server", LanguageServerConstants.ExecutableName);
 
@@ -149,9 +152,9 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
         return base.OnServerInitializationResultAsync(serverInitializationResult, initializationFailureInfo, cancellationToken);
     }
 
-    private static void Log(string message)
-    {
-        try { File.AppendAllText(DiagLogFile, $"[{DateTime.Now:HH:mm:ss.fff}] {message}\n"); } catch { }
-    }
+    private static void Log(string message,
+        [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+        => AsmTools.AsmLog.Log(AsmTools.AsmLogLevel.Debug, "Server", message, member, line);
 }
 #pragma warning restore VSEXTPREVIEW_LSP

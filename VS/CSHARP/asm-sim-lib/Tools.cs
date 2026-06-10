@@ -437,8 +437,8 @@ namespace AsmSim
                 }
                 else
                 {
-                    Console.WriteLine("INFO: Tools:Collapse: state1:\n" + result);
-                    Console.WriteLine("INFO: Tools:Collapse: state2:\n" + prev);
+                    AsmLog.Info("SIM", "Tools:Collapse: state1:\n" + result);
+                    AsmLog.Info("SIM", "Tools:Collapse: state2:\n" + prev);
                     State result2 = new(result, prev, true);
                     if (counter > 2)
                     {
@@ -447,7 +447,7 @@ namespace AsmSim
                     }
 
                     result = result2;
-                    Console.WriteLine("INFO: Tools:Collapse: merged state:\n" + result);
+                    AsmLog.Info("SIM", "Tools:Collapse: merged state:\n" + result);
                 }
                 counter++;
             }

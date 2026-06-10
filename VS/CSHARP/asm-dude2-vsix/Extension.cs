@@ -27,6 +27,12 @@ using Microsoft.VisualStudio.Extensibility;
 [VisualStudioContribution]
 public class Extension : Microsoft.VisualStudio.Extensibility.Extension
 {
+    public Extension()
+    {
+        // Configure AsmLog (disk sink + runtime threshold) as early as the extension loads.
+        VsixLog.EnsureInitialized();
+    }
+
     public override ExtensionConfiguration ExtensionConfiguration => new()
     {
         Metadata = new(

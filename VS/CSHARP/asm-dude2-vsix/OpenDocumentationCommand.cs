@@ -25,7 +25,6 @@ using System.Threading.Tasks;
 [VisualStudioContribution]
 internal class OpenDocumentationCommand : Command
 {
-    private static readonly string DiagLogFile = Path.Combine(Path.GetTempPath(), "AsmDude2-extension-diag.log");
 
     // guidSHLMainMenu, IDG_VS_CODEWIN_NAVIGATETOLOCATION — the "Go to Definition" group in the code editor context menu
     private static readonly Guid GuidSHLMainMenu = new("D309F791-903F-11D0-9EFC-00A0C911004F");
@@ -88,8 +87,8 @@ internal class OpenDocumentationCommand : Command
 
     private static bool IsWordChar(char c) => char.IsLetterOrDigit(c) || c is '_' or '%';
 
-    private static void Log(string message)
-    {
-        try { File.AppendAllText(DiagLogFile, $"[{DateTime.Now:HH:mm:ss.fff}] {message}\n"); } catch { }
-    }
+    private static void Log(string message,
+        [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+        => AsmTools.AsmLog.Log(AsmTools.AsmLogLevel.Debug, "Command", message, member, line);
 }

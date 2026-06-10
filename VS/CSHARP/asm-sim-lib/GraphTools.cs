@@ -22,6 +22,8 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
     using QuikGraph;
 
     using System;
@@ -150,7 +152,7 @@ namespace AsmSim
             }
             else
             {
-                Console.WriteLine("WARNING: Get_First_Mutual_Branch_Point_Backwards: multiple merge points at this the provided vertex " + vertex);
+                AsmLog.Warn("SIM", "Get_First_Mutual_Branch_Point_Backwards: multiple merge points at this the provided vertex " + vertex);
             }
         }
 
@@ -158,7 +160,7 @@ namespace AsmSim
         {
             if (vertex1 == vertex2)
             {
-                Console.WriteLine("INFO: GraphTools:Get_First_Branch_Point: vertex1=vertex2=" + vertex1);
+                AsmLog.Info("SIM", "GraphTools:Get_First_Branch_Point: vertex1=vertex2=" + vertex1);
                 return vertex1;
             }
 
@@ -179,12 +181,12 @@ namespace AsmSim
             switch (m.Count)
             {
                 case 0:
-                    Console.WriteLine("WARNING: GraphTools:Get_First_Branch_Point: no mutual branch point found");
+                    AsmLog.Warn("SIM", "GraphTools:Get_First_Branch_Point: no mutual branch point found");
                     return null;
                 case 1:
                     return m[0];
                 default:
-                    Console.WriteLine("WARNING: GraphTools:Get_First_Branch_Point: multiple mutual branch points found, returning first.");
+                    AsmLog.Warn("SIM", "GraphTools:Get_First_Branch_Point: multiple mutual branch points found, returning first.");
                     return m[0];
             }
         }

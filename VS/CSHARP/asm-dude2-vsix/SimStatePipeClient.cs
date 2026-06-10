@@ -381,13 +381,8 @@ internal sealed class SimStatePipeClient : IDisposable
         }
     }
 
-    private static void PipeClientLog(string msg)
-    {
-        try
-        {
-            string path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AsmDude2-pipe-client.log");
-            System.IO.File.AppendAllText(path, $"[{DateTime.Now:HH:mm:ss.fff}] {msg}\n");
-        }
-        catch { }
-    }
+    private static void PipeClientLog(string msg,
+        [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+        => AsmTools.AsmLog.Log(AsmTools.AsmLogLevel.Debug, "Pipe", msg, member, line);
 }

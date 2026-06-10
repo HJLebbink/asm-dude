@@ -234,7 +234,7 @@ namespace AsmSim
 
                 if (!consistent1 && !consistent2)
                 {
-                    Console.WriteLine("WARNING: State: merge constructor: states have to be consistent. state1 consistent = " + consistent1 + "; state2 consistent = " + consistent2);
+                    AsmLog.Warn("SIM", "State: merge constructor: states have to be consistent. state1 consistent = " + consistent1 + "; state2 consistent = " + consistent2);
                 }
                 if (!consistent1)
                 {
@@ -428,7 +428,7 @@ namespace AsmSim
                 {
                     if (this.frozen_)
                     {
-                        Console.WriteLine("WARNING: State:Frozen: unfreezing a state");
+                        AsmLog.Warn("SIM", "State:Frozen: unfreezing a state");
 
                         this.frozen_ = false;
                         this.cached_Reg_Values_.Clear();
@@ -448,7 +448,7 @@ namespace AsmSim
 
             if (this.frozen_)
             {
-                Console.WriteLine("WARNING: State:Update: state is frozen, nothing added.");
+                AsmLog.Warn("SIM", "State:Update: state is frozen, nothing added.");
                 return;
             }
             lock (this.ctxLock_)
@@ -491,7 +491,7 @@ namespace AsmSim
         {
             if (this.frozen_)
             {
-                Console.WriteLine("WARNING: State:Add: state is frozen, nothing added.");
+                AsmLog.Warn("SIM", "State:Add: state is frozen, nothing added.");
                 return;
             }
             lock (this.ctxLock_)
@@ -709,7 +709,7 @@ namespace AsmSim
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("WARNING: AsmSimulator: " + e.ToString());
+                    AsmLog.Warn("SIM", "AsmSimulator: " + e.ToString());
                     return new Tv[RegisterTools.NBits(regName)];
                 }
             }
@@ -1116,7 +1116,7 @@ namespace AsmSim
                             eq = Tv.ZERO;
                             break;
                         case Status.UNKNOWN:
-                            Console.WriteLine("WARNING: State:equalValue: A: ReasonUnknown = " + this.Solver.ReasonUnknown);
+                            AsmLog.Warn("SIM", "State:equalValue: A: ReasonUnknown = " + this.Solver.ReasonUnknown);
                             break;
                     }
                     if (method1)
@@ -1146,7 +1146,7 @@ namespace AsmSim
                             uneq = Tv.ZERO;
                             break;
                         case Status.UNKNOWN:
-                            Console.WriteLine("WARNING: State:equalValue: B: ReasonUnknown = " + this.Solver.ReasonUnknown);
+                            AsmLog.Warn("SIM", "State:equalValue: B: ReasonUnknown = " + this.Solver.ReasonUnknown);
                             break;
                     }
                 }

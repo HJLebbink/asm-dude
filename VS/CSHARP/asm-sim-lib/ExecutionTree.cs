@@ -22,6 +22,8 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
     using QuikGraph;
 
     using System;
@@ -48,7 +50,7 @@ namespace AsmSim
             /*
             if (!dFlow.Has_LineNumber(startLineNumber))
             {
-                Console.WriteLine("WARNING: ExecutionTree: provided startLineNumber " + startLineNumber + " does not exist in the provided dFlow");
+                AsmLog.Warn("SIM", "ExecutionTree: provided startLineNumber " + startLineNumber + " does not exist in the provided dFlow");
             }
             string startKey = dFlow.Key(startLineNumber);
 

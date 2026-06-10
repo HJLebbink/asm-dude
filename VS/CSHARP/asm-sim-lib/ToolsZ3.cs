@@ -22,6 +22,8 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
     using Microsoft.Z3;
 
     using System;
@@ -772,7 +774,7 @@ namespace AsmSim
             Tv[] results = new Tv[nBits];
             if (value == null)
             {
-                Console.WriteLine("WARNING: ToolsZ3:GetTv5Array: value is null, assuming UNKNOWN");
+                AsmLog.Warn("SIM", "ToolsZ3:GetTv5Array: value is null, assuming UNKNOWN");
                 return results;
             }
             using (BitVecNum bv1_1bit = ctx.MkBV(1, 1))
@@ -794,7 +796,7 @@ namespace AsmSim
             Tv[] results = new Tv[nBits];
             if (value == null)
             {
-                Console.WriteLine("WARNING: ToolsZ3:GetTv5Array: value is null, assuming UNKNOWN");
+                AsmLog.Warn("SIM", "ToolsZ3:GetTv5Array: value is null, assuming UNKNOWN");
                 return results;
             }
             using (BitVecNum bv1_1bit = ctx.MkBV(1, 1))
@@ -821,7 +823,7 @@ namespace AsmSim
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERROR: ToolsZ3: GetTv: e=" + e.ToString());
+                AsmLog.Error("SIM", "ToolsZ3: GetTv: e=" + e.ToString());
                 return Tv.UNDETERMINED;
             }
         }
@@ -1080,7 +1082,7 @@ namespace AsmSim
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERROR: ToolsZ3: GetTv: e=" + e.ToString());
+                AsmLog.Error("SIM", "ToolsZ3: GetTv: e=" + e.ToString());
                 return Tv.UNDETERMINED;
             }
         }

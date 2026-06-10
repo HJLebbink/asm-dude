@@ -345,6 +345,8 @@ public class AsmSettingsData
     [DataMember]
     public bool ARCH_CLDEMOTE;
     [DataMember]
+    public bool ARCH_CLWB;
+    [DataMember]
     public bool ARCH_MOVDIR64B;
     [DataMember]
     public bool ARCH_MOVDIRI;
@@ -427,6 +429,14 @@ public class AsmSettingsData
     public bool useAssemblerAutoDetect;
     [DataMember]
     public int Global_MaxFileLines;
+
+    /// <summary>
+    /// Diagnostic log verbosity: trace|debug|info|warn|error|off (blank = build default). Honored by
+    /// both the VSIX and the LSP server via <see cref="AsmLog.TryParseLevel"/>. The ASMDUDE_LOGLEVEL
+    /// env var overrides this.
+    /// </summary>
+    [DataMember]
+    public string LogLevel = string.Empty;
 #pragma warning restore SA1401 // Fields should be private
 
     public AsmSettingsData()

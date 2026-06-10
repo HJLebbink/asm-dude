@@ -14,6 +14,10 @@ namespace asm_annotate
 
         static async Task<int> Main(string[] args)
         {
+            // Route AsmLog ("ANNOTATE" category) to stderr so diagnostic warnings never interleave with the
+            // generated data on stdout. Warn-level always passes the default threshold (Debug/Warn).
+            AsmTools.AsmLog.AddSink(AsmTools.AsmLogSinks.Console(useStandardError: true));
+
             Console.WriteLine("asm-annotate: Intel instruction data extraction pipeline");
             Console.WriteLine("=========================================================\n");
 

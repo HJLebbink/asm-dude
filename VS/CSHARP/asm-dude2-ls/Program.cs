@@ -30,6 +30,11 @@ try
             opts.SuppressStatusMessages = true);
     }
 
+    // Route Microsoft.Extensions.Logging through AsmLog so host/framework logs share the unified
+    // sinks/format. Added AFTER the stdio ClearProviders so it survives; AsmLog's console sink uses
+    // stderr, so this is safe even in --stdio mode (stdout stays reserved for JSON-RPC).
+    builder.Logging.AddProvider(new AsmLogLoggerProvider());
+
     var host = builder.Build();
     host.Run();
 }

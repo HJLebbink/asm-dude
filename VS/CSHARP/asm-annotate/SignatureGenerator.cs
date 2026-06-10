@@ -287,7 +287,16 @@ namespace asm_annotate
             }
             else
             {
-                Console.WriteLine("WARNING: To_Signature: found header count " + header.Count + ".");
+                AsmLog.Warn("ANNOTATE", "To_Signature: found header count " + header.Count + ".");
+            }
+
+            // A positive arch_column is only meaningful if it is the "CPUID Feature Flag" column. Legacy
+            // SDM tables put "64-Bit Mode"/"Compat-Leg Mode" there ("Valid"/"N.E."), which is not an arch;
+            // for those, fall back to the operand-width heuristic (arch_column == -1) rather than reading a
+            // mode value and emitting an empty arch. (-10 is the dedicated SMX 3-column case; leave it.)
+            if (arch_column >= 0 && (arch_column >= header.Count || !header[arch_column].Contains("CPUID")))
+            {
+                arch_column = -1;
             }
             #endregion
 
@@ -304,7 +313,7 @@ namespace asm_annotate
 
                 if (mnemonic_column >= row.Count)
                 {
-                    Console.WriteLine("WARNING: malformed row");
+                    AsmLog.Warn("ANNOTATE", "To_Signature: malformed row");
                     break;
                 }
                 var Parameters = Parse_Parameters(row[mnemonic_column]);
@@ -379,6 +388,15 @@ namespace asm_annotate
                     {
                         archs = [];
                     }
+                }
+
+                // No arch was extracted for a real mnemonic -> the generated signature row will have an
+                // empty arch column, which the LSP server flags at load time. Surface it here at the
+                // source so the markdown/parser gap can be fixed (e.g. CRC32, CMPXCHG16B, FXSAVE, VERR).
+                if (Parameters.mnemonic != Mnemonic.NONE && !archs.Any(g => g.Count > 0))
+                {
+                    string archCell = (arch_column >= 0 && arch_column < row.Count) ? row[arch_column] : "<none>";
+                    AsmLog.Warn("ANNOTATE", $"To_Signature: no arch for mnemonic {Parameters.mnemonic} (arch cell=\"{archCell}\")");
                 }
 
                 string description = (description_column < row.Count) ? row[description_column] : "";
@@ -538,12 +556,12 @@ namespace asm_annotate
             int pos_Hyphen = str.IndexOf('—');
             if (pos_Hyphen == -1)
             {
-                Console.WriteLine("WARNING: Find_First_Hyphen_Position: cannot find hyphen in str \"" + str + "\".");
+                AsmLog.Warn("ANNOTATE", "Find_First_Hyphen_Position: cannot find hyphen in str \"" + str + "\".");
                 pos_Hyphen = str.IndexOf('–');
             }
             if (pos_Hyphen == -1)
             {
-                Console.WriteLine("WARNING: Find_First_Hyphen_Position: cannot find hyphen in str \"" + str + "\".");
+                AsmLog.Warn("ANNOTATE", "Find_First_Hyphen_Position: cannot find hyphen in str \"" + str + "\".");
                 pos_Hyphen = str.IndexOf('-');
             }
             return pos_Hyphen;

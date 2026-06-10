@@ -108,12 +108,12 @@ namespace AsmSim
                 switch (this.graph_.InDegree(key))
                 {
                     case 0:
-                        Console.WriteLine("WARNING: DynamicFlow: Key_Previous: no previous key");
+                        AsmLog.Warn("SIM", "DynamicFlow: Key_Previous: no previous key");
                         return "NOKEY";
                     case 1:
                         return this.graph_.InEdge(key, 0).Source;
                     default:
-                        Console.WriteLine("WARNING: DynamicFlow: Key_Previous: multiple previous keys, returning the first one");
+                        AsmLog.Warn("SIM", "DynamicFlow: Key_Previous: multiple previous keys, returning the first one");
                         return this.graph_.InEdge(key, 0).Source;
                 }
             }
@@ -144,12 +144,12 @@ namespace AsmSim
                 switch (this.graph_.OutDegree(key))
                 {
                     case 0:
-                        Console.WriteLine("WARNING: DynamicFlow: Key_Next: no next key");
+                        AsmLog.Warn("SIM", "DynamicFlow: Key_Next: no next key");
                         return "NOKEY";
                     case 1:
                         return this.graph_.OutEdge(key, 0).Target;
                     default:
-                        Console.WriteLine("WARNING: DynamicFlow: Key_Next: multiple next keys, returning the first one");
+                        AsmLog.Warn("SIM", "DynamicFlow: Key_Next: multiple next keys, returning the first one");
                         return this.graph_.OutEdge(key, 0).Target;
                 }
             }
@@ -358,7 +358,7 @@ namespace AsmSim
             {
                 if (!this.tools_.Quiet)
                 {
-                    Console.WriteLine("WARNING: DynamicFlow:Update_Forward: startLine " + startLineNumber + " does not exist in " + sFlow);
+                    AsmLog.Warn("SIM", "DynamicFlow:Update_Forward: startLine " + startLineNumber + " does not exist in " + sFlow);
                 }
 
                 return;
@@ -410,17 +410,17 @@ namespace AsmSim
                         #region Display
                         if (!this.tools_.Quiet)
                         {
-                            Console.WriteLine("=====================================");
+                            AsmLog.Debug("SIM", "=====================================");
                         }
 
                         if (!this.tools_.Quiet)
                         {
-                            Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: LINE " + currentLineNumber + ": \"" + sFlow.Get_Line_Str(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
+                            AsmLog.Info("SIM", "Runner:Construct_DynamicFlow_Forward: LINE " + currentLineNumber + ": \"" + sFlow.Get_Line_Str(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
                         }
 
                         if (!this.tools_.Quiet && sFlow.Get_Line(currentLineNumber).mnemonic != Mnemonic.NONE)
                         {
-                            Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: " + update);
+                            AsmLog.Info("SIM", "Runner:Construct_DynamicFlow_Forward: " + update);
                         }
                         //if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + this.State_After(nextKey));
                         #endregion
@@ -438,7 +438,7 @@ namespace AsmSim
                 {
                     if (nextLineNumber == -1)
                     {
-                        Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there does not exists a continue yet a continue is computed");
+                        AsmLog.Warn("SIM", "Runner:Construct_DynamicFlow_Forward: according to flow there does not exists a continue yet a continue is computed");
                     }
                     if (!this.Has_Edge(prevKey, nextKey, false))
                     {
@@ -449,17 +449,17 @@ namespace AsmSim
                         #region Display
                         if (!this.tools_.Quiet)
                         {
-                            Console.WriteLine("=====================================");
+                            AsmLog.Debug("SIM", "=====================================");
                         }
 
                         if (!this.tools_.Quiet)
                         {
-                            Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: LINE " + currentLineNumber + ": \"" + sFlow.Get_Line_Str(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
+                            AsmLog.Info("SIM", "Runner:Construct_DynamicFlow_Forward: LINE " + currentLineNumber + ": \"" + sFlow.Get_Line_Str(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
                         }
 
                         if (!this.tools_.Quiet && sFlow.Get_Line(currentLineNumber).mnemonic != Mnemonic.NONE)
                         {
-                            Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: " + update);
+                            AsmLog.Info("SIM", "Runner:Construct_DynamicFlow_Forward: " + update);
                         }
                         //if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.NONE) Console.WriteLine("INFO: " + this.State_After(nextKey));
                         #endregion
@@ -467,7 +467,7 @@ namespace AsmSim
                 }
                 else if (nextLineNumber != -1)
                 {
-                    Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there exists a regular continue yet no continue is computed");
+                    AsmLog.Warn("SIM", "Runner:Construct_DynamicFlow_Forward: according to flow there exists a regular continue yet no continue is computed");
                 }
             }
 
@@ -480,7 +480,7 @@ namespace AsmSim
             {
                 if (!this.tools_.Quiet)
                 {
-                    Console.WriteLine("WARNING: DynamicFlow:Update_Backward startLine " + startLineNumber + " does not have a previous line in " + sFlow);
+                    AsmLog.Warn("SIM", "DynamicFlow:Update_Backward startLine " + startLineNumber + " does not have a previous line in " + sFlow);
                 }
 
                 return;
@@ -531,17 +531,17 @@ namespace AsmSim
                             #region Display
                             if (!this.tools_.Quiet)
                             {
-                                Console.WriteLine("=====================================");
+                                AsmLog.Debug("SIM", "=====================================");
                             }
 
                             if (!this.tools_.Quiet)
                             {
-                                Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: LINE " + prev.lineNumber + ": \"" + sFlow.Get_Line_Str(prev.lineNumber) + "; branch=" + prev.isBranch);
+                                AsmLog.Info("SIM", "Runner:Construct_DynamicFlow_Backward: LINE " + prev.lineNumber + ": \"" + sFlow.Get_Line_Str(prev.lineNumber) + "; branch=" + prev.isBranch);
                             }
 
                             if (!this.tools_.Quiet && sFlow.Get_Line(prev.lineNumber).mnemonic != Mnemonic.NONE)
                             {
-                                Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: " + update);
+                                AsmLog.Info("SIM", "Runner:Construct_DynamicFlow_Backward: " + update);
                             }
                             //if (!tools.Quiet && flow.GetLine(prev_LineNumber).Mnemonic != Mnemonic.NONE) Console.WriteLine("INFO: " + stateTree.State_After(rootKey));
                             #endregion
@@ -561,7 +561,7 @@ namespace AsmSim
                 {
                     if (this.lineNumber_2_Key_[lineNumber] != key)
                     {
-                        Console.WriteLine("WARNING: DynamicFlow: Add_Vertex: lineNumber " + lineNumber + " already has a key");
+                        AsmLog.Warn("SIM", "DynamicFlow: Add_Vertex: lineNumber " + lineNumber + " already has a key");
                     }
                 }
                 else
@@ -577,7 +577,7 @@ namespace AsmSim
             {
                 if (tag.Tag.branch == isBranch)
                 {
-                    Console.WriteLine("WARNING: DynamicFlow.Add_Edge: edge " + source + "->" + target + " with branch=" + isBranch + " already exists");
+                    AsmLog.Warn("SIM", "DynamicFlow.Add_Edge: edge " + source + "->" + target + " with branch=" + isBranch + " already exists");
                     return;
                 }
             }
@@ -654,12 +654,12 @@ namespace AsmSim
                 #region Payload
                 if (visited_LOCAL.Contains(key_LOCAL)) // found a cycle
                 {
-                    Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: Found cycle at key " + key_LOCAL + "; not implemented yet.");
+                    AsmLog.Warn("SIM", "DynamicFlow: Construct_State_Private: Found cycle at key " + key_LOCAL + "; not implemented yet.");
                     return null; //new State(tools, key_LOCAL, key_LOCAL);
                 }
                 if (!this.Has_Vertex(key_LOCAL))
                 {
-                    Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: key " + key_LOCAL + " not found.");
+                    AsmLog.Warn("SIM", "DynamicFlow: Construct_State_Private: key " + key_LOCAL + " not found.");
                     return new State(this.tools_, key_LOCAL, key_LOCAL);
                 }
 
@@ -731,14 +731,14 @@ namespace AsmSim
                             break;
                         default:
                             // unreachable:
-                            Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: OutDegree = " + this.graph_.OutDegree(key_LOCAL) + " is not implemented yet");
+                            AsmLog.Warn("SIM", "DynamicFlow:Construct_State_Private: OutDegree = " + this.graph_.OutDegree(key_LOCAL) + " is not implemented yet");
                             result = new State(this.tools_, key_LOCAL, key_LOCAL);
                             break;
                     }
                 }
                 if (result == null)
                 {
-                    Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: Returning null!");
+                    AsmLog.Warn("SIM", "DynamicFlow:Construct_State_Private: Returning null!");
                 }
                 #endregion
 
@@ -824,7 +824,7 @@ namespace AsmSim
                         StateUpdate stateUpdate;
                         if (branchInfo == null)
                         {
-                            Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo is null. source1=" + source1 + "; source2=" + source2);
+                            AsmLog.Warn("SIM", "DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo is null. source1=" + source1 + "; source2=" + source2);
                             BoolExpr bc = this.ctx_.MkBoolConst("BC" + target);
                             stateUpdate = new(bc, nextKey2, nextKey1, nextKey3, this.tools_);
                         }
@@ -841,7 +841,7 @@ namespace AsmSim
                     }
                     if (state1.TailKey != state2.TailKey)
                     {
-                        Console.WriteLine("WARNING: DynamicFlow: Merge_State_Update_LOCAL: tails are unequal: tail1=" + state1.TailKey + "; tail2=" + state2.TailKey);
+                        AsmLog.Warn("SIM", "DynamicFlow: Merge_State_Update_LOCAL: tails are unequal: tail1=" + state1.TailKey + "; tail2=" + state2.TailKey);
                     }
                     { // merge the states state1 and state2 into state3
                         foreach (BoolExpr v1 in state2.Solver.Assertions)
@@ -882,12 +882,12 @@ namespace AsmSim
             {
                 if (branchKey == null)
                 {
-                    Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: BranchKey is null;");
+                    AsmLog.Warn("SIM", "DynamicFlow:Get_Branch_Condition: BranchKey is null;");
                     return null;
                 }
                 if (this.graph_.OutDegree(branchKey) != 2)
                 {
-                    Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: incorrect out degree;");
+                    AsmLog.Warn("SIM", "DynamicFlow:Get_Branch_Condition: incorrect out degree;");
                     return null;
                 }
                 TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge1 = this.graph_.OutEdge(branchKey, 0);
@@ -895,12 +895,12 @@ namespace AsmSim
 
                 if (edge1.Tag.stateUpdate.BranchInfo == null)
                 {
-                    Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: branchinfo of edge1 is null");
+                    AsmLog.Warn("SIM", "DynamicFlow:Get_Branch_Condition: branchinfo of edge1 is null");
                     return null;
                 }
                 if (edge2.Tag.stateUpdate.BranchInfo == null)
                 {
-                    Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: branchinfo of edge2 is null");
+                    AsmLog.Warn("SIM", "DynamicFlow:Get_Branch_Condition: branchinfo of edge2 is null");
                     return null;
                 }
                 return edge1.Tag.stateUpdate.BranchInfo;

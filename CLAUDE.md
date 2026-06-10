@@ -161,15 +161,16 @@ dotnet test VS\CSHARP\asm-sim-tests\asm-sim-tests.csproj
 dotnet test VS\CSHARP\asm-dude2-ls-tests\asm-dude2-ls-tests.csproj
 ```
 
-**Test frameworks**: xUnit (asm-dude2-ls-tests), MSTest (asm-tools-tests, asm-sim-tests)
+**Test frameworks**: xUnit (asm-dude2-ls-tests, asm-dude2-vsix-tests), MSTest (asm-tools-tests, asm-sim-tests)
 
 **Test Results Summary**:
 | Project | Passed | Skipped | Notes |
 |---------|--------|---------|-------|
 | asm-tools-tests | 31 | 0 | Core assembly tools (incl. arch DNF parse, tile/operand) |
 | asm-sim-tests | 178 | 3 | Z3 simulator (DynamicFlow merge crash FIXED; 3 skips unrelated) |
-| asm-dude2-ls-tests | 126 | 37 | Unit + AsmSim integration; 5 pre-existing failures (hover/semantic-token, unrelated to signatures) |
-| asm-annotate-tests | 16 | 0 | **NEW** — stage-1 PDF→MD text/title heuristics |
+| asm-dude2-ls-tests | 154 | 37 | Unit + AsmSim integration; `LspProcessIntegrationTests` hover/semantic-token are flaky under parallel load (pass in isolation) |
+| asm-dude2-vsix-tests | 8 | 0 | **NEW** — `CodeLensPublishPlanner` (CodeLens scroll-loop fix), replays the captured VS request stream |
+| asm-annotate-tests | 16 | 0 | stage-1 PDF→MD text/title heuristics |
 | asm-annotate-tests (gen-signatures) | 14 | 0 | stage-2 MD→signature generator (was intel-doc-2-data-tests, now folded into asm-annotate-tests) |
 
 **Note**: The DynamicFlow **branch-merge** Z3 context-lifecycle crash is **FIXED** (shared-context rewrite — see Known Issues); the 25 previously-skipped DynamicFlow tests are re-enabled and pass. Only 3 sim tests remain skipped for unrelated reasons. Run sim tests via `vstest.console.dll`, not `dotnet test`.
@@ -252,36 +253,70 @@ Supported Visual Studio versions: **2022 (17.x) and 2026 (18.x)**
 
 When F5 is pressed, two VS instances run plus the LSP server process. Each has its own logs:
 
-#### 1. Experimental VS — Output Window → "Extensions" pane (check first)
-In the **experimental** VS instance (the one that opens), go to View → Output → select "Extensions" or "VisualStudio.Extensibility" from the dropdown. Shows:
-- Extension host loading your VSIX
-- Errors from `CreateServerConnectionAsync`
-- LSP communication issues
+#### 1. AsmDude log files (check first — this is where everything goes)
+All AsmDude logging (plugin, LSP server, AsmSim) flows through the unified `AsmLog` engine (see
+[Logging](#logging-asmlog) below). Two files in `%TEMP%`:
+```
+%TEMP%\AsmDude2-extension.log   ← the VSIX plugin (categories: CodeLens, Pipe, Settings, Server, Command)
+%TEMP%\asmdude-execution.log    ← the LSP server + AsmSim (categories: LS, ASMSIM, SIM, + host/framework)
+```
+Each line is `[HH:mm:ss.fff] [LVL] [Category] (member:line) message` — grep by level (`WRN`/`ERR`),
+category, or the `(member:line)` call-site key. Raise verbosity with `ASMDUDE_LOGLEVEL=trace` (see below).
 
-#### 2. ServiceHub Extension Host Log (extension won't load at all)
-The OOP extension host process logs here:
+#### 2. AsmDude output panes inside VS
+In the **experimental** VS instance, View → Output → dropdown:
+- **"AsmDude2"** — the plugin's own Info+ logs (clean columnar form).
+- **the language-server pane** — the server's Info+ logs, delivered via LSP `window/logMessage`.
+
+#### 3. Extensions pane (extension host loading / activation)
+View → Output → "Extensions" / "VisualStudio.Extensibility". Errors from `CreateServerConnectionAsync`,
+VSIX load failures, LSP activation issues.
+
+#### 4. ServiceHub Extension Host Log (extension won't load at all)
 ```
 %TEMP%\ServiceHub\logs\*ServiceHub.Host.Extensibility*
 ```
-Look for the most recent file. This is where assembly loading errors appear (e.g., wrong .NET target framework).
+Most recent file; assembly-loading errors appear here (e.g. wrong .NET target framework).
 
-#### 3. LSP Server Log (extension loaded, LSP misbehaves)
-The LSP server (`AsmDude2.LSP.exe`) writes to `LanguageServer.log` in its working directory. When deployed, this is inside the extension's `Server/` folder:
-```
-%LOCALAPPDATA%\Microsoft\VisualStudio\18.0_<id>Exp\VSExtensions\Henk-Jan Lebbink\AsmDude2\<version>\Server\
-```
-
-#### 4. Activity Log (VS startup/discovery issues)
+#### 5. Activity Log (VS startup/discovery issues)
 ```
 %APPDATA%\Microsoft\VisualStudio\18.0_<id>Exp\ActivityLog.xml
 ```
-Useful for extension discovery and registration problems, rarely needed for runtime debugging.
+Extension discovery/registration problems; rarely needed for runtime debugging.
 
 #### Not relevant for runtime debugging:
-- **Host VS** (where you press F5): its Output window and logs only show build/deploy status, not extension runtime errors
-- **Build logs**: only relevant for compile and deployment errors
+- **Host VS** (where you press F5): its Output window only shows build/deploy status.
+- **Build logs**: only relevant for compile/deployment errors.
 
-**Check order**: 1 → 2 → 3 → 4
+**Check order**: 1 → 2 → 3 → 4 → 5
+
+### Logging (AsmLog)
+
+Unified, structured logging across all three components, with **one engine** in the assembly they all
+share. **When debugging, prefer adding `AsmLog` statements + reading the files above over guessing.**
+
+- **Engine:** `AsmTools.AsmLog` in **`asm-options-lib`** (the leaf every component transitively
+  references). Levels `Trace < Debug < Info < Warn < Error < Off`; default threshold **Debug** (DEBUG
+  build) / **Warn** (Release). Sinks are `Action<AsmLogEntry>`; each entry renders **detailed** (file/
+  console, with the `(member:line)` call-site key, auto-filled via `[CallerMemberName]`/`[CallerLineNumber]`)
+  or **clean columnar** (VS panes, `ToDisplayString`). Below-threshold calls early-out before formatting.
+- **Call it as:** `AsmLog.Info("SIM", "msg")` / `Debug` / `Warn` / `Error`. Category is a short subsystem
+  tag (`SIM`, `ASMSIM`, `LS`, `CodeLens`, `Pipe`, `Settings`, `Server`, `Command`).
+- **Per process:**
+  - **Server** — `AsmDude2LS.AsmDudeLog` is a thin facade (category `LS`) that wires the disk sink
+    (`asmdude-execution.log`) + **stderr** console (stderr so it never corrupts `--stdio` JSON-RPC) +
+    the LSP `window/logMessage` sink. `AsmLogLoggerProvider` bridges `Microsoft.Extensions.Logging`
+    (host/`Worker`) into `AsmLog`. **AsmSim** (`asm-sim-lib`) logs via `AsmLog("SIM")` — its old
+    `Console.WriteLine`s are gone (they had corrupted stdout in `--stdio`).
+  - **Plugin** — `AsmDude2.VsixLog` wires the disk sink (`AsmDude2-extension.log`) + the "AsmDude2" VS
+    output pane (created in `AsmLanguageServerProvider.CreateServerConnectionAsync`). The old 5 ad-hoc
+    `File.AppendAllText` loggers now delegate to `AsmLog`.
+- **Runtime verbosity** (no rebuild): env var **`ASMDUDE_LOGLEVEL`**=`trace|debug|info|warn|error|off`
+  (both processes; wins), or the **`LogLevel`** field in `%APPDATA%\AsmDude2\settings.json`
+  (`SettingsManager.ApplyLogLevel`; env var takes precedence).
+- **Do NOT** reintroduce `Console.WriteLine`/`File.AppendAllText` for logging, and keep `AsmLog` in
+  `asm-options-lib` dependency-free (the VSIX references it to avoid pulling heavy deps). A Serilog/MEL
+  backend can sit behind `AsmLog` as a sink with zero call-site churn if ever needed.
 
 ## Data Files
 
@@ -469,7 +504,8 @@ https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.js
 - `asm-dude2-ls`: Language server executable (.NET 10.0 LTS)
 - `asm-dude2-ls-lib`: Language server implementation (.NET 10.0 LTS)
 - `asm-dude2-ls-tests`: Unit tests for LSP server (xUnit)
-- `asm-options-lib`: Shared, dependency-light settings contract (`AsmSettingsData` + `ColorJsonConverter`); referenced by both the VSIX and the server
+- `asm-dude2-vsix-tests`: Unit tests for VSIX-side pure logic (xUnit; links source files like `CodeLensPublishPlanner` directly so tests exercise production code without referencing the VS.Extensibility SDK)
+- `asm-options-lib`: Shared, dependency-light settings contract (`AsmSettingsData` + `ColorJsonConverter`) **and the `AsmLog` logging engine**; referenced by both the VSIX and the server
 - `asm-tools-lib`: Core assembly language tools (.NET 10.0 LTS; single-targeted, no net48)
 - `asm-tools-tests`: Tests for asm-tools-lib (MSTest)
 - `asm-sim-lib`: Assembly simulator using Z3 (.NET 10.0 LTS)
@@ -511,9 +547,18 @@ Implemented with the modern **VisualStudio.Extensibility** CodeLens API (`TextVi
 |------|------|
 | `AsmCodeLensProvider.cs` | `[VisualStudioContribution] ICodeLensProvider` — `TryCreateCodeLensAsync` dispatches on `CodeElementKind` to create the right CodeLens object |
 | `AsmCodeLensTaggerProvider.cs` | Creates/owns the per-document `AsmCodeLensTagger` instances |
-| `AsmCodeLensTagger.cs` | `TextViewTagger<CodeLensTag>` — scans the document, produces `CodeLensTag`s for label defs and sim-state lines; encodes payload in `CodeElement.Description` |
+| `AsmCodeLensTagger.cs` | `TextViewTagger<CodeLensTag>` — fetches data, builds `CodeLensTag`s for label defs and sim-state lines, and publishes them via `PublishAsync`; encodes payload in `CodeElement.Description` |
+| `CodeLensPublishPlanner.cs` | **Pure, VS-free** decision logic (unit-tested in `asm-dude2-vsix-tests`): given a tag request or sim refresh, decides which lines to (re)publish — keyed on per-line content + a recency window |
 | `AsmLabelCodeLens.cs` | `InvokableCodeLens` — renders "N references" from the tag's `refcount:N\|...` description |
 | `AsmSimStateCodeLens.cs` | `InvokableCodeLens` — renders the sim-state label from the tag's `simstate:\|...` description (display-only; click is a no-op) |
+
+> **⚠ Scroll-loop fix (do not regress):** `UpdateTagsAsync` makes VS immediately re-issue
+> `OnRequestTagsAsync(recalculateAll=true)`; answering with the **whole document** (`[0, document.Length]`)
+> outdates every lens → VS re-requests everything → a ~40×/scroll publish↔request loop that thrashes the
+> lenses. `PublishAsync` therefore (a) publishes **only changed lines' ranges**, never the whole document,
+> and (b) routes the decision through `CodeLensPublishPlanner`, which suppresses re-publishing lines VS
+> already has (per-line content + 2 s recency window). The sim side also throttles its per-line
+> `onProgress` (`LspAsmSimulator.ProgressNotifyThrottleMs`). See memory `codelens-scroll-loop`.
 
 **Data flow:**
 1. `AsmCodeLensTagger.CreateTagsAsync` fetches label data from the LSP server via `SimStatePipeClient.GetCodeLensDataAsync` — a list of `AsmLabelRef` (label name, definition line/column/length, reference count). The tagger does **not** parse the document or count references itself; that logic lives only on the server (`GetCodeLensData` → assembler-aware `LabelGraph`, jump/call targets only).

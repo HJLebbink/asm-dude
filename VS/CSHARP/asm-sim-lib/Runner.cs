@@ -61,7 +61,7 @@ namespace AsmSim
         {
             if (state == null)
             {
-                Console.WriteLine("WARNING: Runner:SimpleStep_Forward: provided state is null");
+                AsmLog.Warn("SIM", "Runner:SimpleStep_Forward: provided state is null");
                 return null;
             }
             try
@@ -78,7 +78,7 @@ namespace AsmSim
 
                 if (opcodeBase.IsHalted)
                 {
-                    Console.WriteLine("WARNING: Runner:SimpleStep_Forward: line: " + line + " is halted. Message: " + opcodeBase.SyntaxError);
+                    AsmLog.Warn("SIM", "Runner:SimpleStep_Forward: line: " + line + " is halted. Message: " + opcodeBase.SyntaxError);
                     return null;
                 }
                 opcodeBase.Execute();
@@ -91,19 +91,19 @@ namespace AsmSim
 
                 if (!tools.Quiet)
                 {
-                    Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
+                    AsmLog.Info("SIM", "Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
                 }
 
                 if (!tools.Quiet)
                 {
-                    Console.WriteLine(stateOut);
+                    AsmLog.Debug("SIM", $"{stateOut}");
                 }
 
                 return stateOut;
             }
             catch (Exception e)
             {
-                Console.WriteLine("WARNING: Runner:SimpleStep_Forward: Exception at line: " + line + "; e=" + e.Message);
+                AsmLog.Warn("SIM", "Runner:SimpleStep_Forward: Exception at line: " + line + "; e=" + e.Message);
                 return new State(state);
             }
         }
@@ -137,19 +137,19 @@ namespace AsmSim
 
                 if (!state.Tools.Quiet)
                 {
-                    Console.WriteLine("INFO: Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
+                    AsmLog.Info("SIM", "Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
                 }
 
                 if (!state.Tools.Quiet)
                 {
-                    Console.WriteLine(stateOut);
+                    AsmLog.Debug("SIM", $"{stateOut}");
                 }
 
                 return stateOut;
             }
             catch (Exception e)
             {
-                Console.WriteLine("WARNING: Runner:SimpleStep_Backward: Exception at line: " + line + "; e=" + e.Message);
+                AsmLog.Warn("SIM", "Runner:SimpleStep_Backward: Exception at line: " + line + "; e=" + e.Message);
                 return new State(state);
             }
         }
@@ -193,7 +193,7 @@ namespace AsmSim
             }
             catch (Exception e)
             {
-                Console.WriteLine("WARNING: Runner:Step_Forward: Exception at line: " + line + "; e=" + e.Message);
+                AsmLog.Warn("SIM", "Runner:Step_Forward: Exception at line: " + line + "; e=" + e.Message);
                 return (regular: null, branch: null);
             }
         }
@@ -223,7 +223,7 @@ namespace AsmSim
             }
             catch (Exception e)
             {
-                Console.WriteLine("WARNING: Runner:Step_Forward: Exception e=" + e.Message);
+                AsmLog.Warn("SIM", "Runner:Step_Forward: Exception e=" + e.Message);
                 return (regular: null, branch: null);
             }
         }

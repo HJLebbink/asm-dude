@@ -22,6 +22,8 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
     using Microsoft.Z3;
 
     using System;
@@ -113,15 +115,15 @@ namespace AsmSim
                 {
                     foreach (string key in keys1)
                     {
-                        Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: Keys of state1 " + key);
+                        AsmLog.Info("SIM", "State:RetrieveSharedBranchInfo: Keys of state1 " + key);
                     }
                     foreach (string key in keys2)
                     {
-                        Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: Keys of state2 " + key);
+                        AsmLog.Info("SIM", "State:RetrieveSharedBranchInfo: Keys of state2 " + key);
                     }
                     foreach (string key in sharedKeys)
                     {
-                        Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: sharedKey " + key);
+                        AsmLog.Info("SIM", "State:RetrieveSharedBranchInfo: sharedKey " + key);
                     }
                 }
             }

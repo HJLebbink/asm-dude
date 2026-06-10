@@ -285,7 +285,7 @@ namespace AsmSim
 
                 if (this.branchInfo_ != null)
                 {
-                    Console.WriteLine("WARNING: StatusUpdate:BranchInfo.Set: branchInfo is already set.");
+                    AsmLog.Warn("SIM", "StatusUpdate:BranchInfo.Set: branchInfo is already set.");
                 }
 
                 this.branchInfo_ = value;
@@ -717,7 +717,7 @@ namespace AsmSim
                             }
                         default:
                             {
-                                Console.WriteLine("ERROR: Set: bits=" + nBits + "; value=" + value + "; undef=" + undef);
+                                AsmLog.Error("SIM", "Set: bits=" + nBits + "; value=" + value + "; undef=" + undef);
                                 throw new Exception();
                             }
                     }
@@ -990,7 +990,7 @@ namespace AsmSim
                 //Console.WriteLine("SetMem: memKey=" + memKey + "; new Value=" + newMemContent);
                 if (this.mem_Update_ != null)
                 {
-                    Console.WriteLine("WARNING: StateUpdate:SetMem: multiple memory updates are not allowed");
+                    AsmLog.Warn("SIM", "StateUpdate:SetMem: multiple memory updates are not allowed");
                     //throw new Exception("Multiple memory updates are not allowed");
                 }
                 this.mem_Update_ = ctx.MkEq(memKey, newMemContent);
@@ -1006,7 +1006,7 @@ namespace AsmSim
             this.Empty = false;
             if (this.mem_Full_ != null)
             {
-                Console.WriteLine("WARNING: StateUpdate:SetMem: multiple memory updates are not allowed");
+                AsmLog.Warn("SIM", "StateUpdate:SetMem: multiple memory updates are not allowed");
                 //throw new Exception("Multiple memory updates are not allowed");
             }
             this.mem_Full_ = memContent.Translate(this.ctx_) as ArrayExpr;

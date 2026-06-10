@@ -171,6 +171,7 @@ public class AsmLanguageServerOptions : AsmSettingsData
             Arch.ARCH_SGX2 => this.ARCH_SGX2,
             Arch.ARCH_SMX => this.ARCH_SMX,
             Arch.ARCH_CLDEMOTE => this.ARCH_CLDEMOTE,
+            Arch.ARCH_CLWB => this.ARCH_CLWB,
             Arch.ARCH_MOVDIR64B => this.ARCH_MOVDIR64B,
             Arch.ARCH_MOVDIRI => this.ARCH_MOVDIRI,
             Arch.ARCH_PCONFIG => this.ARCH_PCONFIG,

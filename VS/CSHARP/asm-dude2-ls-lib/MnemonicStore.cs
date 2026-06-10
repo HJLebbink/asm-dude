@@ -195,6 +195,7 @@ namespace AsmDude2LS
             var archs = ArchTools.ParseArchDnf(arch, false, true);
             if (archs.Length == 0)
             {
+                // empty arch is a real data defect in the generated signature file (asm-annotate gen-signatures bug), keep visible
                 AsmDudeLog.Warning($"MnemonicStore: CreateAsmSignatureElement: arch is \"{arch}\": mnemonic={mnemonic}; doc ={doc}");
             }
 
@@ -322,7 +323,8 @@ namespace AsmDude2LS
                                     //AsmDudeLog.Info($"MnemonicStore: adding AsmSignatureInformation {se.SignatureInformation.Label}");
                                     if (Add(se, ref data))
                                     {
-                                        AsmDudeLog.Warning("MnemonicStore:loadRegularData: signature already exists" + se.ToString());
+                                        // duplicate (mnemonic, signature-label) within the generated file; the later form de-duplicates the earlier one
+                                        AsmDudeLog.Debug($"MnemonicStore:loadRegularData: signature already exists: {se.Mnemonic} {se.SignatureInformation.Label}");
                                     }
                                 }
                             }
@@ -407,7 +409,8 @@ namespace AsmDude2LS
                                     // LogInfo($"MnemonicStore: LoadHandcraftedData: adding AsmSignatureInformation {se.SignatureInformation.Label}");
                                     if (Add(se, ref data))
                                     {
-                                        AsmDudeLog.Warning("MnemonicStore:LoadHandcraftedData: signature already exists" + se.ToString());
+                                        // by design: the hand-crafted file OVERRIDES the generated entry with the same (mnemonic, signature-label)
+                                        AsmDudeLog.Debug($"MnemonicStore:LoadHandcraftedData: overriding generated signature: {se.Mnemonic} {se.SignatureInformation.Label}");
                                     }
                                 }
                             }

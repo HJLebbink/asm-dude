@@ -52,6 +52,11 @@ public sealed class SettingsManager : IDisposable
         IncludeFields = true,
         PropertyNameCaseInsensitive = true,
         WriteIndented = true,
+        // WriteDefaults prepends a // comment header; System.Text.Json rejects comments by default
+        // ('/' is an invalid start of a value), so the reader must be told to skip them. Without this
+        // every load of an existing settings.json failed and silently fell back to defaults.
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true,
         Converters = { new ColorJsonConverter() },
     };
 
@@ -85,6 +90,7 @@ public sealed class SettingsManager : IDisposable
             if (loaded != null)
             {
                 AsmDudeLog.Info($"SettingsManager: loaded user settings from {SettingsFile}");
+                ApplyLogLevel(loaded);
                 return loaded;
             }
         }
@@ -94,6 +100,16 @@ public sealed class SettingsManager : IDisposable
         }
 
         return defaults;
+    }
+
+    /// <summary>
+    /// Applies the configured diagnostic log level to <see cref="AsmTools.AsmLog"/>. The
+    /// <c>ASMDUDE_LOGLEVEL</c> env var takes precedence, so settings.json is honored only when it is unset.
+    /// </summary>
+    internal static void ApplyLogLevel(AsmSettingsData options)
+    {
+        if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASMDUDE_LOGLEVEL"))) return;
+        if (AsmTools.AsmLog.TryParseLevel(options.LogLevel, out var level)) AsmTools.AsmLog.Threshold = level;
     }
 
     /// <summary>Start watching settings.json for changes.</summary>

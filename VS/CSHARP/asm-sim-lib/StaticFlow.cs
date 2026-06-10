@@ -161,7 +161,7 @@ namespace AsmSim
             Debug.Assert(lineNumber >= 0);
             if (lineNumber >= this.Current.Count)
             {
-                Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
+                AsmLog.Debug("SIM", "WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
                 return (Mnemonic.NONE, Array.Empty<string>());
             }
 
@@ -404,7 +404,7 @@ namespace AsmSim
             {
                 if (entry.Key.Contains(LINENUMBER_SEPARATOR.ToString()))
                 {
-                    Console.WriteLine("WARNING: CFLOW:GetLines: label " + entry.Key + " has an " + LINENUMBER_SEPARATOR);
+                    AsmLog.Warn("SIM", "CFLOW:GetLines: label " + entry.Key + " has an " + LINENUMBER_SEPARATOR);
                 }
                 string newLabel = entry.Key + LINENUMBER_SEPARATOR + entry.Value;
                 //Console.WriteLine("INFO: ControlFlow:getLines: Replacing label " + entry.Key + " with " + newLabel);
@@ -712,7 +712,7 @@ namespace AsmSim
                     string label = line[labelBeginPos..labelEndPos];
                     if (result.ContainsKey(label))
                     {
-                        Console.WriteLine(string.Format(Culture, "WARNING: getLabels: found a clashing label \"{0}\" at line=\"{1}\".", label, lineNumber));
+                        AsmLog.Warn("SIM", string.Format(Culture, "getLabels: found a clashing label \"{0}\" at line=\"{1}\".", label, lineNumber));
                     }
                     else
                     {
