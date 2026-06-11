@@ -105,6 +105,14 @@ public class AsmLanguageServerOptions : AsmSettingsData
 
     public bool Is_Arch_Switched_On(Arch arch)
     {
+        // A non-Custom instruction-set profile overrides the individual ARCH_* toggles: an arch is on iff
+        // it belongs to the profile's set (ARCH_NONE — always-available instructions — is always on).
+        if (ArchTools.TryGetProfileArchs(this.ArchProfile, out HashSet<Arch> profileArchs))
+        {
+            return (arch == Arch.ARCH_NONE) || profileArchs.Contains(arch);
+        }
+
+        // Custom (or unknown) profile: honor the per-arch toggles (the historical behavior).
         return arch switch
         {
             Arch.ARCH_NONE => true,

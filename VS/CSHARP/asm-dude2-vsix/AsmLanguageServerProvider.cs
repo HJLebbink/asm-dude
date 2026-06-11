@@ -81,7 +81,7 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
 
         try
         {
-            Log($"CreateServerConnectionAsync called (in-proc hybrid mode)");
+            Log($"CreateServerConnectionAsync called (OOP mode; launching out-of-process LSP server)");
             Log($"  Assembly location: {Assembly.GetExecutingAssembly().Location}");
             Log($"  Extension dir: {extensionDir}");
             Log($"  Server exe: {serverExe}, exists: {File.Exists(serverExe)}");

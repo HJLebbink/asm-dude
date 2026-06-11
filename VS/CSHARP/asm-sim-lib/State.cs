@@ -98,6 +98,7 @@ namespace AsmSim
             {
                 this.ctx_ = new Context(this.tools_.ContextSettings); // housekeeping in Dispose();
                 this.ownsCtx_ = true;
+                Z3ContextTracker.Created();
             }
             this.Solver = MakeSolver(this.ctx_, this.tools_.SolverSetting);
             this.Solver_U = MakeSolver(this.ctx_, this.tools_.SolverSetting);
@@ -1271,6 +1272,7 @@ namespace AsmSim
                     if (this.ownsCtx_)
                     {
                         this.ctx_.Dispose();
+                        Z3ContextTracker.Disposed();
                     }
                 }
             }

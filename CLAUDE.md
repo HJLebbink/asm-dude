@@ -344,6 +344,16 @@ The arch column is **DNF** (`+`=AND, `,`=OR, e.g. `AVX512_VL+AVX512_F,AVX10`); `
 is a flattened union. New ISA covered incl. AMX tile registers (`TMM0-7`), AVX10, FP16, Key Locker.
 Each stage has tests in `asm-annotate-tests` (+ `asm-dude2-ls-tests` for the server stage).
 
+**Arch extraction** can miss the CPUID feature when the SDM table has no CPUID column (legacy
+instructions — handled by `To_Signature`'s operand-width heuristic) or a garbled cell (a small
+`SignatureGenerator.KnownArchExceptions` map fills known SGX/Key Locker cases). `gen-signatures` warns
+(`AsmLog.Warn("ANNOTATE", "no arch for …")`) on any remaining gap — empty arch is a real bug, not just
+noise, since it parses to `ARCH_NONE` = always-on, leaking the instruction into every arch profile. See
+[`asm-annotate/KNOWN-DATA-ISSUES.md`](VS/CSHARP/asm-annotate/KNOWN-DATA-ISSUES.md) for the fixed/open
+issues (incl. the EEXIT scrambled-table stage-1 defect and the FXSAVE false-positive warning). **Generator
+fixes are inert until `gen-signatures` is re-run** (rewrites `signature-mar2026.txt` + `overview.txt` + wiki
+`Home.md`).
+
 ### Performance data pipeline (uops.info → TSV), separate from the SDM pipeline
 The latency/throughput TSVs are regenerated independently of the PDF/signature pipeline:
 ```
@@ -528,6 +538,23 @@ Runtime config push over LSP isn't supported in the VS.Extensibility model (micr
 2. The server `SettingsManager` deserializes that file into **`AsmLanguageServerOptions`** (which derives from `AsmSettingsData`) and watches it via `FileSystemWatcher`.
 
 Because both sides bind to the same field names through the shared `AsmSettingsData`, a renamed/removed field is a **compile error**, not a silently-defaulted value. The VSIX references only `asm-options-lib` (not `asm-tools-lib`) so Roslyn isn't pulled into the extension. This mirrors what the original (in-proc / `ILanguageClient`) AsmDude did with `Settings.Default` → `AsmLanguageServerOptions`, adapted to the file transport this platform forces.
+
+#### Instruction-set profile (`archProfile`) — overrides the ~100 `ARCH_*` toggles
+
+Rather than expecting a user to flip ~100 individual `ARCH_*` feature-flag checkboxes, the VSIX exposes a
+**single-select `archProfile` dropdown** (`ArchitectureSettings.ArchProfile`, default **`v4`**): `everything` /
+`latest` / `v4` / `v3` / `v2` / `v1` / `custom` (keys in `ArchProfileKeys`, **asm-options-lib**, shared both
+ways). The VSIX **cannot** expand a profile (it has no `Arch` enum — only `asm-options-lib`), so the profile
+string travels in `AsmSettingsData.ArchProfile` and is interpreted **server-side** by
+`ArchTools.TryGetProfileArchs` (**asm-tools-lib**). `AsmLanguageServerOptions.Is_Arch_Switched_On` checks the
+profile **first**: a non-`custom` profile returns membership in the profile's `Arch` set and **ignores** the
+individual toggles; `custom` falls back to the per-arch bools (historical behavior). The 104 detailed toggles
+are `EnabledWhen = SettingRule.Equal(ArchProfile, custom)` so they grey out unless the profile is `custom`.
+v1–v4 are the psABI levels but **pragmatically inclusive** (each adds its era's common crypto/bit ISA, not
+just the strict baseline); `latest` = everything except deprecated/vendor-legacy (Cyrix/3DNow/IA-64/SSE4A/…).
+To add a new `Arch` to a profile, edit only the `ProfileV*`/`LatestExclusions` arrays in `ArchTools`. Tests:
+`Test_ArchProfile` (asm-tools-tests). **Note:** because the default is `v4`, existing installs that relied on
+the detailed toggles will be overridden on upgrade — switch the profile to `custom` to restore per-flag control.
 
 ### Assembly CodeLens (asm-dude2-vsix)
 

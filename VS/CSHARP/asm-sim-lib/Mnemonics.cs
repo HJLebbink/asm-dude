@@ -108,6 +108,7 @@ namespace AsmSim
                     {
                         this.ctx_ = new Context(t.ContextSettings);
                         this.ownsCtx_ = true;
+                        Z3ContextTracker.Created();
                     }
                 }
                 catch
@@ -437,6 +438,7 @@ namespace AsmSim
                     if (this.ownsCtx_)
                     {
                         this.ctx_?.Dispose();
+                        Z3ContextTracker.Disposed();
                     }
                     /* // TODO HJ 26 okt 2019: why does disposing this does not work?
                     if (this.branchUpdate_ != null)

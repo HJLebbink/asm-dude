@@ -443,5 +443,97 @@ namespace unit_tests_asm_z3
             Assert.AreEqual(cDead, comp[3]);
             Assert.AreEqual(2, new HashSet<int>(comp.Values).Count, "exactly two clusters");
         }
+
+        [TestMethod]
+        public void Test_StaticFlow_ComponentEntryLines_MultiEntry()
+        {
+            // Two entries (funcA at 0, funcB at 2) share a tail (shared at 4). They are ONE
+            // weakly-connected component, but a forward sim seeded only from the min line (0) would
+            // never reach funcB (only reachable by walking 3->4 backwards). ComputeComponentEntryLines
+            // must return BOTH in-degree-0 entries (0 and 2) and NOT the shared tail (4). This is the
+            // multi-root seeding INCREMENTAL_SIM_PLAN.md §Problem-1 requires.
+            string programStr =
+                "funcA:     mov     rax,        1        ;line 0       " + Environment.NewLine +
+                "           jmp     shared               ;line 1       " + Environment.NewLine +
+                "funcB:     mov     rbx,        2        ;line 2       " + Environment.NewLine +
+                "           mov     rcx,        3        ;line 3       " + Environment.NewLine +
+                "shared:    add     rax,        5        ;line 4       " + Environment.NewLine +
+                "           ret                          ;line 5       ";
+
+            StaticFlow sFlow = new(new Tools());
+            sFlow.Update(programStr, removeEmptyLines: false);
+            if (LogToDisplay)
+            {
+                Console.WriteLine(sFlow);
+            }
+
+            IReadOnlyDictionary<int, int> comp = sFlow.ComputeLineToComponent();
+            IReadOnlyDictionary<int, List<int>> entries = sFlow.ComputeComponentEntryLines();
+
+            Assert.AreEqual(1, new HashSet<int>(comp.Values).Count, "the shared tail unites all lines into ONE component");
+            int componentId = comp[0];
+            Assert.IsTrue(entries.ContainsKey(componentId), "the component must have an entry set");
+            List<int> roots = entries[componentId];
+
+            Assert.IsTrue(roots.Contains(0), "funcA (line 0) is an in-degree-0 entry");
+            Assert.IsTrue(roots.Contains(2), "funcB (line 2) is an in-degree-0 entry — the multi-root case");
+            Assert.IsFalse(roots.Contains(4), "the shared tail (line 4, in-degree 2) is NOT an entry");
+        }
+
+        [TestMethod]
+        public void Test_StaticFlow_ComponentEntryLines_SelfLoopFallback()
+        {
+            // A self-loop has NO in-degree-0 vertex (the label is targeted by the jmp, the jmp is
+            // fallen-into by the label). ComputeComponentEntryLines must still yield a non-empty seed
+            // by falling back to the component id (the smallest line).
+            string programStr =
+                "loop:                                   ;line 0       " + Environment.NewLine +
+                "           jmp     loop                 ;line 1       ";
+
+            StaticFlow sFlow = new(new Tools());
+            sFlow.Update(programStr, removeEmptyLines: false);
+
+            IReadOnlyDictionary<int, int> comp = sFlow.ComputeLineToComponent();
+            IReadOnlyDictionary<int, List<int>> entries = sFlow.ComputeComponentEntryLines();
+
+            int componentId = comp[1];
+            Assert.IsTrue(entries.ContainsKey(componentId), "even an entryless (self-loop) component gets a seed");
+            CollectionAssert.AreEqual(new List<int> { componentId }, entries[componentId],
+                "fallback seed is exactly the component id (min line)");
+        }
+
+        [TestMethod]
+        public void Test_Tools_SeededRandom_Reproducible_And_Independent()
+        {
+            // Reproducibility: same seed → identical fresh-constant-name sequence (so a failing sim can
+            // be replayed deterministically in a test without VS).
+            Tools a = new(new Dictionary<string, string>(), string.Empty, 42);
+            Tools b = new(new Dictionary<string, string>(), string.Empty, 42);
+            for (int i = 0; i < 8; i++)
+            {
+                Assert.AreEqual(Tools.CreateKey(a.Rand), Tools.CreateKey(b.Rand), "same seed must replay identically");
+            }
+
+            // Distinct seeds diverge (so concurrent CFG components never collide / can be told apart).
+            Tools c = new(new Dictionary<string, string>(), string.Empty, 1);
+            Tools d = new(new Dictionary<string, string>(), string.Empty, 2);
+            bool anyDifferent = false;
+            for (int i = 0; i < 8; i++)
+            {
+                if (Tools.CreateKey(c.Rand) != Tools.CreateKey(d.Rand))
+                {
+                    anyDifferent = true;
+                    break;
+                }
+            }
+            Assert.IsTrue(anyDifferent, "different seeds must produce different sequences");
+
+            // The copy ctor SHARES the Random instance (intra-component behavior the parallel design
+            // relies on: one shared random within a unit prevents duplicate fresh names in one context;
+            // cross-unit isolation is the seeded ctor's job, asserted above).
+            Tools root = new(new Dictionary<string, string>(), string.Empty, 7);
+            Tools copy = new(root);
+            Assert.AreSame(root.Rand, copy.Rand, "copy ctor must SHARE the Random instance within a unit");
+        }
     }
 }

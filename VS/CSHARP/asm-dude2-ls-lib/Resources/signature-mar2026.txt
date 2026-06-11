@@ -130,10 +130,10 @@ VAESDECLAST	YMM,YMM,YMM/M256	AVX512_VAES+AVX512_VL,AVX512_VAES+AVX10	VAESDECLAST
 VAESDECLAST	ZMM,ZMM,ZMM/M512	AVX512_VAES+AVX512_F,AVX512_VAES+AVX10	VAESDECLAST ZMM1,ZMM2,ZMM3/M512	Perform the last round of an AES decryption flow, using the Equivalent Inverse Cipher, using four128-bit data (state) from zmm2 with four 128-bit round keys from zmm3/m512; store the result in zmm1.
 ;--------------------------------------------------------
 GENERAL	AESDECWIDE128KL	Perform Ten Rounds of AES Decryption Flow with Key Locker on 8 Blocks Using 128-Bit Key	AESDECWIDE128KL
-AESDECWIDE128KL	M384,XMM_ZERO		AESDECWIDE128KL M384,<XMM0-7>	Decrypt XMM0-7 using 128-bit AES key indicated by handle at m384 and store each resultant block back to its corresponding register.
+AESDECWIDE128KL	M384,XMM_ZERO	KEYLOCKER	AESDECWIDE128KL M384,<XMM0-7>	Decrypt XMM0-7 using 128-bit AES key indicated by handle at m384 and store each resultant block back to its corresponding register.
 ;--------------------------------------------------------
 GENERAL	AESDECWIDE256KL	Perform 14 Rounds of AES Decryption Flow with Key Locker on 8 Blocks Using 256-Bit Key	AESDECWIDE256KL
-AESDECWIDE256KL	M512,XMM_ZERO		AESDECWIDE256KL M512,<XMM0-7>	Decrypt XMM0-7 using 256-bit AES key indicated by handle at m512 and store each resultant block back to its corresponding register.
+AESDECWIDE256KL	M512,XMM_ZERO	KEYLOCKER	AESDECWIDE256KL M512,<XMM0-7>	Decrypt XMM0-7 using 256-bit AES key indicated by handle at m512 and store each resultant block back to its corresponding register.
 ;--------------------------------------------------------
 GENERAL	AESENC	Perform One Round of an AES Encryption Flow	AESENC
 AESENC	XMM,XMM/M128	AES	AESENC XMM1,XMM2/M128	Perform one round of an AES encryption flow, using one 128-bit data (state) from xmm1 with one 128-bit round key from xmm2/m128.
@@ -160,10 +160,10 @@ VAESENCLAST	YMM,YMM,YMM/M256	AVX512_VAES+AVX512_VL,AVX512_VAES+AVX10	VAESENCLAST
 VAESENCLAST	ZMM,ZMM,ZMM/M512	AVX512_VAES+AVX512_F,AVX512_VAES+AVX10	VAESENCLAST ZMM1,ZMM2,ZMM3/M512	Perform the last round of an AES encryption flow, using four 128-bit data (state) from zmm2 with four 128-bit round keys from zmm3/m512; store the result in zmm1.
 ;--------------------------------------------------------
 GENERAL	AESENCWIDE128KL	Perform Ten Rounds of AES Encryption Flow with Key Locker on 8 Blocks Using 128-Bit Key	AESENCWIDE128KL
-AESENCWIDE128KL	M384,XMM_ZERO		AESENCWIDE128KL M384,<XMM0-7>	Encrypt XMM0-7 using 128-bit AES key indicated by handle at m384 and store each resultant block back to its corresponding register.
+AESENCWIDE128KL	M384,XMM_ZERO	KEYLOCKER	AESENCWIDE128KL M384,<XMM0-7>	Encrypt XMM0-7 using 128-bit AES key indicated by handle at m384 and store each resultant block back to its corresponding register.
 ;--------------------------------------------------------
 GENERAL	AESENCWIDE256KL	Perform 14 Rounds of AES Encryption Flow with Key Locker on 8 Blocks Using 256-Bit Key	AESENCWIDE256KL
-AESENCWIDE256KL	M512,XMM_ZERO		AESENCWIDE256KL M512,<XMM0-7>	Encrypt XMM0-7 using 256-bit AES key indicated by handle at m512 and store each resultant block back to its corresponding register.
+AESENCWIDE256KL	M512,XMM_ZERO	KEYLOCKER	AESENCWIDE256KL M512,<XMM0-7>	Encrypt XMM0-7 using 256-bit AES key indicated by handle at m512 and store each resultant block back to its corresponding register.
 ;--------------------------------------------------------
 GENERAL	AESIMC	Perform the AES InvMixColumn Transformation	AESIMC
 AESIMC	XMM,XMM/M128	AES	AESIMC XMM1,XMM2/M128	Perform the InvMixColumn transformation on a 128-bit round key from xmm2/m128 and store the result in xmm1.
@@ -392,10 +392,10 @@ GENERAL	CLDEMOTE	Cache Line Demote	CLDEMOTE
 CLDEMOTE	M8	CLDEMOTE	CLDEMOTE M8	Hint to hardware to move the cache line containing m8 to a more distant level of the cache without writing back to memory.
 ;--------------------------------------------------------
 GENERAL	CLFLUSH	Flush Cache Line	CLFLUSH
-CLFLUSH	M8		CLFLUSH M8	Flushes cache line containing m8.
+CLFLUSH	M8	8086	CLFLUSH M8	Flushes cache line containing m8.
 ;--------------------------------------------------------
 GENERAL	CLFLUSHOPT	Flush Cache Line Optimized	CLFLUSHOPT
-CLFLUSHOPT	M8		CLFLUSHOPT M8	Flushes cache line containing m8.
+CLFLUSHOPT	M8	8086	CLFLUSHOPT M8	Flushes cache line containing m8.
 ;--------------------------------------------------------
 GENERAL	CLI	Clear Interrupt Flag	CLI
 CLI		8086	CLI	Clear interrupt flag; interrupts disabled when interrupt flag cleared.
@@ -410,7 +410,7 @@ GENERAL	CLUI	Clear User Interrupt Flag	CLUI
 CLUI		UINTR	CLUI	Clear user interrupt flag; user interrupts blocked when user interrupt flag cleared.
 ;--------------------------------------------------------
 GENERAL	CLWB	Cache Line Write Back	CLWB
-CLWB	M8		CLWB M8	Writes back modified cache line containing m8, and may retain the line in cache hierarchy in non-modified state.
+CLWB	M8	CLWB	CLWB M8	Writes back modified cache line containing m8, and may retain the line in cache hierarchy in non-modified state.
 ;--------------------------------------------------------
 GENERAL	CMC	Complement Carry Flag	CMC
 CMC		8086	CMC	Complement CF flag.
@@ -624,9 +624,9 @@ CMPXCHG	R/M32,R32	386	CMPXCHG R/M32,R32	Compare EAX with r/m32. If equal, ZF is 
 CMPXCHG	R/M64,R64	X64	CMPXCHG R/M64,R64	Compare RAX with r/m64. If equal, ZF is set and r64 is loaded into r/m64. Else, clear ZF and load r/m64 into RAX.
 ;--------------------------------------------------------
 GENERAL	CMPXCHG8B	Compare and Exchange Bytes	CMPXCHG8B_CMPXCHG16B
-CMPXCHG8B	M64		CMPXCHG8B M64	Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
+CMPXCHG8B	M64	X64	CMPXCHG8B M64	Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
 GENERAL	CMPXCHG16B	Compare and Exchange Bytes	CMPXCHG8B_CMPXCHG16B
-CMPXCHG16B	M128		CMPXCHG16B M128	Compare RDX:RAX with m128. If equal, set ZF and load RCX:RBX into m128. Else, clear ZF and load m128 into RDX:RAX.
+CMPXCHG16B	M128	8086	CMPXCHG16B M128	Compare RDX:RAX with m128. If equal, set ZF and load RCX:RBX into m128. Else, clear ZF and load m128 into RDX:RAX.
 ;--------------------------------------------------------
 GENERAL	COMISD	Compare Scalar Ordered Double Precision Floating-Point Values and Set EFLAGS	COMISD
 COMISD	XMM,XMM/M64	SSE2	COMISD XMM1,XMM2/M64	Compare low DP FP values in xmm1 and xmm2/mem64 and set the EFLAGS flags accordingly.
@@ -644,11 +644,11 @@ GENERAL	CPUID	CPU Identification	CPUID
 CPUID		8086	CPUID	Returns processor identification and feature information to the EAX, EBX, ECX, and EDX registers, as determined by input entered in EAX and, in some cases, ECX.
 ;--------------------------------------------------------
 GENERAL	CRC32	Accumulate CRC32 Value	CRC32
-CRC32	R32,R/M8		CRC32 R32,R/M8	Accumulate CRC32 on r/m8.
-CRC32	R32,R/M16		CRC32 R32,R/M16	Accumulate CRC32 on r/m16.
-CRC32	R32,R/M32		CRC32 R32,R/M32	Accumulate CRC32 on r/m32.
-CRC32	R64,R/M8		CRC32 R64,R/M8	Accumulate CRC32 on r/m8.
-CRC32	R64,R/M64		CRC32 R64,R/M64	Accumulate CRC32 on r/m64.
+CRC32	R32,R/M8	386	CRC32 R32,R/M8	Accumulate CRC32 on r/m8.
+CRC32	R32,R/M16	386	CRC32 R32,R/M16	Accumulate CRC32 on r/m16.
+CRC32	R32,R/M32	386	CRC32 R32,R/M32	Accumulate CRC32 on r/m32.
+CRC32	R64,R/M8	X64	CRC32 R64,R/M8	Accumulate CRC32 on r/m8.
+CRC32	R64,R/M64	X64	CRC32 R64,R/M64	Accumulate CRC32 on r/m64.
 ;--------------------------------------------------------
 GENERAL	CVTDQ2PD	Convert Packed Doubleword Integers to Packed Double Precision Floating-Point Values	CVTDQ2PD
 CVTDQ2PD	XMM,XMM/M64	SSE2	CVTDQ2PD XMM1,XMM2/M64	Convert two packed signed doubleword integers from xmm2/mem to two packed DP FP values in xmm1.
@@ -690,10 +690,10 @@ VCVTPD2PS	XMM{K}{Z},YMM/M256/M64BCST	AVX512_VL+AVX512_F,AVX10	VCVTPD2PS XMM1{K1}
 VCVTPD2PS	YMM{K}{Z},ZMM/M512/M64BCST{ER}	AVX512_F,AVX10	VCVTPD2PS YMM1{K1}{Z},ZMM2/M512/M64BCST{ER}	Convert eight packed DP FP values in zmm2/m512/m64bcst to eight SP FP values in ymm1with writemask k1.
 ;--------------------------------------------------------
 GENERAL	CVTPI2PD	Convert Packed Dword Integers to Packed Double Precision Floating-Point Values	CVTPI2PD
-CVTPI2PD	XMM,MM/M64		CVTPI2PD XMM,MM/M64	Convert two packed signed doubleword integers from mm/mem64 to two packed DP FP values in xmm.
+CVTPI2PD	XMM,MM/M64	X64	CVTPI2PD XMM,MM/M64	Convert two packed signed doubleword integers from mm/mem64 to two packed DP FP values in xmm.
 ;--------------------------------------------------------
 GENERAL	CVTPI2PS	Convert Packed Dword Integers to Packed Single Precision Floating-Point Values	CVTPI2PS
-CVTPI2PS	XMM,MM/M64		CVTPI2PS XMM,MM/M64	Convert two signed doubleword integers from mm/m64 to two SP FP values in xmm.
+CVTPI2PS	XMM,MM/M64	X64	CVTPI2PS XMM,MM/M64	Convert two signed doubleword integers from mm/m64 to two SP FP values in xmm.
 ;--------------------------------------------------------
 GENERAL	CVTPS2DQ	Convert Packed Single Precision Floating-Point Values to Packed Signed Doubleword Integer Values	CVTPS2DQ
 CVTPS2DQ	XMM,XMM/M128	SSE2	CVTPS2DQ XMM1,XMM2/M128	Convert four packed SP FP values from xmm2/mem to four packed signed doubleword values in xmm1.
@@ -714,7 +714,7 @@ VCVTPS2PD	YMM{K}{Z},XMM/M128/M32BCST	AVX512_VL+AVX512_F,AVX10	VCVTPS2PD YMM1{K1}
 VCVTPS2PD	ZMM{K}{Z},YMM/M256/M32BCST{SAE}	AVX512_F,AVX10	VCVTPS2PD ZMM1{K1}{Z},YMM2/M256/M32BCST{SAE}	Convert eight packed SP FP values in ymm2/m256/b32bcst to eight packed DP FP values in zmm1 with writemask k1.
 ;--------------------------------------------------------
 GENERAL	CVTPS2PI	Convert Packed Single Precision Floating-Point Values to Packed Dword Integers	CVTPS2PI
-CVTPS2PI	MM,XMM/M64		CVTPS2PI MM,XMM/M64	Convert two packed SP FP values from xmm/m64 to two packed signed doubleword integers in mm.
+CVTPS2PI	MM,XMM/M64	X64	CVTPS2PI MM,XMM/M64	Convert two packed SP FP values from xmm/m64 to two packed signed doubleword integers in mm.
 ;--------------------------------------------------------
 GENERAL	CVTSD2SI	Convert Scalar Double Precision Floating-Point Value to Signed Integer	CVTSD2SI
 CVTSD2SI	R32,XMM/M64	SSE2	CVTSD2SI R32,XMM1/M64	Convert one DP FP value from xmm1/m64 to one signed doubleword integer r32.
@@ -774,7 +774,7 @@ VCVTTPD2DQ	XMM{K}{Z},YMM/M256/M64BCST	AVX512_VL+AVX512_F,AVX10	VCVTTPD2DQ XMM1{K
 VCVTTPD2DQ	YMM{K}{Z},ZMM/M512/M64BCST{SAE}	AVX512_F,AVX10	VCVTTPD2DQ YMM1{K1}{Z},ZMM2/M512/M64BCST{SAE}	Convert eight packed DP FP values in zmm2/m512/m64bcst to eight signed doubleword integers in ymm1 using truncation subject to writemask k1.
 ;--------------------------------------------------------
 GENERAL	CVTTPD2PI	Convert with Truncation Packed Double Precision Floating-Point Values to Packed Dword Integers	CVTTPD2PI
-CVTTPD2PI	MM,XMM/M128		CVTTPD2PI MM,XMM/M128	Convert two packer DP FP values from xmm/m128 to two packed signed doubleword integers in mm using truncation.
+CVTTPD2PI	MM,XMM/M128	8086	CVTTPD2PI MM,XMM/M128	Convert two packer DP FP values from xmm/m128 to two packed signed doubleword integers in mm using truncation.
 ;--------------------------------------------------------
 GENERAL	CVTTPS2DQ	Convert with Truncation Packed Single Precision Floating-Point Values to Packed Signed Doubleword Integer Values	CVTTPS2DQ
 CVTTPS2DQ	XMM,XMM/M128	SSE2	CVTTPS2DQ XMM1,XMM2/M128	Convert four packed SP FP values from xmm2/mem to four packed signed doubleword values in xmm1 using truncation.
@@ -786,7 +786,7 @@ VCVTTPS2DQ	YMM{K}{Z},YMM/M256/M32BCST	AVX512_VL+AVX512_F	VCVTTPS2DQ YMM1{K1}{Z},
 VCVTTPS2DQ	ZMM{K}{Z},ZMM/M512/M32BCST{SAE}	AVX512_F	VCVTTPS2DQ ZMM1{K1}{Z},ZMM2/M512/M32BCST{SAE}	Convert sixteen packed SP FP values from zmm2/m512/m32bcst to sixteen packed signed doubleword values in zmm1 using truncation subject to writemask k1.
 ;--------------------------------------------------------
 GENERAL	CVTTPS2PI	Convert with Truncation Packed Single Precision Floating-Point Values to Packed Dword Integers	CVTTPS2PI
-CVTTPS2PI	MM,XMM/M64		CVTTPS2PI MM,XMM/M64	Convert two SP FP values from xmm/m64 to two signed doubleword signed integers in mm using truncation.
+CVTTPS2PI	MM,XMM/M64	X64	CVTTPS2PI MM,XMM/M64	Convert two SP FP values from xmm/m64 to two signed doubleword signed integers in mm using truncation.
 ;--------------------------------------------------------
 GENERAL	CVTTSD2SI	Convert with Truncation Scalar Double Precision Floating-Point Value to Signed Integer	CVTTSD2SI
 CVTTSD2SI	R32,XMM/M64	SSE2	CVTTSD2SI R32,XMM1/M64	Convert one DP FP value from xmm1/m64 to one signed doubleword integer in r32 using truncation.
@@ -899,7 +899,7 @@ GENERAL	EDBGWR	Write to a Debug Enclave	EDBGWR
 EDBGWR		SGX1	EDBGWR	This leaf function writes a dword/quadword to a debug enclave.
 ;--------------------------------------------------------
 GENERAL	EDECCSSA	Decrements TCS.CSSA	EDECCSSA
-EDECCSSA			EDECCSSA	This leaf function decrements TCS.CSSA.
+EDECCSSA		SGX2	EDECCSSA	This leaf function decrements TCS.CSSA.
 ;--------------------------------------------------------
 GENERAL	EENTER	Enters an Enclave	EENTER
 EENTER		SGX1	EENTER	This leaf function is used to enter an enclave.
@@ -932,10 +932,10 @@ GENERAL	EMODT	Change the Type of an EPC Page	EMODT
 EMODT		SGX2	EMODT	This leaf function changes the type of an existing EPC page.
 ;--------------------------------------------------------
 GENERAL	ENCLS	Execute an Enclave System Function of Specified Leaf Number	ENCLS
-ENCLS			ENCLS	This instruction is used to execute privileged Intel SGX leaf functions that are used for managing and debugging the enclaves.
+ENCLS		SGX1	ENCLS	This instruction is used to execute privileged Intel SGX leaf functions that are used for managing and debugging the enclaves.
 ;--------------------------------------------------------
 GENERAL	ENCLU	Execute an Enclave User Function of Specified Leaf Number	ENCLU
-ENCLU			ENCLU	This instruction is used to execute non-privileged Intel SGX leaf functions.
+ENCLU		SGX1	ENCLU	This instruction is used to execute non-privileged Intel SGX leaf functions.
 ;--------------------------------------------------------
 GENERAL	ENCODEKEY128	Encode 128-Bit Key with Key Locker	ENCODEKEY128
 ENCODEKEY128	R32,R32,XMM_ZERO,XMM_ZERO	KEYLOCKER	ENCODEKEY128 R32,R32,<XMM0-2>,<XMM4-6>	Wrap a 128-bit AES key from XMM0 into a key handle and output handle in XMM0—2.
@@ -982,7 +982,7 @@ GENERAL	ETRACK	Activates EBLOCK Checks	ETRACK
 ETRACK		SGX1	ETRACK	This leaf function activates EBLOCK checks.
 ;--------------------------------------------------------
 GENERAL	EUPDATESVN	Update CR_CPUSVN	EUPDATESVN
-EUPDATESVN			EUPDATESVN	This leaf function updates the CR_CPUSVN if microcode has been updated and EPC is ready.
+EUPDATESVN		SGX2	EUPDATESVN	This leaf function updates the CR_CPUSVN if microcode has been updated and EPC is ready.
 ;--------------------------------------------------------
 GENERAL	EWB	Invalidate an EPC Page and Write out to Main Memory	EWB
 EWB		SGX1	EWB	This leaf function invalidates an EPC page and writes it out to main memory.
@@ -1278,14 +1278,14 @@ FXCH	ST(I)	8086	FXCH ST(I)	Exchange the contents of ST(0) and ST(i).
 FXCH		8086	FXCH	Exchange the contents of ST(0) and ST(1).
 ;--------------------------------------------------------
 GENERAL	FXRSTOR	Restore x87 FPU, MMX, XMM, and MXCSR State	FXRSTOR
-FXRSTOR	M512BYTE		FXRSTOR M512BYTE	Restore the x87 FPU, MMX, XMM, and MXCSR register state from m512byte.
+FXRSTOR	M512BYTE	8086	FXRSTOR M512BYTE	Restore the x87 FPU, MMX, XMM, and MXCSR register state from m512byte.
 GENERAL	FXRSTOR64	Restore x87 FPU, MMX, XMM, and MXCSR State	FXRSTOR
-FXRSTOR64	M512BYTE		FXRSTOR64 M512BYTE	Restore the x87 FPU, MMX, XMM, and MXCSR register state from m512byte.
+FXRSTOR64	M512BYTE	X64	FXRSTOR64 M512BYTE	Restore the x87 FPU, MMX, XMM, and MXCSR register state from m512byte.
 ;--------------------------------------------------------
 GENERAL	FXSAVE	Save x87 FPU, MMX Technology, and SSE State	FXSAVE
-FXSAVE	M512BYTE		FXSAVE M512BYTE	Save the x87 FPU, MMX, XMM, and MXCSR register state to m512byte.
+FXSAVE	M512BYTE	8086	FXSAVE M512BYTE	Save the x87 FPU, MMX, XMM, and MXCSR register state to m512byte.
 GENERAL	FXSAVE64	Save x87 FPU, MMX Technology, and SSE State	FXSAVE
-FXSAVE64	M512BYTE		FXSAVE64 M512BYTE	Save the x87 FPU, MMX, XMM, and MXCSR register state to m512byte.
+FXSAVE64	M512BYTE	8086	FXSAVE64 M512BYTE	Save the x87 FPU, MMX, XMM, and MXCSR register state to m512byte.
 ;--------------------------------------------------------
 GENERAL	FXTRACT	Extract Exponent and Significand	FXTRACT
 FXTRACT		8086	FXTRACT	Separate value in ST(0) into exponent and significand, store exponent in ST(0), and push the significand onto the register stack.
@@ -1806,7 +1806,7 @@ GENERAL	LMSW	Load Machine Status Word	LMSW
 LMSW	R/M16	8086	LMSW R/M16	Loads r/m16 in machine status word of CR0.
 ;--------------------------------------------------------
 GENERAL	LOADIWKEY	Load Internal Wrapping Key with Key Locker	LOADIWKEY
-LOADIWKEY	XMM,XMM,EAX,XMM_ZERO		LOADIWKEY XMM1,XMM2,<EAX>,<XMM0>	Load internal wrapping key from xmm1, xmm2, and XMM0.
+LOADIWKEY	XMM,XMM,EAX,XMM_ZERO	KEYLOCKER	LOADIWKEY XMM1,XMM2,<EAX>,<XMM0>	Load internal wrapping key from xmm1, xmm2, and XMM0.
 ;--------------------------------------------------------
 GENERAL	LOCK	Assert LOCK# Signal Prefix	LOCK
 LOCK		8086	LOCK	Asserts LOCK# signal for duration of the accompanying instruction.
@@ -1851,7 +1851,7 @@ GENERAL	VMASKMOVDQU	Store Selected Bytes of Double Quadword	MASKMOVDQU
 VMASKMOVDQU	XMM,XMM	AVX	VMASKMOVDQU XMM1,XMM2	Selectively write bytes from xmm1 to memory location using the byte mask in xmm2. The default memory location is specified by DS:DI/EDI/RDI.
 ;--------------------------------------------------------
 GENERAL	MASKMOVQ	Store Selected Bytes of Quadword	MASKMOVQ
-MASKMOVQ	MM,MM		MASKMOVQ MM1,MM2	Selectively write bytes from mm1 to memory location using the byte mask in mm2. The default memory location is specified by DS:DI/EDI/RDI.
+MASKMOVQ	MM,MM	8086	MASKMOVQ MM1,MM2	Selectively write bytes from mm1 to memory location using the byte mask in mm2. The default memory location is specified by DS:DI/EDI/RDI.
 ;--------------------------------------------------------
 GENERAL	MAXPD	Maximum of Packed Double Precision Floating-Point Values	MAXPD
 MAXPD	XMM,XMM/M128	SSE2	MAXPD XMM1,XMM2/M128	Return the maximum DP FP values between xmm1 and xmm2/m128.
@@ -3262,7 +3262,7 @@ GENERAL	PREFETCHIT1	Prefetch Data Into Caches	PREFETCHh
 PREFETCHIT1	M8	8086	PREFETCHIT1 M8	Move code from relative address closer to the processor using IT1 hint.
 ;--------------------------------------------------------
 GENERAL	PREFETCHW	Prefetch Data Into Caches in Anticipation of a Write	PREFETCHW
-PREFETCHW	M8		PREFETCHW M8	Move data from m8 closer to the processor in anticipation of a write.
+PREFETCHW	M8	PRFCHW	PREFETCHW M8	Move data from m8 closer to the processor in anticipation of a write.
 ;--------------------------------------------------------
 GENERAL	PREFETCHWT1	Prefetch Vector Data Into Caches with Intent to Write and T1 Hint	PREFETCHWT1
 PREFETCHWT1	M8	PREFETCHWT1	PREFETCHWT1 M8	Move data from m8 closer to the processor using T1 hint with intent to write.
@@ -3315,7 +3315,7 @@ VPSHUFLW	YMM{K}{Z},YMM/M256,IMM8	AVX512_VL+AVX512_BW,AVX10	VPSHUFLW YMM1{K1}{Z},
 VPSHUFLW	ZMM{K}{Z},ZMM/M512,IMM8	AVX512_BW,AVX10	VPSHUFLW ZMM1{K1}{Z},ZMM2/M512,IMM8	Shuffle the low words in zmm2/m512 based on the encoding in imm8 and store the result in zmm1 under write mask k1.
 ;--------------------------------------------------------
 GENERAL	PSHUFW	Shuffle Packed Words	PSHUFW
-PSHUFW	MM,MM/M64,IMM8		PSHUFW MM1,MM2/M64,IMM8	Shuffle the words in mm2/m64 based on the encoding in imm8 and store the result in mm1.
+PSHUFW	MM,MM/M64,IMM8	X64	PSHUFW MM1,MM2/M64,IMM8	Shuffle the words in mm2/m64 based on the encoding in imm8 and store the result in mm1.
 ;--------------------------------------------------------
 GENERAL	PSIGNB	Packed SIGN	PSIGNB_PSIGNW_PSIGND
 PSIGNB	MM,MM/M64	SSSE3	PSIGNB MM1,MM2/M64	Negate/zero/preserve packed byte integers in mm1 depending on the corresponding sign in mm2/m64.
@@ -4824,9 +4824,9 @@ VDPBF16PS	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_BF16+AVX512_VL,AVX10	VDPBF16PS Y
 VDPBF16PS	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_BF16+AVX512_F,AVX10	VDPBF16PS ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Multiply BF16 pairs from zmm2 and zmm3/m512, and accumulate the resulting packed SP results in zmm1 with writemask k1.
 ;--------------------------------------------------------
 GENERAL	VERR	Verify a Segment for Reading or Writing	VERR_VERW
-VERR	R/M16		VERR R/M16	Set ZF=1 if segment specified with r/m16 can be read.
+VERR	R/M16	8086	VERR R/M16	Set ZF=1 if segment specified with r/m16 can be read.
 GENERAL	VERW	Verify a Segment for Reading or Writing	VERR_VERW
-VERW	R/M16		VERW R/M16	Set ZF=1 if segment specified with r/m16 can be written.
+VERW	R/M16	8086	VERW R/M16	Set ZF=1 if segment specified with r/m16 can be written.
 ;--------------------------------------------------------
 GENERAL	VEXP2PD	Approximation to the Exponential 2^x of Packed Double Precision Floating-Point Values With Less Than 2^-23 Relative Error	VEXP2PD
 VEXP2PD	ZMM{K}{Z},ZMM/M512/M64BCST{SAE}	AVX512_ER	VEXP2PD ZMM1{K1}{Z},ZMM2/M512/M64BCST{SAE}	Computes approximations to the exponential 2^x (with less than 2^-23 of maximum relative error) of the packed DP FP values from zmm2/m512/m64bcst and stores the FP result in zmm1with writemask k1.

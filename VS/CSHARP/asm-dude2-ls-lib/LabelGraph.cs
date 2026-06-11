@@ -199,7 +199,10 @@ public sealed class LabelGraph
         }
         else
         {
-            AsmDudeLog.Warning("LabelGraph:Get_Filename: no filename for labelID=" + labelID + " (fileId " + labelID.File_Id + "; line " + labelID.LineNumber + ")");
+            // Benign + internal (an unmapped file id falls back to ""), but Get_Filename is called per
+            // label on the CodeLens/diagnostics path, so at Warn this floods the log and buries real
+            // signal. Keep it at Debug (off in Release; available when debugging label-graph issues).
+            AsmDudeLog.Debug("LabelGraph:Get_Filename: no filename for labelID=" + labelID + " (fileId " + labelID.File_Id + "; line " + labelID.LineNumber + ")");
             return string.Empty;
         }
     }

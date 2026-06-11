@@ -346,6 +346,16 @@ public class AsmSettingsData
     public bool ARCH_CLDEMOTE;
     [DataMember]
     public bool ARCH_CLWB;
+
+    /// <summary>
+    /// Instruction-set profile (one of <see cref="ArchProfileKeys"/>). When this is anything other than
+    /// <see cref="ArchProfileKeys.Custom"/> it OVERRIDES every individual <c>ARCH_*</c> toggle above; only
+    /// <see cref="ArchProfileKeys.Custom"/> honors them. Default is <see cref="ArchProfileKeys.V4"/>
+    /// (modern x86-64 through AVX-512). Interpreted server-side by <c>ArchTools.TryGetProfileArchs</c>.
+    /// </summary>
+    [DataMember]
+    public string ArchProfile = ArchProfileKeys.V4;
+
     [DataMember]
     public bool ARCH_MOVDIR64B;
     [DataMember]

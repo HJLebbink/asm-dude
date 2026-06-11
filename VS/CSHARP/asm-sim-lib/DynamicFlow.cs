@@ -60,6 +60,7 @@ namespace AsmSim
         {
             ArgumentNullException.ThrowIfNull(tools);
             this.ctx_ = new Context(tools.ContextSettings);
+            Z3ContextTracker.Created();
             this.tools_ = new Tools(tools) { SharedCtx = this.ctx_ };
             this.graph_ = new BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>>(true); // allowParallelEdges because of conditional branches to the next line of code
             this.lineNumber_2_Key_ = new Dictionary<int, string>();
@@ -398,13 +399,13 @@ namespace AsmSim
                 {
                     if (nextLineNumber == -1)
                     {
-                        //Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there does not exists a branch yet a branch is computed");
+                        update.Dispose(); // computed but no branch target to attach to — don't leak its Z3 exprs
                         return;
                     }
                     if (!this.Has_Edge(prevKey, nextKey, true))
                     {
                         this.Add_Vertex(nextKey, nextLineNumber);
-                        this.Add_Edge(true, update, prevKey, nextKey);
+                        this.Add_Edge(true, update, prevKey, nextKey); // graph takes ownership of update
                         nextKeys.Push(nextKey);
 
                         #region Display
@@ -424,6 +425,13 @@ namespace AsmSim
                         }
                         //if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + this.State_After(nextKey));
                         #endregion
+                    }
+                    else
+                    {
+                        // Re-converged vertex (diamond / multi-entry): the edge already exists, so this
+                        // freshly computed StateUpdate is redundant and NOT added to the graph — dispose it
+                        // to avoid leaking its Z3 exprs (latent leak; routine once multi-entry seeding lands).
+                        update.Dispose();
                     }
                 }
                 else if (nextLineNumber != -1)
@@ -463,6 +471,13 @@ namespace AsmSim
                         }
                         //if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.NONE) Console.WriteLine("INFO: " + this.State_After(nextKey));
                         #endregion
+                    }
+                    else
+                    {
+                        // Re-converged vertex (diamond / multi-entry): the edge already exists, so this
+                        // freshly computed StateUpdate is redundant and NOT added to the graph — dispose it
+                        // to avoid leaking its Z3 exprs (latent leak; routine once multi-entry seeding lands).
+                        update.Dispose();
                     }
                 }
                 else if (nextLineNumber != -1)
@@ -953,6 +968,7 @@ namespace AsmSim
                 // borrow ctx_ and only release their solvers); then dispose the shared Context last.
                 this.Clear();
                 this.ctx_?.Dispose();
+                Z3ContextTracker.Disposed();
             }
             // free native resources if there are any.
         }

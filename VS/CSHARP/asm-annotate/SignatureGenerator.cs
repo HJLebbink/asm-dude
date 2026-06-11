@@ -225,6 +225,19 @@ namespace asm_annotate
             }
         }
 
+        // Instructions whose SDM "CPUID Feature Flag" cell is empty / "NA" / a garbled "Bit 10" so the arch
+        // can't be parsed from the opcode table, but is unambiguous from the instruction itself. Applied in
+        // To_Signature when the table yields no arch. Keep this small — it is for genuine SDM-table gaps only;
+        // a growing list usually means a parser/column-detection bug to fix instead.
+        private static readonly Dictionary<Mnemonic, Arch> KnownArchExceptions = new()
+        {
+            [Mnemonic.AESDECWIDE128KL] = Arch.ARCH_KEYLOCKER,
+            [Mnemonic.AESDECWIDE256KL] = Arch.ARCH_KEYLOCKER,
+            [Mnemonic.ENCLS] = Arch.ARCH_SGX1,
+            [Mnemonic.ENCLU] = Arch.ARCH_SGX1,
+            [Mnemonic.EUPDATESVN] = Arch.ARCH_SGX2,
+        };
+
         internal static IList<Signature> To_Signature(IList<IList<string>> table)
         {
             #region Determine what is where
@@ -388,6 +401,16 @@ namespace asm_annotate
                     {
                         archs = [];
                     }
+                }
+
+                // A handful of SGX / Key Locker instructions have an empty / "NA" / "Bit 10" CPUID cell in
+                // the SDM (the feature is named only in prose), so no arch is parseable from the table. Fill
+                // those known cases in here — leaving them empty would parse to ARCH_NONE on the server, i.e.
+                // "always on", leaking the instruction into every arch profile (even x86-64-v1).
+                if (Parameters.mnemonic != Mnemonic.NONE && !archs.Any(g => g.Count > 0)
+                    && KnownArchExceptions.TryGetValue(Parameters.mnemonic, out Arch known))
+                {
+                    archs = [[known]];
                 }
 
                 // No arch was extracted for a real mnemonic -> the generated signature row will have an

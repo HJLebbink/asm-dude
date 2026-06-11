@@ -101,6 +101,11 @@ public static class AsmDudeLog
         [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
         => AsmLog.Log(AsmLogLevel.Error, "LS", message, member, line);
 
+    /// <summary>Always-emitted Info banner (bypasses the log threshold); see <see cref="AsmLog.Banner"/>.</summary>
+    public static void Banner(string message,
+        [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        => AsmLog.Banner("LS", message, member, line);
+
     private static AsmLogLevel ToAsm(LogLevel l) => l switch
     {
         LogLevel.Debug => AsmLogLevel.Debug,

@@ -80,6 +80,11 @@ namespace AsmDude2LS
         /// </summary>
         private const long ProgressNotifyThrottleMs = 400;
 
+        /// <summary>A per-line wall-time at/above this (ms) is counted as a Z3 timeout in the run
+        /// summary: the per-line Z3 timeout is 5000 ms, so a line near it almost certainly timed out.
+        /// Heuristic, for observability only.</summary>
+        private const long SlowLineThresholdMs = 4500;
+
         internal sealed class DocCache
         {
             internal readonly Dictionary<int, string?> lineStringsAfter = [];
@@ -158,6 +163,33 @@ namespace AsmDude2LS
 
                 this.RunSimulation(uri, version, lines, cts.Token, onCompleted, onProgress);
             }, cts.Token);
+        }
+
+        /// <summary>
+        /// Test seam — run the simulation SYNCHRONOUSLY and deterministically (no debounce, no
+        /// background <see cref="Task"/>), then return once the per-line cache is fully populated. It
+        /// performs the same cache/version setup <see cref="InvalidateAndSimulate"/> does and calls the
+        /// very same <see cref="RunSimulation"/> body — it is NOT a re-implementation, so a
+        /// characterization test built on it exercises the real production simulator. Used by the
+        /// headless <c>LspAsmSimulatorTests</c> (the golden baseline for the planned engine swap), which
+        /// avoids the flaky sleep-and-poll the older <c>AsmSimTests</c> uses.
+        /// </summary>
+        internal void SimulateSynchronouslyForTest(Uri uri, IReadOnlyList<string> lines)
+        {
+            long version;
+            lock (this.lockObj_)
+            {
+                if (this.pendingTasks_.TryGetValue(uri, out CancellationTokenSource? existing))
+                {
+                    existing.Cancel();
+                    existing.Dispose();
+                    this.pendingTasks_.Remove(uri);
+                }
+                version = this.simVersion_.TryGetValue(uri, out long v) ? v + 1 : 1;
+                this.simVersion_[uri] = version;
+                this.cache_[uri] = new DocCache();
+            }
+            this.RunSimulation(uri, version, lines, CancellationToken.None, onCompleted: null, onProgress: null);
         }
 
         /// <summary>
@@ -298,6 +330,54 @@ namespace AsmDude2LS
                 this.cache_.TryGetValue(uri, out DocCache? entry);
                 return entry;
             }
+        }
+
+        /// <summary>
+        /// Snapshot this document's per-line simulation results as a producer-agnostic
+        /// <see cref="SimResultSet"/> (before/after state, read/write CodeLens labels, per-line
+        /// diagnostics) — the shape <see cref="SimResultComparer"/> diffs. Used now for determinism
+        /// checks and, when the per-component engine lands, as the S0 shadow oracle that compares the
+        /// linear engine against it (INCREMENTAL_SIM_PLAN.md §5). Returns an empty set if the document
+        /// has no cached simulation.
+        /// </summary>
+        internal SimResultSet ToResultSet(Uri uri, string label)
+        {
+            var lines = new Dictionary<int, SimLineResult>();
+            lock (this.lockObj_)
+            {
+                if (this.cache_.TryGetValue(uri, out DocCache? entry))
+                {
+                    // Diagnostics are a flat list; group them per line (the comparer sorts within a line).
+                    var diagByLine = new Dictionary<int, List<string>>();
+                    foreach (SimDiagnostic d in entry.diagnostics)
+                    {
+                        if (!diagByLine.TryGetValue(d.Line, out List<string>? list))
+                        {
+                            list = [];
+                            diagByLine[d.Line] = list;
+                        }
+                        list.Add($"{d.Kind}:{d.Message}");
+                    }
+
+                    var keys = new HashSet<int>();
+                    foreach (int k in entry.lineStringsBefore.Keys) keys.Add(k);
+                    foreach (int k in entry.lineStringsAfter.Keys) keys.Add(k);
+                    foreach (int k in entry.lineStringsReadLabels.Keys) keys.Add(k);
+                    foreach (int k in entry.lineStringsWriteLabels.Keys) keys.Add(k);
+                    foreach (int k in diagByLine.Keys) keys.Add(k);
+
+                    foreach (int k in keys)
+                    {
+                        lines[k] = new SimLineResult(
+                            entry.lineStringsBefore.GetValueOrDefault(k),
+                            entry.lineStringsAfter.GetValueOrDefault(k),
+                            entry.lineStringsReadLabels.GetValueOrDefault(k),
+                            entry.lineStringsWriteLabels.GetValueOrDefault(k),
+                            diagByLine.GetValueOrDefault(k));
+                    }
+                }
+            }
+            return new SimResultSet(label, lines);
         }
 
         /// <summary>
@@ -556,9 +636,48 @@ namespace AsmDude2LS
 
         // ── Background simulation ──────────────────────────────────────────────
 
+        /// <summary>
+        /// Observability (gated, side-effect-free): logs how the document decomposes into weakly-connected
+        /// CFG components and each component's forward-seed entry lines. This is the partition the planned
+        /// per-component engine (INCREMENTAL_SIM_PLAN.md Phase 2) will simulate; logging it now lets us SEE
+        /// the decomposition on real files and validates <see cref="StaticFlow.ComputeComponentEntryLines"/>
+        /// on live editor input — with ZERO effect on the actual (linear) simulation. Only runs when Debug
+        /// logging is enabled (building a <see cref="StaticFlow"/> instantiates opcodes), and never throws
+        /// into the simulation path.
+        /// </summary>
+        private static void LogCfgPartition(Uri uri, IReadOnlyList<string> lines)
+        {
+            if (!AsmLog.IsEnabled(AsmLogLevel.Debug)) return;
+            try
+            {
+                var sFlow = new StaticFlow(new AsmSimTools());
+                // StaticFlow.Update splits the program on Environment.NewLine (see Test_StaticFlow), so
+                // join with that, NOT "\n" — otherwise the whole document parses as a single line.
+                sFlow.Update(string.Join(Environment.NewLine, lines), removeEmptyLines: false);
+
+                IReadOnlyDictionary<int, int> lineToComponent = sFlow.ComputeLineToComponent();
+                IReadOnlyDictionary<int, List<int>> entries = sFlow.ComputeComponentEntryLines();
+
+                int componentCount = new HashSet<int>(lineToComponent.Values).Count;
+                var componentIds = new List<int>(entries.Keys);
+                componentIds.Sort();
+
+                var sb = new StringBuilder();
+                sb.Append($"[CFG] {uri}: {sFlow.NLines} lines -> {componentCount} component(s); entries:");
+                foreach (int id in componentIds)
+                    sb.Append($" c{id}=[{string.Join(",", entries[id])}]");
+                Log(sb.ToString());
+            }
+            catch (Exception ex)
+            {
+                Log($"[CFG] partition logging failed (non-fatal): {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
         private void RunSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
         {
             Log($"[THREAD] RunSimulation started for {uri}, {lines.Count} lines");
+            LogCfgPartition(uri, lines);
 
             // Declared OUTSIDE the try so the finally can dispose them on EVERY exit path (see finally).
             var ownedStates = new List<AsmSimState>();
@@ -567,6 +686,10 @@ namespace AsmDude2LS
                 var settings = new Dictionary<string, string>
                 {
                     { "timeout", "5000" },
+                    // Pin Z3's internal RNG so a run is reproducible (aids debugging + the headless
+                    // characterization tests). NOTE: the 5 s timeout above is still wall-clock-dependent,
+                    // so determinism only fully holds for programs that never hit it.
+                    { "random_seed", "0" },
                 };
                 AsmSimTools tools = new(settings);
                 tools.StateConfig.Set_All_Off();
@@ -594,6 +717,7 @@ namespace AsmDude2LS
 
                 var newDiagnostics = new List<SimDiagnostic>();
                 int linesWritten = 0;
+                int slowLineCount = 0; // lines whose Z3 work hit (≈) the per-line timeout — see run summary
 
                 // Coalesce per-line progress notifications (see ProgressNotifyThrottleMs). The
                 // negative seed lets the first simulated line notify immediately; the rest are
@@ -701,7 +825,11 @@ namespace AsmDude2LS
                         continue;
                     }
 
-                    Log($"[THREAD] Line {i}: processing '{mnemonic} {string.Join(", ", args)}'...");
+                    Log($"[THREAD] Line {i} (editor line {i + 1}): processing '{mnemonic} {string.Join(", ", args)}'...");
+
+                    // Time the Z3-heavy work for this instruction (before/after state strings,
+                    // opcode instantiation, the SimpleStep_Forward solve) so slow lines are greppable.
+                    var lineClock = System.Diagnostics.Stopwatch.StartNew();
 
                     // ── Before-state: state at entry to this instruction ──────────
                     if (!stateToString.TryGetValue(state, out string? beforeStr))
@@ -798,7 +926,9 @@ namespace AsmDude2LS
                         onProgress?.Invoke(uri);
                     }
 
-                    Log($"[THREAD] Line {i}: {mnemonic} done");
+                    lineClock.Stop();
+                    if (lineClock.ElapsedMilliseconds >= SlowLineThresholdMs) slowLineCount++;
+                    Log($"[THREAD] Line {i} (editor line {i + 1}): {mnemonic} done in {lineClock.ElapsedMilliseconds} ms");
                 }
 
                 // Finalize. The per-line state STRINGS were already written to the cache incrementally;
@@ -819,7 +949,7 @@ namespace AsmDude2LS
                     return; // finally disposes ownedStates
                 }
 
-                Log($"[THREAD] SUCCESS: {linesWritten} lines written, {newDiagnostics.Count} diagnostics");
+                Log($"[THREAD] SUCCESS: {linesWritten} lines written, {newDiagnostics.Count} diagnostics, {slowLineCount} slow/timeout line(s) (>={SlowLineThresholdMs}ms), total {progressClock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
                 // Notify client to refresh inlay hints (final flush) and republish diagnostics.
                 onProgress?.Invoke(uri);
                 onCompleted?.Invoke(uri);

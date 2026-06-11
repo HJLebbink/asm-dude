@@ -895,6 +895,94 @@ public static class ArchTools
         }
     }
 
+    // ── Instruction-set profiles ────────────────────────────────────────────────────────────────
+    // A profile is a one-click preset selecting a whole family of architectures, so users need not
+    // toggle the ~100 individual CPUID flags by hand (see ArchProfileKeys). The v1–v4 sets follow the
+    // x86-64 psABI microarchitecture levels but are pragmatically inclusive (each level also enables
+    // its era's widely-available crypto/bit extensions) because this drives editor completion.
+
+    private static readonly Arch[] ProfileV1 =
+    [
+        Arch.ARCH_8086, Arch.ARCH_186, Arch.ARCH_286, Arch.ARCH_386, Arch.ARCH_486,
+        Arch.ARCH_PENT, Arch.ARCH_P6, Arch.ARCH_X64, Arch.ARCH_MMX, Arch.ARCH_SSE, Arch.ARCH_SSE2,
+    ];
+
+    private static readonly Arch[] ProfileV2Add =
+    [
+        Arch.ARCH_SSE3, Arch.ARCH_SSSE3, Arch.ARCH_SSE4_1, Arch.ARCH_SSE4_2, Arch.ARCH_AES, Arch.ARCH_PCLMULQDQ,
+    ];
+
+    private static readonly Arch[] ProfileV3Add =
+    [
+        Arch.ARCH_AVX, Arch.ARCH_AVX2, Arch.ARCH_FMA, Arch.ARCH_BMI1, Arch.ARCH_BMI2, Arch.ARCH_F16C,
+        Arch.ARCH_LZCNT, Arch.ARCH_MOVBE, Arch.ARCH_RDRAND, Arch.ARCH_RDSEED, Arch.ARCH_ADX,
+        Arch.ARCH_FSGSBASE, Arch.ARCH_INVPCID, Arch.ARCH_RDPID,
+    ];
+
+    private static readonly Arch[] ProfileV4Add =
+    [
+        Arch.ARCH_AVX512_F, Arch.ARCH_AVX512_CD, Arch.ARCH_AVX512_ER, Arch.ARCH_AVX512_PF,
+        Arch.ARCH_AVX512_BW, Arch.ARCH_AVX512_DQ, Arch.ARCH_AVX512_VL, Arch.ARCH_AVX512_IFMA,
+        Arch.ARCH_AVX512_VBMI, Arch.ARCH_AVX512_VPOPCNTDQ, Arch.ARCH_AVX512_4VNNIW, Arch.ARCH_AVX512_4FMAPS,
+        Arch.ARCH_AVX512_VBMI2, Arch.ARCH_AVX512_VNNI, Arch.ARCH_AVX512_BITALG, Arch.ARCH_AVX512_GFNI,
+        Arch.ARCH_AVX512_VAES, Arch.ARCH_AVX512_VPCLMULQDQ, Arch.ARCH_AVX512_BF16,
+        Arch.ARCH_AVX512_VP2INTERSECT, Arch.ARCH_AVX512_FP16, Arch.ARCH_SHA,
+    ];
+
+    // Deprecated / vendor-legacy arches excluded from the "Latest" profile (still reachable via Custom or Everything).
+    private static readonly Arch[] LatestExclusions =
+    [
+        Arch.ARCH_SSE4A, Arch.ARCH_SSE5, Arch.ARCH_AMD, Arch.ARCH_TBM, Arch.ARCH_3DNOW,
+        Arch.ARCH_CYRIX, Arch.ARCH_CYRIXM, Arch.ARCH_IA64, Arch.ARCH_UNDOC,
+    ];
+
+    private static readonly Dictionary<string, HashSet<Arch>> ProfileSets = BuildProfileSets();
+
+    private static Dictionary<string, HashSet<Arch>> BuildProfileSets()
+    {
+        var v1 = new HashSet<Arch>(ProfileV1);
+        var v2 = new HashSet<Arch>(v1); v2.UnionWith(ProfileV2Add);
+        var v3 = new HashSet<Arch>(v2); v3.UnionWith(ProfileV3Add);
+        var v4 = new HashSet<Arch>(v3); v4.UnionWith(ProfileV4Add);
+
+        var everything = new HashSet<Arch>();
+        foreach (Arch a in Enum.GetValues<Arch>())
+        {
+            if (a != Arch.ARCH_NONE) everything.Add(a);
+        }
+
+        var latest = new HashSet<Arch>(everything);
+        latest.ExceptWith(LatestExclusions);
+
+        return new Dictionary<string, HashSet<Arch>>(StringComparer.OrdinalIgnoreCase)
+        {
+            [ArchProfileKeys.V1] = v1,
+            [ArchProfileKeys.V2] = v2,
+            [ArchProfileKeys.V3] = v3,
+            [ArchProfileKeys.V4] = v4,
+            [ArchProfileKeys.Latest] = latest,
+            [ArchProfileKeys.Everything] = everything,
+        };
+    }
+
+    /// <summary>
+    /// Expands an instruction-set <paramref name="profile"/> key (see <see cref="ArchProfileKeys"/>) into
+    /// the concrete set of architectures it enables. Returns <c>false</c> for <see cref="ArchProfileKeys.Custom"/>
+    /// (and any unknown key), signalling the caller to fall back to the individual ARCH_* toggles.
+    /// <c>Arch.ARCH_NONE</c> (always-available instructions) is never part of a profile set; callers treat it
+    /// as always-on regardless.
+    /// </summary>
+    public static bool TryGetProfileArchs(string? profile, out HashSet<Arch> archs)
+    {
+        if (!string.IsNullOrWhiteSpace(profile) && ProfileSets.TryGetValue(profile.Trim(), out HashSet<Arch>? set))
+        {
+            archs = set;
+            return true;
+        }
+        archs = [];
+        return false;
+    }
+
     public static string ToString(Arch arch)
     {
         switch (arch)

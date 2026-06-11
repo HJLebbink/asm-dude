@@ -364,6 +364,13 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     /// </summary>
     public void OnInitializeComplete()
     {
+        // Startup banner — always emitted (even at Warn verbosity), so it (a) marks each session in the
+        // dateless disk log with a full date/time, and (b) guarantees a window/logMessage so Visual Studio
+        // creates the "AsmDude2 Language Server" output pane. Emitted here because the LSP connection is live.
+        string version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
+        AsmDudeLog.Banner("════════ AsmDude2 Language Server ════════");
+        AsmDudeLog.Banner($"version {version}  |  started {DateTime.Now:yyyy-MM-dd HH:mm:ss}  |  PID {Environment.ProcessId}  |  {System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}");
+
         AsmDudeLog.Info("LanguageServer: OnInitializeComplete");
         // Dynamically register inlay hints so VS activates the feature (VS prefers dynamic registration).
         var registrationTask = this.SendMethodRequestAsync<RegistrationParams, object>(Methods.ClientRegisterCapabilityName, new RegistrationParams

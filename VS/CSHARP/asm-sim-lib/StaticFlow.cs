@@ -372,6 +372,57 @@ namespace AsmSim
             return result;
         }
 
+        /// <summary>
+        /// For each weakly-connected CFG component (see <see cref="ComputeLineToComponent"/>), the lines
+        /// a FORWARD simulation must be seeded from to cover the whole component: the component's
+        /// in-degree-0 vertices (its entry points). A component with NO in-degree-0 vertex — e.g. a pure
+        /// self-loop <c>l: jmp l</c> — falls back to its component id (the smallest line), which is always
+        /// a valid seed. Keyed by component id (smallest line), so it composes with the line→component map;
+        /// each entry list is sorted for deterministic, reproducible seeding.
+        /// </summary>
+        /// <remarks>
+        /// Needed because <see cref="ComputeLineToComponent"/> returns *weakly*-connected components but a
+        /// forward flow follows *directed* edges: a multi-entry component (two function entries sharing a
+        /// tail) is NOT covered by a single forward root, so the DynamicFlow must be seeded from ALL entry
+        /// lines. This is the construction primitive for Phase 2 of INCREMENTAL_SIM_PLAN.md — it changes no
+        /// existing behavior (additive, pure) and is the multi-root seeding the plan's §Problem-1 requires.
+        /// </remarks>
+        public IReadOnlyDictionary<int, List<int>> ComputeComponentEntryLines()
+        {
+            IReadOnlyDictionary<int, int> lineToComponent = this.ComputeLineToComponent();
+
+            var entriesByComponent = new Dictionary<int, List<int>>();
+            foreach (int v in this.graph_.Vertices)
+            {
+                if (this.graph_.IsInEdgesEmpty(v)) // in-degree 0 → an entry point of its component
+                {
+                    int componentId = lineToComponent[v];
+                    if (!entriesByComponent.TryGetValue(componentId, out List<int>? entries))
+                    {
+                        entries = [];
+                        entriesByComponent[componentId] = entries;
+                    }
+                    entries.Add(v);
+                }
+            }
+
+            // Entryless components (e.g. self-loops, in-degree ≥ 1 everywhere): seed from the component
+            // id (the smallest line), which is always a member and a valid forward root.
+            foreach (int componentId in new HashSet<int>(lineToComponent.Values))
+            {
+                if (!entriesByComponent.ContainsKey(componentId))
+                {
+                    entriesByComponent[componentId] = [componentId];
+                }
+            }
+
+            foreach (List<int> entries in entriesByComponent.Values)
+            {
+                entries.Sort();
+            }
+            return entriesByComponent;
+        }
+
         /// <summary>A BranchPoint is an code line that has two next states (that need not be different)</summary>
         public bool Is_Branch_Point(int lineNumber)
         {

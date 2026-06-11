@@ -67,6 +67,32 @@ namespace AsmSim
             this.StateConfig.GetRegOn();
         }
 
+        /// <summary>
+        /// Like <see cref="Tools(Dictionary{string,string}, string)"/> but with a DETERMINISTICALLY
+        /// SEEDED random source. This is the parallel-safety + reproducibility seam for per-CFG-component
+        /// simulation (INCREMENTAL_SIM_PLAN.md Phase 2): give each concurrent simulation unit a DISTINCT
+        /// seed (e.g. the component id / its smallest line number) so that
+        /// <list type="number">
+        ///   <item>concurrent units never share one non-thread-safe <see cref="Random"/> — the copy ctor
+        ///   <see cref="Tools(Tools)"/> deliberately SHARES the random WITHIN a unit (single-threaded,
+        ///   and it prevents duplicate fresh-constant names in one context); cross-unit isolation is
+        ///   THIS ctor's job;</item>
+        ///   <item>a run is reproducible — the same seed yields the same fresh-constant name sequence, so
+        ///   a failing simulation can be replayed in a test without VS.</item>
+        /// </list>
+        /// </summary>
+        public Tools(Dictionary<string, string> contextSettings, string solverSetting, int randomSeed)
+        {
+            this.ContextSettings = contextSettings;
+            this.SolverSetting = solverSetting;
+            this.rand_ = new Random(randomSeed);
+            this.p_ = new AsmParameters();
+            this.Quiet = true;
+            this.ShowUndefConstraints = false;
+            this.StateConfig = new StateConfig();
+            this.StateConfig.GetRegOn();
+        }
+
         public Dictionary<string, string> ContextSettings { get; private set; }
 
         /// <summary>

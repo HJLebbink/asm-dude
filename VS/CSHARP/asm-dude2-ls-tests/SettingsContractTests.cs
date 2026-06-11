@@ -65,7 +65,9 @@ public class SettingsContractTests
     {
         // Verifies the inheritance split: AsmLanguageServerOptions' arch logic reads fields that now
         // live in the AsmSettingsData base, after a JSON round-trip through the contract.
-        var produced = new AsmSettingsData { ARCH_X64 = true, ARCH_AVX2 = true };
+        // Custom profile: the per-arch ARCH_* toggles drive the result (a non-Custom profile would
+        // override them — covered by Test_ArchProfile in asm-tools-tests).
+        var produced = new AsmSettingsData { ArchProfile = ArchProfileKeys.Custom, ARCH_X64 = true, ARCH_AVX2 = true };
         string json = JsonSerializer.Serialize(produced, MakeOptions());
         var consumed = JsonSerializer.Deserialize<AsmLanguageServerOptions>(json, MakeOptions())!;
 

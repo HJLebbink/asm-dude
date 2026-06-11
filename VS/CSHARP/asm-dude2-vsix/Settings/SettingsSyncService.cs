@@ -5,6 +5,8 @@
 
 namespace AsmDude2.Settings;
 
+using AsmTools;
+
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Settings;
 
@@ -158,6 +160,11 @@ internal class SettingsSyncService : ExtensionPart
             AsmSim_Decorate_Registers = v.ValueOrDefault(AsmDudeSettings.AsmSimDecorateRegisters, true),
             AsmSim_Decorate_Unimplemented = v.ValueOrDefault(AsmDudeSettings.AsmSimDecorateUnimplemented, false),
 
+            // Instruction-set profile: when not "custom", this overrides every ARCH_* toggle below
+            // (the server expands it via ArchTools.TryGetProfileArchs). The toggles are still sent so
+            // "Custom" keeps working.
+            ArchProfile = v.ValueOrDefault(ArchitectureSettings.ArchProfile, ArchProfileKeys.V4),
+
             // Architectures: Processors
             ARCH_8086 = v.ValueOrDefault(ArchitectureSettings.Arch8086, true),
             ARCH_186 = v.ValueOrDefault(ArchitectureSettings.Arch186, true),
@@ -248,6 +255,7 @@ internal class SettingsSyncService : ExtensionPart
             ARCH_SGX1 = v.ValueOrDefault(ArchitectureSettings.ArchSGX1, false),
             ARCH_SGX2 = v.ValueOrDefault(ArchitectureSettings.ArchSGX2, false),
             ARCH_CLDEMOTE = v.ValueOrDefault(ArchitectureSettings.ArchCLDEMOTE, false),
+            ARCH_CLWB = v.ValueOrDefault(ArchitectureSettings.ArchCLWB, false),
             ARCH_MOVDIR64B = v.ValueOrDefault(ArchitectureSettings.ArchMOVDIR64B, false),
             ARCH_MOVDIRI = v.ValueOrDefault(ArchitectureSettings.ArchMOVDIRI, false),
             ARCH_PCONFIG = v.ValueOrDefault(ArchitectureSettings.ArchPCONFIG, false),

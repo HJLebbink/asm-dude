@@ -42,6 +42,21 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
     private bool simRefreshPending;
     private bool simRefreshRunning;
 
+    // ── Server-data cache (the per-scroll latency fix) ──────────────────────────────────────────
+    // Sim-state + label data only change when the document is edited or the server pushes a
+    // simStateUpdated. A plain scroll re-issues OnRequestTagsAsync (several times) but changes
+    // NOTHING — yet BuildTagsAsync used to make two blocking pipe round-trips (each with a 5 s
+    // timeout) on every one of those calls. While the server is busy with the slow initial Z3 sim,
+    // those round-trips queue behind a lock-contended server and stall for seconds, re-fetching data
+    // identical to what is already on screen. We therefore cache the last server answer and re-fetch
+    // ONLY when it can have changed: an edit (OnTextViewChangedAsync) or a sim push (OnSimStateUpdated)
+    // sets dataDirty_; a pure scroll reuses the cache, making it a local re-render. Accessed only under
+    // `semaphore` (all of OnRequestTags/RunSimRefresh/OnTextViewChanged enter it); dataDirty_ is set
+    // from event threads so it is volatile.
+    private volatile bool dataDirty_ = true;
+    private Dictionary<int, string>? cachedSimStates_;
+    private IReadOnlyList<AsmLabelRef>? cachedLabels_;
+
     // Decides which lines to (re)publish (VS-free, unit-tested in CodeLensPublishPlannerTests).
     // The 2s window lets a genuine recalculateAll re-supply a lens after quiescence while killing
     // the tight OnRequestTags ↔ UpdateTags echo loop.
@@ -77,8 +92,10 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
         {
             this.currentDocumentSnapshot = documentAfter;
             // Positions shifted: forget per-line publish state so the next publish recomputes from
-            // scratch, then proactively refresh (per-line ranges).
+            // scratch, then proactively refresh (per-line ranges). The edit can change labels/sim
+            // state, so invalidate the server-data cache too.
             this.planner.Reset();
+            this.dataDirty_ = true;
             await this.PublishAsync(documentAfter, requestedRanges: null);
         }
     }
@@ -114,6 +131,8 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
         // Only refresh if the notification is for this document
         if (!updatedUri.Equals(this.documentUri)) return;
 
+        // The server has new sim-state data — invalidate the cache so the refresh re-fetches.
+        this.dataDirty_ = true;
         TaggerLog($"SimStateUpdated for {updatedUri} — scheduling tag refresh");
         _ = this.RunSimRefreshAsync();
     }
@@ -211,13 +230,29 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
     private async Task<(List<(int start, int line, TaggedTrackingTextRange<CodeLensTag> tag)> built, Dictionary<int, string> sigByLine, Dictionary<int, TextRange> lineRanges)> BuildTagsAsync(ITextDocumentSnapshot document)
     {
         // Reference counting lives on the (multithreaded) server via its assembler-aware LabelGraph;
-        // the tagger only renders the result — it does NOT parse.
-        Dictionary<int, string> simStates = await SimStatePipeClient.Instance
-            .GetSimStatesAsync(this.documentUri).ConfigureAwait(false);
-        IReadOnlyList<AsmLabelRef> labels = await SimStatePipeClient.Instance
-            .GetCodeLensDataAsync(this.documentUri).ConfigureAwait(false);
-
-        TaggerLog($"BuildTagsAsync: {simStates.Count} sim states, {labels.Count} label(s)");
+        // the tagger only renders the result — it does NOT parse. The two pipe round-trips below are
+        // the expensive part of a publish (each blocks up to 5 s if the server is busy with the slow
+        // initial sim), so we only pay them when the data can have changed (dataDirty_, set by edits
+        // and sim pushes). A pure scroll reuses the cache and re-renders locally — no IPC.
+        Dictionary<int, string> simStates;
+        IReadOnlyList<AsmLabelRef> labels;
+        if (this.dataDirty_ || this.cachedSimStates_ is null || this.cachedLabels_ is null)
+        {
+            simStates = await SimStatePipeClient.Instance
+                .GetSimStatesAsync(this.documentUri).ConfigureAwait(false);
+            labels = await SimStatePipeClient.Instance
+                .GetCodeLensDataAsync(this.documentUri).ConfigureAwait(false);
+            this.cachedSimStates_ = simStates;
+            this.cachedLabels_ = labels;
+            this.dataDirty_ = false;
+            TaggerLog($"BuildTagsAsync: fetched {simStates.Count} sim states, {labels.Count} label(s)");
+        }
+        else
+        {
+            simStates = this.cachedSimStates_;
+            labels = this.cachedLabels_;
+            TaggerLogVerbose($"BuildTagsAsync: reused cache ({simStates.Count} sim states, {labels.Count} label(s)) — no IPC");
+        }
 
         var labelsByLine = new Dictionary<int, AsmLabelRef>();
         foreach (var lbl in labels)

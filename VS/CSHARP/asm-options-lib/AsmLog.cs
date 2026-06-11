@@ -114,9 +114,11 @@ public static class AsmLog
     /// stable, greppable key); they are auto-filled by the convenience overloads, and a facade forwards
     /// its own caller's values so it doesn't mask the true site.
     /// </summary>
-    public static void Log(AsmLogLevel level, string category, string message, string? member = null, int line = 0)
+    public static void Log(AsmLogLevel level, string category, string message, string? member = null, int line = 0, bool force = false)
     {
-        if (!IsEnabled(level)) return;
+        // force = always emit (e.g. a startup banner) regardless of Threshold, but a hard Off still silences all.
+        if (!force && !IsEnabled(level)) return;
+        if (force && Threshold == AsmLogLevel.Off) return;
 
         var entry = new AsmLogEntry(DateTime.Now, level, category, message, member, line);
 
@@ -146,6 +148,15 @@ public static class AsmLog
 
     public static void Error(string category, string message, Exception ex, [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
         => Log(AsmLogLevel.Error, category, $"{message}: {ex.GetType().Name}: {ex.Message}", member, line);
+
+    /// <summary>
+    /// Logs an important one-off message (e.g. a startup banner) at Info severity that is ALWAYS emitted,
+    /// bypassing <see cref="Threshold"/> (but still silenced by a hard <see cref="AsmLogLevel.Off"/>). Useful
+    /// as a session marker even when the log is kept at Warn — and, in the server, it guarantees a
+    /// <c>window/logMessage</c> is sent so Visual Studio creates the language-server output pane.
+    /// </summary>
+    public static void Banner(string category, string message, [CallerMemberName] string member = "", [CallerLineNumber] int line = 0)
+        => Log(AsmLogLevel.Info, category, message, member, line, force: true);
 
     /// <summary>Parses a level name (case-insensitive) from an env var / settings value. Returns false if blank/unknown.</summary>
     public static bool TryParseLevel(string? text, out AsmLogLevel level)

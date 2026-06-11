@@ -147,6 +147,7 @@ namespace AsmSim
             {
                 this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
                 this.ownsCtx_ = true;
+                Z3ContextTracker.Created();
             }
             this.Empty = true;
         }
@@ -168,6 +169,7 @@ namespace AsmSim
             {
                 this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
                 this.ownsCtx_ = true;
+                Z3ContextTracker.Created();
             }
             // When branchCondition is already in ctx_ (shared context), Translate is an identity.
             this.branch_Condition_ = branchCondition.Translate(this.ctx_) as BoolExpr;
@@ -1203,6 +1205,7 @@ namespace AsmSim
                     if (this.ownsCtx_)
                     {
                         this.ctx_.Dispose();
+                        Z3ContextTracker.Disposed();
                     }
                 }
             }
