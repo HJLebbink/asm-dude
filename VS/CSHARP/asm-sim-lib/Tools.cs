@@ -39,6 +39,14 @@ namespace AsmSim
 
         public bool ShowUndefConstraints { get; set; }
 
+        /// <summary>How the simulator summarizes loops (see <see cref="LoopHandling"/>). Default
+        /// <see cref="LoopHandling.Accept"/> (legacy behavior). Carried through the copy ctor so a whole
+        /// simulation unit shares one choice.</summary>
+        public LoopHandling LoopHandling { get; set; } = LoopHandling.Accept;
+
+        /// <summary>Per-loop work cap for the selected <see cref="LoopHandling"/>.</summary>
+        public LoopBudget LoopBudget { get; set; } = LoopBudget.Default;
+
         public Tools()
             : this([], string.Empty) { }
 
@@ -53,6 +61,8 @@ namespace AsmSim
             this.ShowUndefConstraints = other.ShowUndefConstraints;
             this.StateConfig = other.StateConfig;
             this.SharedCtx = other.SharedCtx; // share the same Z3 Context reference (by design)
+            this.LoopHandling = other.LoopHandling;
+            this.LoopBudget = other.LoopBudget;
         }
 
         public Tools(Dictionary<string, string> contextSettings, string solverSetting = "")

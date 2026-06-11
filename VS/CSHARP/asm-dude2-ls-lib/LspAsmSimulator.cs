@@ -120,6 +120,16 @@ namespace AsmDude2LS
             [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
             => AsmLog.Log(AsmLogLevel.Debug, "ASMSIM", msg, member, line);
 
+        /// <summary>Per-RUN sim summary for the VS "AsmDude2 Language Server" pane. Emitted at Info with
+        /// <c>force</c> so it shows even when the deployed (Release) build's threshold is Warn — like the
+        /// startup banner, and for the same reason (it's once-per-run and the user wants to see the sim
+        /// working). A hard <c>ASMDUDE_LOGLEVEL=off</c> still silences it. Keep per-LINE chatter on <see
+        /// cref="Log"/> (Debug → disk log only, raise with ASMDUDE_LOGLEVEL=debug).</summary>
+        private static void LogInfo(string msg,
+            [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+            [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+            => AsmLog.Log(AsmLogLevel.Info, "ASMSIM", msg, member, line, force: true);
+
         /// <summary>
         /// Trigger a background re-simulation for the given document.
         /// Called whenever the document content changes.
@@ -379,6 +389,329 @@ namespace AsmDude2LS
             }
             return new SimResultSet(label, lines);
         }
+
+        // ── S2: per-component DynamicFlow engine + SIMDIFF shadow ───────────────────────────────────
+        // The component engine is a SEPARATE path; the linear engine stays authoritative. Selected by the
+        // ASMDUDE_SIM_ENGINE env var (linear | shadow). In "shadow" the linear run drives the editor and
+        // the component engine runs compute-only, with every per-line before/after difference logged under
+        // the SIMDIFF category — so the merge-vs-linear semantic change is OBSERVED before anything flips.
+        // INCREMENTAL_SIM_PLAN.md S2 (no editor flip yet).
+        internal enum SimEngineMode
+        {
+            /// <summary>Editor uses the linear single-step sim (default, authoritative).</summary>
+            Linear,
+
+            /// <summary>Editor uses the linear sim; the component engine runs compute-only and SIMDIFF-logs.</summary>
+            Shadow,
+
+            /// <summary>Editor uses the DYNAMIC per-component engine (the flip). Linear is not run.</summary>
+            Component,
+        }
+
+        private static readonly SimEngineMode SimEngine = ParseSimEngine();
+
+        private static SimEngineMode ParseSimEngine()
+        {
+            string? v = Environment.GetEnvironmentVariable("ASMDUDE_SIM_ENGINE");
+            if (string.Equals(v, "component", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Component;
+            if (string.Equals(v, "shadow", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Shadow;
+            return SimEngineMode.Linear;
+        }
+
+        /// <summary>Loop-handling strategy the component engine uses (ASMDUDE_SIM_LOOP env var:
+        /// accept|modsethavoc|peelonce|fullunroll|fixpoint). Default Accept (legacy loop behavior).</summary>
+        private static readonly AsmSim.LoopHandling SimLoopHandling =
+            Enum.TryParse(Environment.GetEnvironmentVariable("ASMDUDE_SIM_LOOP"), ignoreCase: true, out AsmSim.LoopHandling lh)
+                ? lh
+                : AsmSim.LoopHandling.Accept;
+
+        /// <summary>The same register/flag tracking the linear sim uses (RAX..R15 + CF/ZF/SF/OF). Shared by
+        /// both engines so a SIMDIFF comparison is apples-to-apples.</summary>
+        private static void EnableFullStateConfig(AsmSimTools tools)
+        {
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RDX = true;
+            tools.StateConfig.RSI = true;
+            tools.StateConfig.RDI = true;
+            tools.StateConfig.RSP = true;
+            tools.StateConfig.RBP = true;
+            tools.StateConfig.R8 = true;
+            tools.StateConfig.R9 = true;
+            tools.StateConfig.R10 = true;
+            tools.StateConfig.R11 = true;
+            tools.StateConfig.R12 = true;
+            tools.StateConfig.R13 = true;
+            tools.StateConfig.R14 = true;
+            tools.StateConfig.R15 = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.ZF = true;
+            tools.StateConfig.SF = true;
+            tools.StateConfig.OF = true;
+        }
+
+        /// <summary>
+        /// The per-component engine: partition the document into weakly-connected CFG components and
+        /// simulate each with its own multi-root <see cref="DynamicFlow"/> (own Z3 context, distinct
+        /// per-component seeded RNG — the §1 parallel-safety seam), extracting per-line before/after state
+        /// strings. Returns a before/after-only <see cref="SimResultSet"/> (labels/diagnostics not yet
+        /// produced by this engine — S2b). Never throws into the caller; a failing component is logged and
+        /// skipped. NOTE: heavier than the linear sim (real merge machinery) — only run in shadow/analysis.
+        /// </summary>
+        /// <summary>
+        /// 1:1 line-preserving rewrite that lifts the linear sim's <c>#pragma assume</c> feature into the
+        /// CFG fed to the component engine: <c>#pragma assume X</c> becomes the instruction <c>X</c> (the
+        /// assumption becomes a real step on the path) and <c>#pragma assume HLT</c> becomes <c>HLT</c>
+        /// (Runner returns null for HLT ⇒ the path halts ⇒ the next line becomes an in-degree-0 root that
+        /// the multi-root construction seeds with a FRESH state — reproducing the HLT reset). Indices are
+        /// preserved, so the ORIGINAL <paramref name="lines"/> still drive the display filter (a pragma
+        /// slot parses to Mnemonic.NONE and is not emitted), matching the linear sim line-for-line.
+        /// </summary>
+        private static string[] RewritePragmasForCfg(IReadOnlyList<string> lines)
+        {
+            const string pragmaPrefix = "#pragma assume ";
+            var result = new string[lines.Count];
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string trimmed = lines[i].Trim();
+                if (trimmed.StartsWith(pragmaPrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    string assume = trimmed[pragmaPrefix.Length..].Trim();
+                    int commentIdx = assume.IndexOf(';');
+                    if (commentIdx >= 0) assume = assume[..commentIdx].Trim();
+                    result[i] = assume; // "X" or "HLT"
+                }
+                else
+                {
+                    result[i] = lines[i];
+                }
+            }
+            return result;
+        }
+
+        /// <summary>One line's component-engine output, with diagnostics kept as structured objects (so the
+        /// editor cache can consume them; the shadow path stringifies them for comparison).</summary>
+        private sealed record ComponentLine(string? Before, string? After, string? ReadLabel, string? WriteLabel, List<SimDiagnostic> Diagnostics);
+
+        private SimResultSet BuildComponentResultSet(string label, IReadOnlyList<string> lines)
+        {
+            var result = new Dictionary<int, SimLineResult>();
+            foreach (KeyValuePair<int, ComponentLine> kv in this.ComputeComponentLines(lines))
+            {
+                ComponentLine cl = kv.Value;
+                List<string>? diagStrings = null;
+                if (cl.Diagnostics.Count > 0)
+                {
+                    diagStrings = [];
+                    foreach (SimDiagnostic d in cl.Diagnostics) diagStrings.Add($"{d.Kind}:{d.Message}");
+                }
+                result[kv.Key] = new SimLineResult(cl.Before, cl.After, cl.ReadLabel, cl.WriteLabel, diagStrings);
+            }
+            return new SimResultSet(label, result);
+        }
+
+        /// <summary>Run the dynamic per-component engine and return per-line before/after state, CodeLens
+        /// read/write labels, and diagnostics — driven from the dynamic states via the SAME per-line logic
+        /// the linear sim uses. Shared by the shadow comparison and the component-engine editor path.</summary>
+        private Dictionary<int, ComponentLine> ComputeComponentLines(IReadOnlyList<string> lines)
+        {
+            var result = new Dictionary<int, ComponentLine>();
+            try
+            {
+                var settings = new Dictionary<string, string>
+                {
+                    { "timeout", "5000" },
+                    { "random_seed", "0" },
+                };
+
+                // The CFG sees the pragma-lifted program; display/filtering still uses the original lines.
+                string[] effective = RewritePragmasForCfg(lines);
+                var sFlow = new StaticFlow(new AsmSimTools(settings));
+                sFlow.Update(string.Join(Environment.NewLine, effective), removeEmptyLines: false);
+
+                IReadOnlyDictionary<int, int> lineToComponent = sFlow.ComputeLineToComponent();
+                IReadOnlyDictionary<int, List<int>> entriesByComponent = sFlow.ComputeComponentEntryLines();
+
+                var linesByComponent = new Dictionary<int, List<int>>();
+                foreach (var (line, componentId) in lineToComponent)
+                {
+                    if (!linesByComponent.TryGetValue(componentId, out List<int>? bucket))
+                    {
+                        bucket = [];
+                        linesByComponent[componentId] = bucket;
+                    }
+                    bucket.Add(line);
+                }
+
+                foreach (var (componentId, roots) in entriesByComponent)
+                {
+                    try
+                    {
+                        // Distinct seed per component ⇒ parallel-safe (no shared Random) + reproducible.
+                        var compTools = new AsmSimTools(settings, string.Empty, componentId);
+                        EnableFullStateConfig(compTools);
+                        compTools.Quiet = true;
+                        compTools.LoopHandling = SimLoopHandling; // ASMDUDE_SIM_LOOP
+
+                        using DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, roots, compTools);
+                        // The heavy Z3 work for a whole component happens here (the worklist evaluates every
+                        // vertex up front), so time it per component; per-line below is just extraction.
+                        var compClock = System.Diagnostics.Stopwatch.StartNew();
+                        using var ev = new ComponentEvaluator(dFlow, sFlow); // loop-aware, per-line before/after
+                        compClock.Stop();
+                        AsmLog.Info("ASMSIM", $"[component] component {componentId}: evaluated in {compClock.ElapsedMilliseconds} ms");
+
+                        if (!linesByComponent.TryGetValue(componentId, out List<int>? componentLines)) continue;
+                        foreach (int line in componentLines)
+                        {
+                            // Skip phantom vertices the CFG adds past the last instruction (e.g. the
+                            // fall-through "end" line N for an N-line program); the editor/linear sim only
+                            // annotate real document lines, so the shadow must compare the same set.
+                            if (line < 0 || line >= lines.Count) continue;
+                            var lineClock = System.Diagnostics.Stopwatch.StartNew();
+
+                            // Match the linear sim EXACTLY: only real instruction lines carry annotations.
+                            (_, _, Mnemonic mnemonic, string[] args, _) = AsmSourceTools.ParseLine(lines[line].Trim(), -1, -1, AssemblerEnum.UNKNOWN);
+                            if (mnemonic == Mnemonic.NONE) continue;
+
+                            AsmSimState? before = ev.Before(line); // owned by ev — do NOT dispose
+                            AsmSimState? after = ev.After(line);
+                            string? beforeStr = before is null ? null : ComputeStateString(before);
+                            string? afterStr = after is null ? null : ComputeStateString(after);
+
+                            // Labels + diagnostics — driven from the DYNAMIC states via the SAME per-line
+                            // logic the linear sim uses, so the output is field-for-field comparable.
+                            string? readLabel = null;
+                            string? writeLabel = null;
+                            var diags = new List<SimDiagnostic>();
+                            if (before != null)
+                            {
+                                var dummyKeys = ("d_p", "d_n", "d_b");
+                                using OpcodeBase? op = Runner.InstantiateOpcode(mnemonic, args, dummyKeys, compTools);
+
+                                var writtenRegs = new HashSet<Rn>();
+                                Flags writtenFlags = Flags.NONE;
+                                var readRegs = new HashSet<Rn>();
+                                Flags readFlags = Flags.NONE;
+                                if (op != null)
+                                {
+                                    foreach (Rn r in op.RegsWriteStatic) writtenRegs.Add(RegisterTools.Get64BitsRegister(r));
+                                    writtenFlags = op.FlagsWriteStatic;
+                                    foreach (Rn r in op.RegsReadStatic) readRegs.Add(RegisterTools.Get64BitsRegister(r));
+                                    readFlags = op.FlagsReadStatic;
+                                }
+
+                                readLabel = ComputeReadLabel(before, readRegs, readFlags);
+                                if (after != null) writeLabel = ComputeWriteLabel(after, writtenRegs, writtenFlags);
+                                this.CollectDiagnostics(lines[line], line, before, compTools, diags, op);
+                            }
+
+                            if (beforeStr != null || afterStr != null || readLabel != null || writeLabel != null || diags.Count > 0)
+                            {
+                                result[line] = new ComponentLine(beforeStr, afterStr, readLabel, writeLabel, diags);
+                            }
+                            lineClock.Stop();
+                            AsmLog.Info("ASMSIM", $"[component] line {line + 1}: {mnemonic} {(diags.Count > 0 ? $"({diags.Count} diag) " : "")}in {lineClock.ElapsedMilliseconds} ms");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"[SHADOW] component {componentId} failed: {ex.GetType().Name}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"[SHADOW] component engine failed: {ex.GetType().Name}: {ex.Message}");
+            }
+            return result;
+        }
+
+        /// <summary>The flip (ASMDUDE_SIM_ENGINE=component): populate the editor cache from the dynamic
+        /// per-component engine instead of the linear walk. Read paths (hover / inlay hints / CodeLens /
+        /// diagnostics) are unchanged — they serve from the same cache. Reversible: switch the env var back.</summary>
+        private void RunComponentSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            Dictionary<int, ComponentLine> computed;
+            try
+            {
+                computed = this.ComputeComponentLines(lines);
+            }
+            catch (Exception ex)
+            {
+                Log($"[THREAD] COMPONENT EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+                return;
+            }
+
+            if (ct.IsCancellationRequested) return;
+
+            int linesWritten = 0;
+            int diagCount = 0;
+            lock (this.lockObj_)
+            {
+                if (!this.simVersion_.TryGetValue(uri, out long curVer) || curVer != version
+                    || !this.cache_.TryGetValue(uri, out DocCache? entry))
+                {
+                    return; // a newer edit superseded this run
+                }
+                foreach (KeyValuePair<int, ComponentLine> kv in computed)
+                {
+                    int line = kv.Key;
+                    ComponentLine cl = kv.Value;
+                    if (cl.Before != null) entry.lineStringsBefore[line] = cl.Before;
+                    if (cl.After != null) entry.lineStringsAfter[line] = cl.After;
+                    if (cl.ReadLabel != null) entry.lineStringsReadLabels[line] = cl.ReadLabel;
+                    if (cl.WriteLabel != null) entry.lineStringsWriteLabels[line] = cl.WriteLabel;
+                    if (cl.Diagnostics.Count > 0)
+                    {
+                        entry.diagnostics.AddRange(cl.Diagnostics);
+                        diagCount += cl.Diagnostics.Count;
+                    }
+                    linesWritten++;
+                }
+            }
+
+            LogInfo($"[component] SUCCESS: {linesWritten} lines, {diagCount} diagnostics, loop={SimLoopHandling}, total {clock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
+            onProgress?.Invoke(uri);
+            onCompleted?.Invoke(uri);
+        }
+
+        /// <summary>Shadow mode: compare the just-completed linear result against the component engine and
+        /// log the per-line diff under SIMDIFF. Linear stays authoritative — this only observes.</summary>
+        private void RunShadowComparison(Uri uri, IReadOnlyList<string> lines)
+        {
+            SimResultSet linear = this.ToResultSet(uri, "linear"); // full: before/after + labels + diagnostics
+            SimResultSet component = BuildComponentResultSet("component", lines);
+            SimDiff diff = SimResultComparer.Compare(linear, component);
+
+            if (diff.IsEmpty)
+            {
+                SimDiffLog($"{uri}: linear == component ({linear.Lines.Count} lines, {component.Lines.Count} component lines)");
+            }
+            else
+            {
+                SimDiffLog($"{uri}: {diff.Entries.Count} diff(s) over {diff.ChangedLines.Count} line(s)" + Environment.NewLine + diff.ToReport());
+            }
+        }
+
+        /// <summary>Test seam: run BOTH engines on the same program (linear synchronously, then component)
+        /// and return the SIMDIFF — so tests can assert agreement (straight-line) or the expected
+        /// merge-vs-linear divergence (branches), exercising the real production engines.</summary>
+        internal SimDiff CompareEnginesForTest(Uri uri, IReadOnlyList<string> lines)
+        {
+            this.SimulateSynchronouslyForTest(uri, lines);
+            SimResultSet linear = this.ToResultSet(uri, "linear"); // full: before/after + labels + diagnostics
+            SimResultSet component = BuildComponentResultSet("component", lines);
+            return SimResultComparer.Compare(linear, component);
+        }
+
+        private static void SimDiffLog(string msg,
+            [System.Runtime.CompilerServices.CallerMemberName] string member = "",
+            [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
+            => AsmLog.Log(AsmLogLevel.Warn, "SIMDIFF", msg, member, line);
 
         /// <summary>
         /// Returns a thread-safe snapshot of the CodeLens label strings for each display position.
@@ -676,8 +1009,16 @@ namespace AsmDude2LS
 
         private void RunSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
         {
-            Log($"[THREAD] RunSimulation started for {uri}, {lines.Count} lines");
+            LogInfo($"sim started: engine={SimEngine} loop={SimLoopHandling}, {lines.Count} lines, {uri.Segments[^1]}");
             LogCfgPartition(uri, lines);
+
+            // The flip: when ASMDUDE_SIM_ENGINE=component, drive the editor from the dynamic per-component
+            // engine instead of the linear walk below. Read paths are unchanged (same cache).
+            if (SimEngine == SimEngineMode.Component)
+            {
+                this.RunComponentSimulation(uri, version, lines, ct, onCompleted, onProgress);
+                return;
+            }
 
             // Declared OUTSIDE the try so the finally can dispose them on EVERY exit path (see finally).
             var ownedStates = new List<AsmSimState>();
@@ -692,27 +1033,7 @@ namespace AsmDude2LS
                     { "random_seed", "0" },
                 };
                 AsmSimTools tools = new(settings);
-                tools.StateConfig.Set_All_Off();
-                tools.StateConfig.RAX = true;
-                tools.StateConfig.RBX = true;
-                tools.StateConfig.RCX = true;
-                tools.StateConfig.RDX = true;
-                tools.StateConfig.RSI = true;
-                tools.StateConfig.RDI = true;
-                tools.StateConfig.RSP = true;
-                tools.StateConfig.RBP = true;
-                tools.StateConfig.R8 = true;
-                tools.StateConfig.R9 = true;
-                tools.StateConfig.R10 = true;
-                tools.StateConfig.R11 = true;
-                tools.StateConfig.R12 = true;
-                tools.StateConfig.R13 = true;
-                tools.StateConfig.R14 = true;
-                tools.StateConfig.R15 = true;
-                tools.StateConfig.CF = true;
-                tools.StateConfig.ZF = true;
-                tools.StateConfig.SF = true;
-                tools.StateConfig.OF = true;
+                EnableFullStateConfig(tools); // shared with the component engine so SIMDIFF is apples-to-apples
                 tools.Quiet = true;
 
                 var newDiagnostics = new List<SimDiagnostic>();
@@ -928,7 +1249,7 @@ namespace AsmDude2LS
 
                     lineClock.Stop();
                     if (lineClock.ElapsedMilliseconds >= SlowLineThresholdMs) slowLineCount++;
-                    Log($"[THREAD] Line {i} (editor line {i + 1}): {mnemonic} done in {lineClock.ElapsedMilliseconds} ms");
+                    AsmLog.Info("ASMSIM", $"[linear] line {i + 1}: {mnemonic} done in {lineClock.ElapsedMilliseconds} ms");
                 }
 
                 // Finalize. The per-line state STRINGS were already written to the cache incrementally;
@@ -949,10 +1270,24 @@ namespace AsmDude2LS
                     return; // finally disposes ownedStates
                 }
 
-                Log($"[THREAD] SUCCESS: {linesWritten} lines written, {newDiagnostics.Count} diagnostics, {slowLineCount} slow/timeout line(s) (>={SlowLineThresholdMs}ms), total {progressClock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
+                LogInfo($"[linear] SUCCESS: {linesWritten} lines written, {newDiagnostics.Count} diagnostics, {slowLineCount} slow/timeout line(s) (>={SlowLineThresholdMs}ms), total {progressClock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
                 // Notify client to refresh inlay hints (final flush) and republish diagnostics.
                 onProgress?.Invoke(uri);
                 onCompleted?.Invoke(uri);
+
+                // Shadow mode: run the per-component engine compute-only and log per-line diffs vs the
+                // (authoritative) linear result. Never affects the editor; wrapped so it can't wedge the sim.
+                if (SimEngine == SimEngineMode.Shadow)
+                {
+                    try
+                    {
+                        this.RunShadowComparison(uri, lines);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"[SHADOW] comparison failed: {ex.GetType().Name}: {ex.Message}");
+                    }
+                }
             }
             catch (OperationCanceledException)
             {

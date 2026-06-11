@@ -448,19 +448,16 @@ namespace AsmSim
             this.use_Parsed_Code_A_ = !this.use_Parsed_Code_A_;
 
             #region Parse to find all labels
+            // Label references are annotated with their definition line per parsed TOKEN below (exact
+            // match). Do NOT annotate via a substring programStr.Replace: it corrupts any mnemonic/register/
+            // longer-label that contains a label name as a substring (a label "m" would mangle mov/cmp/jmp).
             IDictionary<string, int> labels = GetLabels(programStr);
-            // replace all labels by annotated label
-
-            foreach (KeyValuePair<string, int> entry in labels)
+            foreach (string key in labels.Keys)
             {
-                if (entry.Key.Contains(LINENUMBER_SEPARATOR.ToString()))
+                if (key.Contains(LINENUMBER_SEPARATOR))
                 {
-                    AsmLog.Warn("SIM", "CFLOW:GetLines: label " + entry.Key + " has an " + LINENUMBER_SEPARATOR);
+                    AsmLog.Warn("SIM", "CFLOW:GetLines: label " + key + " contains the reserved separator '" + LINENUMBER_SEPARATOR + "'");
                 }
-                string newLabel = entry.Key + LINENUMBER_SEPARATOR + entry.Value;
-                //Console.WriteLine("INFO: ControlFlow:getLines: Replacing label " + entry.Key + " with " + newLabel);
-                programStr = programStr.Replace(entry.Key, newLabel);
-                Debug.Assert(programStr != null);
             }
             #endregion
 
@@ -477,6 +474,17 @@ namespace AsmSim
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
                     (KeywordID[] _, string label, Mnemonic mnemonic, string[] args, string remark) line = AsmSourceTools.ParseLine(lines[lineNumber], -1, -1, AssemblerEnum.UNKNOWN);
+
+                    // Annotate label references ("foo" -> "foo!5") by exact token match so Static_Jump /
+                    // GetLineNumberFromLabel can resolve them; token-level so non-label tokens are untouched.
+                    for (int k = 0; k < line.args.Length; ++k)
+                    {
+                        if (labels.TryGetValue(line.args[k], out int targetLine))
+                        {
+                            line.args[k] = line.args[k] + LINENUMBER_SEPARATOR + targetLine;
+                        }
+                    }
+
                     EvalArgs(ref line.args);
                     current.Add((line.label, line.mnemonic, line.args));
 
@@ -747,7 +755,11 @@ namespace AsmSim
             return (jumpTo1, jumpTo2);
         }
 
-        /// <summary>Get all labels with the line number on which it is defined</summary>
+        /// <summary>Get all labels with the line number on which it is defined.</summary>
+        /// <remarks>Keys by the bare label name. KNOWN LIMITATION: local labels are not scoped to their
+        /// enclosing global label, so the same name reused in two scopes (e.g. NASM <c>.loop</c> under two
+        /// functions) clashes — the second definition is dropped and its references mis-resolve (a warning
+        /// is logged). To fix, qualify a local label with its parent here and resolve references in scope.</remarks>
         private static IDictionary<string, int> GetLabels(string text)
         {
             IDictionary<string, int> result = new Dictionary<string, int>();

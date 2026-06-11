@@ -51,8 +51,25 @@ namespace AsmSim
 
         public static DynamicFlow Construct_DynamicFlow_Forward(StaticFlow sFlow, int startLine, int nSteps, Tools tools)
         {
+            ArgumentNullException.ThrowIfNull(sFlow);
+            // Honor startLine (previously ignored — it called Reset(sFlow, true), hardcoding FirstLineNumber).
+            // Single relocatable root; for a multi-entry component use the IReadOnlyCollection overload below.
             DynamicFlow dFlow = new(tools);
-            dFlow.Reset(sFlow, true);
+            dFlow.Reset(sFlow, new[] { startLine });
+            return dFlow;
+        }
+
+        /// <summary>
+        /// Build a forward DynamicFlow seeded from ALL entry lines of a (possibly multi-entry) CFG
+        /// component — see <see cref="StaticFlow.ComputeComponentEntryLines"/>. The single-root overloads
+        /// under-cover a component whose functions share a tail; this one covers it. The Phase-2
+        /// per-component construction primitive (INCREMENTAL_SIM_PLAN.md §Problem-1 / S1).
+        /// </summary>
+        public static DynamicFlow Construct_DynamicFlow_Forward(StaticFlow sFlow, IReadOnlyCollection<int> forwardRoots, Tools tools)
+        {
+            ArgumentNullException.ThrowIfNull(sFlow);
+            DynamicFlow dFlow = new(tools);
+            dFlow.Reset(sFlow, forwardRoots);
             return dFlow;
         }
 

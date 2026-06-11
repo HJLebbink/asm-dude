@@ -66,9 +66,13 @@ Original Phase 1 outline:
   `rootKey_ = "!" + FirstLineNumber`). The private `DynamicFlow.Update_Forward(sFlow, startLine)` does
   support an arbitrary start, so the fix is to add `Reset(sFlow, forward, startLine)` (set
   `rootKey_ = sFlow.Get_Key(startLine)`, call `Update_Forward(sFlow, startLine)`) and have the 4-arg
-  Construct use it. Also map `Create_States_Before/After` semantics for components ending in
-  `ret`/unconditional `jmp` (an exploratory test hit empty results there). So Phase 2 is genuine
-  implementation, not just wiring.
+  Construct use it. ~~Also map `Create_States_Before/After` semantics for components ending in
+  `ret`/unconditional `jmp` (an exploratory test hit empty results there).~~ **RESOLVED by the S1 spike
+  (2026-06-11, `Test_DynamicFlowComponent`): the "empty results" fear does NOT reproduce** — ret- and
+  jmp-terminated components produce non-empty per-line states; `Create_States_After(0)`/`_Before(ret)`
+  prove the values (`rax=10`). The post-`ret` end state is havoc/UNKNOWN (correct ret semantics,
+  irrelevant to per-line editor extraction). So Phase 2 construction is mechanical wiring after all —
+  EXCEPT the new boundary the spike found (below).
 - Then: simulate each component into its own context; cache per-line strings; keep its context alive.
 
 **Phase 3 — Incremental invalidation.**
@@ -250,11 +254,42 @@ than today's single chain.
   compute-only; log every per-line before/after/label/diagnostic mismatch at `Warn` under a new
   **`SIMDIFF`** category. Ship this, run real `.asm` files, understand every diff. Only then flip
   `ASMDUDE_SIM_ENGINE=component` (instant rollback = flip back).
-- **S1 — DynamicFlow construction (Part A, items 1-6)** behind the existing 178 sim tests **plus** new
-  gate tests: multi-entry (§2), self-loop+diamond (§3), `ret`/`jmp` terminal (item 5 — write the
-  failing repro FIRST), parallel-Random race (§1). No editor change.
-- **S2 — component extraction + bounded parallelism (Part B)**, gated by the flag, validated against
-  S0 shadow diffs and the §7 memory bound.
+- **S1 — DynamicFlow construction (Part A). ✅ DONE (2026-06-11).** No editor change; full sim suite
+  **194/0/3** (no regression from the core construction refactor).
+  - **Item 5 spike** (`Test_DynamicFlowComponent`): ret/jmp components yield non-empty, value-proving
+    per-line states — the "empty results" fear did NOT reproduce. **New finding carried to S2:** DynamicFlow
+    does a **single-pass merge, not a fixpoint**, so a loop head reads its merged value as UNKNOWN
+    (`mov rax,7; jmp start` ⇒ rax UNKNOWN, not the invariant 7). Not a regression (the linear editor sim
+    ignores jumps today); the component engine is just *less precise in loops* — SIMDIFF will surface these
+    exact lines as an explicit S2/S3 accept/improve decision, NOT a silent bug.
+  - **Items 1/2/6 (multi-root construction):** `DynamicFlow.Update_Forward(IReadOnlyCollection<int>)` seeds
+    ALL entry roots (single-int delegates to it); `DynamicFlow.Reset(sFlow, forwardRoots)`; the 4-arg
+    `Runner.Construct_DynamicFlow_Forward` now HONORS `startLine` (was ignored) + a new
+    `Construct_DynamicFlow_Forward(sFlow, IReadOnlyCollection<int> roots, tools)`. **Gate test**
+    `MultiRoot_CoversAllEntries_OfMultiEntryComponent`: a single root from line 0 does NOT reach funcB
+    (under-coverage demonstrated), multi-root covers funcB(rbx=2) AND funcA(rax=1). Items 3 (entry-lines
+    primitive) + 4 (dispose-on-skip) were already done.
+  - **Remaining gate tests still worth adding** (not blockers): self-loop+diamond termination (§3) is
+    partly covered by the spike + the `Test_Z3ContextTracker_DynamicFlow_NoLeak` diamond; the parallel-
+    Random race (§1) needs the parallel driver (S2).
+- **S2 — component extraction + shadow. STARTED (2026-06-11), shadow-only, NO editor flip.**
+  - `LspAsmSimulator.BuildComponentResultSet` — the per-component engine: StaticFlow → ComputeLineToComponent
+    + ComputeComponentEntryLines → one multi-root `DynamicFlow` per component (own Z3 context + DISTINCT
+    per-component seeded Random via `new Tools(settings,"",componentId)` — the §1 parallel-safety seam) →
+    extract per-line before/after via `Create_States_Before/After(line,0)`. Before/after only for now
+    (labels/diagnostics = S2b). Robust: each component try/caught, never throws into the linear sim.
+  - `ASMDUDE_SIM_ENGINE=linear|shadow` (env). In `shadow`, the linear run stays authoritative and
+    `RunShadowComparison` runs the component engine compute-only and logs the SIMDIFF under the **`SIMDIFF`**
+    category. `EnableFullStateConfig` is shared by both engines so the comparison is apples-to-apples.
+  - Tests (ls-tests, via `CompareEnginesForTest` seam): `Shadow_StraightLineProgram_EnginesAgree` (no
+    merges ⇒ identical) and `Shadow_BranchProgram_EnginesDifferAtJoin` (the merge-vs-linear divergence is
+    detected at the join — the shadow's whole purpose). **Parity bug the shadow already caught + fixed:**
+    the component engine emitted the phantom fall-through "end" vertex (line N of an N-line program); now
+    filtered to real document lines (`line < lines.Count`).
+  - **Remaining S2:** labels/diagnostics parity (S2b); actual bounded PARALLELISM (components run
+    sequentially today — seeded Random already makes them parallel-SAFE) with a `SemaphoreSlim` + dispose-
+    after-extract (§7 peak bound via `Z3ContextTracker.Peak`); then — only after shadow diffs on real files
+    are understood — the engine FLIP (component authoritative), which is the one deliberately-deferred step.
 - **S3 — incrementality (Phase 3)** only after the §6 key-strategy decision.
 
 ### Observability requirements (so a problem is diagnosable, not a mystery)

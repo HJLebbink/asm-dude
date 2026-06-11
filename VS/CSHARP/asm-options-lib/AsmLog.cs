@@ -89,7 +89,9 @@ public static class AsmLog
 #if DEBUG
         AsmLogLevel.Debug;
 #else
-        AsmLogLevel.Warn;
+        // TEMPORARY: Info (normally Warn) so Release builds surface Info logs while the dynamic-sim
+        // engine is being developed/tested. Revert to AsmLogLevel.Warn before shipping.
+        AsmLogLevel.Info;
 #endif
 
     private static readonly List<Action<AsmLogEntry>> Sinks = [];

@@ -488,6 +488,85 @@ namespace AsmSim
             this.TailKey = prevKey;
         }
 
+        private static int havocCounter_;
+
+        /// <summary>
+        /// Returns a copy of this state with the given registers/flags reset to UNKNOWN (defined but
+        /// untracked) and everything else carried over unchanged. Used by loop strategies to forget the
+        /// values a loop body writes while keeping loop invariants. Implemented as a framed StateUpdate:
+        /// only the named regs/flags are Set; unset ones flow through (<see cref="StateUpdate"/> frames).
+        /// </summary>
+        public State Havoc(IReadOnlySet<Rn> regs, Flags flags)
+        {
+            State result = new(this); // copy; borrows this context
+            bool any = (regs is { Count: > 0 }) || (flags != Flags.NONE);
+            if (!any)
+            {
+                return result;
+            }
+
+            string nextKey = this.HeadKey + "!Hv" + System.Threading.Interlocked.Increment(ref havocCounter_);
+            using StateUpdate update = new(this.HeadKey, nextKey, this.tools_);
+            if (regs != null)
+            {
+                foreach (Rn r in regs)
+                {
+                    update.Set(r, Tv.UNKNOWN);
+                }
+            }
+            foreach (Flags f in this.tools_.StateConfig.GetFlagOn())
+            {
+                if (f != Flags.NONE && (flags & f) == f)
+                {
+                    update.Set(f, Tv.UNKNOWN);
+                }
+            }
+            result.Update_Forward(update);
+            return result;
+        }
+
+        /// <summary>
+        /// Per-bit equality of two states over the tracked registers and flags (the Tv lattice). Used to
+        /// detect fixpoint convergence in <see cref="FixpointStrategy"/>. Compares observable values, not
+        /// solver assertions, so two differently-built states with the same values are equal.
+        /// </summary>
+        public static bool Equiv(State a, State b)
+        {
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
+            if (a == null || b == null)
+            {
+                return false;
+            }
+
+            foreach (Rn r in a.tools_.StateConfig.GetRegOn())
+            {
+                Tv[] ta = a.GetTvArray(r);
+                Tv[] tb = b.GetTvArray(r);
+                if (ta.Length != tb.Length)
+                {
+                    return false;
+                }
+                for (int i = 0; i < ta.Length; ++i)
+                {
+                    if (ta[i] != tb[i])
+                    {
+                        return false;
+                    }
+                }
+            }
+            foreach (Flags f in a.tools_.StateConfig.GetFlagOn())
+            {
+                if (a.GetTv(f) != b.GetTv(f))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public void Add(BranchInfo branchInfo)
         {
             if (this.frozen_)

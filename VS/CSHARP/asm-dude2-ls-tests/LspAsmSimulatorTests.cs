@@ -214,4 +214,119 @@ public class LspAsmSimulatorTests
         diff.IsEmpty.Should().BeTrue(diff.ToReport());
         a.Lines.Should().NotBeEmpty("the runs must actually produce results (empty diff means identical, not both-empty)");
     }
+
+    [Fact]
+    public void Shadow_StraightLineProgram_EnginesAgree()
+    {
+        // S2 shadow: on straight-line code (no joins) the per-component DynamicFlow engine must produce
+        // the SAME per-line before/after states as the linear engine. This validates the component engine
+        // and the shadow comparison on the case where they MUST agree.
+        using var sim = new LspAsmSimulator();
+        var uri = new Uri("file:///shadow_straightline.asm");
+        string[] lines = ["mov rax, 0x10", "add rax, 0x20", "mov rbx, rax"];
+
+        SimDiff diff = sim.CompareEnginesForTest(uri, lines);
+
+        diff.IsEmpty.Should().BeTrue("straight-line code has no merges, so both engines must agree." + Environment.NewLine + diff.ToReport());
+    }
+
+    [Fact]
+    public void Shadow_BranchProgram_EnginesDifferAtJoin()
+    {
+        // S2 shadow: THE point of the shadow. The linear engine walks top-to-bottom and executes the
+        // jumped-over `mov rax,2`, so rax=2 at the join. The component engine builds the CFG (line 2 is a
+        // separate entry that merges into the join), so rax is the join of {1,2} = UNKNOWN. They MUST
+        // differ at the join — and the shadow surfaces exactly that line, which is what makes the eventual
+        // engine flip a reviewed change, not a silent one.
+        using var sim = new LspAsmSimulator();
+        var uri = new Uri("file:///shadow_branch.asm");
+        string[] lines =
+        [
+            "        mov rax, 1",
+            "        jmp skip",
+            "        mov rax, 2",
+            "skip:   mov rbx, rax",
+        ];
+
+        SimDiff diff = sim.CompareEnginesForTest(uri, lines);
+
+        diff.IsEmpty.Should().BeFalse("merge-vs-linear semantics must differ on a branch — the shadow's whole purpose");
+        diff.ChangedLines.Should().Contain(3, "the divergence is at the join (line 3)." + Environment.NewLine + diff.ToReport());
+    }
+
+    [Fact]
+    public void Shadow_NonInstructionLines_AreNotSpuriousDiffs()
+    {
+        // Regression for the extractor bug behind the real-file "only in component" noise: label,
+        // comment, and directive lines must be skipped by BOTH engines (only real instructions carry
+        // state). No #pragma here, so this straight-line program must agree exactly.
+        using var sim = new LspAsmSimulator();
+        var uri = new Uri("file:///shadow_noninstr.asm");
+        string[] lines =
+        [
+            "        mov rax, 0x10",
+            "        ; just a comment",
+            "        mov rbx, 0x20",
+            "target:",
+            "        add rax, rbx",
+        ];
+
+        SimDiff diff = sim.CompareEnginesForTest(uri, lines);
+
+        diff.IsEmpty.Should().BeTrue("non-instruction lines must be skipped by both engines; straight-line agrees." + Environment.NewLine + diff.ToReport());
+    }
+
+    [Fact]
+    public void Shadow_PragmaAssumeAndHlt_EnginesAgree()
+    {
+        // The #pragma rewrite must make the component engine match the linear engine in #pragma regions:
+        //   - `#pragma assume mov rax, 8` injects rax=8  -> line 1 proves rbx=8;
+        //   - `#pragma assume HLT` resets the state      -> after it, rbx is unknown again (line 3).
+        using var sim = new LspAsmSimulator();
+        var uri = new Uri("file:///shadow_pragma.asm");
+        string[] lines =
+        [
+            "        #pragma assume mov rax, 8",
+            "        mov rbx, rax",
+            "        #pragma assume HLT",
+            "        mov rcx, rbx",
+        ];
+
+        SimDiff diff = sim.CompareEnginesForTest(uri, lines);
+
+        diff.IsEmpty.Should().BeTrue("the #pragma rewrite must make the component engine match linear across assume + HLT." + Environment.NewLine + diff.ToReport());
+    }
+
+    [Fact(Skip = "Manual exploration only — runs the full sim on a real branch-heavy file; slow due to Z3 timeouts. Writes %TEMP%/shadow_report.txt.")]
+    public void Explore_Shadow_OnRealExampleFile()
+    {
+        // EXPLORATION (not a regression gate): run the shadow on a real editor example file and dump a
+        // data sheet (lines, components, diff count, sample diffs, wall time) to %TEMP%/shadow_report.txt.
+        // Bounded to keep the run tractable: the component engine does full merge machinery + Z3.
+        const string path = @"C:\Source\Github\asm-dude\VS\CSHARP\asm-dude2-vsix\Resources\examples\example_semantic_analysis.asm";
+        if (!System.IO.File.Exists(path)) return;
+
+        string[] all = System.IO.File.ReadAllLines(path);
+        string[] lines = all.Length > 16 ? all[..16] : all; // the top #pragma "Unreachable code" region + first HLT
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        using var sim = new LspAsmSimulator();
+        var uri = new Uri("file:///explore_real.asm");
+        SimDiff diff = sim.CompareEnginesForTest(uri, lines);
+        sw.Stop();
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"file: {path}");
+        sb.AppendLine($"lines simulated: {lines.Length} (of {all.Length})");
+        sb.AppendLine($"elapsed: {sw.Elapsed.TotalSeconds:F1} s (linear + component)");
+        sb.AppendLine($"diff entries: {diff.Entries.Count}; changed lines: {diff.ChangedLines.Count}");
+        sb.AppendLine("---- report (first 60 entries) ----");
+        int n = 0;
+        foreach (SimDiffEntry e in diff.Entries)
+        {
+            sb.AppendLine("  " + e);
+            if (++n >= 60) { sb.AppendLine($"  ... (+{diff.Entries.Count - n} more)"); break; }
+        }
+        System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "shadow_report.txt"), sb.ToString());
+    }
 }

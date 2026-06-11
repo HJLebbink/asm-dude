@@ -58,9 +58,13 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
     private IReadOnlyList<AsmLabelRef>? cachedLabels_;
 
     // Decides which lines to (re)publish (VS-free, unit-tested in CodeLensPublishPlannerTests).
-    // The 2s window lets a genuine recalculateAll re-supply a lens after quiescence while killing
-    // the tight OnRequestTags ↔ UpdateTags echo loop.
-    private const long RepublishWindowMs = 2000;
+    // The window only has to cover the ECHO — our UpdateTagsAsync makes VS immediately re-request the
+    // same range (recalculateAll), which we must suppress to avoid the tight OnRequestTags ↔ UpdateTags
+    // loop. That echo is a sub-second local round-trip. A LONGER window is harmful: while it lasts, a
+    // genuine scroll-back (VS discarded the lens and re-requests it) is also suppressed, so the lens
+    // stays gone until the window expires. Keep it just above the echo latency so scroll-back restores
+    // the lens promptly while the echo is still swallowed.
+    private const long RepublishWindowMs = 400;
     private readonly CodeLensPublishPlanner planner = new(RepublishWindowMs);
 
     public AsmCodeLensTagger(AsmCodeLensTaggerProvider provider, Uri documentUri)

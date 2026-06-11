@@ -72,6 +72,14 @@ namespace AsmSim
 
         public BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> Graph { get { return this.graph_; } }
 
+        /// <summary>The shared Z3 context this flow's vertices/edges live in. States/updates built against
+        /// this flow (e.g. by <see cref="ComponentEvaluator"/>) MUST borrow it.</summary>
+        internal Context FlowContext => this.ctx_;
+
+        /// <summary>The flow's internal Tools (carries <see cref="Tools.SharedCtx"/> = <see cref="FlowContext"/>,
+        /// the StateConfig, and the loop-handling choice).</summary>
+        internal Tools FlowTools => this.tools_;
+
         public bool Is_Branch_Point(int lineNumber)
         {
             string key = this.Key(lineNumber);
@@ -353,27 +361,67 @@ namespace AsmSim
             }
         }
 
-        private void Update_Forward(StaticFlow sFlow, int startLineNumber)
+        /// <summary>
+        /// Forward reset seeded from an explicit set of entry lines (a CFG component's entry points; see
+        /// <see cref="StaticFlow.ComputeComponentEntryLines"/>). This is the multi-root construction Phase 2
+        /// needs: a single forward root under-covers a multi-entry component. The cache id / leaf anchor
+        /// (<c>rootKey_</c>) is the smallest seeded line (matching <c>ComputeLineToComponent</c>'s component
+        /// id); per-line extraction (<see cref="Create_States_Before"/>/<see cref="Create_States_After"/>)
+        /// uses the line→key map, not <c>rootKey_</c>, so multi-root does not disturb it.
+        /// </summary>
+        public void Reset(StaticFlow sFlow, IReadOnlyCollection<int> forwardRoots)
         {
-            if (!sFlow.HasLine(startLineNumber))
-            {
-                if (!this.tools_.Quiet)
-                {
-                    AsmLog.Warn("SIM", "DynamicFlow:Update_Forward: startLine " + startLineNumber + " does not exist in " + sFlow);
-                }
+            ArgumentNullException.ThrowIfNull(sFlow);
+            ArgumentNullException.ThrowIfNull(forwardRoots);
 
-                return;
+            lock (this.updateLock_)
+            {
+                int min = int.MaxValue;
+                foreach (int r in forwardRoots)
+                {
+                    if (r < min) min = r;
+                }
+                this.rootKey_ = sFlow.Get_Key(min == int.MaxValue ? sFlow.FirstLineNumber : min);
+                this.Clear();
+                this.Update_Forward(sFlow, forwardRoots);
             }
+        }
+
+        // Single-root entry, kept for existing callers (Reset → FirstLineNumber). Delegates to the
+        // multi-root form so there is ONE traversal implementation.
+        private void Update_Forward(StaticFlow sFlow, int startLineNumber)
+            => this.Update_Forward(sFlow, new[] { startLineNumber });
+
+        // Multi-root forward construction. A weakly-connected CFG component can have several entry points
+        // (in-degree-0 vertices — e.g. two functions sharing a tail; see StaticFlow.ComputeComponentEntryLines),
+        // and a single forward root under-covers them, so seed ALL roots. Convergence is automatic: line-based
+        // keys (StaticFlow.Get_Key) make the entries' edges land on the same join vertex (in-degree >= 2) →
+        // existing Merge_State_Update_LOCAL, the safe intra-(shared-)context merge.
+        private void Update_Forward(StaticFlow sFlow, IReadOnlyCollection<int> startLineNumbers)
+        {
             Stack<string> nextKeys = new();
 
             // Get the head of the current state, this head will be the prevKey of the update, nextKey is fresh.
             // When state is updated, tail is not changed; head is set to the fresh nextKey.
 
-            #region Create the Root node
+            #region Create the Root node(s)
+            foreach (int startLineNumber in startLineNumbers)
             {
+                if (!sFlow.HasLine(startLineNumber))
+                {
+                    if (!this.tools_.Quiet)
+                    {
+                        AsmLog.Warn("SIM", "DynamicFlow:Update_Forward: startLine " + startLineNumber + " does not exist in " + sFlow);
+                    }
+
+                    continue;
+                }
                 string rootKey = sFlow.Get_Key(startLineNumber);
-                nextKeys.Push(rootKey);
-                this.Add_Vertex(rootKey, startLineNumber);
+                if (!this.graph_.ContainsVertex(rootKey)) // a shared/duplicate root is seeded once
+                {
+                    nextKeys.Push(rootKey);
+                    this.Add_Vertex(rootKey, startLineNumber);
+                }
             }
             #endregion
 
@@ -766,6 +814,23 @@ namespace AsmSim
                 IEnumerable<(string source, StateUpdate stateUpdate)> incoming_Branches,
                 ICollection<string> visited2)
             {
+                // A join reached ONLY by branch/jump edges has no regular (fall-through) predecessor, so
+                // incoming_Regular is empty (null stateUpdate) and the `update1.NextKey = …` below
+                // NRE'd (any switch table / label every path jmp/jcc to). Promote the first branch to be
+                // the base; the remaining branches merge against it (the promoted one becomes the 'else'
+                // case). Only triggers on the null-regular path, so existing merges are untouched.
+                // See DYNAMIC-FLOW-TEST-TAXONOMY.md D4.
+                if (incoming_Regular.stateUpdate == null)
+                {
+                    List<(string source, StateUpdate stateUpdate)> branchList = new(incoming_Branches);
+                    if (branchList.Count == 0)
+                    {
+                        return new State(this.tools_, target, target);
+                    }
+                    incoming_Regular = branchList[0];
+                    incoming_Branches = branchList.GetRange(1, branchList.Count - 1);
+                }
+
                 string source1 = incoming_Regular.source;
                 using State state1 = Construct_State_Private_LOCAL(source1, false, new List<string>(visited2));
                 if (state1 == null)
