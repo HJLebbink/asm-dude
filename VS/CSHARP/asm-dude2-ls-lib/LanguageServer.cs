@@ -567,7 +567,14 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             try
             {
                 this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
-                    onCompleted: completedUri => this.SendDiagnostics(completedUri.ToString()),
+                    onCompleted: completedUri =>
+                    {
+                        this.SendDiagnostics(completedUri.ToString());
+                        // Final push of the run: tells the CodeLens tagger to fully re-materialize
+                        // (VS may have dropped lenses during the long sim; an incremental refresh
+                        // would suppress unchanged lines and leave them missing).
+                        this.simStatePipeServer_.NotifySimStateUpdated(completedUri, completed: true);
+                    },
                     onProgress: progressUri =>
                     {
                         AsmDudeLog.Debug($"[UpdateInternals] sending {Methods.WorkspaceInlayHintRefreshName} + pipe notify");
@@ -2930,22 +2937,10 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         }
                         string full_Descr = AsmTools.AsmSourceTools.Linewrap(archStr + descr, MaxNumberOfCharsInToolTips);
 
-                        // Show simulated register value before and after this line (if known).
-                        var simUri = new Uri(parameter.TextDocument.Uri.ToString());
-                        int simLine = (int)parameter.Position.Line;
-                        string? simBefore = this.asmSimulator_.GetRegisterValueBeforeLine(simUri, simLine, reg);
-                        string? simAfter = this.asmSimulator_.GetRegisterValueAfterLine(simUri, simLine, reg);
-                        string simSuffix = string.Empty;
-                        if (simBefore != null || simAfter != null)
-                        {
-                            var sb = new System.Text.StringBuilder("\n");
-                            if (simBefore != null) sb.Append($"Before: {simBefore}\n");
-                            if (simAfter != null) sb.Append($"After : {simAfter}");
-                            simSuffix = sb.ToString();
-                        }
-
+                        // The simulated before/after register value is intentionally NOT shown here:
+                        // it is presented as a CodeLens above/below the line instead (see AsmCodeLensTagger).
                         hoverContent = [
-                            $"Register {regStr}: {full_Descr}{simSuffix}",
+                            $"Register {regStr}: {full_Descr}",
                             ];
                     }
                     break;
@@ -3164,23 +3159,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         */
 
 
-        // Append simulator register+flag state if available.
-        // For mnemonic/jump hovers, show state before and after the instruction.
-        // Register hovers already show the specific register's value inline (above).
-        if (tokenType is AsmTokenType.Mnemonic or AsmTokenType.Jump or AsmTokenType.MnemonicOff)
-        {
-            var simUri2 = new Uri(parameter.TextDocument.Uri.ToString());
-            int simLine2 = (int)parameter.Position.Line;
-            string? simBefore2 = this.asmSimulator_.GetRegisterStatesBeforeLine(simUri2, simLine2);
-            string? simAfter2 = this.asmSimulator_.GetRegisterStatesAfterLine(simUri2, simLine2);
-            if (simBefore2 != null || simAfter2 != null)
-            {
-                var sb2 = new System.Text.StringBuilder();
-                if (simBefore2 != null) sb2.Append("\nBefore:" + simBefore2);
-                if (simAfter2 != null) sb2.Append("\nAfter:" + simAfter2);
-                hoverContent = [.. (hoverContent ?? []), sb2.ToString()];
-            }
-        }
+        // The simulator before/after register+flag state is intentionally NOT appended to the hover:
+        // it is presented as a CodeLens above/below the instruction instead (see AsmCodeLensTagger).
 
         if (hoverContent != null)
         {

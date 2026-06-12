@@ -52,6 +52,8 @@ namespace AsmSim
         private readonly StaticFlow sFlow_;
         private readonly Tools tools_;
         private readonly ILoopStrategy strategy_;
+        private readonly Action<int, State, State>? onLineReady_;
+        private readonly System.Threading.CancellationToken cancel_;
 
         private readonly List<string> topo_ = [];               // reverse-postorder over forward edges
         private readonly HashSet<(string src, string dst)> backEdges_ = [];
@@ -63,12 +65,21 @@ namespace AsmSim
         public int LoopCount { get; private set; }
         public int LoopIterations { get; private set; }
 
-        public ComponentEvaluator(DynamicFlow flow, StaticFlow sFlow)
+        /// <param name="onLineReady">Optional. Invoked (on the calling thread, in topological order) the
+        /// moment a vertex's before- AND after-state are computed, with that vertex's source line number
+        /// and the two states — so a consumer can extract/emit per line INCREMENTALLY instead of waiting
+        /// for the whole component. The states are owned by this evaluator (do not dispose).</param>
+        /// <param name="cancel">Stops the evaluation between vertices (partial states remain valid).</param>
+        public ComponentEvaluator(DynamicFlow flow, StaticFlow sFlow,
+            Action<int, State, State>? onLineReady = null,
+            System.Threading.CancellationToken cancel = default)
         {
             this.flow_ = flow ?? throw new ArgumentNullException(nameof(flow));
             this.sFlow_ = sFlow ?? throw new ArgumentNullException(nameof(sFlow));
             this.tools_ = flow.FlowTools; // carries SharedCtx (= flow context), StateConfig, LoopHandling
             this.strategy_ = LoopStrategies.For(this.tools_.LoopHandling);
+            this.onLineReady_ = onLineReady;
+            this.cancel_ = cancel;
 
             this.ClassifyEdges();
             this.Evaluate();
@@ -167,15 +178,30 @@ namespace AsmSim
         #region Evaluation
         private void Evaluate()
         {
+            // ONE pass: before(v) then after(v) per vertex, in topo order. after(v) only needs before(v)
+            // and v's out-edges (both available), so it does NOT require a separate full second pass — and
+            // computing both here lets onLineReady_ stream each line as soon as it is fully resolved
+            // (incremental editor display), instead of after the whole component.
             foreach (string v in this.topo_)
             {
+                if (this.cancel_.IsCancellationRequested)
+                {
+                    return; // partial before_/after_ remain valid for the lines already done
+                }
+
                 this.before_[v] = this.headers_.Contains(v)
                     ? this.ResolveLoopHeader(v)
                     : this.ComputeForward(v, this.before_, planted: null);
-            }
-            foreach (string v in this.topo_)
-            {
                 this.after_[v] = this.ComputeAfter(v);
+
+                if (this.onLineReady_ != null)
+                {
+                    int line = this.flow_.LineNumber(v);
+                    if (line >= 0)
+                    {
+                        this.onLineReady_(line, this.before_[v], this.after_[v]);
+                    }
+                }
             }
         }
 

@@ -329,4 +329,47 @@ public class LspAsmSimulatorTests
         }
         System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "shadow_report.txt"), sb.ToString());
     }
+
+    // ── CodeLens write/read label merge (the per-position "w:"/"r:" → "rw:" combine) ────────────────
+    // Invariant: an UNKNOWN-valued write (rendered as binary "0b????…", no hex) must survive compaction
+    // and the merge with the next instruction's read. The binary form has spaces around '=' in the raw
+    // state string; if CompactStateString doesn't normalize them, ParseCompactItems (which splits on
+    // spaces) drops the item and the write silently vanishes — the read appears to "overwrite" it.
+
+    [Fact]
+    public void CompactStateString_UnknownRegisterValue_IsNormalizedSpaceFree()
+    {
+        // Raw production form for an unknown register write: "<prefix>:NAME = 0b<binary>" (no hex part).
+        string? compact = LspAsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
+
+        // Must be space-free so ParseCompactItems can read it back (this is what was broken).
+        compact.Should().Be("w:RAX=0b????_????");
+    }
+
+    [Fact]
+    public void MergeCompactLabels_UnknownWrite_IsNotDroppedByConcreteRead()
+    {
+        // Line N writes RAX with an unknown value; line N+1 reads a different, concrete register RBX.
+        // Both share the CodeLens at display position N+1 and BOTH must show.
+        string? write = LspAsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
+        string? read = LspAsmSimulator.CompactStateString("\nr:RBX = 0b0000_0100 = 0x4");
+
+        string? merged = LspAsmSimulator.MergeCompactLabels(write, read);
+
+        merged.Should().NotBeNull();
+        merged.Should().Contain("w:RAX=0b????_????"); // the write is kept, not overwritten…
+        merged.Should().Contain("r:RBX=0x4");         // …alongside the read
+    }
+
+    [Fact]
+    public void MergeCompactLabels_SameRegisterWrittenThenRead_MergesToReadWrite()
+    {
+        // Same register on both sides (even with an unknown value) collapses to a single "rw:" item.
+        string? write = LspAsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
+        string? read = LspAsmSimulator.CompactStateString("\nr:RAX = 0b????_????");
+
+        string? merged = LspAsmSimulator.MergeCompactLabels(write, read);
+
+        merged.Should().Be("rw:RAX=0b????_????");
+    }
 }

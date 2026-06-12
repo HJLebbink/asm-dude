@@ -60,8 +60,10 @@ internal sealed class SimStatePipeClient : IDisposable
     /// <summary>
     /// Raised (from a background thread) when the server notifies that sim state
     /// has been updated for a document URI. Listeners should schedule a tagger refresh.
+    /// The bool is <c>true</c> on the FINAL push of a simulation run (completion) — a signal to
+    /// fully re-materialize lenses rather than do an incremental (suppression-prone) refresh.
     /// </summary>
-    internal event Action<Uri>? SimStateUpdated;
+    internal event Action<Uri, bool>? SimStateUpdated;
 
     private SimStatePipeClient() { }
 
@@ -321,9 +323,12 @@ internal sealed class SimStatePipeClient : IDisposable
             string? uriStr = uriEl.GetString();
             if (string.IsNullOrEmpty(uriStr)) return;
 
+            bool completed = doc.RootElement.TryGetProperty("completed", out var cEl)
+                && cEl.ValueKind == JsonValueKind.True;
+
             var uri = new Uri(uriStr);
-            PipeClientLog($"Received simStateUpdated for {uriStr}");
-            this.SimStateUpdated?.Invoke(uri);
+            PipeClientLog($"Received simStateUpdated for {uriStr} (completed={completed})");
+            this.SimStateUpdated?.Invoke(uri, completed);
         }
         catch (Exception ex)
         {

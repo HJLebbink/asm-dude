@@ -386,3 +386,93 @@ engine), in `LspAsmSimulator`:
   FunctionProgram` (captures the log via an `AsmLog` sink). **Gotcha caught by that test:** `StaticFlow.
   Update` splits on `Environment.NewLine`, so editor `lines` must be joined with that, not `"\n"` — the
   same join the future component engine will need.
+
+---
+
+## Phase P — Parallelize the component engine's per-line extraction (2026-06-13)
+
+**Goal:** make the merge (component) engine fast enough to be the editor default. The bottleneck is the
+per-line **value extraction** (`LspAsmSimulator.ExtractComponentLine` → `ComputeStateString` → Z3 solves
+each register's display value), observed at **~4 s/line** (same order as the linear sim's per-line Z3 cost).
+Extraction of line N is **independent** of every other line once the symbolic states exist, so it is
+embarrassingly parallel — modulo the Z3 constraint below.
+
+### Prerequisite — DONE (2026-06-13): incremental emission
+`ComponentEvaluator` got an `onLineReady(line, before, after)` callback fired in topo order the moment a
+vertex's before+after states resolve (its two `Evaluate()` passes were merged into one — `after(v)` only
+needs `before(v)` + v's out-edges). `LspAsmSimulator.RunComponentSimulation` now writes each line to the
+`DocCache` and fires a throttled `onProgress` as it's extracted (mirrors the linear loop), so CodeLens/hover
+appear progressively instead of after the whole document. Per-phase timing added:
+`[component] component K: DynamicFlow built in … ms` + per-line `[component] line N: extracted in … ms`.
+**Gate before building Phase P:** read those logs on a real file under `ASMDUDE_SIM_ENGINE=component` and
+confirm the per-line `extracted in …` time dominates (vs the gaps between lines = the join-solving inside
+`Evaluate()`). If extraction dominates → build P. If `Evaluate()` joins are also multi-second, P helps only
+partially (that part is topo-dependent — see "Out of scope").
+
+### The hard constraint
+A Z3 `Context` is **not thread-safe** — not even for concurrent *reads*. All states within one component
+**share one context** (`Tools.SharedCtx`; this shared-context design is what fixed the cross-context
+`Z3_translate` AV). Therefore:
+- You may NOT solve two lines' states concurrently on the shared context.
+- You may NOT `Translate` two states off the shared context concurrently (Translate reads the source ctx).
+
+### Design — serial clone, parallel solve
+Split each line's work into a cheap serial half and the expensive parallel half:
+
+1. **Serial (evaluator thread, in `onLineReady`):** deep-clone the line's `before`/`after` State into its
+   OWN fresh `Context` via the existing copy path (`new State(other)` with an owned context ⇒ Z3
+   `Translate` of the assertions). Translate copies expression trees only — **no solving** — so it's ~ms
+   against the 4 s solve. The clone is independent of the shared context.
+2. **Parallel (worker pool):** hand the cloned (own-context) states to a bounded worker. The worker runs
+   `ExtractComponentLine` on the clones (the 4 s of `ComputeStateString`/`ComputeReadLabel`/diagnostics
+   solving), then **disposes the cloned context**, then `Emit`s the result (cache write under `lockObj_`
+   + throttled `onProgress`).
+
+The evaluator keeps marching the worklist (serial, shared ctx) while workers solve — so construction and
+extraction overlap, and N lines solve at once.
+
+### Bounding & safety
+- **Bounded parallelism:** `SemaphoreSlim(maxDegree)` with `maxDegree ≈ Environment.ProcessorCount`
+  (cap, e.g. 4–8). The evaluator `await`s a slot before cloning the next line ⇒ back-pressure ⇒ at most
+  `maxDegree` clones alive ⇒ bounded Z3 native memory (the 18 GiB-leak risk). Release the slot in the
+  worker's `finally` after disposing the clone.
+- **Memory gauge:** assert `AsmSim.Z3ContextTracker.Peak` stays ≤ baseline + maxDegree (clones are owned
+  contexts → counted). Add to the `[component] SUCCESS` summary.
+- **Cancellation:** check `ct` before cloning and inside the worker; a superseded run abandons cheaply
+  (dispose any in-flight clones).
+- **Determinism:** extraction is read-only and per-line independent ⇒ result is order-independent; emission
+  order varies but the cache is keyed by line, so the final state is identical. (Keep the per-component
+  seeded Random as-is; it affects construction, not extraction.)
+- **Threading of `Emit`:** the cache write already takes `lockObj_`; keep it. `linesWritten/diagCount` and
+  the throttle clock become shared — guard with the same lock or `Interlocked`.
+
+### Implementation sketch
+- `ComponentEvaluator` is unchanged (already streams per vertex). The parallelism lives entirely in
+  `LspAsmSimulator`:
+  - In the `onLineReady` callback: clone before/after into a fresh context (serial), then `await
+    semaphore`, then `Task.Run` the worker (solve+extract+emit+dispose+release).
+  - Track the spawned tasks; `Task.WhenAll` them after `ComputeComponentLines` returns, before the
+    `SUCCESS` log / `onCompleted`.
+- Need a small helper: `State CloneIntoOwnContext(State s, Tools perLineTools)` — verify the copy ctor
+  path that allocates an owned `Context` and Translates the assertions (see `State(State other)` and the
+  `ownsCtx_`/`SharedCtx` logic). If the copy ctor only ever shares, add an explicit "clone to new ctx"
+  constructor/method.
+- Per-line tools: each clone needs a `Tools` whose `SharedCtx` is the clone's own context (so
+  `ComputeStateString`/solver use it). Build a lightweight per-line `Tools` (seeded deterministically) or
+  reuse the component tools with the context swapped — confirm `ComputeStateString` reads the context off
+  the State, not off a shared Tools.
+
+### Verification
+- **Correctness:** SIMDIFF (`ASMDUDE_SIM_ENGINE=shadow`) must show **zero new diffs** vs the sequential
+  component run — parallelism must not change values. Add a test: same program, sequential vs parallel
+  extraction ⇒ identical `SimResultSet`.
+- **Speed:** wall-clock of `[component] SUCCESS total … ms` drops ≈ `min(maxDegree, cores)`× on a
+  multi-line file; per-line `extracted in …` unchanged (each still ~4 s, just overlapped).
+- **Memory:** `Z3 ctx peak` ≤ baseline + maxDegree.
+- **Stability:** no AV / no `Z3_translate` race over a stress file (the whole reason for the serial-clone rule).
+
+### Out of scope (separate, harder)
+- Parallelizing `Evaluate()` itself (the merge/join solving) — topo-dependent, not embarrassingly parallel.
+  Only attempt if the gate above shows join-solving (not extraction) dominates.
+- Cross-component parallelism (each component already owns a context, so it's the *easy* axis) — a cheap
+  add once the within-component worker pool exists: run components on the same bounded pool. Do it second.

@@ -688,22 +688,9 @@ public class LanguageServerTarget(LanguageServer server)
     /// SEE ALSO: GetSemanticTokensFullSemanticTokensParams, GetSemanticTokensDelta
     public SemanticTokens? GetSemanticTokensFull(SemanticTokensParams parameter)
     {
-        AsmDudeLog.Info($"GetSemanticTokensFull: uri={parameter.TextDocument.Uri}");
+        AsmDudeLog.Debug($"GetSemanticTokensFull: uri={parameter.TextDocument.Uri}");
         SemanticTokens? result = server.GetSemanticTokens(parameter);
-        AsmDudeLog.Info($"GetSemanticTokensFull: resultId={result?.ResultId}, tokenCount={result?.Data?.Length / 5 ?? 0}");
-        if (result?.Data is { Length: > 0 } d)
-        {
-            // Log all tokens with absolute positions for debugging
-            var sb = new System.Text.StringBuilder("GetSemanticTokensFull: ALL tokens:\n");
-            int absLine = 0, absChar = 0;
-            for (int i = 0; i + 4 < d.Length; i += 5)
-            {
-                absLine += d[i];
-                absChar = d[i] > 0 ? d[i + 1] : absChar + d[i + 1];
-                sb.Append($"  L{absLine}:[{absChar}-{absChar + d[i + 2]}] type={d[i + 3]} mod={d[i + 4]}\n");
-            }
-            AsmDudeLog.Info(sb.ToString());
-        }
+        AsmDudeLog.Debug($"GetSemanticTokensFull: resultId={result?.ResultId}, tokenCount={result?.Data?.Length / 5 ?? 0}");
         return result;
     }
 

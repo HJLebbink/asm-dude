@@ -184,8 +184,11 @@ namespace AsmDude2LS
         /// headless <c>LspAsmSimulatorTests</c> (the golden baseline for the planned engine swap), which
         /// avoids the flaky sleep-and-poll the older <c>AsmSimTests</c> uses.
         /// </summary>
-        internal void SimulateSynchronouslyForTest(Uri uri, IReadOnlyList<string> lines)
+        internal void SimulateSynchronouslyForTest(Uri uri, IReadOnlyList<string> lines, SimEngineMode engine = SimEngineMode.Linear)
         {
+            // Tests pin the engine explicitly (default Linear, the golden-baseline engine) so they are
+            // independent of the production default and of the ASMDUDE_SIM_ENGINE env var.
+            this.engineMode_ = engine;
             long version;
             lock (this.lockObj_)
             {
@@ -312,14 +315,31 @@ namespace AsmDude2LS
             foreach (string rawLine in stateStr.Split('\n', StringSplitOptions.RemoveEmptyEntries))
             {
                 string s = rawLine.Trim();
-                int hexMarker = s.IndexOf("= 0x", StringComparison.Ordinal);
-                if (hexMarker >= 0)
+
+                // A register line is "prefix:NAME = <binary> [= <hex>]" (note the spaces around the first
+                // '='). A flag line is already compact ("w:ZF=0 w:CF=1", no surrounding spaces). The
+                // register form MUST be normalized to a space-free "prefix:NAME=value" — otherwise
+                // ParseCompactItems (which splits on spaces) drops it, and an unknown-valued write then
+                // silently vanishes from the merged CodeLens (the write looks "overwritten" by the read).
+                int regSep = s.IndexOf(" = ", StringComparison.Ordinal);
+                if (regSep > 0)
                 {
-                    string hexVal = s[(hexMarker + 4)..].Trim().TrimStart('0');
-                    if (hexVal.Length == 0) hexVal = "0";
-                    int firstEq = s.IndexOf(" = ", StringComparison.Ordinal);
-                    string regName = firstEq > 0 ? s[..firstEq].Trim() : "?";
-                    parts.Add($"{regName}=0x{hexVal}");
+                    string regName = s[..regSep].Trim();
+                    int hexMarker = s.IndexOf("= 0x", StringComparison.Ordinal);
+                    string val;
+                    if (hexMarker >= 0)
+                    {
+                        string hexVal = s[(hexMarker + 4)..].Trim().TrimStart('0');
+                        if (hexVal.Length == 0) hexVal = "0";
+                        val = "0x" + hexVal;
+                    }
+                    else
+                    {
+                        // Binary-only value (e.g. an unknown register: 0b????_…). ToStringBin uses '_'
+                        // separators, not spaces, so the value is already space-free.
+                        val = s[(regSep + 3)..].Trim();
+                    }
+                    parts.Add($"{regName}={val}");
                 }
                 else
                 {
@@ -398,23 +418,38 @@ namespace AsmDude2LS
         // INCREMENTAL_SIM_PLAN.md S2 (no editor flip yet).
         internal enum SimEngineMode
         {
-            /// <summary>Editor uses the linear single-step sim (default, authoritative).</summary>
+            /// <summary>The linear single-step sim — the EDITOR DEFAULT. Single-path (does NOT follow jump
+            /// targets, resets at labels) so join-point values are imprecise (read as unknown), BUT it
+            /// writes the per-line cache INCREMENTALLY, so CodeLens/hover appear progressively as it runs.</summary>
             Linear,
 
             /// <summary>Editor uses the linear sim; the component engine runs compute-only and SIMDIFF-logs.</summary>
             Shadow,
 
-            /// <summary>Editor uses the DYNAMIC per-component engine (the flip). Linear is not run.</summary>
+            /// <summary>The DYNAMIC per-component (DynamicFlow) engine. More precise at join points (follows
+            /// jumps, merges branch states), but NON-INCREMENTAL — it computes the whole document before
+            /// writing the cache, so on a real (slow-Z3) file NOTHING shows until it finishes (minutes).
+            /// NOT yet usable as the editor default; behind <c>ASMDUDE_SIM_ENGINE=component</c> until it
+            /// gains per-line incremental writes. See INCREMENTAL_SIM_PLAN.md.</summary>
             Component,
         }
 
+        /// <summary>The configured engine from the environment; the editor default is <see cref="SimEngineMode.Linear"/>.</summary>
         private static readonly SimEngineMode SimEngine = ParseSimEngine();
+
+        /// <summary>Per-instance engine (defaults to <see cref="SimEngine"/>). The test seam pins this to
+        /// <see cref="SimEngineMode.Linear"/> so the linear golden-baseline tests still exercise linear.</summary>
+        private SimEngineMode engineMode_ = SimEngine;
 
         private static SimEngineMode ParseSimEngine()
         {
             string? v = Environment.GetEnvironmentVariable("ASMDUDE_SIM_ENGINE");
-            if (string.Equals(v, "component", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Component;
+            if (string.Equals(v, "linear", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Linear;
             if (string.Equals(v, "shadow", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Shadow;
+            if (string.Equals(v, "component", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Component;
+            // DEFAULT = Linear. The merge engine (Component) is more precise but currently NON-INCREMENTAL
+            // (no CodeLens appear until the whole file finishes — verified empirically), so it can't be the
+            // editor default yet. Opt in with ASMDUDE_SIM_ENGINE=component.
             return SimEngineMode.Linear;
         }
 
@@ -514,8 +549,14 @@ namespace AsmDude2LS
 
         /// <summary>Run the dynamic per-component engine and return per-line before/after state, CodeLens
         /// read/write labels, and diagnostics — driven from the dynamic states via the SAME per-line logic
-        /// the linear sim uses. Shared by the shadow comparison and the component-engine editor path.</summary>
-        private Dictionary<int, ComponentLine> ComputeComponentLines(IReadOnlyList<string> lines)
+        /// the linear sim uses. Shared by the shadow comparison and the component-engine editor path.
+        /// <para><paramref name="onLine"/>, when given, is invoked the moment each line is extracted (topo
+        /// order), so the editor path can write the cache + refresh CodeLens INCREMENTALLY rather than after
+        /// the whole document. <paramref name="ct"/> stops the build between vertices.</para></summary>
+        private Dictionary<int, ComponentLine> ComputeComponentLines(
+            IReadOnlyList<string> lines,
+            CancellationToken ct = default,
+            Action<int, ComponentLine>? onLine = null)
         {
             var result = new Dictionary<int, ComponentLine>();
             try
@@ -547,6 +588,7 @@ namespace AsmDude2LS
 
                 foreach (var (componentId, roots) in entriesByComponent)
                 {
+                    if (ct.IsCancellationRequested) break;
                     try
                     {
                         // Distinct seed per component ⇒ parallel-safe (no shared Random) + reproducible.
@@ -555,66 +597,40 @@ namespace AsmDude2LS
                         compTools.Quiet = true;
                         compTools.LoopHandling = SimLoopHandling; // ASMDUDE_SIM_LOOP
 
+                        int compLineCount = linesByComponent.TryGetValue(componentId, out List<int>? cls) ? cls.Count : 0;
+                        var constructClock = System.Diagnostics.Stopwatch.StartNew();
                         using DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, roots, compTools);
-                        // The heavy Z3 work for a whole component happens here (the worklist evaluates every
-                        // vertex up front), so time it per component; per-line below is just extraction.
-                        var compClock = System.Diagnostics.Stopwatch.StartNew();
-                        using var ev = new ComponentEvaluator(dFlow, sFlow); // loop-aware, per-line before/after
-                        compClock.Stop();
-                        AsmLog.Info("ASMSIM", $"[component] component {componentId}: evaluated in {compClock.ElapsedMilliseconds} ms");
+                        constructClock.Stop();
+                        AsmLog.Info("ASMSIM", $"[component] component {componentId}: DynamicFlow built in {constructClock.ElapsedMilliseconds} ms ({compLineCount} lines)");
 
-                        if (!linesByComponent.TryGetValue(componentId, out List<int>? componentLines)) continue;
-                        foreach (int line in componentLines)
-                        {
-                            // Skip phantom vertices the CFG adds past the last instruction (e.g. the
-                            // fall-through "end" line N for an N-line program); the editor/linear sim only
-                            // annotate real document lines, so the shadow must compare the same set.
-                            if (line < 0 || line >= lines.Count) continue;
-                            var lineClock = System.Diagnostics.Stopwatch.StartNew();
-
-                            // Match the linear sim EXACTLY: only real instruction lines carry annotations.
-                            (_, _, Mnemonic mnemonic, string[] args, _) = AsmSourceTools.ParseLine(lines[line].Trim(), -1, -1, AssemblerEnum.UNKNOWN);
-                            if (mnemonic == Mnemonic.NONE) continue;
-
-                            AsmSimState? before = ev.Before(line); // owned by ev — do NOT dispose
-                            AsmSimState? after = ev.After(line);
-                            string? beforeStr = before is null ? null : ComputeStateString(before);
-                            string? afterStr = after is null ? null : ComputeStateString(after);
-
-                            // Labels + diagnostics — driven from the DYNAMIC states via the SAME per-line
-                            // logic the linear sim uses, so the output is field-for-field comparable.
-                            string? readLabel = null;
-                            string? writeLabel = null;
-                            var diags = new List<SimDiagnostic>();
-                            if (before != null)
+                        // ComponentEvaluator drives the per-vertex worklist; onLineReady fires the instant a
+                        // line's before/after states resolve (topo order), so we extract + stream THAT line
+                        // immediately. This is the incrementality the linear sim has — CodeLens/hover appear
+                        // progressively instead of after the whole (slow-Z3) component finishes.
+                        using var ev = new ComponentEvaluator(dFlow, sFlow,
+                            onLineReady: (line, before, after) =>
                             {
-                                var dummyKeys = ("d_p", "d_n", "d_b");
-                                using OpcodeBase? op = Runner.InstantiateOpcode(mnemonic, args, dummyKeys, compTools);
-
-                                var writtenRegs = new HashSet<Rn>();
-                                Flags writtenFlags = Flags.NONE;
-                                var readRegs = new HashSet<Rn>();
-                                Flags readFlags = Flags.NONE;
-                                if (op != null)
+                                // Skip phantom vertices past the last instruction (CFG end line N of an
+                                // N-line program); the editor/linear sim only annotate real document lines.
+                                if (line < 0 || line >= lines.Count || ct.IsCancellationRequested) return;
+                                try
                                 {
-                                    foreach (Rn r in op.RegsWriteStatic) writtenRegs.Add(RegisterTools.Get64BitsRegister(r));
-                                    writtenFlags = op.FlagsWriteStatic;
-                                    foreach (Rn r in op.RegsReadStatic) readRegs.Add(RegisterTools.Get64BitsRegister(r));
-                                    readFlags = op.FlagsReadStatic;
+                                    var lineClock = System.Diagnostics.Stopwatch.StartNew();
+                                    ComponentLine? cl = this.ExtractComponentLine(lines, line, before, after, compTools);
+                                    lineClock.Stop();
+                                    if (cl != null)
+                                    {
+                                        result[line] = cl;
+                                        onLine?.Invoke(line, cl);
+                                        AsmLog.Info("ASMSIM", $"[component] line {line + 1}: extracted in {lineClock.ElapsedMilliseconds} ms");
+                                    }
                                 }
-
-                                readLabel = ComputeReadLabel(before, readRegs, readFlags);
-                                if (after != null) writeLabel = ComputeWriteLabel(after, writtenRegs, writtenFlags);
-                                this.CollectDiagnostics(lines[line], line, before, compTools, diags, op);
-                            }
-
-                            if (beforeStr != null || afterStr != null || readLabel != null || writeLabel != null || diags.Count > 0)
-                            {
-                                result[line] = new ComponentLine(beforeStr, afterStr, readLabel, writeLabel, diags);
-                            }
-                            lineClock.Stop();
-                            AsmLog.Info("ASMSIM", $"[component] line {line + 1}: {mnemonic} {(diags.Count > 0 ? $"({diags.Count} diag) " : "")}in {lineClock.ElapsedMilliseconds} ms");
-                        }
+                                catch (Exception ex)
+                                {
+                                    Log($"[component] line {line} extraction failed: {ex.GetType().Name}: {ex.Message}");
+                                }
+                            },
+                            cancel: ct);
                     }
                     catch (Exception ex)
                     {
@@ -629,16 +645,95 @@ namespace AsmDude2LS
             return result;
         }
 
+        /// <summary>Turn one line's dynamic before/after states into its editor annotations (state strings,
+        /// CodeLens read/write labels, diagnostics) — the SAME per-line logic the linear sim uses. The heavy
+        /// Z3 value-solving (ComputeStateString → solve each register) happens HERE, per line, so this is
+        /// what dominates a slow run. Returns null for non-instruction lines / nothing-to-show.</summary>
+        private ComponentLine? ExtractComponentLine(IReadOnlyList<string> lines, int line, AsmSimState? before, AsmSimState? after, AsmSimTools compTools)
+        {
+            // Match the linear sim EXACTLY: only real instruction lines carry annotations.
+            (_, _, Mnemonic mnemonic, string[] args, _) = AsmSourceTools.ParseLine(lines[line].Trim(), -1, -1, AssemblerEnum.UNKNOWN);
+            if (mnemonic == Mnemonic.NONE) return null;
+
+            string? beforeStr = before is null ? null : ComputeStateString(before);
+            string? afterStr = after is null ? null : ComputeStateString(after);
+
+            string? readLabel = null;
+            string? writeLabel = null;
+            var diags = new List<SimDiagnostic>();
+            if (before != null)
+            {
+                var dummyKeys = ("d_p", "d_n", "d_b");
+                using OpcodeBase? op = Runner.InstantiateOpcode(mnemonic, args, dummyKeys, compTools);
+
+                var writtenRegs = new HashSet<Rn>();
+                Flags writtenFlags = Flags.NONE;
+                var readRegs = new HashSet<Rn>();
+                Flags readFlags = Flags.NONE;
+                if (op != null)
+                {
+                    foreach (Rn r in op.RegsWriteStatic) writtenRegs.Add(RegisterTools.Get64BitsRegister(r));
+                    writtenFlags = op.FlagsWriteStatic;
+                    foreach (Rn r in op.RegsReadStatic) readRegs.Add(RegisterTools.Get64BitsRegister(r));
+                    readFlags = op.FlagsReadStatic;
+                }
+
+                readLabel = ComputeReadLabel(before, readRegs, readFlags);
+                if (after != null) writeLabel = ComputeWriteLabel(after, writtenRegs, writtenFlags);
+                this.CollectDiagnostics(lines[line], line, before, compTools, diags, op);
+            }
+
+            return (beforeStr != null || afterStr != null || readLabel != null || writeLabel != null || diags.Count > 0)
+                ? new ComponentLine(beforeStr, afterStr, readLabel, writeLabel, diags)
+                : null;
+        }
+
         /// <summary>The flip (ASMDUDE_SIM_ENGINE=component): populate the editor cache from the dynamic
         /// per-component engine instead of the linear walk. Read paths (hover / inlay hints / CodeLens /
-        /// diagnostics) are unchanged — they serve from the same cache. Reversible: switch the env var back.</summary>
+        /// diagnostics) are unchanged — they serve from the same cache. Now INCREMENTAL: each line is
+        /// written to the cache the instant it is extracted, with a throttled onProgress, so CodeLens appear
+        /// progressively (like the linear engine) instead of after the whole document. Reversible via env var.</summary>
         private void RunComponentSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
         {
             var clock = System.Diagnostics.Stopwatch.StartNew();
-            Dictionary<int, ComponentLine> computed;
+            int linesWritten = 0;
+            int diagCount = 0;
+            long lastProgressMs = -ProgressNotifyThrottleMs;
+
+            // Called per line as the engine resolves it: write that one line to the cache (under lock, vs
+            // the read paths) and fire a throttled refresh so the editor draws it immediately.
+            void Emit(int line, ComponentLine cl)
+            {
+                bool wrote = false;
+                lock (this.lockObj_)
+                {
+                    if (!ct.IsCancellationRequested
+                        && this.simVersion_.TryGetValue(uri, out long curVer) && curVer == version
+                        && this.cache_.TryGetValue(uri, out DocCache? entry))
+                    {
+                        if (cl.Before != null) entry.lineStringsBefore[line] = cl.Before;
+                        if (cl.After != null) entry.lineStringsAfter[line] = cl.After;
+                        if (cl.ReadLabel != null) entry.lineStringsReadLabels[line] = cl.ReadLabel;
+                        if (cl.WriteLabel != null) entry.lineStringsWriteLabels[line] = cl.WriteLabel;
+                        if (cl.Diagnostics.Count > 0)
+                        {
+                            entry.diagnostics.AddRange(cl.Diagnostics);
+                            diagCount += cl.Diagnostics.Count;
+                        }
+                        linesWritten++;
+                        wrote = true;
+                    }
+                }
+                if (wrote && clock.ElapsedMilliseconds - lastProgressMs >= ProgressNotifyThrottleMs)
+                {
+                    lastProgressMs = clock.ElapsedMilliseconds;
+                    onProgress?.Invoke(uri);
+                }
+            }
+
             try
             {
-                computed = this.ComputeComponentLines(lines);
+                this.ComputeComponentLines(lines, ct, Emit);
             }
             catch (Exception ex)
             {
@@ -648,34 +743,8 @@ namespace AsmDude2LS
 
             if (ct.IsCancellationRequested) return;
 
-            int linesWritten = 0;
-            int diagCount = 0;
-            lock (this.lockObj_)
-            {
-                if (!this.simVersion_.TryGetValue(uri, out long curVer) || curVer != version
-                    || !this.cache_.TryGetValue(uri, out DocCache? entry))
-                {
-                    return; // a newer edit superseded this run
-                }
-                foreach (KeyValuePair<int, ComponentLine> kv in computed)
-                {
-                    int line = kv.Key;
-                    ComponentLine cl = kv.Value;
-                    if (cl.Before != null) entry.lineStringsBefore[line] = cl.Before;
-                    if (cl.After != null) entry.lineStringsAfter[line] = cl.After;
-                    if (cl.ReadLabel != null) entry.lineStringsReadLabels[line] = cl.ReadLabel;
-                    if (cl.WriteLabel != null) entry.lineStringsWriteLabels[line] = cl.WriteLabel;
-                    if (cl.Diagnostics.Count > 0)
-                    {
-                        entry.diagnostics.AddRange(cl.Diagnostics);
-                        diagCount += cl.Diagnostics.Count;
-                    }
-                    linesWritten++;
-                }
-            }
-
             LogInfo($"[component] SUCCESS: {linesWritten} lines, {diagCount} diagnostics, loop={SimLoopHandling}, total {clock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
-            onProgress?.Invoke(uri);
+            onProgress?.Invoke(uri); // final flush
             onCompleted?.Invoke(uri);
         }
 
@@ -783,7 +852,7 @@ namespace AsmDude2LS
         /// Items present in both (same name) are promoted to <c>rw:</c>.
         /// Write-only items keep <c>w:</c>; read-only items keep <c>r:</c>.
         /// </summary>
-        private static string? MergeCompactLabels(string? writeCompact, string? readCompact)
+        internal static string? MergeCompactLabels(string? writeCompact, string? readCompact)
         {
             if (string.IsNullOrEmpty(writeCompact) && string.IsNullOrEmpty(readCompact)) return null;
             if (string.IsNullOrEmpty(readCompact)) return writeCompact;
@@ -1009,12 +1078,12 @@ namespace AsmDude2LS
 
         private void RunSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
         {
-            LogInfo($"sim started: engine={SimEngine} loop={SimLoopHandling}, {lines.Count} lines, {uri.Segments[^1]}");
+            LogInfo($"sim started: engine={this.engineMode_} loop={SimLoopHandling}, {lines.Count} lines, {uri.Segments[^1]}");
             LogCfgPartition(uri, lines);
 
-            // The flip: when ASMDUDE_SIM_ENGINE=component, drive the editor from the dynamic per-component
+            // The merge engine is the editor default; drive the editor from the dynamic per-component
             // engine instead of the linear walk below. Read paths are unchanged (same cache).
-            if (SimEngine == SimEngineMode.Component)
+            if (this.engineMode_ == SimEngineMode.Component)
             {
                 this.RunComponentSimulation(uri, version, lines, ct, onCompleted, onProgress);
                 return;
@@ -1276,8 +1345,8 @@ namespace AsmDude2LS
                 onCompleted?.Invoke(uri);
 
                 // Shadow mode: run the per-component engine compute-only and log per-line diffs vs the
-                // (authoritative) linear result. Never affects the editor; wrapped so it can't wedge the sim.
-                if (SimEngine == SimEngineMode.Shadow)
+                // linear result. Never affects the editor; wrapped so it can't wedge the sim.
+                if (this.engineMode_ == SimEngineMode.Shadow)
                 {
                     try
                     {

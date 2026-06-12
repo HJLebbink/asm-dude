@@ -100,8 +100,12 @@ internal sealed class SimStatePipeServer : IDisposable
     /// <summary>
     /// Push a sim-state-updated notification to the connected VSIX client (if any).
     /// Called from the simulator's background thread whenever a line's sim state is updated.
+    /// <paramref name="completed"/> marks the FINAL push of a simulation run (vs an intermediate
+    /// progress push): the client uses it to force a full re-materialization of every lens, because
+    /// VS may have silently dropped lenses during the long, load-heavy sim and the incremental
+    /// publisher would otherwise suppress re-publishing lines whose content did not change.
     /// </summary>
-    internal void NotifySimStateUpdated(Uri uri)
+    internal void NotifySimStateUpdated(Uri uri, bool completed = false)
     {
         StreamWriter? w;
         lock (this.writerLock_)
@@ -109,7 +113,7 @@ internal sealed class SimStatePipeServer : IDisposable
         if (w == null) return;
         try
         {
-            string msg = JsonSerializer.Serialize(new { method = "simStateUpdated", uri = uri.ToString() });
+            string msg = JsonSerializer.Serialize(new { method = "simStateUpdated", uri = uri.ToString(), completed });
             // WriteLine is not thread-safe; use lock
             lock (this.writerLock_)
                 this.clientWriter_?.WriteLine(msg);

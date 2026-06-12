@@ -58,14 +58,23 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
     private IReadOnlyList<AsmLabelRef>? cachedLabels_;
 
     // Decides which lines to (re)publish (VS-free, unit-tested in CodeLensPublishPlannerTests).
-    // The window only has to cover the ECHO — our UpdateTagsAsync makes VS immediately re-request the
-    // same range (recalculateAll), which we must suppress to avoid the tight OnRequestTags ↔ UpdateTags
-    // loop. That echo is a sub-second local round-trip. A LONGER window is harmful: while it lasts, a
-    // genuine scroll-back (VS discarded the lens and re-requests it) is also suppressed, so the lens
-    // stays gone until the window expires. Keep it just above the echo latency so scroll-back restores
-    // the lens promptly while the echo is still swallowed.
-    private const long RepublishWindowMs = 400;
-    private readonly CodeLensPublishPlanner planner = new(RepublishWindowMs);
+    // Per-line content dedup: a line is (re)emitted only when its content differs from what VS was last
+    // sent. Echoes and VS's partial re-requests therefore publish nothing (no churn). Full re-supply is
+    // driven by planner.Reset() — ONLY on edit (line positions shift); a sim refresh is a normal content
+    // refresh. See CodeLensPublishPlanner.
+    private readonly CodeLensPublishPlanner planner = new();
+
+    // ── Storm self-diagnosis (so the log explains the publish↔request loop without guesswork) ──
+    // The dedup lives in the planner. This is only the safety net: a rolling publish-rate counter emits
+    // ONE throttled WARN if the loop ever fails to converge, plus lastPublishTick_ feeds the "gap=" log.
+    private long lastPublishTick_;
+    private readonly Queue<long> recentPublishTicks_ = new();
+    private long stormWarnedTick_;
+    private const int StormWindowMs = 3000;   // look back this far …
+    private const int StormThreshold = 30;    // … this many publishes ⇒ not converging (legit scroll: 1
+                                              // publish per distinct viewport, well under this; a real
+                                              // storm re-publishes continuously because the echo isn't caught)
+    private const int StormWarnCooldownMs = 5000;
 
     public AsmCodeLensTagger(AsmCodeLensTaggerProvider provider, Uri documentUri)
     {
@@ -108,7 +117,9 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
     {
         long reqVer = requestedRanges.TextDocumentSnapshot?.RpcContract.Version ?? -1;
         long curVer = this.currentDocumentSnapshot?.RpcContract.Version ?? -1;
-        TaggerLogVerbose($"OnRequestTagsAsync: recalculateAll={recalculateAll}, ranges={requestedRanges.Count}, reqVer={reqVer}, curVer={curVer}");
+        // Logged at Info (temporarily) to confirm whether VS sets recalculateAll on the publish ECHO —
+        // that determines whether honoring the flag converges or storms. See CodeLensPublishPlanner.
+        TaggerLog($"OnRequestTagsAsync: recalculateAll={recalculateAll}, ranges={requestedRanges.Count}, reqVer={reqVer}, curVer={curVer}");
 
         if (requestedRanges.Count == 0 || requestedRanges.TextDocumentSnapshot is null) return;
 
@@ -124,20 +135,23 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
 
         this.currentDocumentSnapshot = snapshot;
 
-        // Answer EXACTLY the ranges VS asked about. Passing the whole document here makes VS treat
-        // every tag as outdated and immediately re-request (recalculateAll) — an endless
-        // OnRequestTags ↔ UpdateTags storm that re-materializes every lens over the OOP boundary.
-        await this.PublishAsync(snapshot, ranges);
+        // Answer EXACTLY the ranges VS asked about. recalculateAll ⇒ VS dropped our tags, re-supply them
+        // (even unchanged); otherwise publish only content changes so the echo collapses to nothing.
+        await this.PublishAsync(snapshot, ranges, recalculateAll);
     }
 
-    private void OnSimStateUpdated(Uri updatedUri)
+    private void OnSimStateUpdated(Uri updatedUri, bool completed)
     {
         // Only refresh if the notification is for this document
         if (!updatedUri.Equals(this.documentUri)) return;
 
         // The server has new sim-state data — invalidate the cache so the refresh re-fetches.
+        // A completion push is treated as a normal content refresh: the per-line planner publishes only
+        // the lines whose state changed. (It must NOT Reset/full-republish — the sim "completes"
+        // repeatedly during a run, and each Reset re-emitted every lens, churning them.)
         this.dataDirty_ = true;
-        TaggerLog($"SimStateUpdated for {updatedUri} — scheduling tag refresh");
+
+        TaggerLog($"SimStateUpdated for {updatedUri} (completed={completed}) — scheduling tag refresh");
         _ = this.RunSimRefreshAsync();
     }
 
@@ -186,8 +200,10 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
     ///   <item><paramref name="requestedRanges"/> null (a sim/edit refresh): publishes only the lines
     ///   whose tags changed since the last publish (per-line ranges), keeping unchanged lenses warm.</item>
     /// </list>
+    /// <paramref name="recalculateAll"/> is the VS request's flag (false for proactive refreshes): when
+    /// true VS has dropped our tags, so in-scope lenses are re-emitted even if their content is unchanged.
     /// </summary>
-    private async Task PublishAsync(ITextDocumentSnapshot document, IReadOnlyList<TextRange>? requestedRanges)
+    private async Task PublishAsync(ITextDocumentSnapshot document, IReadOnlyList<TextRange>? requestedRanges, bool recalculateAll = false)
     {
         var (built, sigByLine, lineRanges) = await this.BuildTagsAsync(document).ConfigureAwait(false);
 
@@ -202,12 +218,27 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
                     requestedLines.Add(line);
         }
 
-        var toPublish = this.planner.Plan(requestedLines, sigByLine, Environment.TickCount64);
+        long now = Environment.TickCount64;
+        long gap = this.lastPublishTick_ == 0 ? -1 : now - this.lastPublishTick_;
 
-        string scope = requestedRanges is null ? "sim/edit" : $"{requestedRanges.Count} req ranges→{requestedLines!.Count} lines";
+        // All the publish decision logic lives in the (unit-tested) planner; the tagger just renders the
+        // outcome and logs it so the publish↔request loop is legible in the AsmDude2 pane.
+        PublishPlan plan = this.planner.Plan(requestedLines, sigByLine, recalculateAll);
+        var toPublish = plan.Lines;
+
+        string scope = requestedRanges is null
+            ? $"sim/edit, {sigByLine.Count} tagged lines"
+            : $"{requestedRanges.Count} req ranges→{requestedLines!.Count} lines, recalcAll={recalculateAll}, gap={gap}ms";
+
+        if (plan.Outcome == PublishOutcome.EchoSkipped)
+        {
+            TaggerLog($"PublishAsync: skip ECHO — identical re-request ({scope})");
+            return;
+        }
+
         if (toPublish.Count == 0)
         {
-            TaggerLogVerbose($"PublishAsync: nothing to publish ({scope}) — skip [loop-safe]");
+            TaggerLog($"PublishAsync: nothing to publish ({scope}) — converged [loop-safe]");
             return;
         }
 
@@ -217,13 +248,37 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
 
         if (updatedRanges.Count == 0)
         {
-            TaggerLogVerbose($"PublishAsync: {toPublish.Count} line(s) to publish but no ranges ({scope}) — skip");
+            TaggerLog($"PublishAsync: {toPublish.Count} line(s) to publish but no ranges ({scope}) — skip");
             return;
         }
 
         var newTags = built.Where(b => toPublish.Contains(b.line)).Select(b => b.tag).ToList();
         await this.UpdateTagsAsync(updatedRanges, newTags, CancellationToken.None);
+
+        this.lastPublishTick_ = now;
+        this.NotePublishForStormDetection(now);
+
         TaggerLog($"PublishAsync: published {toPublish.Count} line(s) [{string.Join(",", toPublish.OrderBy(x => x))}], {newTags.Count} tags ({scope})");
+    }
+
+    /// <summary>Records a publish and, if the publish rate shows the publish↔request loop is NOT
+    /// converging, emits one throttled WARN that names the likely cause — so a storm is self-evident in
+    /// the log instead of having to be inferred from the density of publish lines.</summary>
+    private void NotePublishForStormDetection(long now)
+    {
+        this.recentPublishTicks_.Enqueue(now);
+        while (this.recentPublishTicks_.Count > 0 && now - this.recentPublishTicks_.Peek() > StormWindowMs)
+            this.recentPublishTicks_.Dequeue();
+
+        if (this.recentPublishTicks_.Count >= StormThreshold && now - this.stormWarnedTick_ > StormWarnCooldownMs)
+        {
+            this.stormWarnedTick_ = now;
+            AsmTools.AsmLog.Warn("CodeLens",
+                $"publish↔request loop NOT converging: {this.recentPublishTicks_.Count} publishes in {StormWindowMs}ms for {this.documentUri.Segments[^1]}. " +
+                "Per-line content dedup should make repeat/partial requests publish nothing. If the SAME lines are re-published " +
+                "every request, the tag data (sigByLine from BuildTagsAsync) is unstable for unchanged lines — fix the data " +
+                "source, not the planner. See CodeLensPublishPlanner.");
+        }
     }
 
     /// <summary>
@@ -324,13 +379,14 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
         => sigByLine[line] = sigByLine.TryGetValue(line, out var existing) ? existing + ";" + fragment : fragment;
 
     // ── Diagnostic logging ──────────────────────────────────────────────────────────────────────
-    // Routed through the shared AsmLog under category "CodeLens". Notable events log at Debug; the
+    // Routed through the shared AsmLog under category "CodeLens". Notable, low-frequency events
+    // (fetches, actual publishes) log at Info so they are visible in the default extension log; the
     // high-frequency per-request detail logs at Trace (suppressed unless the level threshold is
     // lowered via ASMDUDE_LOGLEVEL / settings). The real call site (member:line) is preserved.
     internal static void TaggerLog(string msg,
         [System.Runtime.CompilerServices.CallerMemberName] string member = "",
         [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
-        => AsmTools.AsmLog.Log(AsmTools.AsmLogLevel.Debug, "CodeLens", msg, member, line);
+        => AsmTools.AsmLog.Log(AsmTools.AsmLogLevel.Info, "CodeLens", msg, member, line);
 
     internal static void TaggerLogVerbose(string msg,
         [System.Runtime.CompilerServices.CallerMemberName] string member = "",

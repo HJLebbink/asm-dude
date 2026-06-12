@@ -12,20 +12,20 @@ using Xunit;
 
 /// <summary>
 /// Offline replay tests for <see cref="CodeLensPublishPlanner"/> — the VS-free decision logic the
-/// CodeLens tagger actually calls. These reproduce the request streams captured from a live VS
-/// session (in <c>%TEMP%\asmdude-tagger.log</c>): on every scroll VS fires a burst of
-/// <c>OnRequestTagsAsync(recalculateAll: true)</c> over the same lines, and each <c>UpdateTagsAsync</c>
-/// we emit triggers another request. The planner's job is to publish each line once and suppress the
-/// echo, so a ~40-request burst collapses to a single publish.
+/// CodeLens tagger actually calls. PROVEN from the log: VS DROPS a CodeLens tag when its line scrolls off
+/// and re-requests it on scroll-back, so a request must re-publish the tags it asks for (answering
+/// "nothing" left the lens blank). VS also re-issues the immediate identical ECHO, which must be
+/// suppressed or it storms. The rule: a request is served by re-publishing its visible tags UNLESS its
+/// serve signature (visible tags + content) equals the one just served (the echo). A scroll-back differs
+/// from the just-served viewport ⇒ served; an echo matches ⇒ skipped. A proactive sim/edit refresh
+/// publishes only content changes and forces the next request to re-serve.
 ///
-/// What this canNOT prove: that VS actually goes quiet (that's VS-side behaviour, only observable in
-/// the hive). What it DOES prove deterministically: given that request stream, we emit the right,
-/// minimal set of publishes — which is exactly the logic I kept getting wrong by eyeballing.
+/// What this canNOT prove: VS's exact request stream (only observable in the hive). What it DOES prove
+/// deterministically: a scroll-back re-publishes (not blank), the immediate echo is suppressed (no storm),
+/// and a sim push emits exactly the changed line.
 /// </summary>
 public sealed class CodeLensPublishPlannerTests
 {
-    private const long WindowMs = 2000;
-
     // A representative on-screen tag layout: one label lens + three sim-state lenses.
     private static Dictionary<int, string> Sigs(params (int line, string sig)[] entries)
         => entries.ToDictionary(e => e.line, e => e.sig);
@@ -41,90 +41,135 @@ public sealed class CodeLensPublishPlannerTests
     private static IReadOnlyCollection<int> VisibleLines()
         => Enumerable.Range(0, 27).ToList();
 
+    private static int[] Ordered(PublishPlan p) => p.Lines.OrderBy(x => x).ToArray();
+
     [Fact]
-    public void FirstRequest_PublishesEveryOnScreenTagLine()
+    public void FirstRequest_PublishesEveryVisibleTagLine()
     {
-        var planner = new CodeLensPublishPlanner(WindowMs);
+        var planner = new CodeLensPublishPlanner();
 
-        var toPublish = planner.Plan(VisibleLines(), ScreenContent, nowTick: 1000);
+        // No prior serve ⇒ every visible tagged line is published.
+        var plan = planner.Plan(VisibleLines(), ScreenContent);
 
-        Assert.Equal(new[] { 0, 9, 10, 11 }, toPublish.OrderBy(x => x));
+        Assert.Equal(PublishOutcome.Published, plan.Outcome);
+        Assert.Equal(new[] { 0, 9, 10, 11 }, Ordered(plan));
     }
 
     [Fact]
-    public void RepeatedIdenticalRequests_PublishOnceThenNeverAgain()
+    public void ImmediateIdenticalRequest_IsEchoSkipped()
     {
-        // This is the bug: ~40 identical recalculateAll requests per scroll. Must collapse to 1 publish.
-        var planner = new CodeLensPublishPlanner(WindowMs);
-        long tick = 1000;
+        // The publish ECHO: VS re-asks for the identical viewport right after we served it ⇒ same serve
+        // signature ⇒ suppressed, so the loop converges.
+        var planner = new CodeLensPublishPlanner();
+        planner.Plan(VisibleLines(), ScreenContent, recalculateAll: true);
 
-        int firstCount = planner.Plan(VisibleLines(), ScreenContent, tick).Count;
+        var echo = planner.Plan(VisibleLines(), ScreenContent, recalculateAll: true);
+
+        Assert.Equal(PublishOutcome.EchoSkipped, echo.Outcome);
+        Assert.Empty(echo.Lines);
+    }
+
+    [Fact]
+    public void RepeatedIdenticalRequests_ServeOnceThenAllEchoSkipped()
+    {
+        var planner = new CodeLensPublishPlanner();
+        var first = planner.Plan(VisibleLines(), ScreenContent, recalculateAll: true);
 
         int laterPublishes = 0;
         for (int i = 0; i < 40; i++)
-        {
-            tick += 5; // a few ms apart, as in the captured burst — well inside the 2s window
-            laterPublishes += planner.Plan(VisibleLines(), ScreenContent, tick).Count;
-        }
+            laterPublishes += planner.Plan(VisibleLines(), ScreenContent, recalculateAll: true).Lines.Count;
 
-        Assert.Equal(4, firstCount);     // lines 0,9,10,11 published once
-        Assert.Equal(0, laterPublishes); // every subsequent identical request is suppressed
+        Assert.Equal(new[] { 0, 9, 10, 11 }, Ordered(first));
+        Assert.Equal(0, laterPublishes);
     }
 
     [Fact]
-    public void DifferentRangePartition_SameLines_StillSuppressed()
+    public void ScrollBack_RepublishesTags_BecauseVsDroppedThem()
     {
-        // VS varies how it groups the requested ranges between requests. After the tagger reduces
-        // ranges→lines, the planner sees the SAME line set, so it must still suppress. (This is what
-        // the earlier range-keyed dedupe failed to do.)
-        var planner = new CodeLensPublishPlanner(WindowMs);
-        long tick = 1000;
+        // PROVEN from the log: VS drops a tag when it scrolls off and re-requests it on scroll-back. So a
+        // scroll-back (different viewport than the one just served) MUST re-publish — NOT answer "nothing",
+        // which left the lens blank.
+        var planner = new CodeLensPublishPlanner();
 
-        planner.Plan(Enumerable.Range(0, 27).ToList(), ScreenContent, tick);
-        tick += 10;
-        var again = planner.Plan(Enumerable.Range(5, 15).ToList(), ScreenContent, tick); // different line window, same on-screen tags 9,10,11
+        planner.Plan(VisibleLines(), ScreenContent);                       // viewport A (tags) served
+        planner.Plan(Enumerable.Range(100, 20).ToList(), ScreenContent);   // scrolled away (different sig)
+        var back = planner.Plan(VisibleLines(), ScreenContent);            // back to A
 
-        // Lines 9,10,11 were already published and are fresh → nothing new. (Line 0 isn't in 5..19.)
-        Assert.Empty(again);
+        Assert.Equal(PublishOutcome.Published, back.Outcome);
+        Assert.Equal(new[] { 0, 9, 10, 11 }, Ordered(back)); // restored, not blank
+    }
+
+    [Fact]
+    public void DifferentRangePartition_SameVisibleTags_IsEchoSkipped()
+    {
+        // VS varies how it partitions the requested ranges. Two requests covering the SAME visible tags
+        // produce the same serve signature ⇒ the second is the echo ⇒ suppressed (no re-churn).
+        var planner = new CodeLensPublishPlanner();
+        planner.Plan(Enumerable.Range(0, 27).ToList(), ScreenContent);   // covers tags 0,9,10,11
+
+        var again = planner.Plan(Enumerable.Range(0, 20).ToList(), ScreenContent); // also covers 0,9,10,11
+
+        Assert.Equal(PublishOutcome.EchoSkipped, again.Outcome);
+    }
+
+    [Fact]
+    public void ContentChange_OnSameViewport_IsServed_NotEcho()
+    {
+        // A sim push changed a visible line's content ⇒ different serve signature ⇒ not the echo ⇒ served.
+        var planner = new CodeLensPublishPlanner();
+        planner.Plan(VisibleLines(), ScreenContent);
+
+        var changed = Sigs(
+            (0, "L:0,6,3,label1"),
+            (9, "S:→RAX=0x99"),   // changed
+            (10, "S:→RBX=0x4"),
+            (11, "S:rw:RCX"));
+
+        var plan = planner.Plan(VisibleLines(), changed);
+
+        Assert.NotEqual(PublishOutcome.EchoSkipped, plan.Outcome);
+        Assert.Contains(9, plan.Lines);
     }
 
     [Fact]
     public void SimRefresh_RepublishesOnlyTheChangedLine()
     {
-        var planner = new CodeLensPublishPlanner(WindowMs);
-        planner.Plan(VisibleLines(), ScreenContent, nowTick: 1000);
+        var planner = new CodeLensPublishPlanner();
+        planner.Plan(VisibleLines(), ScreenContent);
 
-        // Sim advances: line 10's state changes; everything else identical. requestedLines == null
-        // models the proactive sim refresh (whole document in scope).
+        // Sim advances: line 10's state changes. requestedLines == null models the proactive sim refresh.
         var updated = Sigs(
             (0, "L:0,6,3,label1"),
             (9, "S:→RAX=0x10"),
             (10, "S:→RBX=0x8"),   // changed
             (11, "S:rw:RCX"));
 
-        var toPublish = planner.Plan(requestedLines: null, updated, nowTick: 1100);
+        var plan = planner.Plan(requestedLines: null, updated);
 
-        Assert.Equal(new[] { 10 }, toPublish.OrderBy(x => x));
+        Assert.Equal(new[] { 10 }, Ordered(plan));
     }
 
     [Fact]
-    public void GenuineRecalculate_AfterQuiescence_RepublishesEverything()
+    public void SimRefresh_ForcesNextRequestToReServe()
     {
-        // A real recalculateAll (theme change, doc reopen, …) arriving after the window must re-supply
-        // the lenses — otherwise skipping would leave them blank (the "space not preserved" regression).
-        var planner = new CodeLensPublishPlanner(WindowMs);
-        planner.Plan(VisibleLines(), ScreenContent, nowTick: 1000);
+        // A proactive refresh clears the serve baseline, so the next VS request re-serves the viewport
+        // (VS may have dropped tags meanwhile). The echo AFTER that re-serve is then suppressed.
+        var planner = new CodeLensPublishPlanner();
+        planner.Plan(VisibleLines(), ScreenContent);          // served
+        planner.Plan(requestedLines: null, ScreenContent);    // proactive refresh (clears serve baseline)
 
-        var toPublish = planner.Plan(VisibleLines(), ScreenContent, nowTick: 1000 + WindowMs + 1);
+        var served = planner.Plan(VisibleLines(), ScreenContent);
+        var echo = planner.Plan(VisibleLines(), ScreenContent);
 
-        Assert.Equal(new[] { 0, 9, 10, 11 }, toPublish.OrderBy(x => x));
+        Assert.Equal(new[] { 0, 9, 10, 11 }, Ordered(served)); // re-served after the refresh
+        Assert.Equal(PublishOutcome.EchoSkipped, echo.Outcome); // its echo is suppressed
     }
 
     [Fact]
     public void LostTag_IsOutdatedSoTheStaleLensIsRemoved()
     {
-        var planner = new CodeLensPublishPlanner(WindowMs);
-        planner.Plan(VisibleLines(), ScreenContent, nowTick: 1000);
+        var planner = new CodeLensPublishPlanner();
+        planner.Plan(VisibleLines(), ScreenContent);
 
         // Line 11 no longer has a sim state.
         var fewer = Sigs(
@@ -132,32 +177,33 @@ public sealed class CodeLensPublishPlannerTests
             (9, "S:→RAX=0x10"),
             (10, "S:→RBX=0x4"));
 
-        var toPublish = planner.Plan(requestedLines: null, fewer, nowTick: 1100);
+        var plan = planner.Plan(requestedLines: null, fewer);
 
-        Assert.Equal(new[] { 11 }, toPublish.OrderBy(x => x));
+        Assert.Equal(new[] { 11 }, Ordered(plan));
     }
 
     [Fact]
-    public void RequestForOffscreenRegion_DoesNotPublishOnscreenTagsAgain()
+    public void RequestForOffscreenRegion_PublishesNothing()
     {
-        var planner = new CodeLensPublishPlanner(WindowMs);
-        planner.Plan(VisibleLines(), ScreenContent, nowTick: 1000);
+        var planner = new CodeLensPublishPlanner();
+        planner.Plan(VisibleLines(), ScreenContent);
 
         // VS asks about lines 100..120 (scrolled far away) — none of our tags live there.
-        var toPublish = planner.Plan(Enumerable.Range(100, 20).ToList(), ScreenContent, nowTick: 1100);
+        var plan = planner.Plan(Enumerable.Range(100, 20).ToList(), ScreenContent);
 
-        Assert.Empty(toPublish);
+        Assert.Empty(plan.Lines);
     }
 
     [Fact]
     public void ResetForcesRepublish()
     {
-        var planner = new CodeLensPublishPlanner(WindowMs);
-        planner.Plan(VisibleLines(), ScreenContent, nowTick: 1000);
+        var planner = new CodeLensPublishPlanner();
+        planner.Plan(VisibleLines(), ScreenContent);
 
-        planner.Reset(); // e.g. after an edit
+        planner.Reset(); // ONLY on edit (line positions shifted) — NOT on a sim refresh
 
-        var toPublish = planner.Plan(VisibleLines(), ScreenContent, nowTick: 1100);
-        Assert.Equal(new[] { 0, 9, 10, 11 }, toPublish.OrderBy(x => x));
+        // Reset clears the per-line baseline, so the next request re-emits every visible line.
+        var plan = planner.Plan(VisibleLines(), ScreenContent);
+        Assert.Equal(new[] { 0, 9, 10, 11 }, Ordered(plan));
     }
 }
