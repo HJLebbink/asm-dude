@@ -3,12 +3,12 @@
 
 namespace AsmDude2LS;
 
+using AsmTools;
+
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
-
-using AsmTools;
 
 /// <summary>Back-compat level enum for the LSP server; maps onto <see cref="AsmLogLevel"/>.</summary>
 public enum LogLevel

@@ -22,16 +22,16 @@
 
 namespace unit_tests_asm_z3
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-
     using AsmSim;
 
     using AsmTools;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
 
     /// <summary>
     /// INCREMENTAL_SIM_PLAN.md Phase 2 / S1 spike. Resolves Part-A item 5 — the one genuine UNKNOWN:

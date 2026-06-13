@@ -112,7 +112,52 @@ The LSP server is split into two projects following the **library + executable p
     (`Get_Arch_Switched_On`, `Used_Assembler`, …) on top of the shared data contract
   - Single-targeted for .NET 10.0-windows (dropped net48 support)
 
-- **asm-sim-lib**: Assembly instruction simulator using Z3 solver (.NET 10.0 LTS)
+#### The AsmSim subsystem — the `asm-sim-*` family (3 layers + tests)
+
+The symbolic Z3 simulation is split into **three layers**, each its own project, all prefixed `asm-sim-*`
+(the prefix deliberately distinguishes the *simulation subsystem* from the `asm-dude2-*` app/editor layer).
+**Do not merge these — they are genuinely different layers** (verified 2026-06-13):
+
+- **`asm-sim-lib`** — the **ENGINE** (namespace `AsmSim`). Pure Z3 symbolic execution: `DynamicFlow`
+  (the per-component CFG + its SYMBOLIC ITE/phi merge — `Create_States_Before/After` →
+  `Create_State_Private`/`MergeConstructor`), `State`, `StateUpdate`, `Runner`, `LoopStrategy`, `Tools`
+  (`Tools.Collapse` = the n-ary merge), `Tv`, `StaticFlow`, `SimResultComparer`. **Has no
+  editor/LSP/document concept.** Reused by the fuzzer, the CLI, and `asm-sim-tests` — so it must stay pure.
+  *Never put document-caching or editor-facing code here.* (The bespoke `ComponentEvaluator` Tv-level
+  merge was deleted 2026-06-13 — it solved all 16 registers per vertex; the editor now reads DynamicFlow's
+  symbolic states directly, ~100× faster. See `INCREMENTAL_SIM_PLAN.md`.)
+
+- **`asm-sim-host-lib`** — the **HOST / orchestration** (namespace `AsmSim.Host`). Drives the engine per
+  document: `AsmSimulator` (the linear walk + the component engine = DynamicFlow's symbolic states + only
+  the displayed registers solved per line on the Phase-P parallel worker pool; runtime `ApplySettings`),
+  `DocCache` (per-line before/after state + CodeLens read/write labels + diagnostics), `SimDiagnostic`,
+  and `AsmSimProtocol` (the out-of-process wire DTOs). **Has NO LSP-protocol dependency** (so it can be
+  hosted either in-process by the LSP server or out-of-process by the sim server). Depends on
+  `asm-sim-lib` + `asm-tools-lib` + `asm-options-lib`. *(Was `asm-dude2-sim-lib`; `AsmSimulator` was
+  `LspAsmSimulator` — both renamed 2026-06-13 to stop lying about being LSP-specific.)*
+
+- **`asm-sim-server`** — the **out-of-process server exe** (AssemblyName `AsmSim.Server`, namespace
+  `AsmSim.Host`). Hosts `asm-sim-host-lib` behind a `StreamJsonRpc` stdio interface (`AsmSimProtocol`) so
+  the heavy/crash-prone Z3 sim can run in a separate process and not block or kill the LSP. Mirrors how
+  `asm-dude2-ls` hosts `asm-dude2-ls-lib`. **Status: working & tested** — `AsmSimClient` (in the LSP server)
+  launches it, mirrors streamed results, **respawns on crash** (re-sends open docs), and pushes runtime
+  **`settingsChanged`** (engine switch without restart). Opt-in via `ASMDUDE_SIM_OUTOFPROC=1` (default
+  in-process). See `VS/CSHARP/ASMSIM_SERVER_PLAN.md`.
+
+- **`asm-sim-tests`** (MSTest, via `vstest.console.dll`) tests the **engine** (`asm-sim-lib`):
+  `Test_DynamicFlow*`, etc. **`asm-sim-host-tests`** (xUnit) tests the **host** (`asm-sim-host-lib`):
+  `AsmSimulatorTests` (golden register values, `CompactStateString`/`MergeCompactLabels`, linear-vs-component
+  shadow), `AsmSimComponentEngineTests` (the symbolic component engine on a real file), `AsmSimServer*Tests`
+  (in-memory + launched-process out-of-proc), `AsmSimSettingsChangedTests`. The `AsmSimClient` respawn +
+  settings-push tests live in `asm-dude2-ls-tests`. Tests live with the layer they test.
+
+**Engine selection / tuning** (env vars read by `asm-sim-host-lib`, visible to whichever process hosts it):
+`ASMDUDE_SIM_ENGINE=linear|component|shadow` (default **component** since 2026-06-13 — the per-component
+engine that reads DynamicFlow's symbolic ITE-merged states + solves only displayed registers per line;
+branch-aware and ~on par with linear. Force the old single-path engine with `=linear`),
+`ASMDUDE_SIM_PARALLEL=<N>` (component worker count, default
+≈ min(cores, 8)), `ASMDUDE_SIM_LOOP=accept|modsethavoc|peelonce|fullunroll|fixpoint`. All three are also
+runtime-settable on the out-of-process server via `settingsChanged` (no restart).
 
 - **asm-annotate**: The instruction-data toolchain (CLI). Subcommands: `extract` (Intel SDM PDF→Markdown,
   stage 1), `gen-signatures` (wiki Markdown→`signature-*.txt`, stage 2 — formerly the standalone
@@ -518,8 +563,12 @@ https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.js
 - `asm-options-lib`: Shared, dependency-light settings contract (`AsmSettingsData` + `ColorJsonConverter`) **and the `AsmLog` logging engine**; referenced by both the VSIX and the server
 - `asm-tools-lib`: Core assembly language tools (.NET 10.0 LTS; single-targeted, no net48)
 - `asm-tools-tests`: Tests for asm-tools-lib (MSTest)
-- `asm-sim-lib`: Assembly simulator using Z3 (.NET 10.0 LTS)
-- `asm-sim-tests`: Tests for asm-sim-lib (MSTest)
+- **AsmSim subsystem** (`asm-sim-*` — 3 layers; see "The AsmSim subsystem" above for the engine/host/server distinction):
+  - `asm-sim-lib`: **engine** — Z3 symbolic execution (ns `AsmSim`); pure, no editor/LSP concept
+  - `asm-sim-host-lib`: **host** — `AsmSimulator`/`DocCache`/parallel pool/protocol DTOs (ns `AsmSim.Host`); LSP-free
+  - `asm-sim-server`: **out-of-process sim server exe** (`AsmSim.Server`, StreamJsonRpc/stdio) — server half built, client TODO
+  - `asm-sim-tests`: engine tests (MSTest, run via `vstest.console.dll`)
+  - `asm-sim-host-tests`: host tests (xUnit) — `AsmSimulatorTests`
 - `asm-annotate`: Assembly annotation utility (.NET 10.0 LTS)
 
 ### Archived Projects (`VS\CSHARP\old\`)

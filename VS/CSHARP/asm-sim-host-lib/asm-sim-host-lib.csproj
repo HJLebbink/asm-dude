@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The AsmSim simulation engine, extracted from asm-dude2-ls-lib (INCREMENTAL_SIM_PLAN / ASMSIM_SERVER_PLAN
+       S1). Owns AsmSimulator + DocCache + the component engine glue. Has NO LSP-protocol dependency, so it
+       can later be hosted by a standalone AsmSim.LS.exe sim server. Referenced in-process by asm-dude2-ls-lib
+       for now. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>AsmSim.Host</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <IsPackable>false</IsPackable>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Z3" Version="4.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj" />
+    <ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj" />
+    <ProjectReference Include="..\asm-options-lib\asm-options-lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- AsmSimulator + DocCache are internal; expose to the in-process host, the out-of-proc sim
+         server exe, tests, and fuzzer. -->
+    <InternalsVisibleTo Include="asm-dude2-ls-lib" />
+    <InternalsVisibleTo Include="AsmSim.Server" /> <!-- the sim server exe's AssemblyName -->
+    <InternalsVisibleTo Include="asm-sim-host-tests" />
+    <InternalsVisibleTo Include="asm-dude2-ls-tests" /> <!-- AsmSimClient crash-respawn test needs the mirror -->
+    <InternalsVisibleTo Include="asm-fuzz" />
+  </ItemGroup>
+
+</Project>

@@ -35,7 +35,6 @@ namespace unit_tests_asm_z3
     using System.Globalization;
 
     [TestClass]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     public class Test_MemZ3
     {
         private const bool LogToDisplay = AsmTestTools.LOG_TO_DISPLAY;

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- AsmSim.Server.exe — the out-of-process AsmSim simulation server. Hosts asm-sim-host-lib behind a
+       StreamJsonRpc stdio interface (AsmSimProtocol). Launched by the LSP server; streams per-line results
+       back. See VS/CSHARP/ASMSIM_SERVER_PLAN.md. -->
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="asm-sim-host-tests" /> <!-- AsmSimRpcServer end-to-end test -->
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>AsmSim.Server</AssemblyName>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>AsmSim.Host</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StreamJsonRpc" Version="2.25.29" />
+    <!-- StreamJsonRpc pulls a vulnerable MessagePack transitively; pin the patched version (NU1903). -->
+    <PackageReference Include="MessagePack" Version="3.1.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\asm-sim-host-lib\asm-sim-host-lib.csproj" />
+    <ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj" />
+    <ProjectReference Include="..\asm-options-lib\asm-options-lib.csproj" />
+  </ItemGroup>
+
+</Project>

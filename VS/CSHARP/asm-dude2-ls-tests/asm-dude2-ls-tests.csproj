@@ -38,6 +38,12 @@
 	<!-- References -->
 	<ItemGroup>
 		<ProjectReference Include="..\asm-dude2-ls-lib\asm-dude2-ls-lib.csproj" />
+		<!-- Build (but don't reference) the out-of-process sim server so the AsmSimClient crash-respawn test
+		     can launch the real AsmSim.Server.exe (located via ASMDUDE_SIM_SERVER_PATH in the test). -->
+		<ProjectReference Include="..\asm-sim-server\asm-sim-server.csproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<Private>false</Private>
+		</ProjectReference>
 	</ItemGroup>
 
 </Project>

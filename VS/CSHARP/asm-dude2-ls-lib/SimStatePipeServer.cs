@@ -22,6 +22,8 @@
 
 namespace AsmDude2LS;
 
+using AsmSim.Host;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -59,13 +61,13 @@ using System.Threading.Tasks;
 internal sealed class SimStatePipeServer : IDisposable
 {
     private readonly string pipeName_;
-    private readonly LspAsmSimulator simulator_;
+    private readonly AsmSimulator simulator_;
     private readonly CancellationTokenSource cts_ = new();
     private volatile StreamWriter? clientWriter_;
     private readonly object writerLock_ = new();
     private int disposed_ = 0;
 
-    internal SimStatePipeServer(LspAsmSimulator simulator)
+    internal SimStatePipeServer(AsmSimulator simulator)
     {
         this.simulator_ = simulator;
         this.pipeName_ = $"asmdude2-simstate-{Environment.ProcessId}";

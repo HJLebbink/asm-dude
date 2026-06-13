@@ -20,42 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2LS.Tests;
-
-using System;
-using System.Collections.Generic;
+namespace AsmSim.Host.Tests;
 
 using AsmSim;
 
 using FluentAssertions;
 
+using System;
+using System.Collections.Generic;
+
 using Xunit;
 
 /// <summary>
-/// Headless CHARACTERIZATION tests for the editor's linear simulator (<see cref="LspAsmSimulator"/>).
+/// Headless CHARACTERIZATION tests for the editor's linear simulator (<see cref="AsmSimulator"/>).
 ///
 /// <para>Purpose: pin down the simulator's current per-line output (register/flag states) for small,
 /// deterministic programs, so that the planned move to a per-CFG-component / DynamicFlow engine
 /// (INCREMENTAL_SIM_PLAN.md Phase 2) has a golden baseline to diff against — the oracle the S0 shadow
 /// harness will compare the new engine to. These run with NO Visual Studio: they drive the real
-/// <see cref="LspAsmSimulator.RunSimulation"/> synchronously through the
-/// <see cref="LspAsmSimulator.SimulateSynchronouslyForTest"/> seam.</para>
+/// <see cref="AsmSimulator.RunSimulation"/> synchronously through the
+/// <see cref="AsmSimulator.SimulateSynchronouslyForTest"/> seam.</para>
 ///
 /// <para>Reproducibility note: every program here is small enough that Z3 never hits the per-line
 /// timeout, so results are deterministic regardless of machine speed. Programs that CAN time out are
 /// intentionally avoided (a timed-out query yields <c>unknown</c> on a slow box but a value on a fast
 /// one — see the reproducibility caveat in INCREMENTAL_SIM_PLAN.md).</para>
 /// </summary>
-public class LspAsmSimulatorTests
+[Collection("AsmLog")] // the Observability test manipulates global AsmLog sinks/threshold
+public class AsmSimulatorTests
 {
     /// <summary>Compact after-state of a line, in the stable production form (e.g. "rax=0x30, ZF=0").</summary>
-    private static string? CompactAfter(LspAsmSimulator sim, Uri uri, int line)
-        => LspAsmSimulator.CompactStateString(sim.GetRegisterStatesAfterLine(uri, line));
+    private static string? CompactAfter(AsmSimulator sim, Uri uri, int line)
+        => AsmSimulator.CompactStateString(sim.GetRegisterStatesAfterLine(uri, line));
 
     [Fact]
     public void StraightLine_RegisterValues_AreProven()
     {
-        using var sim = new LspAsmSimulator();
+        using var sim = new AsmSimulator();
         var uri = new Uri("file:///charac_straightline.asm");
         string[] lines =
         [
@@ -75,7 +76,7 @@ public class LspAsmSimulatorTests
     [Fact]
     public void XorSelf_ZerosRegisterAndSetsZeroFlag()
     {
-        using var sim = new LspAsmSimulator();
+        using var sim = new AsmSimulator();
         var uri = new Uri("file:///charac_xorself.asm");
         string[] lines = ["xor rax, rax"]; // rax = 0, ZF = 1
 
@@ -84,6 +85,24 @@ public class LspAsmSimulatorTests
         string? after = CompactAfter(sim, uri, 0);
         after.Should().Contain("RAX=0x_0000_0000_0000", "xor reg,reg proves the register is zero");
         after.Should().Contain("ZF=1", "a zero result sets the zero flag");
+    }
+
+    [Fact]
+    public void ParityJump_ReadsPF_IsAnnotated()
+    {
+        // A parity jump (`jp`) reads PF and nothing else. The read-side CodeLens label must therefore show
+        // PF — which requires PF to be a TRACKED status flag (EnableFullStateConfig). Guards the regression
+        // where only CF/ZF/SF/OF were tracked, so `jp` got NO read label at all.
+        using var sim = new AsmSimulator();
+        var uri = new Uri("file:///parity_jump.asm");
+        string[] lines = ["mov al, 1", "cmp al, 0", "jp label1", "label1:"];
+
+        sim.SimulateSynchronouslyForTest(uri, lines);
+        SimResultSet rs = sim.ToResultSet(uri, "parity");
+
+        rs.Lines.Should().ContainKey(2, "the jp instruction line is annotated");
+        rs.Lines[2].ReadLabel.Should().NotBeNull("jp reads a flag, so it must have a read label");
+        rs.Lines[2].ReadLabel!.Should().Contain("PF", "jp is jump-if-parity — it reads the parity flag");
     }
 
     [Fact]
@@ -96,7 +115,7 @@ public class LspAsmSimulatorTests
 
         static List<string?> Run(string[] program)
         {
-            using var sim = new LspAsmSimulator();
+            using var sim = new AsmSimulator();
             var uri = new Uri("file:///charac_determinism.asm");
             sim.SimulateSynchronouslyForTest(uri, program);
             var result = new List<string?>();
@@ -132,7 +151,7 @@ public class LspAsmSimulatorTests
             "skip: mov rbx, rax",    // line 3 (label / join)
         ];
 
-        using var sim = new LspAsmSimulator();
+        using var sim = new AsmSimulator();
         sim.SimulateSynchronouslyForTest(uri, lines);
 
         CompactAfter(sim, uri, 0).Should().Contain("RAX=0x_0000_0000_0001", "line 0 proves rax=1");
@@ -162,7 +181,7 @@ public class LspAsmSimulatorTests
         AsmTools.AsmLog.AddSink(Sink);
         try
         {
-            using var sim = new LspAsmSimulator();
+            using var sim = new AsmSimulator();
             var uri = new Uri("file:///obs_cfg_twofunc.asm");
             string[] lines =
             [
@@ -200,7 +219,7 @@ public class LspAsmSimulatorTests
 
         static SimResultSet Run(string[] program, string label)
         {
-            using var sim = new LspAsmSimulator();
+            using var sim = new AsmSimulator();
             var uri = new Uri("file:///simdiff_determinism.asm");
             sim.SimulateSynchronouslyForTest(uri, program);
             return sim.ToResultSet(uri, label);
@@ -221,7 +240,7 @@ public class LspAsmSimulatorTests
         // S2 shadow: on straight-line code (no joins) the per-component DynamicFlow engine must produce
         // the SAME per-line before/after states as the linear engine. This validates the component engine
         // and the shadow comparison on the case where they MUST agree.
-        using var sim = new LspAsmSimulator();
+        using var sim = new AsmSimulator();
         var uri = new Uri("file:///shadow_straightline.asm");
         string[] lines = ["mov rax, 0x10", "add rax, 0x20", "mov rbx, rax"];
 
@@ -238,7 +257,7 @@ public class LspAsmSimulatorTests
         // separate entry that merges into the join), so rax is the join of {1,2} = UNKNOWN. They MUST
         // differ at the join — and the shadow surfaces exactly that line, which is what makes the eventual
         // engine flip a reviewed change, not a silent one.
-        using var sim = new LspAsmSimulator();
+        using var sim = new AsmSimulator();
         var uri = new Uri("file:///shadow_branch.asm");
         string[] lines =
         [
@@ -260,7 +279,7 @@ public class LspAsmSimulatorTests
         // Regression for the extractor bug behind the real-file "only in component" noise: label,
         // comment, and directive lines must be skipped by BOTH engines (only real instructions carry
         // state). No #pragma here, so this straight-line program must agree exactly.
-        using var sim = new LspAsmSimulator();
+        using var sim = new AsmSimulator();
         var uri = new Uri("file:///shadow_noninstr.asm");
         string[] lines =
         [
@@ -282,7 +301,7 @@ public class LspAsmSimulatorTests
         // The #pragma rewrite must make the component engine match the linear engine in #pragma regions:
         //   - `#pragma assume mov rax, 8` injects rax=8  -> line 1 proves rbx=8;
         //   - `#pragma assume HLT` resets the state      -> after it, rbx is unknown again (line 3).
-        using var sim = new LspAsmSimulator();
+        using var sim = new AsmSimulator();
         var uri = new Uri("file:///shadow_pragma.asm");
         string[] lines =
         [
@@ -310,7 +329,7 @@ public class LspAsmSimulatorTests
         string[] lines = all.Length > 16 ? all[..16] : all; // the top #pragma "Unreachable code" region + first HLT
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        using var sim = new LspAsmSimulator();
+        using var sim = new AsmSimulator();
         var uri = new Uri("file:///explore_real.asm");
         SimDiff diff = sim.CompareEnginesForTest(uri, lines);
         sw.Stop();
@@ -340,7 +359,7 @@ public class LspAsmSimulatorTests
     public void CompactStateString_UnknownRegisterValue_IsNormalizedSpaceFree()
     {
         // Raw production form for an unknown register write: "<prefix>:NAME = 0b<binary>" (no hex part).
-        string? compact = LspAsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
+        string? compact = AsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
 
         // Must be space-free so ParseCompactItems can read it back (this is what was broken).
         compact.Should().Be("w:RAX=0b????_????");
@@ -351,10 +370,10 @@ public class LspAsmSimulatorTests
     {
         // Line N writes RAX with an unknown value; line N+1 reads a different, concrete register RBX.
         // Both share the CodeLens at display position N+1 and BOTH must show.
-        string? write = LspAsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
-        string? read = LspAsmSimulator.CompactStateString("\nr:RBX = 0b0000_0100 = 0x4");
+        string? write = AsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
+        string? read = AsmSimulator.CompactStateString("\nr:RBX = 0b0000_0100 = 0x4");
 
-        string? merged = LspAsmSimulator.MergeCompactLabels(write, read);
+        string? merged = AsmSimulator.MergeCompactLabels(write, read);
 
         merged.Should().NotBeNull();
         merged.Should().Contain("w:RAX=0b????_????"); // the write is kept, not overwritten…
@@ -365,10 +384,10 @@ public class LspAsmSimulatorTests
     public void MergeCompactLabels_SameRegisterWrittenThenRead_MergesToReadWrite()
     {
         // Same register on both sides (even with an unknown value) collapses to a single "rw:" item.
-        string? write = LspAsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
-        string? read = LspAsmSimulator.CompactStateString("\nr:RAX = 0b????_????");
+        string? write = AsmSimulator.CompactStateString("\nw:RAX = 0b????_????");
+        string? read = AsmSimulator.CompactStateString("\nr:RAX = 0b????_????");
 
-        string? merged = LspAsmSimulator.MergeCompactLabels(write, read);
+        string? merged = AsmSimulator.MergeCompactLabels(write, read);
 
         merged.Should().Be("rw:RAX=0b????_????");
     }

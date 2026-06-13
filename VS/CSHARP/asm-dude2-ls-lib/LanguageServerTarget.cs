@@ -559,7 +559,7 @@ public class LanguageServerTarget(LanguageServer server)
     /// <!-- LLM-ANNOTATION -->
     /// LLM KEYWORDS: Z3 simulator, proven states, assembly analysis, LSP
     /// USED IN: LanguageServer.GetProvenStates
-    /// SEE ALSO: ProvenStatesResponse, LspAsmSimulator
+    /// SEE ALSO: ProvenStatesResponse, AsmSimulator
 
     /// <summary>
     /// Handle custom asm/getProvenStates request. Returns Z3-proven register states for a document range.

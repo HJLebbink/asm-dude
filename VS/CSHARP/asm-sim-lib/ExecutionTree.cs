@@ -22,8 +22,6 @@
 
 namespace AsmSim
 {
-    using AsmTools;
-
     using QuikGraph;
 
     using System;

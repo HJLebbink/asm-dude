@@ -14,7 +14,6 @@ label2:
 
 	#pragma assume HLT ; HLT instruction will reset the simulator
 
-
 	#region negative constants
 	mov rax, -10
 	mov rbx, 10
@@ -45,7 +44,7 @@ label1:
 	mov cl, bl
 	xor cx, bx
 	bsf ax, cx
-	inc rax
+	inc rax # triggers a warning because the content of rax is UNDEFINED
 	#endregion
 
 
@@ -65,7 +64,13 @@ label1:
 	#region Semantic Error: usage of undefined carry 
 	mov cl, 0
 	bsf ax, cx
-	add eax, 1
+	jc label3a # trigger a warning because the content of carry is UNDEFINED
+	mov rbx, 0x10
+	jmp label3b
+	label3a:
+	mov rbx, 0x00
+	label3b:
+	mov rdx, rbx # triggers a warning because the content of rbx is UNDEFINED
 	#endregion
 
 
@@ -83,8 +88,8 @@ label1:
 
 	#region slow (expensive) instruction
 	mov ptr qword [rax], 10
-	mov rax, ptr qword [rax]
-	popcnt rbx, rax
+	mov rcx, ptr qword [rax]
+	popcnt rbx, rcx
 	#endregion
 
 
@@ -94,7 +99,7 @@ label1:
 	#region moving undefined values to memory and retrieving it.
 	mov cx, 0
 	bsf ax, cx
-	mov ptr dword [rbx], eax
+	mov ptr dword [rbx], eax # triggers a warning because the content of eax is UNDEFINED
 	mov rcx, ptr qword [rbx]
 	#endregion
 
@@ -104,7 +109,7 @@ label1:
 
 	#region Redundant instruction warning
 	mov rax, rbx
-	mov rbx, rax
+	mov rbx, rax # because rax and rbx have the same content, the this mov instruction is redundant
 	#endregion
 
 
@@ -115,7 +120,7 @@ label1:
 	mov rax, rsp
 	push rbx
 	pop rcx
-	mov rax, rsp
+	mov rax, rsp # because push plus pop restores the value of rsp, the mov instruction is redundant
 	#endregion
 
 
@@ -125,7 +130,7 @@ label1:
 	#region Redundant instruction warning in memory (but AsmSim may not find it simply because it times out)
 	mov rax, rbx
 	mov qword [rcx], rax
-	mov qword [rcx], rbx
+	mov qword [rcx], rbx # because rax and rbx have the same content, the this mov instruction is redundant
 	#endregion
 
 
@@ -138,7 +143,7 @@ label1:
 	mov rbx, qword [rdx]
 	cmp rcx, rdx
 	jne label4
-	mov rbx, rax
+	mov rbx, rax # because rcx and rdx are equal, the content of rax and rbx are the same, so this mov instruction is redundant
 	label4:
 
 

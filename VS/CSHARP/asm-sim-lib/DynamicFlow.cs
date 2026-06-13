@@ -73,7 +73,7 @@ namespace AsmSim
         public BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> Graph { get { return this.graph_; } }
 
         /// <summary>The shared Z3 context this flow's vertices/edges live in. States/updates built against
-        /// this flow (e.g. by <see cref="ComponentEvaluator"/>) MUST borrow it.</summary>
+        /// this flow (e.g. by <see cref="Create_States_Before"/>/<see cref="Create_States_After"/>) MUST borrow it.</summary>
         internal Context FlowContext => this.ctx_;
 
         /// <summary>The flow's internal Tools (carries <see cref="Tools.SharedCtx"/> = <see cref="FlowContext"/>,

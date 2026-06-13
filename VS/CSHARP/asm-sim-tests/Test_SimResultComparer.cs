@@ -22,12 +22,12 @@
 
 namespace unit_tests_asm_z3
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
     using AsmSim;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Unit tests for the standalone differential oracle <see cref="SimResultComparer"/>. Hand-built

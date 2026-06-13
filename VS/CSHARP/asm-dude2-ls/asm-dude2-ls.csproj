@@ -47,7 +47,27 @@
 
   <ItemGroup>
     <ProjectReference Include="..\asm-dude2-ls-lib\asm-dude2-ls-lib.csproj" />
+    <!-- Build the out-of-process sim server alongside the LSP server, but don't reference its assembly
+         (it's a sibling exe we launch, not a library). The BundleAsmSimServer target below copies its
+         output next to the LSP exe so ASMDUDE_SIM_OUTOFPROC=1 finds AsmSim.Server.exe in a real deploy
+         (it's bundled into the VSIX Server/ dir with the LSP exe). See ASMSIM_SERVER_PLAN.md S3. -->
+    <ProjectReference Include="..\asm-sim-server\asm-sim-server.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
+
+  <!-- Copy the sim server's full build output next to the LSP exe (shared DLLs are identical versions,
+       same solution; AsmSim.Server.exe/dll/runtimeconfig/deps are the additions). -->
+  <Target Name="BundleAsmSimServer" AfterTargets="Build">
+    <ItemGroup>
+      <_SimServerFiles Include="$(MSBuildThisFileDirectory)..\asm-sim-server\bin\$(Configuration)\$(TargetFramework)\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_SimServerFiles)"
+          DestinationFiles="@(_SimServerFiles->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          Condition="Exists('$(MSBuildThisFileDirectory)..\asm-sim-server\bin\$(Configuration)\$(TargetFramework)')" />
+  </Target>
 
   <ItemGroup>
     <None Update="LICENSE.txt">

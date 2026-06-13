@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude2LS
+namespace AsmSim.Host
 {
     using AsmSim;
     using AsmSim.Mnemonics;
@@ -60,7 +60,7 @@ namespace AsmDude2LS
     ///   - Unreachable-instruction diagnostics (before-state.IsConsistent == Tv.ZERO)
     ///   - Not-implemented instruction marking
     /// </summary>
-    internal sealed class LspAsmSimulator : IDisposable
+    internal sealed class AsmSimulator : IDisposable
     {
         internal const int MaxLines = 200;
 
@@ -110,7 +110,7 @@ namespace AsmDude2LS
         private readonly Dictionary<Uri, long> simVersion_ = [];
         private readonly object lockObj_ = new();
 
-        internal LspAsmSimulator()
+        internal AsmSimulator()
         {
         }
 
@@ -181,14 +181,18 @@ namespace AsmDude2LS
         /// performs the same cache/version setup <see cref="InvalidateAndSimulate"/> does and calls the
         /// very same <see cref="RunSimulation"/> body — it is NOT a re-implementation, so a
         /// characterization test built on it exercises the real production simulator. Used by the
-        /// headless <c>LspAsmSimulatorTests</c> (the golden baseline for the planned engine swap), which
+        /// headless <c>AsmSimulatorTests</c> (the golden baseline for the planned engine swap), which
         /// avoids the flaky sleep-and-poll the older <c>AsmSimTests</c> uses.
         /// </summary>
-        internal void SimulateSynchronouslyForTest(Uri uri, IReadOnlyList<string> lines, SimEngineMode engine = SimEngineMode.Linear)
+        internal void SimulateSynchronouslyForTest(Uri uri, IReadOnlyList<string> lines, SimEngineMode engine = SimEngineMode.Linear, bool computeFullState = true)
         {
             // Tests pin the engine explicitly (default Linear, the golden-baseline engine) so they are
             // independent of the production default and of the ASMDUDE_SIM_ENGINE env var.
             this.engineMode_ = engine;
+            // Most tests assert on the full before/after dumps (golden register values, getProvenStates), so
+            // default to computing them even though the editor skips them. A parity test that compares against
+            // the editor (out-of-process) path passes false to match. See computeFullState_.
+            this.computeFullState_ = computeFullState;
             long version;
             lock (this.lockObj_)
             {
@@ -224,6 +228,47 @@ namespace AsmDude2LS
                 // Cancelling the token above makes the in-flight RunSimulation (if any) unwind and dispose
                 // its own Z3 states in its finally; the cache itself holds only strings.
                 this.cache_.Remove(uri);
+            }
+        }
+
+        /// <summary>
+        /// MIRROR write path (out-of-process mode): replace this document's cache with a snapshot streamed
+        /// from the AsmSim server (<see cref="AsmSimLineResultsParams"/>). This simulator does NOT run Z3
+        /// here — it is just the read cache the LSP server queries; the server process did the solving and
+        /// pushes results. The snapshot is authoritative (the server sends the full per-line set each
+        /// throttle), so the entry is rebuilt; a stale (older-version) snapshot is dropped.
+        /// </summary>
+        internal void ApplyLineResults(Uri uri, long version, IReadOnlyList<AsmSimLineDto> lines)
+        {
+            var entry = new DocCache();
+            foreach (AsmSimLineDto dto in lines)
+            {
+                if (dto.Before != null) entry.lineStringsBefore[dto.Line] = dto.Before;
+                if (dto.After != null) entry.lineStringsAfter[dto.Line] = dto.After;
+                if (dto.ReadLabel != null) entry.lineStringsReadLabels[dto.Line] = dto.ReadLabel;
+                if (dto.WriteLabel != null) entry.lineStringsWriteLabels[dto.Line] = dto.WriteLabel;
+                if (dto.Diagnostics != null)
+                {
+                    foreach (string d in dto.Diagnostics)
+                    {
+                        // ToResultSet flattened each diagnostic to "Kind:Message"; parse it back.
+                        int c = d.IndexOf(':');
+                        string kindStr = c > 0 ? d[..c] : string.Empty;
+                        string msg = c >= 0 ? d[(c + 1)..] : d;
+                        SimDiagnosticKind kind = Enum.TryParse(kindStr, out SimDiagnosticKind k) ? k : SimDiagnosticKind.NotImplemented;
+                        entry.diagnostics.Add(new SimDiagnostic(dto.Line, msg, kind));
+                    }
+                }
+            }
+
+            lock (this.lockObj_)
+            {
+                if (this.simVersion_.TryGetValue(uri, out long cur) && cur > version)
+                {
+                    return; // a newer mirror snapshot already applied
+                }
+                this.simVersion_[uri] = version;
+                this.cache_[uri] = entry;
             }
         }
 
@@ -418,39 +463,53 @@ namespace AsmDude2LS
         // INCREMENTAL_SIM_PLAN.md S2 (no editor flip yet).
         internal enum SimEngineMode
         {
-            /// <summary>The linear single-step sim — the EDITOR DEFAULT. Single-path (does NOT follow jump
-            /// targets, resets at labels) so join-point values are imprecise (read as unknown), BUT it
-            /// writes the per-line cache INCREMENTALLY, so CodeLens/hover appear progressively as it runs.</summary>
+            /// <summary>The linear single-step sim. Single-path (does NOT follow jump targets, resets at
+            /// labels) so join-point values are imprecise (read as unknown). Incremental. Kept for tests
+            /// and as a rollback (<c>ASMDUDE_SIM_ENGINE=linear</c>).</summary>
             Linear,
 
             /// <summary>Editor uses the linear sim; the component engine runs compute-only and SIMDIFF-logs.</summary>
             Shadow,
 
-            /// <summary>The DYNAMIC per-component (DynamicFlow) engine. More precise at join points (follows
-            /// jumps, merges branch states), but NON-INCREMENTAL — it computes the whole document before
-            /// writing the cache, so on a real (slow-Z3) file NOTHING shows until it finishes (minutes).
-            /// NOT yet usable as the editor default; behind <c>ASMDUDE_SIM_ENGINE=component</c> until it
-            /// gains per-line incremental writes. See INCREMENTAL_SIM_PLAN.md.</summary>
+            /// <summary>The DYNAMIC per-component (DynamicFlow) engine — the EDITOR DEFAULT. More precise at
+            /// join points (follows jumps, merges branch states). Now INCREMENTAL (streams each line as it
+            /// resolves) AND parallel (Phase P: per-line value-solve on a bounded worker pool, each on its
+            /// own cloned Z3 context). Roll back with <c>ASMDUDE_SIM_ENGINE=linear</c>; tune workers with
+            /// <c>ASMDUDE_SIM_PARALLEL</c>. See INCREMENTAL_SIM_PLAN.md "Phase P".</summary>
             Component,
         }
 
-        /// <summary>The configured engine from the environment; the editor default is <see cref="SimEngineMode.Linear"/>.</summary>
+        /// <summary>The configured engine from the environment; the editor default is <see cref="SimEngineMode.Component"/>.</summary>
         private static readonly SimEngineMode SimEngine = ParseSimEngine();
 
         /// <summary>Per-instance engine (defaults to <see cref="SimEngine"/>). The test seam pins this to
         /// <see cref="SimEngineMode.Linear"/> so the linear golden-baseline tests still exercise linear.</summary>
         private SimEngineMode engineMode_ = SimEngine;
 
-        private static SimEngineMode ParseSimEngine()
+        /// <summary>When false (the editor default) the per-line FULL register/flag dump — the all-registers
+        /// <see cref="ComputeStateString"/> before/after strings (≈16 register-solves each, ×2 states) — is
+        /// SKIPPED. The editor only needs the read/write CodeLens labels (the 1-3 registers the instruction
+        /// actually touches, via <see cref="ComputeReadLabel"/>/<see cref="ComputeWriteLabel"/>), so the dump
+        /// is pure waste there: it only ever fed the now-removed hover before/after view and the test-only
+        /// <c>asm/getProvenStates</c>. The test seam (<see cref="SimulateSynchronouslyForTest"/>) sets this
+        /// true so getProvenStates and the linear-vs-component shadow parity still get the full dumps.</summary>
+        private bool computeFullState_;
+
+        /// <summary>Per-instance loop-handling strategy the component engine uses (defaults to the
+        /// <see cref="SimLoopHandling"/> env value; overridable at runtime via <see cref="ApplySettings"/>).</summary>
+        private AsmSim.LoopHandling loopHandling_ = SimLoopHandling;
+
+        private static SimEngineMode ParseSimEngine() => ParseEngine(Environment.GetEnvironmentVariable("ASMDUDE_SIM_ENGINE"));
+
+        /// <summary>Map an engine name to a mode; the editor DEFAULT (unrecognized/null) is Component — it
+        /// reads DynamicFlow's symbolic ITE-merged states (branch-aware, ~on par with linear) and is strictly
+        /// more correct than linear, which executes jumped-over code and resets at labels. Force the old
+        /// single-path engine with <c>linear</c>.</summary>
+        private static SimEngineMode ParseEngine(string? v)
         {
-            string? v = Environment.GetEnvironmentVariable("ASMDUDE_SIM_ENGINE");
             if (string.Equals(v, "linear", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Linear;
             if (string.Equals(v, "shadow", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Shadow;
-            if (string.Equals(v, "component", StringComparison.OrdinalIgnoreCase)) return SimEngineMode.Component;
-            // DEFAULT = Linear. The merge engine (Component) is more precise but currently NON-INCREMENTAL
-            // (no CodeLens appear until the whole file finishes — verified empirically), so it can't be the
-            // editor default yet. Opt in with ASMDUDE_SIM_ENGINE=component.
-            return SimEngineMode.Linear;
+            return SimEngineMode.Component;
         }
 
         /// <summary>Loop-handling strategy the component engine uses (ASMDUDE_SIM_LOOP env var:
@@ -459,6 +518,34 @@ namespace AsmDude2LS
             Enum.TryParse(Environment.GetEnvironmentVariable("ASMDUDE_SIM_LOOP"), ignoreCase: true, out AsmSim.LoopHandling lh)
                 ? lh
                 : AsmSim.LoopHandling.Accept;
+
+        /// <summary>Apply engine/loop settings to this instance at RUNTIME (the out-of-process server's
+        /// <c>settingsChanged</c> path — see <c>AsmSimRpcServer.SettingsChanged</c>). Takes effect on the
+        /// next simulation; the caller re-sends open documents to pick it up. Parallelism is structural
+        /// (pool size fixed at construction) and intentionally NOT changed here.</summary>
+        public void ApplySettings(string? engine, string? loop)
+        {
+            this.engineMode_ = ParseEngine(engine);
+            if (Enum.TryParse(loop, ignoreCase: true, out AsmSim.LoopHandling lh2))
+            {
+                this.loopHandling_ = lh2;
+            }
+            AsmLog.Info("ASMSIM", $"ApplySettings: engine={this.engineMode_}, loop={this.loopHandling_}");
+        }
+
+        /// <summary>Max concurrent per-line value-extractions the component engine runs (ASMDUDE_SIM_PARALLEL
+        /// env var). Extraction (solve the displayed read/write registers of each line — see
+        /// <see cref="ExtractComponentLine"/>) is independent per line; each worker solves on its OWN cloned
+        /// Z3 context (Z3 contexts are not thread-safe, so a shared one cannot be used concurrently — see
+        /// INCREMENTAL_SIM_PLAN.md "Phase P"). Default ≈ processor count (capped). 1 = effectively sequential.</summary>
+        private static readonly int SimParallelism = ParseParallelism();
+
+        private static int ParseParallelism()
+        {
+            string? v = Environment.GetEnvironmentVariable("ASMDUDE_SIM_PARALLEL");
+            if (int.TryParse(v, out int n) && n >= 1) return Math.Min(n, 64);
+            return Math.Max(1, Math.Min(Environment.ProcessorCount, 8));
+        }
 
         /// <summary>The same register/flag tracking the linear sim uses (RAX..R15 + CF/ZF/SF/OF). Shared by
         /// both engines so a SIMDIFF comparison is apples-to-apples.</summary>
@@ -481,10 +568,17 @@ namespace AsmDude2LS
             tools.StateConfig.R13 = true;
             tools.StateConfig.R14 = true;
             tools.StateConfig.R15 = true;
+            // All 6 ALU status flags, so flag-reading instructions are fully annotated — e.g. `jp`/`jnp`
+            // read PF (without PF tracked, a parity jump shows NO read label), the BCD/`adc`-family touch AF,
+            // and `cmp`/`add`/`sub` write the full set.
             tools.StateConfig.CF = true;
+            tools.StateConfig.PF = true;
+            tools.StateConfig.AF = true;
             tools.StateConfig.ZF = true;
             tools.StateConfig.SF = true;
             tools.StateConfig.OF = true;
+            // Enable memory tracking for instructions that read/write memory
+            tools.StateConfig.Mem = true;
         }
 
         /// <summary>
@@ -586,6 +680,19 @@ namespace AsmDude2LS
                     bucket.Add(line);
                 }
 
+                // ── Bounded worker pool for the per-line VALUE extraction (Phase P) ─────────────────────
+                // DynamicFlow.Create_States_Before/After gives each line's SYMBOLIC state cheaply (no solving);
+                // turning that into the concrete RAX=0x… read/write labels (the Z3 solve of the displayed
+                // registers) is the per-line cost, and it is independent per line. So we clone each line's
+                // state into its OWN context (serial, cheap AST Translate) and solve it on a background
+                // worker — N lines at once. A SemaphoreSlim bounds concurrency (back-pressure + capped Z3
+                // native memory); results stream via onLine as each finishes. Z3 contexts are NOT
+                // thread-safe, hence the per-worker clone (NOT a shared ctx).
+                using var pool = new System.Threading.SemaphoreSlim(SimParallelism, SimParallelism);
+                var tasks = new List<Task>();
+                var resultLock = new object();
+                var tasksLock = new object();
+
                 foreach (var (componentId, roots) in entriesByComponent)
                 {
                     if (ct.IsCancellationRequested) break;
@@ -595,54 +702,179 @@ namespace AsmDude2LS
                         var compTools = new AsmSimTools(settings, string.Empty, componentId);
                         EnableFullStateConfig(compTools);
                         compTools.Quiet = true;
-                        compTools.LoopHandling = SimLoopHandling; // ASMDUDE_SIM_LOOP
+                        compTools.LoopHandling = this.loopHandling_; // ASMDUDE_SIM_LOOP / runtime ApplySettings
 
                         int compLineCount = linesByComponent.TryGetValue(componentId, out List<int>? cls) ? cls.Count : 0;
                         var constructClock = System.Diagnostics.Stopwatch.StartNew();
                         using DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, roots, compTools);
                         constructClock.Stop();
-                        AsmLog.Info("ASMSIM", $"[component] component {componentId}: DynamicFlow built in {constructClock.ElapsedMilliseconds} ms ({compLineCount} lines)");
+                        AsmLog.Info("ASMSIM", $"[component] component {componentId}: DynamicFlow built in {constructClock.ElapsedMilliseconds} ms ({compLineCount} lines, parallel={SimParallelism})");
 
-                        // ComponentEvaluator drives the per-vertex worklist; onLineReady fires the instant a
-                        // line's before/after states resolve (topo order), so we extract + stream THAT line
-                        // immediately. This is the incrementality the linear sim has — CodeLens/hover appear
-                        // progressively instead of after the whole (slow-Z3) component finishes.
-                        using var ev = new ComponentEvaluator(dFlow, sFlow,
-                            onLineReady: (line, before, after) =>
+                        // Per-line before/after states come straight from the DynamicFlow's SYMBOLIC engine
+                        // (Create_States_Before/After → the ITE/phi merge in Create_State_Private), exactly as
+                        // the original AsmDude1 simulator did — NOT collapsed to per-bit Tv values at every
+                        // vertex. We then clone each line's state into its own Z3 context (serial) and solve
+                        // ONLY the displayed registers on the worker pool (parallel). Symbolic build is cheap
+                        // (no solving); the only Z3 solving is the per-line extraction of read/write labels.
+                        List<int> compLines = linesByComponent.TryGetValue(componentId, out List<int>? cl2) ? cl2 : [];
+                        compLines.Sort(); // stream CodeLens top-to-bottom
+                        foreach (int line in compLines)
+                        {
+                            if (ct.IsCancellationRequested) break;
+                            if (line < 0 || line >= lines.Count || !dFlow.Has_LineNumber(line)) continue;
+
+                            // Build the symbolic before/after states (ITE-merged at join points), then clone
+                            // them into a fresh worker context (the clone READS the shared dFlow context, so it
+                            // stays on this thread) and dispose the originals.
+                            AsmSimState? before = CollapseStates(dFlow.Create_States_Before(line));
+                            if (before == null) continue;
+                            AsmSimState? after = CollapseStates(dFlow.Create_States_After(line));
+
+                            CloneSet clone;
+                            try
                             {
-                                // Skip phantom vertices past the last instruction (CFG end line N of an
-                                // N-line program); the editor/linear sim only annotate real document lines.
-                                if (line < 0 || line >= lines.Count || ct.IsCancellationRequested) return;
+                                clone = this.CloneLineForWorker(line, before, after, settings);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log($"[component] line {line} clone failed: {ex.GetType().Name}: {ex.Message}");
+                                continue;
+                            }
+                            finally
+                            {
+                                before.Dispose();
+                                after?.Dispose();
+                            }
+
+                            try
+                            {
+                                pool.Wait(ct); // back-pressure: at most SimParallelism clones solving at once
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                clone.Dispose();
+                                break;
+                            }
+
+                            int capturedLine = line;
+                            CloneSet capturedClone = clone;
+                            // PARALLEL (worker thread, isolated context): solve + extract + emit + dispose.
+                            Task task = Task.Run(() =>
+                            {
                                 try
                                 {
                                     var lineClock = System.Diagnostics.Stopwatch.StartNew();
-                                    ComponentLine? cl = this.ExtractComponentLine(lines, line, before, after, compTools);
+                                    ComponentLine? cl = this.ExtractComponentLine(lines, capturedLine, capturedClone.Before, capturedClone.After, capturedClone.Tools);
                                     lineClock.Stop();
-                                    if (cl != null)
+                                    if (cl != null && !ct.IsCancellationRequested)
                                     {
-                                        result[line] = cl;
-                                        onLine?.Invoke(line, cl);
-                                        AsmLog.Info("ASMSIM", $"[component] line {line + 1}: extracted in {lineClock.ElapsedMilliseconds} ms");
+                                        lock (resultLock) result[capturedLine] = cl;
+                                        onLine?.Invoke(capturedLine, cl);
+                                        AsmLog.Debug("ASMSIM", $"[component] line {capturedLine + 1}: extracted in {lineClock.ElapsedMilliseconds} ms");
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log($"[component] line {line} extraction failed: {ex.GetType().Name}: {ex.Message}");
+                                    Log($"[component] line {capturedLine} extraction failed: {ex.GetType().Name}: {ex.Message}");
                                 }
-                            },
-                            cancel: ct);
+                                finally
+                                {
+                                    capturedClone.Dispose();
+                                    pool.Release();
+                                }
+                            });
+                            lock (tasksLock) tasks.Add(task);
+                        }
                     }
                     catch (Exception ex)
                     {
                         Log($"[SHADOW] component {componentId} failed: {ex.GetType().Name}: {ex.Message}");
                     }
                 }
+
+                // Wait for every extraction worker before returning: the result dict + editor cache must be
+                // complete for the (synchronous) shadow consumer; the editor path already streamed each line.
+                Task[] pending;
+                lock (tasksLock) pending = [.. tasks];
+                // Intentional synchronous wait: ComputeComponentLines runs on the dedicated sim BACKGROUND
+                // thread (never the UI/RPC thread), and must return a COMPLETE result for the synchronous
+                // shadow/test consumer. No UI affinity ⇒ no deadlock.
+#pragma warning disable VSTHRD002
+                try { Task.WhenAll(pending).GetAwaiter().GetResult(); }
+                catch (Exception ex) { Log($"[component] worker wait: {ex.GetType().Name}: {ex.Message}"); }
+#pragma warning restore VSTHRD002
             }
             catch (Exception ex)
             {
                 Log($"[SHADOW] component engine failed: {ex.GetType().Name}: {ex.Message}");
             }
             return result;
+        }
+
+        /// <summary>A line's before/after states cloned into their OWN Z3 context for parallel solving
+        /// (Phase P). OWNS the context — <see cref="Dispose"/> releases the states then the context.</summary>
+        private readonly struct CloneSet(Microsoft.Z3.Context ctx, AsmSimTools tools, AsmSimState before, AsmSimState? after)
+        {
+            public AsmSimTools Tools { get; } = tools;
+            public AsmSimState Before { get; } = before;
+            public AsmSimState? After { get; } = after;
+            private readonly Microsoft.Z3.Context ctx_ = ctx;
+
+            public void Dispose()
+            {
+                this.After?.Dispose();
+                this.Before.Dispose();
+                this.ctx_.Dispose();
+                AsmSim.Z3ContextTracker.Disposed();
+            }
+        }
+
+        /// <summary>Materialize the DynamicFlow's symbolic state(s) for a line into ONE state: a single path
+        /// is returned as-is; a merge point is combined with the ITE/phi <see cref="AsmSimTools.Collapse"/>
+        /// (the theorem-prover merge — NOT per-bit Tv collapsing). Returns null if the line has no state
+        /// (unreached). Caller owns and disposes the result.</summary>
+        private static AsmSimState? CollapseStates(IEnumerable<AsmSimState> states)
+        {
+            var list = new List<AsmSimState>(states);
+            switch (list.Count)
+            {
+                case 0:
+                    return null;
+                case 1:
+                    return list[0];
+                default:
+                    AsmSimState merged = AsmSimTools.Collapse(list);
+                    foreach (AsmSimState s in list)
+                    {
+                        if (!ReferenceEquals(s, merged)) s.Dispose();
+                    }
+                    return merged;
+            }
+        }
+
+        /// <summary>Clone a line's before/after states into a fresh, isolated Z3 context so they can be
+        /// solved on a worker thread without touching the shared component context. MUST be called on the
+        /// evaluator thread — the clone (Z3 <c>Translate</c>) READS the shared source context. Cheap: copies
+        /// AST, no solving. The per-line <see cref="Tools"/> uses the SEEDED ctor (distinct, isolated
+        /// <see cref="Random"/>) — the copy ctor would SHARE one non-thread-safe Random across workers.</summary>
+        private CloneSet CloneLineForWorker(int line, AsmSimState before, AsmSimState? after, Dictionary<string, string> settings)
+        {
+            var lineCtx = new Microsoft.Z3.Context(new Dictionary<string, string>(settings));
+            AsmSim.Z3ContextTracker.Created();
+            var lineTools = new AsmSimTools(new Dictionary<string, string>(settings), string.Empty, line) { SharedCtx = lineCtx };
+            EnableFullStateConfig(lineTools);
+            lineTools.Quiet = true;
+            lineTools.LoopHandling = this.loopHandling_;
+
+            var bClone = new AsmSimState(lineCtx, lineTools, before.TailKey ?? string.Empty, before.HeadKey ?? string.Empty);
+            before.Copy(bClone);
+            AsmSimState? aClone = null;
+            if (after != null)
+            {
+                aClone = new AsmSimState(lineCtx, lineTools, after.TailKey ?? string.Empty, after.HeadKey ?? string.Empty);
+                after.Copy(aClone);
+            }
+            return new CloneSet(lineCtx, lineTools, bClone, aClone);
         }
 
         /// <summary>Turn one line's dynamic before/after states into its editor annotations (state strings,
@@ -655,8 +887,10 @@ namespace AsmDude2LS
             (_, _, Mnemonic mnemonic, string[] args, _) = AsmSourceTools.ParseLine(lines[line].Trim(), -1, -1, AssemblerEnum.UNKNOWN);
             if (mnemonic == Mnemonic.NONE) return null;
 
-            string? beforeStr = before is null ? null : ComputeStateString(before);
-            string? afterStr = after is null ? null : ComputeStateString(after);
+            // Full register dumps are skipped in the editor (computeFullState_ == false) — only the read/write
+            // labels below are needed for CodeLens. See computeFullState_.
+            string? beforeStr = (this.computeFullState_ && before is not null) ? ComputeStateString(before) : null;
+            string? afterStr = (this.computeFullState_ && after is not null) ? ComputeStateString(after) : null;
 
             string? readLabel = null;
             string? writeLabel = null;
@@ -700,11 +934,12 @@ namespace AsmDude2LS
             int diagCount = 0;
             long lastProgressMs = -ProgressNotifyThrottleMs;
 
-            // Called per line as the engine resolves it: write that one line to the cache (under lock, vs
-            // the read paths) and fire a throttled refresh so the editor draws it immediately.
+            // Called per line as each worker resolves it — CONCURRENTLY (Phase P). Writes that one line to
+            // the cache under lockObj_ (vs the read paths) and decides the throttled refresh under the same
+            // lock (so linesWritten/diagCount/lastProgressMs are race-free); fires onProgress outside the lock.
             void Emit(int line, ComponentLine cl)
             {
-                bool wrote = false;
+                bool fireProgress = false;
                 lock (this.lockObj_)
                 {
                     if (!ct.IsCancellationRequested
@@ -721,14 +956,16 @@ namespace AsmDude2LS
                             diagCount += cl.Diagnostics.Count;
                         }
                         linesWritten++;
-                        wrote = true;
+
+                        long now = clock.ElapsedMilliseconds;
+                        if (now - lastProgressMs >= ProgressNotifyThrottleMs)
+                        {
+                            lastProgressMs = now;
+                            fireProgress = true;
+                        }
                     }
                 }
-                if (wrote && clock.ElapsedMilliseconds - lastProgressMs >= ProgressNotifyThrottleMs)
-                {
-                    lastProgressMs = clock.ElapsedMilliseconds;
-                    onProgress?.Invoke(uri);
-                }
+                if (fireProgress) onProgress?.Invoke(uri);
             }
 
             try
@@ -743,7 +980,7 @@ namespace AsmDude2LS
 
             if (ct.IsCancellationRequested) return;
 
-            LogInfo($"[component] SUCCESS: {linesWritten} lines, {diagCount} diagnostics, loop={SimLoopHandling}, total {clock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
+            LogInfo($"[component] SUCCESS: {linesWritten} lines, {diagCount} diagnostics, loop={this.loopHandling_}, total {clock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
             onProgress?.Invoke(uri); // final flush
             onCompleted?.Invoke(uri);
         }
@@ -1078,7 +1315,7 @@ namespace AsmDude2LS
 
         private void RunSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
         {
-            LogInfo($"sim started: engine={this.engineMode_} loop={SimLoopHandling}, {lines.Count} lines, {uri.Segments[^1]}");
+            LogInfo($"sim started: engine={this.engineMode_} loop={this.loopHandling_}, {lines.Count} lines, {uri.Segments[^1]}");
             LogCfgPartition(uri, lines);
 
             // The merge engine is the editor default; drive the editor from the dynamic per-component
@@ -1221,8 +1458,9 @@ namespace AsmDude2LS
                     // opcode instantiation, the SimpleStep_Forward solve) so slow lines are greppable.
                     var lineClock = System.Diagnostics.Stopwatch.StartNew();
 
-                    // ── Before-state: state at entry to this instruction ──────────
-                    if (!stateToString.TryGetValue(state, out string? beforeStr))
+                    // ── Before-state full dump (only when computeFullState_; editor skips it) ──
+                    string? beforeStr = null;
+                    if (this.computeFullState_ && !stateToString.TryGetValue(state, out beforeStr))
                     {
                         beforeStr = ComputeStateString(state);
                         stateToString[state] = beforeStr;
@@ -1270,8 +1508,9 @@ namespace AsmDude2LS
                         AsmLog.Debug("ASMSIM", $"line {i}: {ex.Message}");
                     }
 
-                    // ── After-state (full — for hover) ────────────────────────────
-                    if (!stateToString.TryGetValue(state, out string? afterStr))
+                    // ── After-state full dump (only when computeFullState_; editor skips it) ──
+                    string? afterStr = null;
+                    if (this.computeFullState_ && !stateToString.TryGetValue(state, out afterStr))
                     {
                         afterStr = ComputeStateString(state);
                         stateToString[state] = afterStr;

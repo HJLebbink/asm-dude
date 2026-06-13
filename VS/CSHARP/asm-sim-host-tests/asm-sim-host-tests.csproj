@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Tests for the extracted AsmSim engine (asm-sim-host-lib): AsmSimulator golden/characterization,
+       CompactStateString/MergeCompactLabels, and the linear-vs-component shadow comparison. Moved out of
+       asm-dude2-ls-tests with the simulator (ASMSIM_SERVER_PLAN S1) — they have NO LSP dependency. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>AsmSim.Host.Tests</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>14</LangVersion>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <PlatformTarget>x64</PlatformTarget>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <!-- xUnit1051: advisory to thread TestContext.Current.CancellationToken into WaitAsync; not worth it. -->
+    <NoWarn>$(NoWarn);xUnit1051</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
+    <PackageReference Include="coverlet.collector" Version="10.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="8.10.0" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+    <!-- For the in-memory AsmSimRpcServer ↔ client end-to-end test (no process launch). -->
+    <PackageReference Include="StreamJsonRpc" Version="2.25.29" />
+    <PackageReference Include="MessagePack" Version="3.1.7" />
+    <PackageReference Include="Nerdbank.Streams" Version="2.13.16" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The real branchy AsmSim example, copied so the component-engine test runs the engine on realistic
+         150-line code (regions, jumps, #pragma assume) instead of a toy program. -->
+    <None Include="..\asm-dude2-vsix\Resources\examples\example_semantic_analysis.asm" Link="example_semantic_analysis.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\asm-sim-host-lib\asm-sim-host-lib.csproj" />
+    <ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj" />
+    <ProjectReference Include="..\asm-sim-server\asm-sim-server.csproj" />
+  </ItemGroup>
+
+</Project>

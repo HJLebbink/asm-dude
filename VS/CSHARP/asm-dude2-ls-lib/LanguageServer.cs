@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmSim.Host;
+
 using AsmSourceTools;
 
 using AsmTools;
@@ -89,10 +91,51 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     private AsmDude2Tools asmDudeTools = null!;
     public MnemonicStore mnemonicStore = null!;
 
-    private readonly LspAsmSimulator asmSimulator_;
+    private readonly AsmSimulator asmSimulator_;
     private readonly SimStatePipeServer simStatePipeServer_;
     public PerformanceStore performanceStore = null!;
     public AsmLanguageServerOptions options = null!;
+
+    // Out-of-process AsmSim server (ASMSIM_SERVER_PLAN). The simulation runs in AsmSim.Server.exe and streams
+    // results into asmSimulator_'s cache (which stays the read source), so a Z3 crash/OOM kills only the sim
+    // server — the client respawns it and re-sends open docs — not the LSP. This is the DEFAULT (validated
+    // 2026-06-13). Opt OUT (run the sim in-process) with ASMDUDE_SIM_OUTOFPROC=0 or =inproc; the in-process
+    // engine is also the automatic fallback if the server exe can't be launched.
+    private static readonly bool SimOutOfProc = ParseOutOfProc();
+
+    private static bool ParseOutOfProc()
+    {
+        string? v = Environment.GetEnvironmentVariable("ASMDUDE_SIM_OUTOFPROC");
+        return !string.Equals(v, "0", StringComparison.Ordinal)
+            && !string.Equals(v, "inproc", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private AsmSimClient? simClient_;
+    private bool simClientTried_;
+
+    /// <summary>Lazily launches the out-of-process sim server on first use (unless ASMDUDE_SIM_OUTOFPROC=0).
+    /// Returns null to use the in-process engine (opt-out, or if the server can't be launched).</summary>
+    private AsmSimClient? EnsureSimClient()
+    {
+        if (!SimOutOfProc) return null;
+        if (!this.simClientTried_)
+        {
+            this.simClientTried_ = true;
+            this.simClient_ = AsmSimClient.TryCreate(this.asmSimulator_, this.BuildSimSettings());
+        }
+        return this.simClient_;
+    }
+
+    /// <summary>The out-of-process sim settings derived from the current options + env. Default engine must
+    /// match the IN-PROCESS default (<c>AsmSimulator.ParseEngine</c> ⇒ Component) so the in-proc fallback and
+    /// the out-of-proc server run the same engine; force the single-path engine the same way
+    /// (<c>ASMDUDE_SIM_ENGINE=linear</c>) in both modes.</summary>
+    private AsmSim.Host.AsmSimSettings BuildSimSettings() => new(
+        AsmSimOn: this.options?.AsmSim_On ?? true,
+        Engine: Environment.GetEnvironmentVariable("ASMDUDE_SIM_ENGINE") ?? "component",
+        LoopHandling: Environment.GetEnvironmentVariable("ASMDUDE_SIM_LOOP") ?? "accept",
+        Parallelism: 0,
+        Z3TimeoutMs: this.options?.AsmSim_Z3_Timeout_MS ?? 5000);
 
     public static LanguageServer Create(Stream sender, Stream reader)
     {
@@ -155,7 +198,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         AsmDudeLog.Info("LanguageServer: RPC listener started");
 
         this.target.OnInitialized += this.OnTargetInitialized;
-        this.asmSimulator_ = new LspAsmSimulator();
+        this.asmSimulator_ = new AsmSimulator();
         this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_)
         {
             // Server owns label reference counting; the VSIX tagger fetches it over the pipe.
@@ -182,7 +225,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.foldingRanges = [];
         this.diagnostics = [];
         this.Symbols = [];
-        this.asmSimulator_ = new LspAsmSimulator();
+        this.asmSimulator_ = new AsmSimulator();
         this.simStatePipeServer_ = new SimStatePipeServer(this.asmSimulator_)
         {
             CodeLensDataProvider = this.GetCodeLensData,
@@ -415,6 +458,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         Debug.Assert(options != null);
         // AsmDudeLog.Info($"Initialize: Options: {jToken}");
         this.options = options;
+
+        // Re-init also fires on a settings.json change (SettingsManager.SettingsChanged → server.Initialize).
+        // If the out-of-process sim server is running, push the new settings so they take effect WITHOUT a
+        // server restart (it applies engine/loop in place and re-simulates the re-sent open documents).
+        this.simClient_?.SettingsChanged(this.BuildSimSettings());
     }
 
     /// <summary>
@@ -566,21 +614,34 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             AsmDudeLog.Debug($"[UpdateInternals] starting AsmSim simulation");
             try
             {
-                this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines,
-                    onCompleted: completedUri =>
-                    {
-                        this.SendDiagnostics(completedUri.ToString());
-                        // Final push of the run: tells the CodeLens tagger to fully re-materialize
-                        // (VS may have dropped lenses during the long sim; an incremental refresh
-                        // would suppress unchanged lines and leave them missing).
-                        this.simStatePipeServer_.NotifySimStateUpdated(completedUri, completed: true);
-                    },
-                    onProgress: progressUri =>
-                    {
-                        AsmDudeLog.Debug($"[UpdateInternals] sending {Methods.WorkspaceInlayHintRefreshName} + pipe notify");
-                        _ = this.SendMethodNotificationAsync<object?>(Methods.WorkspaceInlayHintRefreshName, null);
-                        this.simStatePipeServer_.NotifySimStateUpdated(progressUri);
-                    });
+                // Callbacks are identical whether the sim runs in-process or in the out-of-process server;
+                // they drive diagnostics + CodeLens/inlay refresh from the (mirror) cache.
+                void OnCompleted(Uri completedUri)
+                {
+                    this.SendDiagnostics(completedUri.ToString());
+                    // Final push of the run: tells the CodeLens tagger to fully re-materialize
+                    // (VS may have dropped lenses during the long sim; an incremental refresh
+                    // would suppress unchanged lines and leave them missing).
+                    this.simStatePipeServer_.NotifySimStateUpdated(completedUri, completed: true);
+                }
+                void OnProgress(Uri progressUri)
+                {
+                    AsmDudeLog.Debug($"[UpdateInternals] sending {Methods.WorkspaceInlayHintRefreshName} + pipe notify");
+                    _ = this.SendMethodNotificationAsync<object?>(Methods.WorkspaceInlayHintRefreshName, null);
+                    this.simStatePipeServer_.NotifySimStateUpdated(progressUri);
+                }
+
+                AsmSimClient? client = this.EnsureSimClient();
+                if (client != null)
+                {
+                    // Out-of-process: the server simulates and streams per-line results into asmSimulator_'s
+                    // cache (the read source); read paths are unchanged.
+                    client.DocumentChanged(new Uri(uri), newLines, OnProgress, OnCompleted);
+                }
+                else
+                {
+                    this.asmSimulator_.InvalidateAndSimulate(new Uri(uri), newLines, OnCompleted, OnProgress);
+                }
             }
             catch (Exception ex)
             {
@@ -626,6 +687,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.foldingRanges.Remove(uri);
         this._documentAssemblerTypes.Remove(uri);
         this.asmSimulator_.CancelAndRemove(new Uri(uri));
+        this.simClient_?.DocumentClosed(new Uri(uri));
     }
 
     /// <summary>
@@ -3199,7 +3261,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     /// <!-- LLM-ANNOTATION -->
     /// LLM KEYWORDS: Z3 simulator, proven states, register simulation, assembly analysis
     /// USED IN: LanguageServerTarget.GetProvenStates
-    /// SEE ALSO: LspAsmSimulator, ProvenStatesResponse, GetCachedEntry
+    /// SEE ALSO: AsmSimulator, ProvenStatesResponse, GetCachedEntry
     public ProvenStatesResponse? GetProvenStates(GetProvenStatesParams parameter)
     {
         try
@@ -3222,7 +3284,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
 
             var states = new List<ProvenLineState>();
-            int limit = Math.Min(lines.Length, LspAsmSimulator.MaxLines);
+            int limit = Math.Min(lines.Length, AsmSimulator.MaxLines);
             for (int i = 0; i < limit; i++)
             {
                 if (startLine.HasValue && i < startLine.Value) continue;
@@ -3495,6 +3557,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     public void Dispose()
     {
         if (Interlocked.Exchange(ref this._disposed, 1) != 0) return;
+        this.simClient_?.Dispose();
         this.simStatePipeServer_.Dispose();
         this.Exit();
         this.rpc?.Dispose();

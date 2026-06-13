@@ -22,11 +22,11 @@
 
 namespace unit_tests_asm_tools
 {
-    using System.Collections.Generic;
-
     using AsmTools;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    using System.Collections.Generic;
 
     [TestClass]
     public class Test_AsmLog

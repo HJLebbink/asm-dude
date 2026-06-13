@@ -22,10 +22,10 @@
 
 namespace AsmSim
 {
+    using AsmTools;
+
     using System;
     using System.Collections.Generic;
-
-    using AsmTools;
 
     /// <summary>
     /// How the simulator summarizes a loop (a CFG cycle) when computing per-line states. Selectable so the

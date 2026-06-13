@@ -22,12 +22,12 @@
 
 namespace unit_tests_asm_z3
 {
-    using System;
-    using System.Collections.Generic;
-
     using AsmSim;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Leak-regression guard for the Z3 native <c>Context</c> lifecycle (the object behind the historical

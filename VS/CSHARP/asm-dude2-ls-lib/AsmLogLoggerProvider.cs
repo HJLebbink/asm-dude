@@ -3,11 +3,11 @@
 
 namespace AsmDude2LS;
 
-using System;
-
 using AsmTools;
 
 using Microsoft.Extensions.Logging;
+
+using System;
 
 using MsLogLevel = Microsoft.Extensions.Logging.LogLevel;
 

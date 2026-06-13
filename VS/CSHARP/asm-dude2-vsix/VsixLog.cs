@@ -3,15 +3,15 @@
 
 namespace AsmDude2;
 
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
 using AsmTools;
 
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Documents;
+
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 /// <summary>
 /// Configures <see cref="AsmLog"/> for the VSIX (plugin) process. Same engine/format as the LSP server

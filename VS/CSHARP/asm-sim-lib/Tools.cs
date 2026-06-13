@@ -473,8 +473,9 @@ namespace AsmSim
                 }
                 else
                 {
-                    AsmLog.Info("SIM", "Tools:Collapse: state1:\n" + result);
-                    AsmLog.Info("SIM", "Tools:Collapse: state2:\n" + prev);
+                    // Full state dumps — Debug only (this runs on the editor's symbolic merge path).
+                    AsmLog.Debug("SIM", "Tools:Collapse: state1:\n" + result);
+                    AsmLog.Debug("SIM", "Tools:Collapse: state2:\n" + prev);
                     State result2 = new(result, prev, true);
                     if (counter > 2)
                     {
@@ -483,7 +484,7 @@ namespace AsmSim
                     }
 
                     result = result2;
-                    AsmLog.Info("SIM", "Tools:Collapse: merged state:\n" + result);
+                    AsmLog.Debug("SIM", "Tools:Collapse: merged state:\n" + result);
                 }
                 counter++;
             }

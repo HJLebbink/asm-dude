@@ -47,7 +47,7 @@ The branch-merge **crash**, the 18 GiB **leak**, and the missing **incrementalit
 
 *State-layer landed (2026-06-03, lifted from branch `asmsim-state-refactor`, which is now fully mined and can be deleted):*
 - `State` got an `ownsCtx_` flag, a borrowed-context private ctor `State(Context, Tools)`, a public `State(Context, Tools, tail, head)`, the copy ctor now **shares** the source's context (and `Copy()` skips Z3 `Translate` when `ReferenceEquals` the contexts), and `Dispose()` only disposes the context when `ownsCtx_`.
-- `LspAsmSimulator.DisposeList` now disposes in **reverse** order so the context-owning root state is disposed last (pairs with the copy-ctor sharing).
+- `AsmSimulator.DisposeList` now disposes in **reverse** order so the context-owning root state is disposed last (pairs with the copy-ctor sharing).
 - Validated: `asm-sim-tests` 153/0/28, `asm-dude2-ls-tests` 120/6/37 — no regression. (BranchInfo/BranchInfoStore null-checks were already on dotnet10; branch's nullable-`Operand?` and configurable-debounce were skipped as non-essential.)
 
 *Still TODO in Phase 1:* extend the borrowed-context pattern to `StateUpdate` and `OpcodeBase`; change the **merge ctor** `State(s1, s2, merge)` to share `s1`'s context; wire `DynamicFlow`/`Runner` to create ONE context per CFG component and pass it everywhere; delete the now-redundant cross-context `Translate` calls. **Gate: the 28 `[Ignore]`d DynamicFlow tests must pass.**
@@ -82,7 +82,7 @@ Original Phase 1 outline:
 
 **Phase 4 — Memory policy & wiring.**
 - A context accumulates AST across rebuilds → recreate a component's context on rebuild (don't reuse forever); cap live contexts with LRU eviction to strings-only for cold components.
-- Wire `LspAsmSimulator` to the component cache. Keep read paths (`GetCachedString`/`GetSimStatesSummary`) string-based and context-independent (already true).
+- Wire `AsmSimulator` to the component cache. Keep read paths (`GetCachedString`/`GetSimStatesSummary`) string-based and context-independent (already true).
 
 ## Notes / invariants
 - Read paths must remain string-based (plain managed strings, independent of Z3) so disposing a component's context never invalidates cached display data. (This invariant is what the 2026-06-03 leak fix established.)
@@ -96,7 +96,7 @@ See also: `Z3_CONTEXT_LIFECYCLE_BUG.md` (the crash this resolves) and memory `as
 ## Phase 2 — feasibility review (2026-06-03, code-studied, parked for hands-on experiment)
 
 Studied: `DynamicFlow.cs`, `Runner.cs`, `Tools.cs`, `StaticFlow.cs` (`ComputeLineToComponent`,
-`Get_Key`), `LspAsmSimulator.cs`. Conclusion: **one Z3 context per weakly-connected component is
+`Get_Key`), `AsmSimulator.cs`. Conclusion: **one Z3 context per weakly-connected component is
 SOUND**, but the plan's *construction method* and its *target engine* both need correcting.
 
 ### What holds (per-component context is correct)
@@ -141,11 +141,11 @@ SOUND**, but the plan's *construction method* and its *target engine* both need 
     makes it routine. Dispose-on-skip.
 
 ### Problem 2 — the editor does NOT use DynamicFlow (ARCHITECTURE — the bigger one)
-- Production sim path is `LspAsmSimulator`, which **deliberately avoids DynamicFlow**: linear
+- Production sim path is `AsmSimulator`, which **deliberately avoids DynamicFlow**: linear
   `SimpleStep_Forward` walk that **resets** state at labels/ZERO-consistent points instead of merging
-  (`LspAsmSimulator.cs:53`, `:676-685`). `DynamicFlow` is exercised only by `asm-sim-main/ProgramZ3.cs`
+  (`AsmSimulator.cs:53`, `:676-685`). `DynamicFlow` is exercised only by `asm-sim-main/ProgramZ3.cs`
   (CLI playground) and the test suite.
-- So Phases 2–4 optimize an engine the editor doesn't run. Phase 4's "wire `LspAsmSimulator` to the
+- So Phases 2–4 optimize an engine the editor doesn't run. Phase 4's "wire `AsmSimulator` to the
   component cache" is really **replace the linear simulator with the multi-entry DynamicFlow engine** —
   i.e. bring the merge machinery back onto the editor hot path. That is the real scope, not a wiring step.
 
@@ -156,12 +156,12 @@ necessary but **not sufficient** — a single arbitrary root still under-covers 
 (Problem 1). The real fix is multi-root seeding, not a single relocatable root.
 
 ### Two decision branches before writing code
-1. **Goal = editor responsiveness** → cheaper path: make the *linear* `LspAsmSimulator` incremental
+1. **Goal = editor responsiveness** → cheaper path: make the *linear* `AsmSimulator` incremental
    (cache per-line before/after; on edit recompute only from first changed line). Line-based keys make
    this deterministic. No DynamicFlow, no merge, no context-lifecycle hazard. Matches the engine the
    editor already uses.
 2. **Goal = real CFG/merge semantics in the editor** → do the multi-root DynamicFlow-per-component
-   work above AND move `LspAsmSimulator` onto it. Construction work only pays off once this is chosen.
+   work above AND move `AsmSimulator` onto it. Construction work only pays off once this is chosen.
 
 Status: **parked** — HJL to experiment with the code first.
 
@@ -221,7 +221,7 @@ parity — **but verify per-line**, because label lines that ARE jump targets ca
 harness (S0) makes any divergence here visible automatically.
 
 ### 5. 🟠 Semantic regression is the thing that "borks silently"
-Merge-at-join (DynamicFlow) ≠ the linear sim's label-reset heuristic (`LspAsmSimulator.cs:~676`). Per-
+Merge-at-join (DynamicFlow) ≠ the linear sim's label-reset heuristic (`AsmSimulator.cs:~676`). Per-
 line displayed register/flag values **will** change (some become `unknown` at joins — more correct;
 some single-path concretes disappear). Without a per-line diff you cannot tell a correct change from a
 regression. **This is mandatory:** do not flip the editor onto the new engine without the shadow diff
@@ -273,7 +273,7 @@ than today's single chain.
     partly covered by the spike + the `Test_Z3ContextTracker_DynamicFlow_NoLeak` diamond; the parallel-
     Random race (§1) needs the parallel driver (S2).
 - **S2 — component extraction + shadow. STARTED (2026-06-11), shadow-only, NO editor flip.**
-  - `LspAsmSimulator.BuildComponentResultSet` — the per-component engine: StaticFlow → ComputeLineToComponent
+  - `AsmSimulator.BuildComponentResultSet` — the per-component engine: StaticFlow → ComputeLineToComponent
     + ComputeComponentEntryLines → one multi-root `DynamicFlow` per component (own Z3 context + DISTINCT
     per-component seeded Random via `new Tools(settings,"",componentId)` — the §1 parallel-safety seam) →
     extract per-line before/after via `Create_States_Before/After(line,0)`. Before/after only for now
@@ -308,7 +308,7 @@ silent semantic divergence — observe those FIRST; the partition/timing are nec
    producer-agnostic comparator: two per-line result sets (before/after state, read/write labels,
    diagnostics) → structured per-field diff, with `ToReport()` for the SIMDIFF log / test messages. Pure,
    total, no Z3/LSP. Unit-tested by `Test_SimResultComparer` (8 tests, hand-built sets). Producer adapter
-   `LspAsmSimulator.ToResultSet(uri,label)` snapshots the editor sim. First consumer:
+   `AsmSimulator.ToResultSet(uri,label)` snapshots the editor sim. First consumer:
    `SimResultComparer_SameProgramTwice_NoDiff` (determinism, ls-tests). **Reusable beyond the swap**:
    determinism/flakiness (run-twice), timeout-sensitivity (5000 vs 1000), Z3-upgrade validation,
    optimization-equivalence (incl. the linear-per-component parallelism), differential fuzzing oracle,
@@ -349,15 +349,15 @@ Deterministic C#-level randomness is necessary but **not sufficient** for reprod
   completes on a fast one yields a *different* result (a value vs `unknown`). So any test/program that is
   timeout-sensitive is inherently flaky regardless of seeding. **Reproducible tests must use programs
   small enough that Z3 never hits the timeout** (or raise/remove the timeout in the test).
-- Production (`LspAsmSimulator`, `DynamicFlow`) does **not** use the seeded ctor yet — the seam exists
+- Production (`AsmSimulator`, `DynamicFlow`) does **not** use the seeded ctor yet — the seam exists
   and is tested, but determinism is opt-in until the component driver adopts it.
 
 ### Headless characterization baseline landed (2026-06-11)
 The editor's linear simulator now has a **golden, VS-free** test baseline — the oracle the S0 shadow
 harness will diff the new engine against:
-- **Seam:** `LspAsmSimulator.SimulateSynchronouslyForTest(uri, lines)` runs the real `RunSimulation`
+- **Seam:** `AsmSimulator.SimulateSynchronouslyForTest(uri, lines)` runs the real `RunSimulation`
   synchronously (no debounce/Task) — not a re-implementation.
-- **Tests:** `asm-dude2-ls-tests/LspAsmSimulatorTests.cs` (xUnit, 4 tests, no VS): straight-line proven
+- **Tests:** `asm-dude2-ls-tests/AsmSimulatorTests.cs` (xUnit, 4 tests, no VS): straight-line proven
   register values, `xor`-self zero+ZF, **same program simulated twice ⇒ byte-identical output**
   (reproducibility proven for the editor sim), and a branch golden.
 - **Z3 determinism:** `random_seed=0` added to the editor sim's Z3 settings (empirically verified Z3
@@ -373,7 +373,7 @@ harness will diff the new engine against:
 
 ### Observability foundation landed (2026-06-11)
 The "Observability requirements" above are now partly in place (the parts that don't need the component
-engine), in `LspAsmSimulator`:
+engine), in `AsmSimulator`:
 - **Per-run summary** — the `[THREAD] SUCCESS` line now reports `slow/timeout line(s) (>=4500ms)` and
   `total ms` (directly diagnoses the slow-sim complaints; the 4500 ms heuristic flags lines that hit the
   5 s Z3 timeout). Per-line `done in {ms}` timing was already added.
@@ -391,8 +391,20 @@ engine), in `LspAsmSimulator`:
 
 ## Phase P — Parallelize the component engine's per-line extraction (2026-06-13)
 
+**STATUS: IMPLEMENTED 2026-06-13** (behind `ASMDUDE_SIM_ENGINE=component`; editor default still Linear).
+`AsmSimulator.ComputeComponentLines` clones each resolved line's before/after states into their OWN
+fresh Z3 context (`CloneLineForWorker`, serial on the evaluator thread — cheap AST `Translate`) and solves
+them on a bounded `SemaphoreSlim(SimParallelism)` worker pool (`ExtractComponentLine`), streaming each via
+`Emit` and disposing the clone after. `ASMDUDE_SIM_PARALLEL` sets the degree (default ≈ min(ProcessorCount,
+8); 1 = serial). Per-line `Tools` use the SEEDED ctor (isolated `Random` per worker — the copy ctor would
+share one non-thread-safe Random). `Emit` is lock-guarded; `Z3ContextTracker` counts each clone ctx.
+Validated: build clean (0 warn); shadow tests 4/1 (parallel component == linear where expected, differs at
+joins as expected ⇒ parallelism changed NO values); `Test_ComponentEvaluator` 7/7. **Not yet measured on a
+real file** — open the example with the env var and read `extracted in … ms` cadence + `total … ms`. Design
+write-up follows.
+
 **Goal:** make the merge (component) engine fast enough to be the editor default. The bottleneck is the
-per-line **value extraction** (`LspAsmSimulator.ExtractComponentLine` → `ComputeStateString` → Z3 solves
+per-line **value extraction** (`AsmSimulator.ExtractComponentLine` → `ComputeStateString` → Z3 solves
 each register's display value), observed at **~4 s/line** (same order as the linear sim's per-line Z3 cost).
 Extraction of line N is **independent** of every other line once the symbolic states exist, so it is
 embarrassingly parallel — modulo the Z3 constraint below.
@@ -400,7 +412,7 @@ embarrassingly parallel — modulo the Z3 constraint below.
 ### Prerequisite — DONE (2026-06-13): incremental emission
 `ComponentEvaluator` got an `onLineReady(line, before, after)` callback fired in topo order the moment a
 vertex's before+after states resolve (its two `Evaluate()` passes were merged into one — `after(v)` only
-needs `before(v)` + v's out-edges). `LspAsmSimulator.RunComponentSimulation` now writes each line to the
+needs `before(v)` + v's out-edges). `AsmSimulator.RunComponentSimulation` now writes each line to the
 `DocCache` and fires a throttled `onProgress` as it's extracted (mirrors the linear loop), so CodeLens/hover
 appear progressively instead of after the whole document. Per-phase timing added:
 `[component] component K: DynamicFlow built in … ms` + per-line `[component] line N: extracted in … ms`.
@@ -448,7 +460,7 @@ extraction overlap, and N lines solve at once.
 
 ### Implementation sketch
 - `ComponentEvaluator` is unchanged (already streams per vertex). The parallelism lives entirely in
-  `LspAsmSimulator`:
+  `AsmSimulator`:
   - In the `onLineReady` callback: clone before/after into a fresh context (serial), then `await
     semaphore`, then `Task.Run` the worker (solve+extract+emit+dispose+release).
   - Track the spawned tasks; `Task.WhenAll` them after `ComputeComponentLines` returns, before the
@@ -476,3 +488,199 @@ extraction overlap, and N lines solve at once.
   Only attempt if the gate above shows join-solving (not extraction) dominates.
 - Cross-component parallelism (each component already owns a context, so it's the *easy* axis) — a cheap
   add once the within-component worker pool exists: run components on the same bounded pool. Do it second.
+
+---
+
+## The real bottleneck is `Evaluate()` join-solving, not extraction (measured 2026-06-13)
+
+> **✅ RESOLVED 2026-06-13 (direction B, AsmDude1's recipe).** `AsmSimulator.ComputeComponentLines` no
+> longer runs `ComponentEvaluator`; it reads each line's state straight from `DynamicFlow.Create_States_
+> Before/After(line)` (the SYMBOLIC ITE/phi merge in `Create_State_Private`/`MergeConstructor`; `Tools.
+> Collapse` for the rare multi-state case) — exactly as AsmDude1's `Get_State_Before/After` did — and solves
+> only the displayed read/write registers per line on the Phase-P pool. The bespoke `ComponentEvaluator`
+> (`PlantAtKey`/`JoinContribsAt`, the all-16-register-per-vertex Tv solve) was **deleted**. Measured: 3-line
+> program 66,836 ms → **587 ms** (~114×); 150-line `example_semantic_analysis.asm` timeout(>4 min) → **8.7 s**.
+> The ITE-chain-depth caveat below is moot for the editor (line→key is 1:1 so `Collapse` rarely fires) — it
+> would only matter if a future change reintroduced long symbolic merge chains. Analysis kept below for history.
+
+Phase P parallelized **extraction** and the editor was made to skip the full register dump
+(`AsmSimulator.computeFullState_` — editor needs only the read/write CodeLens labels, ≈1-3 registers, not
+the all-16 `ComputeStateString`). That made extraction cheap (`extracted in` ≈ 0.3-2.5 s/line). But
+instrumenting the launched out-of-process server on a 3-line program exposed where the time actually goes:
+
+```
+[component] vertex !0 (line 1): symbolic before+after in 2442 ms
+[component] vertex !1 (line 2): symbolic before+after in 10686 ms
+[component] vertex !2 (line 3): symbolic before+after in 15356 ms     <- CLONE 11 ms, extract 2344 ms
+[component] vertex !3 (line 4): symbolic before+after in 15983 ms
+[component] SUCCESS: 3 lines … total 44600 ms
+```
+
+So **the `ComponentEvaluator.Evaluate()` per-vertex symbolic build dominates** (≈2.4 → 16 s, *growing per
+vertex*), while CLONE is ~10 ms and extraction is sub-3 s. This is the "join-solving" the Phase-P "Out of
+scope" gate named. The 150-line `example_semantic_analysis.asm` therefore can't finish in minutes (the
+opt-in probe `AsmSimComponentEngineTests` is `Skip`ped for this reason).
+
+### Root cause: `PlantAtKey`/`JoinContribsAt` solve ALL `GetRegOn()` registers at EVERY vertex
+`ComponentEvaluator.PlantAtKey` (and `JoinContribsAt`) loop `this.tools_.StateConfig.GetRegOn()` (all 16
+GP regs, set by `EnableFullStateConfig`) and call `snapshot.GetTvArray(r)` per register — the expensive
+per-bit Z3 solve (64 bits × 2-4 `Solver.Check`, see `ToolsZ3.GetTv_Method2`). Run at **every** vertex
+(both `ComputeForward` and `ComputeAfter` end in a plant/join), that is `O(vertices × 16 × 64 × checks)`.
+It grows per vertex as the planted values feed deeper chains. This is the SAME all-16-register waste removed
+from the editor extraction, but here it is structural to the engine's state construction.
+
+### Why it's there (corrected, code-checked — not "to keep expressions shallow")
+The documented reason (`ComponentEvaluator.cs` class comment, ~L42-47) is that the engine plants every
+vertex at the **canonical key** and joins **value-level (per-bit `Tv`)**, *not* by solver-merging — because
+the legacy solver-merge `State(s1,s2,merge:true)` (`State.cs` `MergeConstructor`) asserts the **union** of
+both solvers' assertions (`State.cs:277-291`), so two contributors that share a canonical key would
+AND `reg!K=A ∧ reg!K=B` → contradiction. **But** that contradiction is *self-inflicted by the canonical-key
+plant*: `MergeConstructor`'s normal path (different head keys, `State.cs:312-335`) builds a proper SSA
+**ITE/phi** merge `merged_reg = ITE(branch, reg@head1, reg@head2)` and does NOT contradict. So:
+- The eager per-register solve is a consequence of *choosing canonical-key planting*, which has two faces:
+  (a) it forces the value-level join [documented], and (b) it keeps expressions shallow vs the legacy ITE
+  merge's deepening nests [the other side of the same coin]. Neither is the root; the *plant-to-canonical-key
+  choice* is.
+
+### Two fix directions
+- **A — write-set-only plant (recommended first; low risk).** Keep canonical-key planting, but thread the
+  predecessor's already-concrete `Tv[]` forward and `GetTvArray`-solve **only** the registers written on a
+  contributing edge (the edge's `StateUpdate` write-set); registers unwritten on all contributors keep their
+  carried `Tv[]` (cheap per-bit join, no Z3). Sound (an unwritten register's value is unchanged). Drops
+  ≈14/16 of the per-vertex solves. Guard with the shadow-parity test (`SimResultComparer`,
+  `OutOfProcess_MatchesInProcess`).
+- **B — legacy ITE/phi symbolic merge (AsmDude1's path; bigger).** Drop canonical-key planting, use the
+  distinct-key ITE merge + **lazy, cached, per-queried-register** solving (what made AsmDude1 feel fast:
+  `Tools.Collapse` + `Create_StateConfig` for only used regs + hover-time `GetTvArray_Cached`).
+
+### ITE-chain depth is NOT a blocker for direction B — depth-collapse is a *missing feature*, not a wall
+The objection to B is that ITE merges `ITE(bc, ITE(bc', …), …)` deepen over long merge chains, making the
+lazy solve expensive. That depth is **boundable** and the methods are simply **not implemented yet**:
+- **Lossless collapse** — prune an ITE subtree once it can no longer affect any truth-value: both arms
+  equal, the branch condition becomes determined, or the subexpression feeds a register no longer read
+  downstream (dead-subtree / dead-key elimination). Precision preserved.
+- **Lossy simplification** — generic over-approximation that caps depth at a precision cost.
+Neither exists today, so today B's ITE terms would grow unbounded — but that is a TODO, not a fundamental
+limitation of the symbolic-merge approach. Record this so the A-vs-B choice isn't made on the false premise
+that "ITE merges must deepen forever."
+
+---
+
+# Phase 3 — Incremental invalidation via the dataflow cone (DETAILED SPEC, 2026-06-13)
+
+> Replaces the coarse "per-component reuse" framing of the old Phase 3/§6 with a precise **dataflow-cone**
+> design. The §6 line-key problem is dissolved here: we reason about *instructions and their dataflow*, and
+> line numbers become a pure display mapping produced by an instruction-level diff.
+
+## 1. Goal / non-goals
+- **Goal:** on an edit, recompute only the lines whose displayed values *can* change (the forward dataflow
+  **cone**), reuse cached strings for everything else, and produce output **byte-identical to a full
+  re-simulation**. The win is skipping the expensive per-line Z3 **solve** for unaffected lines.
+- **Non-goal:** reusing Z3 *contexts/states* across edits. The cache is strings-only (Z3-independent), so
+  there is NO context-lifetime / LRU / memory problem (the original Phase-4 worry evaporates). We rebuild
+  the cheap symbolic structure and only avoid the expensive solving.
+
+## 2. Why it's tractable now (vs the 2026-06-03 framing)
+- Construction is cheap (`DynamicFlow` build ≈ 50 ms); the cost is the per-line **solve/extract** (hundreds
+  of ms × lines). So "recompute the structure, skip the solves" is the right lever.
+- `DocCache` is strings-only (`lineStringsBefore/After/Read/WriteLabels` + `diagnostics`) → reusing them is
+  a pure managed-string remap.
+- The cone's ingredients already exist: per-instruction `RegsReadStatic`/`RegsWriteStatic` +
+  `FlagsReadStatic`/`FlagsWriteStatic` (`AsmSimulator.cs:907-910`), and the `DynamicFlow` *is* the dataflow
+  graph. No Z3 is needed to compute the cone.
+
+## 3. Layering & retained per-document state
+- **StaticFlow** = control flow only: per-line `(label, mnemonic, args)` + CFG edges. Cheap, syntactic.
+  `Update(text)` returns `changed` by comparing per-line content by index (`StaticFlow.cs:443`, diff
+  ~L500-540) — so an operand edit *does* register; a comment/whitespace edit does not.
+- **DynamicFlow** = symbolic values, built from StaticFlow; the **cone lives here**.
+- **New retained state per URI** (today only `cache_`/`simVersion_`/`pendingTasks_` are kept, and `cache_`
+  is *discarded* every edit at `AsmSimulator.cs:163`):
+  - `prevInstr_[uri]`: the previous parsed instruction sequence `(label, mnemonic, args)[]` (for the diff).
+  - the previous `DocCache` (stop discarding it; build a NEW one by merging reused + recomputed lines).
+  - (optional) `prevReadWrite_[uri]`: per-line read/write sets, to avoid re-instantiating opcodes.
+
+## 4. The edit pipeline (replaces "always rebuild")
+On a debounced edit with `newLines`:
+1. **Parse** `newLines` → `newInstr` (`(label,mnemonic,args)[]`). Cheap; no Z3.
+2. **Instruction-level diff** `prevInstr` vs `newInstr` (LCS/Myers on the tuples) → an **edit script** and a
+   bijection **`oldLine ↔ newLine`** for the *unchanged* instructions. This is what makes insert/delete
+   cheap: a shifted-but-identical instruction is matched, not treated as edited (the "line-delta" that
+   defeats §6).
+3. **Tier 0 — no instruction change** (only comment/whitespace/blank shifts): **reuse the whole previous
+   DocCache**, remapped through `oldLine→newLine`. **No Z3.** Done.
+4. **Otherwise** build the new `StaticFlow` (cheap) and:
+   - **Classify the edit** by comparing edges/labels: *topology unchanged* (operand-only) → narrow dataflow
+     cone valid; *topology changed* (label/jump added/removed/retargeted) → structural cone (§7).
+   - **Compute the cone** = the set of `newLine`s to re-solve (§5).
+   - **Selective re-solve:** a CFG component with **no** cone line is **skipped entirely** (its `DynamicFlow`
+     is never built) and reuses remapped strings; a component **with** cone lines builds its `DynamicFlow`
+     (cheap) but **extracts/solves only the cone lines**, reusing remapped strings for the rest.
+   - **Merge** into a fresh `DocCache`: cone lines = freshly extracted; others = `oldLine→newLine` remapped.
+
+## 5. Cone computation (no Z3) — a precision ladder
+**Inputs:** the changed `newLine`s, the CFG (StaticFlow edges), per-line read/write sets (instantiate
+opcodes for the reachable region — metadata only, no solving).
+- **Tier 1 — static cone (reachability):** forward BFS/DFS over CFG edges from each changed line; cone =
+  union of reachable lines. Sound; excludes everything before the edit and all unreachable components.
+- **Tier 2 — dynamic cone (dirty-set with kill):** seed a **dirty set** with what each changed instruction
+  *writes* (regs + flags; memory ⇒ §7). Forward-propagate: a line that **reads** a dirty item joins the cone
+  and its **writes** join the dirty set; a line that **overwrites** a dirty reg without reading it makes it
+  **clean** (the edit's effect is *killed*). Joins: dirty if any predecessor is. Loops: iterate to a
+  fixpoint (monotone, finite ⇒ terminates). Short-lived registers ⇒ tiny cones.
+
+`dynamic cone ⊆ static cone ⊆ reachable region`. The cone is based on *"the instruction changed,"* not
+*"the value changed"* — so it may re-solve a few lines whose values turn out identical (harmless; proving
+them equal would require solving, defeating the purpose).
+
+## 6. Soundness invariants (MUST hold)
+- A reused (non-cone) line's before/after symbolic state is identical to the previous run (same instructions
+  on its dataflow path, same predecessors) ⇒ its strings are unchanged ⇒ reuse is correct.
+- The cone is a **sound over-approximation**: when unsure, widen (memory, topology change, label add/remove,
+  unresolved jump target ⇒ fall back to the static cone or the whole affected component).
+- **Diagnostics** (usage-of-undefined, redundant, unreachable) are value-dependent ⇒ recomputed for cone
+  lines, reused for non-cone lines.
+
+## 7. Edge cases & fallbacks
+- **CFG-topology change** ⇒ cone = lines reachable in *old ∪ new* graph from the change; in practice
+  **re-solve the affected component(s) wholesale** (still skips untouched components).
+- **Memory:** not sliceable ⇒ a memory **write** dirties all downstream memory **reads**.
+- **Loops:** dirty propagation around back-edges runs to a fixpoint.
+- **Pragmas:** diff/cone run on the **pragma-lifted effective lines** (`RewritePragmasForCfg`), preserving
+  the effective↔display mapping (`#pragma assume HLT` ⇒ a component boundary the cone respects for free).
+- **Partial mid-typing line** ⇒ `Mnemonic.NONE` ⇒ no instruction, often no cone.
+- **Multi-entry / unreachable lines:** cone reachability seeds from `ComputeComponentEntryLines`, not line 0.
+
+## 8. Correctness gate — the shadow oracle (reuse existing infra)
+Invariant: **incremental output == full re-simulation output** for the same final text. Reuse
+`SimResultComparer` + the shadow harness: a debug/shadow mode runs BOTH the incremental pass and a full
+re-sim, diffs the `SimResultSet`s, and **logs any divergence** (an unsound cone). Unit tests assert
+`Compare(incremental, full).IsEmpty` for: operand edit, reg→reg vs reg→imm, insert line, delete line,
+comment-only edit, label add, jump retarget, edit inside a loop, and an edit in one of several components
+(the others must be byte-identical AND not re-solved).
+
+## 9. Milestones (each independently shippable + reversible)
+- **M0 — plumbing (no behavior change).** Retain `prevInstr_` + stop discarding `cache_`; add the
+  instruction diff; add an `ASMDUDE_SIM_INCREMENTAL` flag (default OFF). Full re-sim still runs; wire the
+  retained state + diff + shadow comparison so the oracle is live.
+- **M1 — Tier 0 (skip-if-no-instruction-change).** Reuse cache remapped by line shift when the diff has no
+  content edits. Biggest keystroke win for the least code; zero cone risk.
+- **M2 — Tier 1 (static cone).** Re-solve only reachable-from-edit lines; skip untouched components.
+- **M3 — Tier 2 (dynamic cone).** Dirty-set + kill. Flip `ASMDUDE_SIM_INCREMENTAL` default ON once the
+  shadow oracle is clean over the battery + a soak.
+
+## 10. New code (by location)
+- `asm-sim-lib`: an **instruction diff** (LCS over `(label,mnemonic,args)`); a **cone** module (static
+  reachability + dirty-set propagation) on `StaticFlow` + read/write sets — pure, testable, no Z3.
+- `asm-sim-host-lib/AsmSimulator`: retained per-URI state; the edit pipeline in `InvalidateAndSimulate`/
+  `RunSimulation`/`ComputeComponentLines` (skip non-cone components/lines; merge+remap `DocCache`); the
+  flag; the shadow hook.
+- Tests: `asm-sim-tests` (diff + cone units), `asm-sim-host-tests` (incremental==full shadow battery).
+
+## 11. Risks / open questions
+- **Diff stability:** index-compare over-invalidates on insert/delete; LCS on instruction tuples is required.
+- **Topology-change detection must be conservative:** a missed topology change ⇒ unsound cone. Start by
+  treating ANY change to a label/jump/branch line as topology-changed (whole-component fallback).
+- **Memory precision:** the conservative rule may make memory-heavy files barely incremental; measure first.
+- **Benefit shape:** single tight function ⇒ Tier 2 helps via *kill* but the cone may still be large;
+  multi-component files ⇒ large wins. Instrument "lines re-solved / total".
