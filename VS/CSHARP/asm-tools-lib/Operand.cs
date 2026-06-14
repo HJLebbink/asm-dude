@@ -146,7 +146,7 @@ public class Operand
         }
         else
         {
-            Console.WriteLine("WARNING: Operand:SignExtend: can only sign extend imm.");
+            AsmLog.Warn("TOOLS", "Operand:SignExtend: can only sign extend imm.");
         }
     }
 
@@ -162,7 +162,7 @@ public class Operand
         }
         else
         {
-            Console.WriteLine("WARNING: Operand:ZeroExtend: can only zero extend imm.");
+            AsmLog.Warn("TOOLS", "Operand:ZeroExtend: can only zero extend imm.");
         }
     }
 

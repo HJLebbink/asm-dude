@@ -35,16 +35,19 @@ internal sealed class AsmSimRpcServer : IDisposable
     [JsonRpcMethod(AsmSimProtocol.Initialize)]
     public AsmSimInitResult Initialize(AsmSimInitParams parameters)
     {
-        AsmLog.Banner("ASMSIM", $"AsmSim.LS server: initialize from pid={parameters.ClientProcessId}, engine={parameters.Settings.Engine}");
+        AsmLog.Banner("ASMSIM", $"AsmSim.LS server: initialize from pid={parameters.ClientProcessId}, engine={parameters.Settings.Engine}, incremental={parameters.Settings.Incremental}");
+        // Apply the initial settings so the first simulation already honors them (the client also pushes a
+        // settingsChanged shortly after, but this makes startup self-consistent).
+        this.simulator_.ApplySettings(parameters.Settings.Engine, parameters.Settings.LoopHandling, parameters.Settings.Incremental, parameters.Settings.ShowRedundant);
         return new AsmSimInitResult(parameters.Settings.Engine, parameters.Settings.Parallelism, "1.0.0.0");
     }
 
     [JsonRpcMethod(AsmSimProtocol.SettingsChanged)]
     public void SettingsChanged(AsmSimSettings settings)
     {
-        AsmLog.Info("ASMSIM", $"settingsChanged: engine={settings.Engine}, loop={settings.LoopHandling}, parallel={settings.Parallelism}");
-        // Apply at runtime; the client re-sends open documents so they re-simulate with the new engine/loop.
-        this.simulator_.ApplySettings(settings.Engine, settings.LoopHandling);
+        AsmLog.Info("ASMSIM", $"settingsChanged: engine={settings.Engine}, loop={settings.LoopHandling}, parallel={settings.Parallelism}, incremental={settings.Incremental}, showRedundant={settings.ShowRedundant}");
+        // Apply at runtime; the client re-sends open documents so they re-simulate with the new settings.
+        this.simulator_.ApplySettings(settings.Engine, settings.LoopHandling, settings.Incremental, settings.ShowRedundant);
     }
 
     [JsonRpcMethod(AsmSimProtocol.DocumentChanged)]

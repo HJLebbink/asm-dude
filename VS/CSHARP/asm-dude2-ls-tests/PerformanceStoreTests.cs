@@ -55,7 +55,7 @@ public class PerformanceStoreTests
                 case MicroArch.Skylake: options.PerformanceInfo_Skylake_On = true; break;
                 case MicroArch.Icelake: options.PerformanceInfo_Icelake_On = true; break;
                 case MicroArch.Zen4: options.PerformanceInfo_Zen4_On = true; break;
-                default: throw new System.ArgumentException($"test helper does not enable {a}");
+                default: throw new System.ArgumentException($"test helper does not enable {a}", nameof(arches));
             }
         }
 

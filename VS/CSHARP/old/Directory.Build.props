@@ -1,0 +1,9 @@
+<Project>
+
+  <!-- Archived projects. This file deliberately does NOT import the parent VS/CSHARP/Directory.Build.props,
+       so the centralized analyzer packages/settings do not apply to dead code under old/. -->
+  <PropertyGroup>
+    <RunAnalyzers>false</RunAnalyzers>
+  </PropertyGroup>
+
+</Project>

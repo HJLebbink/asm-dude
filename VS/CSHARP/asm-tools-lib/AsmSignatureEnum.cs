@@ -385,7 +385,7 @@ public static class AsmSignatureTools
             case "NONE": return [AsmSignatureEnum.NONE];
 
             default:
-                Console.WriteLine("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
+                AsmLog.Warn("TOOLS", "AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
                 return [AsmSignatureEnum.UNKNOWN];
         }
     }

@@ -3,6 +3,12 @@
 
 namespace AsmDude2;
 
+// RS0030: VS-Threading bans SemaphoreSlim because waiting on it on the VS UI thread can hang VS. This is an
+// OUT-OF-PROCESS extension (runs in a ServiceHub host, not the VS UI thread — see CLAUDE.md), so there is no
+// UI thread to hang and no JoinableTaskContext to coordinate with; ReentrantSemaphore offers no benefit here.
+// requestSem_ just serializes async pipe requests off any UI thread.
+#pragma warning disable RS0030 // Do not use banned APIs
+
 using System;
 using System.Collections.Generic;
 using System.IO;

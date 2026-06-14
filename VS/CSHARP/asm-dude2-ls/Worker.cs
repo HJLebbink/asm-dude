@@ -39,14 +39,10 @@ public partial class Worker : BackgroundService
 
         if (UseStdio)
         {
-            // Use stdin/stdout for communication (for testing and CLI usage)
-            // Get raw streams BEFORE redirecting Console.Out
-            var stdin = Console.OpenStandardInput();
-            var stdout = Console.OpenStandardOutput();
-
-            // Redirect Console.Out to stderr to prevent asm-tools-lib debug output
-            // from corrupting the LSP protocol on stdout
-            Console.SetOut(Console.Error);
+            // Use stdin/stdout for the LSP JSON-RPC channel (for testing and CLI usage). The shared helper
+            // grabs the raw streams AND redirects Console.Out to stderr so stray library writes cannot
+            // corrupt the protocol on stdout.
+            (System.IO.Stream stdin, System.IO.Stream stdout) = AsmTools.StdioRpcChannel.OpenAndRedirectConsole();
 
             LanguageServer.UseStdio = true;
             AsmDude2LS.AsmDudeLog.UseStdio = true;

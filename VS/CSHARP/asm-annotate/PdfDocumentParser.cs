@@ -307,7 +307,7 @@ namespace AsmAnnotate
     internal class PdfTextOperatorListener : IEventListener
     {
         private readonly List<PdfTextElement> _texts = [];
-        private string _currentFontName = "";
+        private readonly string _currentFontName = "";
 
         public List<PdfTextElement> ExtractedTexts => _texts;
 

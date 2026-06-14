@@ -143,6 +143,7 @@ internal class SettingsSyncService : ExtensionPart
 
             // AsmSim
             AsmSim_On = v.ValueOrDefault(AsmDudeSettings.AsmSimOn, true),
+            AsmSim_Incremental = v.ValueOrDefault(AsmDudeSettings.AsmSimIncremental, true),
             AsmSim_Z3_Timeout_MS = v.ValueOrDefault(AsmDudeSettings.AsmSimZ3Timeout, 5000),
             AsmSim_Number_Of_Threads = v.ValueOrDefault(AsmDudeSettings.AsmSimThreads, 4),
             AsmSim_64_Bits = v.ValueOrDefault(AsmDudeSettings.AsmSim64Bits, true),
@@ -153,8 +154,8 @@ internal class SettingsSyncService : ExtensionPart
             AsmSim_Decorate_Syntax_Errors = v.ValueOrDefault(AsmDudeSettings.AsmSimDecorateSyntaxErrors, true),
             AsmSim_Show_Usage_Of_Undefined = v.ValueOrDefault(AsmDudeSettings.AsmSimShowUsageOfUndefined, true),
             AsmSim_Decorate_Usage_Of_Undefined = v.ValueOrDefault(AsmDudeSettings.AsmSimDecorateUsageOfUndefined, true),
-            AsmSim_Show_Redundant_Instructions = v.ValueOrDefault(AsmDudeSettings.AsmSimShowRedundantInstructions, false),
-            AsmSim_Decorate_Redundant_Instructions = v.ValueOrDefault(AsmDudeSettings.AsmSimDecorateRedundantInstructions, false),
+            AsmSim_Show_Redundant_Instructions = v.ValueOrDefault(AsmDudeSettings.AsmSimShowRedundantInstructions, true),
+            AsmSim_Decorate_Redundant_Instructions = v.ValueOrDefault(AsmDudeSettings.AsmSimDecorateRedundantInstructions, true),
             AsmSim_Show_Unreachable_Instructions = v.ValueOrDefault(AsmDudeSettings.AsmSimShowUnreachableInstructions, true),
             AsmSim_Decorate_Unreachable_Instructions = v.ValueOrDefault(AsmDudeSettings.AsmSimDecorateUnreachableInstructions, true),
             AsmSim_Decorate_Registers = v.ValueOrDefault(AsmDudeSettings.AsmSimDecorateRegisters, true),

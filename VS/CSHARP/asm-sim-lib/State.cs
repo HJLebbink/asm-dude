@@ -230,12 +230,26 @@ namespace AsmSim
         {
             #region Handle Inconsistent states
             {
-                bool consistent1 = state1.IsConsistent == Tv.ONE;
-                bool consistent2 = state2.IsConsistent == Tv.ONE;
+                Tv consistency1 = state1.IsConsistent;
+                Tv consistency2 = state2.IsConsistent;
+                bool consistent1 = consistency1 == Tv.ONE;
+                bool consistent2 = consistency2 == Tv.ONE;
 
                 if (!consistent1 && !consistent2)
                 {
-                    AsmLog.Warn("SIM", "State: merge constructor: states have to be consistent. state1 consistent = " + consistent1 + "; state2 consistent = " + consistent2);
+                    // Merging two non-consistent states. If BOTH are genuinely UNSAT the merge is correctly
+                    // unreachable (e.g. both predecessors are dead code, or contradictory branch conditions) —
+                    // this is expected, not an error. Only an UNDETERMINED input (Z3 returned 'unknown', e.g. a
+                    // timeout) is worth a warning: collapsing "unknown reachability" to "unreachable" below
+                    // drops a state and loses precision.
+                    if (consistency1 == Tv.UNDETERMINED || consistency2 == Tv.UNDETERMINED)
+                    {
+                        AsmLog.Warn("SIM", $"State.MergeConstructor: merging states with undetermined consistency (state1={consistency1}, state2={consistency2}); treating as unreachable may lose precision.");
+                    }
+                    else
+                    {
+                        AsmLog.Debug("SIM", "State.MergeConstructor: both incoming states are unreachable (UNSAT); merge is unreachable.");
+                    }
                 }
                 if (!consistent1)
                 {
@@ -684,6 +698,61 @@ namespace AsmSim
                 }
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Counts, among the given written locations, how many this state proves UNCHANGED between
+        /// <paramref name="prevKey"/> and <paramref name="nextKey"/> (value at prevKey == value at nextKey),
+        /// returning the aggregate <see cref="RedundancyVerdict"/>. Only locations switched on in
+        /// <see cref="Tools.StateConfig"/> are considered. Builds on the <see cref="Is_Redundant(Rn, string, string)"/>
+        /// primitives, so it is symbolic (handles unknown-but-equal values, not just concrete ones).
+        /// <para><b>Precondition:</b> this state must still constrain BOTH keys. That holds for a freshly
+        /// stepped state BEFORE it is frozen, but NOT after — freezing runs <see cref="Remove_History"/>,
+        /// which garbage-collects an overwritten location's prevKey binding. Callers therefore query a
+        /// transient, unfrozen state (see <see cref="Runner.IsRedundantInstruction(string, State)"/>), never
+        /// the persistent compacted one. See REDUNDANT_DIAGNOSTICS_PLAN.md.</para>
+        /// </summary>
+        public RedundancyVerdict ComputeRedundancy(string prevKey, string nextKey, IEnumerable<Rn> writtenRegs, Flags writtenFlags, bool writesMem)
+        {
+            StateConfig cfg = this.tools_.StateConfig;
+            int written = 0;
+            int redundant = 0;
+
+            var seen = new HashSet<Rn>();
+            foreach (Rn reg in writtenRegs)
+            {
+                Rn reg64 = RegisterTools.Get64BitsRegister(reg);
+                if (!cfg.IsRegOn(reg64) || !seen.Add(reg64))
+                {
+                    continue;
+                }
+                written++;
+                if (this.Is_Redundant(reg64, prevKey, nextKey))
+                {
+                    redundant++;
+                }
+            }
+            foreach (Flags flag in FlagTools.GetFlags(writtenFlags))
+            {
+                if (!cfg.IsFlagOn(flag))
+                {
+                    continue;
+                }
+                written++;
+                if (this.Is_Redundant(flag, prevKey, nextKey))
+                {
+                    redundant++;
+                }
+            }
+            if (writesMem && cfg.Mem)
+            {
+                written++;
+                if (this.Is_Redundant_Mem(prevKey, nextKey) == Tv.ONE)
+                {
+                    redundant++;
+                }
+            }
+            return new RedundancyVerdict(written, redundant);
         }
 
         public Tv? GetTv_Cached(Flags flagName)

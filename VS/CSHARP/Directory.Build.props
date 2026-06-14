@@ -1,0 +1,55 @@
+<Project>
+
+  <!-- ============================================================================================
+       Centralized analyzer configuration for all ACTIVE asm-dude projects (everything under
+       VS/CSHARP/ except old/, which opts out via old/Directory.Build.props).
+
+       Policy: analyzers run at WARNING level. No project's TreatWarningsAsErrors is set here, so the
+       build stays green while findings are triaged. Per-rule severities live in VS/.editorconfig;
+       banned-API symbols live in VS/CSHARP/BannedSymbols.txt.
+
+       Projects may still override any of these properties locally (last definition wins).
+       ============================================================================================ -->
+
+  <PropertyGroup>
+    <!-- Built-in .NET (CAxxxx) analyzers + IDExxxx code-style enforced at build, newest rule set. -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <!-- Console/File.Append* are legitimate output (not logging) in the CLI tools, the fuzzer harness and
+       the test projects, so the banned-API rule (RS0030) is suppressed there. Everywhere else it fires so
+       logging is routed through AsmLog. The AsmLog sink itself opts out with a file-level pragma. -->
+  <PropertyGroup>
+    <_AsmAllowConsole>false</_AsmAllowConsole>
+    <_AsmAllowConsole Condition="$(MSBuildProjectName.EndsWith('-tests')) Or '$(MSBuildProjectName)' == 'asm-annotate' Or '$(MSBuildProjectName)' == 'asm-sim-main' Or '$(MSBuildProjectName)' == 'asm-fuzz'">true</_AsmAllowConsole>
+    <NoWarn Condition="'$(_AsmAllowConsole)' == 'true'">$(NoWarn);RS0030</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Meziantou: pragmatic correctness / immutability / readonly rules (the "readonly data structures"
+         ask). 2.0.138 is pinned because it is already in the local NuGet cache. -->
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.138">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <!-- VSTHRD async / JoinableTask / StreamJsonRpc deadlock rules — important for the LSP server,
+         the VSIX and the sim server. Version matches the one asm-annotate already used. -->
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.0.61">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <!-- Bans ad-hoc logging APIs (Console / File.Append*) so logging goes through AsmLog — see
+         BannedSymbols.txt + the CLAUDE.md "Logging" rule. CLI/test/fuzzer projects opt out via NoWarn. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="4.14.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.txt" />
+  </ItemGroup>
+
+</Project>

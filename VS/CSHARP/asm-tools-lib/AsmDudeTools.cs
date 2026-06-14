@@ -177,19 +177,19 @@ public sealed class AsmDude2Tools : IDisposable
     private static void LogInfo(string msg)
     {
         Instance.traceSource?.TraceEvent(TraceEventType.Information, 0, msg);
-        Console.WriteLine($"INFO: {msg}");
+        AsmLog.Info("TOOLS", msg);
     }
 
     private static void LogWarning(string msg)
     {
         Instance.traceSource?.TraceEvent(TraceEventType.Warning, 0, msg);
-        Console.WriteLine($"WARNING: {msg}");
+        AsmLog.Warn("TOOLS", msg);
     }
 
     private static void LogError(string msg)
     {
         Instance.traceSource?.TraceEvent(TraceEventType.Error, 0, msg);
-        Console.WriteLine($"ERROR: {msg}");
+        AsmLog.Error("TOOLS", msg);
     }
 
     private void Init_Data(string path)

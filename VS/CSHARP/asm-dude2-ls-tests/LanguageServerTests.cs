@@ -195,7 +195,7 @@ public class LanguageServerTests
 
     private CompletionList? GetCompletions(string asmLine, int character)
     {
-        var uri = $"file:///test_completion_{asmLine.GetHashCode():x}.asm";
+        var uri = $"file:///test_completion_{asmLine.GetHashCode(StringComparison.Ordinal):x}.asm";
         this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
         {
             TextDocument = new TextDocumentItem

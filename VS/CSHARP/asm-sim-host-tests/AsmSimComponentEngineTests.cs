@@ -38,7 +38,7 @@ public sealed class AsmSimComponentEngineTests(ITestOutputHelper output)
     {
         string path = Path.Combine(AppContext.BaseDirectory, "example_semantic_analysis.asm");
         File.Exists(path).Should().BeTrue($"the example asm must be copied next to the test ({path})");
-        string[] lines = File.ReadAllLines(path);
+        string[] lines = await File.ReadAllLinesAsync(path);
         lines.Length.Should().BeGreaterThan(100, "this is the full ~150-line semantic-analysis example");
 
         // Capture the engine's per-line solve timings ("[component] line N: extracted in X ms").

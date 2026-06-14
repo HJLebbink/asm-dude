@@ -660,14 +660,124 @@ comment-only edit, label add, jump retarget, edit inside a loop, and an edit in 
 (the others must be byte-identical AND not re-solved).
 
 ## 9. Milestones (each independently shippable + reversible)
-- **M0 — plumbing (no behavior change).** Retain `prevInstr_` + stop discarding `cache_`; add the
-  instruction diff; add an `ASMDUDE_SIM_INCREMENTAL` flag (default OFF). Full re-sim still runs; wire the
-  retained state + diff + shadow comparison so the oracle is live.
-- **M1 — Tier 0 (skip-if-no-instruction-change).** Reuse cache remapped by line shift when the diff has no
-  content edits. Biggest keystroke win for the least code; zero cone risk.
-- **M2 — Tier 1 (static cone).** Re-solve only reachable-from-edit lines; skip untouched components.
-- **M3 — Tier 2 (dynamic cone).** Dirty-set + kill. Flip `ASMDUDE_SIM_INCREMENTAL` default ON once the
-  shadow oracle is clean over the battery + a soak.
+
+> **Control (2026-06-14):** the switch is the **`AsmSim_Incremental` setting** (VS settings checkbox
+> "Incremental simulation (experimental)" → `settings.json` → wire DTO `AsmSimSettings.Incremental` →
+> `AsmSimulator.ApplySettings` instance `incremental_`), **runtime-settable with no restart** (applied to both
+> the out-of-proc server and the in-proc simulator). Default OFF. The old `ASMDUDE_SIM_INCREMENTAL` env var now
+> only seeds the initial value (back-compat). Env vars were abandoned for this because a long-lived parent
+> `devenv.exe` passes a stale environment down the whole VS→LSP→AsmSim.Server tree (env is inherited at launch,
+> never re-read), so toggling needed a full host-VS restart — the setting avoids that.
+- **M0 — plumbing (no behavior change). ✅ DONE (2026-06-14).** Landed behavior-neutral:
+  - **`AsmSim.InstructionDiff`** (`asm-sim-lib/InstructionDiff.cs`, pure/Z3-free) — `Instruction`
+    (`(label, mnemonic, args)`, field-wise equality, parsed via the same `AsmSourceTools.ParseLine` the
+    sim/`StaticFlow` use) + an LCS alignment exposing `NewToOld`/`OldToNew`, `AddedNewLines`/
+    `RemovedOldLines`, and **`HasNoInstructionChange`** (Tier-0). Unit-tested by `Test_InstructionDiff`
+    (10 tests: operand edit localized, blank-insert is Tier-0 + remaps, comment edit is Tier-0, insert/
+    delete/label-add detected). This is the "line-delta" that dissolves the §6 line-key problem.
+  - **`AsmSimulator`** retains `prevInstr_[uri]` and diffs each edit via `RetainAndDiff` →
+    `RecordIncrementalDiff` (logs the cone summary under category `ASMSIM`/`[INC]`), called at the top of
+    `RunSimulation`. Cleared in `CancelAndRemove`/`Dispose`. Gated by **`ASMDUDE_SIM_INCREMENTAL`** (default
+    OFF): with the flag off the simulator is byte-for-byte unchanged. Test seam
+    `ComputeIncrementalDiffForTest` exercises the real retain+diff path; host tests
+    `AsmSimIncrementalDiffTests` (5) prove cold-first-run, cross-edit diff, Tier-0 blank-insert remap,
+    per-URI history, and close-forgets-history.
+  - **Deliberate deviation from the spec wording:** "stop discarding `cache_`" was NOT done in M0 — keeping
+    the cache without remapping would change what the editor serves (a behavior change). Cache retention +
+    remap is M1, where the Tier-0 reuse actually consumes it. M0 is observe-only.
+  - **Shadow oracle:** the full incremental-vs-full comparison (`SimResultComparer`) can't run until there
+    is an incremental OUTPUT to compare (M1+); M0 only computes/logs the diff. The oracle wiring lands with
+    M1 reuse.
+- **M1 — Tier 0 (skip-if-no-instruction-change). ✅ DONE (2026-06-14).** When an edit shifts only inert
+  (blank/comment) lines, the cache is remapped through the line shift and Z3 is skipped entirely.
+  - **Soundness refinement:** the reuse gate is **`InstructionDiff.HasOnlyInertChanges`**, NOT
+    `HasNoInstructionChange`. A label-only line is `Mnemonic.NONE`, so adding/removing one passes the
+    instruction check yet changes CFG topology — `IsInert` (no instruction AND no label) excludes it.
+    Comment-on-instruction edits are still Tier-0 (the parser strips the comment ⇒ the instruction matches).
+  - **`AsmSimulator`:** `committed_[uri]` pairs each completed run's instructions with the DocCache it
+    produced (committed on both engines' SUCCESS path); `TryTier0Reuse` (called at the top of
+    `RunSimulation`, gated by `ASMDUDE_SIM_INCREMENTAL`) diffs the edit, and on `HasOnlyInertChanges`
+    `RemapCache`s the strings + diagnostics onto the shifted lines, installs the cache, and fires the same
+    onProgress/onCompleted a real run would — no Z3. Declines (→ full sim) on any instruction/label change.
+  - **Shadow oracle WIRED:** `AsmSimTier0ReuseTests` (10) assert `SimResultComparer.Compare(incremental,
+    full).IsEmpty` over blank insert/remove, comment edit, comment-on-code edit, and diagnostic remap, plus
+    negative cases (operand edit / label add / cold doc must decline). Test seam `SimulateTier0ForTest`
+    drives the real `TryTier0Reuse` flag-independently.
+  - **"No recomputation" proven directly:** `Tier0Reuse_CarriesOverCachedStrings_…` asserts the reused
+    line's cached string is the SAME object instance (reference-identity) as in the baseline — a re-solve
+    would allocate a new string. (Reference-identity, not the global `Z3ContextTracker` counter, because
+    xUnit runs other context-creating classes in parallel ⇒ the global counter is not reliable here.)
+  - **Component-engine baseline verified (the live-VS config):** `BlankLineInserted_ComponentEngine_…`
+    commits the baseline with the **Component** (DynamicFlow) engine — the editor default — and proves it
+    reuses to a full Component re-sim. Inert-only edits keep the CFG identical, so every DynamicFlow line
+    state is unchanged; reuse is sound for the merge engine too. Full host suite green; solution builds clean.
+  - Default still OFF (`ASMDUDE_SIM_INCREMENTAL`); flip to ON is deferred to after M3's cone oracle soak.
+- **M2 — Tier 1 (static cone). ✅ DONE (2026-06-14).** A topology-preserving instruction edit re-solves only
+  the forward dataflow cone (component engine) and reuses the remapped baseline for everything else.
+  - **`asm-sim-lib/DataflowCone.cs`** (pure, Z3-free): `ChangedLineSeeds(diff)` = every `AddedNewLine` + the
+    surviving successor of each deletion (the subtle case, found via the nearest matched old line after the
+    gap); `StaticCone(newFlow, seeds|diff)` unions each seed's forward CFG-reachable set
+    (`StaticFlow.FutureLineNumbers`); `IsTopologyPreserving(diff)` = no added/removed line carries a label or
+    is control-flow (jump/call/ret/int) — the soundness guard. Unit-tested by `Test_DataflowCone` (11):
+    excludes earlier lines + other components, deletion cones the successor, branch reaches both targets,
+    merge edit excludes pre-merge code, + the 5 topology cases (plain edit/insert preserve; jump retarget /
+    label add / labeled-line edit do not).
+  - **Soundness:** a non-cone line is not forward-reachable from any changed instruction, so none of its CFG
+    ancestors changed ⇒ its symbolic state (hence its strings) is unchanged ⇒ reuse is exact. The topology
+    guard handles the one case forward-reachability misses — an edit that DELETES an in-edge to a node
+    (label/jump change), which can change that node's merged value without it being downstream — by falling
+    back to a full sim (conservative: editing a labeled instruction also falls back; M3 may refine).
+  - **`AsmSimulator`:** `ComputeComponentLines` gained an `onlyLines` filter (skip a whole untouched
+    component; within a touched component extract only cone lines). `TryConeComponentReuse` (in
+    `RunSimulation` after the Tier-0 check, gated by `ASMDUDE_SIM_INCREMENTAL` + Component engine) computes
+    the cone, builds the reuse-base (`RemapConeReuse` of non-cone lines), and runs
+    `RunComponentSimulation(cone, reuseBase)` which pre-installs the reuse-base then overwrites cone lines
+    with fresh values. Declines (→ full sim) when cold / topology-changed / on error.
+  - **Oracle:** `AsmSimConeReuseTests` (7) assert `SimResultComparer.Compare(coneIncremental, full).IsEmpty`
+    on the Component engine for operand/insert/delete + two-component edits, plus a reference-identity proof
+    that the untouched component's cached strings are reused (its DynamicFlow never rebuilt), plus negatives
+    (labeled-line edit / cold doc decline). Seam `SimulateConeForTest`. Full host suite green; solution clean.
+- **M3 — Tier 2 (dynamic cone). ✅ DONE (2026-06-14).** Dirty-set + kill, tighter than the static cone.
+  - **`asm-sim-lib/DynamicCone.cs`** (pure, Z3-free): `LineEffects` (per-line read/write regs+flags+mem, with
+    `KillRegs` = the full-width writes safe to clear) + `Compute` = a monotone forward dataflow worklist
+    (gen/kill, union meet ⇒ fixpoint, loops included). A line is in the cone iff it is a changed instruction
+    or READS a dirty location; a clean-input full overwrite KILLS dirtiness; memory is conservative (a write
+    never kills; once dirty, every later read is in the cone); a deletion seeds the deleted writes at the
+    surviving successor. Unit-tested by `Test_DynamicCone` (7): clean-reader excluded, full-overwrite kill
+    skips a later reader, partial write stays dirty, flags + memory propagate, loop fixpoint, deletion seed.
+  - **SOUNDNESS SCOPE — labels-only:** the dynamic cone is sound for the editor's read/write CodeLens labels
+    (a kill line recomputes the same value ⇒ its labels are unchanged), NOT for a full register DUMP (any
+    dirty location makes every downstream line's dump differ). So `TryConeComponentReuse` uses the dynamic
+    cone only when `!computeFullState_` (the editor's real mode) and the STATIC cone when dumping.
+    `BuildLineEffects` instantiates opcodes for metadata only (no solving); `KillRegs` = writes whose dest is
+    ≥32-bit (`RegisterTools.NBits`, since a 32-bit write zero-extends).
+  - **Oracle:** `AsmSimDynamicConeReuseTests` (5, labels-only Component engine) assert
+    `Compare(coneIncremental, full).IsEmpty` AND tightness via reference-identity: an independent line and a
+    KILLED-register's downstream reader are reused (not recomputed), while a genuine dependent reader is
+    re-solved to the new value. Pure cone units 29; full host suite green; solution clean.
+  - **Topology relaxation ✅ DONE (2026-06-14).** The conservative "decline on any label/jump change" fallback
+    is replaced by `DataflowCone.StaticConeWithTopology(oldFlow, newFlow, diff)`: seeds = changed instructions
+    ∪ every new line whose set of incoming CFG edges differs from its old counterpart's (old edges mapped to
+    new-line space via `OldToNew`; a deleted predecessor = a lost edge), then forward reachability in the new
+    graph (the plan's "old ∪ new" cone, §7). So a retargeted jump seeds the jump + the old target (lost edge)
+    + the new target (gained edge); editing a labeled line with no edge change stays tight (just its forward
+    cone). `TryConeComponentReuse` rebuilds the old CFG from the retained `committed_.Lines` and uses this cone
+    on a topology change instead of declining. Pure tests `Test_DataflowCone` (+2: jump-retarget seeds both
+    targets, labeled-edit-without-edge-change stays tight); oracle `AsmSimConeReuseTests` (the old "declines"
+    tests flipped to "reuses + equals full": labeled-line edit, jump retarget, label-add-resolves-jump).
+  - **Automated soak ✅ DONE (2026-06-14).** `AsmSimIncrementalSoakTests` drives the REAL dispatch
+    (`SimulateIncrementalForTest` → RunSimulation's Tier-0→cone→full) through a 7-edit cumulative battery
+    (operand, insert, comment, blank, flag-input cmp, second-component, jump-retarget) and asserts
+    incremental == full at EVERY step — catching state drift across chained reuses. Diagnostics are part of
+    that comparison (the cmp/jne flag-input step exercises the dirty-branch concern) and stayed identical.
+  - **Default flipped ON (2026-06-14).** The `AsmSim_Incremental` setting now defaults **true** (VSIX
+    `AsmSimIncremental` `defaultValue: true` + `SettingsSyncService` fallback true + `BuildSimSettings ?? true`);
+    runtime-toggleable, safe per-edit fallback to a full sim. A live-VS soak on real `.asm` files is the only
+    remaining (manual) validation; turn the setting off if anything misbehaves. **M0–M3 COMPLETE.**
+  - **Future direction (loops):** see `LOOP_SEMANTICS_RESEARCH_NOTES.md` — using a loop's inductive invariant
+    (from abstract interpretation or Z3/Spacer CHC solving) as a "focus" to bound the cone at loops
+    (cones-and-foci idea), so loop-carried dependencies become reusable instead of swept in by back-edge
+    reachability. Exploratory, not committed.
 
 ## 10. New code (by location)
 - `asm-sim-lib`: an **instruction diff** (LCS over `(label,mnemonic,args)`); a **cone** module (static

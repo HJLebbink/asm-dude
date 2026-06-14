@@ -314,11 +314,17 @@ namespace AsmSim
         {
             get
             {
-                IEnumerable<State> leafs = this.Create_Leafs;
+                // Materialize once: Create_Leafs is a lazy iterator (re-enumerating builds fresh states), and
+                // Collapse returns the SOLE leaf as-is when there is only one — so disposing every leaf below
+                // would dispose the very state we return (a use-after-free). Skip the returned reference.
+                List<State> leafs = [.. this.Create_Leafs];
                 State result = Tools.Collapse(leafs);
                 foreach (State v in leafs)
                 {
-                    v.Dispose();
+                    if (!ReferenceEquals(v, result))
+                    {
+                        v.Dispose();
+                    }
                 }
 
                 return result;

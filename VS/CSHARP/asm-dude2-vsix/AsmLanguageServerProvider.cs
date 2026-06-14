@@ -72,9 +72,11 @@ internal class AsmLanguageServerProvider : LanguageServerProvider
 
     public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
     {
-        // Create the dedicated "AsmDude2" VS output pane and attach the Info+ sink (once, best-effort).
-        // Fire-and-forget so it never delays/affects the server connection; self-guarded inside.
+        // Create the dedicated VS output panes (once, best-effort, fire-and-forget so they never delay the
+        // server connection; self-guarded inside): "AsmDude2 VSIX" for this plugin's logs, and "AsmSim" which
+        // tails the out-of-process sim server's log file.
         _ = VsixLog.EnsureOutputChannelAsync(this.Extensibility, cancellationToken);
+        _ = VsixLog.EnsureAsmSimOutputChannelAsync(this.Extensibility, cancellationToken);
 
         string extensionDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         string serverExe = Path.Combine(extensionDir, "Server", LanguageServerConstants.ExecutableName);

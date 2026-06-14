@@ -239,7 +239,10 @@ namespace AsmSim
                 }
             }
 
-            public override string ToString()
+            // 'sealed' so subclasses cannot re-override it: the in-constructor uses of ToString() (to format
+            // SyntaxError/Warning messages) are then safe — a sealed method can't dispatch into a not-yet-
+            // constructed subclass override. mnemonic_/args_ are set in the base ctor before any subclass runs.
+            public sealed override string ToString()
             {
                 return this.mnemonic_ + " " + string.Join(", ", this.args_);
             }

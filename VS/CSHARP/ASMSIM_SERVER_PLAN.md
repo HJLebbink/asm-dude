@@ -182,7 +182,12 @@ per-`uri`/`version` `CancellationToken`). `documentChanged` is the implicit canc
    "Phase 3 — … via the dataflow cone"). Recompute only the forward **dataflow cone** of an edit, reuse
    cached strings for the rest; an instruction-level diff (not line keys) supplies the line-delta, dissolving
    the old §6 re-keying blocker. Milestones M0 (plumbing+shadow oracle) → M1 (skip-if-unchanged) → M2 (static
-   cone) → M3 (dynamic cone), each shippable behind `ASMDUDE_SIM_INCREMENTAL`. Not started.
+   cone) → M3 (dynamic cone), each shippable. **✅ M0–M3 DONE (2026-06-14)** with an `incremental==full`
+   oracle throughout; controlled by the **`AsmSim_Incremental` setting** (VS checkbox / settings.json,
+   runtime, no restart), default OFF. *Remaining before flipping default ON:* a real-`.asm` shadow soak in
+   live VS; a real old-vs-new CFG-edge diff to relax the conservative topology guard (labeled-line /
+   jump-operand edits currently full-sim); confirm a reused line's unreachable/usage-undefined diagnostics
+   can't depend on a dirty branch condition.
 6. **Solver-level (ITE) merge. ✅ DONE 2026-06-13.** The branch join is now the symbolic ITE/phi merge —
    the editor reads `DynamicFlow.Create_States_Before/After` (`MergeConstructor`) directly; the Tv-level
    `ComponentEvaluator` was deleted. Cross-register facts are preserved and per-vertex solving is gone

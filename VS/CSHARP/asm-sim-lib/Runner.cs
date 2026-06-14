@@ -125,6 +125,57 @@ namespace AsmSim
             }
         }
 
+        /// <summary>
+        /// Answers "is <paramref name="line"/> redundant given <paramref name="before"/>?" — i.e. does
+        /// executing the instruction leave every tracked location it writes provably unchanged. Returns
+        /// <c>null</c> when redundancy is undefined for the line (not an instruction, a halted/syntax-error
+        /// line, or a not-implemented / mock-SIMD opcode).
+        /// <para>This is the one correct place to ask the question. It applies the instruction to a COPY of
+        /// <paramref name="before"/> and queries the result <b>while that copy is still UNFROZEN</b>, so the
+        /// pre-instruction value of an overwritten register is still present alongside the post value. The
+        /// normal simulation freezes every state (<see cref="State.Frozen"/> ⇒ <see cref="State.Remove_History"/>),
+        /// which garbage-collects the pre value to keep models small — so asking on the frozen after-state
+        /// always misses a value rewrite (e.g. <c>mov rax,0x10</c> when rax already holds 0x10). The probe
+        /// here is local and discarded, so the persistent (frozen, compact) states are untouched. See
+        /// REDUNDANT_DIAGNOSTICS_PLAN.md.</para>
+        /// </summary>
+        public static RedundancyVerdict? IsRedundantInstruction(string line, State before)
+        {
+            ArgumentNullException.ThrowIfNull(before);
+            try
+            {
+                Tools tools = before.Tools;
+                string prevKey = before.HeadKey;
+                string nextKey = Tools.CreateKey(tools.Rand);
+                (KeywordID[] _, string _label, Mnemonic mnemonic, string[] args, string _remark) = AsmSourceTools.ParseLine(line, -1, -1, AssemblerEnum.UNKNOWN);
+                if (mnemonic == Mnemonic.NONE)
+                {
+                    return null;
+                }
+                using OpcodeBase? op = InstantiateOpcode(mnemonic, args, (prevKey, nextKey, "DUMMY_NOT_USED"), tools);
+                if (op == null || op.IsHalted || op is NotImplemented or DummySIMD)
+                {
+                    return null; // redundancy is undefined for these
+                }
+                op.Execute();
+
+                // Apply the instruction to a COPY of `before` and keep it UNFROZEN: the copy still proves
+                // `before`'s current values (at prevKey) and the update adds the post values (at nextKey), so
+                // both keys are live for the query below. The probe is disposed immediately.
+                using State probe = new(before);
+                probe.Update_Forward(op.Updates.regular);
+                op.Updates.regular?.Dispose();
+                op.Updates.branch?.Dispose();
+
+                return probe.ComputeRedundancy(prevKey, nextKey, op.RegsWriteStatic, op.FlagsWriteStatic, op.MemWriteStatic);
+            }
+            catch (Exception e)
+            {
+                AsmLog.Warn("SIM", "Runner:IsRedundantInstruction: Exception at line: " + line + "; e=" + e.Message);
+                return null;
+            }
+        }
+
         /// <summary>Perform onestep forward and return the state of the regular branch</summary>
         public static State? SimpleStep_Backward(string line, State state)
         {

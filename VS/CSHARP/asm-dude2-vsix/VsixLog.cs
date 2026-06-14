@@ -16,8 +16,9 @@ using System.Threading.Tasks;
 /// <summary>
 /// Configures <see cref="AsmLog"/> for the VSIX (plugin) process. Same engine/format as the LSP server
 /// and AsmSim, but its own destinations: a disk file (<c>%TEMP%\AsmDude2-extension.log</c>) and,
-/// optionally, the Visual Studio "AsmDude" output pane (wired by <see cref="AttachOutputSink"/> once the
-/// VS.Extensibility output channel exists). Verbosity follows the build default (Debug/Warn), overridable
+/// optionally, the Visual Studio "AsmDude2 VSIX" output pane (wired by <see cref="AttachOutputSink"/> once the
+/// VS.Extensibility output channel exists). It also owns the "AsmSim" pane that tails the sim server's log.
+/// Verbosity follows the build default (Debug/Warn), overridable
 /// at runtime via the <c>ASMDUDE_LOGLEVEL</c> env var and the <c>LogLevel</c> field in settings.json.
 /// </summary>
 internal static class VsixLog
@@ -77,7 +78,7 @@ internal static class VsixLog
         try
         {
             outputChannel_ = await extensibility.Views().Output
-                .CreateOutputChannelAsync("AsmDude2", cancellationToken)
+                .CreateOutputChannelAsync("AsmDude2 VSIX", cancellationToken)
                 .ConfigureAwait(false);
 
             AttachOutputSink(line =>
@@ -89,12 +90,46 @@ internal static class VsixLog
                 lock (outputWriteLock_) channel.Writer.WriteLine(line);
             });
 
-            AsmLog.Info("Server", "AsmDude2 output pane ready");
+            AsmLog.Info("Server", "AsmDude2 VSIX output pane ready");
         }
         catch (Exception ex)
         {
             Interlocked.Exchange(ref outputChannelCreated_, 0); // allow a later retry
-            AsmLog.Warn("Server", $"could not create AsmDude2 output pane: {ex.GetType().Name}: {ex.Message}");
+            AsmLog.Warn("Server", $"could not create AsmDude2 VSIX output pane: {ex.GetType().Name}: {ex.Message}");
         }
     }
+
+    private static int asmSimChannelCreated_;
+
+    /// <summary>The out-of-process AsmSim server (<c>AsmSim.Server.exe</c>) logs to its own file (NOT to this
+    /// process or the LSP), so its <c>[INC]</c>/<c>[component]</c>/diagnostics lines never reach a VS pane.
+    /// This creates an "AsmSim" output pane and tails that file into it (tail -f from EOF) so the sim is as
+    /// visible in VS as the plugin ("AsmDude2 VSIX") and the LSP ("AsmDude2 Language Server"). Self-contained
+    /// in the VSIX because only the extension can create output panes, and the sim server is a grandchild
+    /// process we don't pipe logs back from. Best-effort; failure never affects anything else.</summary>
+    internal static async Task EnsureAsmSimOutputChannelAsync(VisualStudioExtensibility extensibility, CancellationToken cancellationToken)
+    {
+        if (Interlocked.Exchange(ref asmSimChannelCreated_, 1) != 0) return;
+
+        try
+        {
+            OutputChannel channel = await extensibility.Views().Output
+                .CreateOutputChannelAsync("AsmSim", cancellationToken)
+                .ConfigureAwait(false);
+
+            string simLogPath = Path.Combine(Path.GetTempPath(), "asmdude-simserver.log");
+            // Single writer (this one task) ⇒ OutputChannel.Writer needs no extra locking here.
+            _ = Task.Run(() => LogFileTail.RunAsync(
+                simLogPath,
+                line => channel.Writer.WriteLineAsync(line),
+                cancellationToken), cancellationToken);
+            AsmLog.Info("Server", "AsmSim output pane ready (tailing asmdude-simserver.log)");
+        }
+        catch (Exception ex)
+        {
+            Interlocked.Exchange(ref asmSimChannelCreated_, 0); // allow a later retry
+            AsmLog.Warn("Server", $"could not create AsmSim output pane: {ex.GetType().Name}: {ex.Message}");
+        }
+    }
+
 }

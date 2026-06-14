@@ -58,7 +58,7 @@ namespace AsmDude2LS
 
         public override readonly int GetHashCode()
         {
-            return this.microArch_.GetHashCode() ^ this.instr_.GetHashCode() ^ this.args_.GetHashCode();
+            return this.microArch_.GetHashCode() ^ this.instr_.GetHashCode() ^ StringComparer.Ordinal.GetHashCode(this.args_);
         }
 
         public static bool operator ==(PerformanceItem left, PerformanceItem right)

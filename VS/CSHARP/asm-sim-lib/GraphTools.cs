@@ -164,31 +164,52 @@ namespace AsmSim
                 return vertex1;
             }
 
-            HashSet<string> branchPoints1 = [];
-            HashSet<string> branchPoints2 = [];
+            HashSet<string> mutual = new(Get_Branch_Points_Backwards(vertex1, graph));
+            mutual.IntersectWith(new HashSet<string>(Get_Branch_Points_Backwards(vertex2, graph)));
 
-            foreach (string v in Get_Branch_Points_Backwards(vertex1, graph))
+            if (mutual.Count == 0)
             {
-                branchPoints1.Add(v);
+                AsmLog.Warn("SIM", "GraphTools:Get_Branch_Point: no mutual branch point found between " + vertex1 + " and " + vertex2);
+                return null;
+            }
+            if (mutual.Count == 1)
+            {
+                return mutual.First();
             }
 
-            foreach (string v in Get_Branch_Points_Backwards(vertex2, graph))
+            // Multiple common branch points is the NORMAL case for nested branches / loops: every enclosing
+            // branch is a shared ancestor of both incoming paths. The branch that actually distinguishes the
+            // two paths is the NEAREST one (the innermost / latest divergence); an outer branch's condition is
+            // identical on both paths, so selecting it would gate the ITE-merge on the wrong predicate. Pick
+            // the nearest deterministically with a backward BFS from vertex1 — the first common branch point
+            // reached. (The old code returned an arbitrary HashSet element and warned on every such case.)
+            HashSet<string> visited = [vertex1];
+            Queue<string> queue = new();
+            queue.Enqueue(vertex1);
+            while (queue.Count > 0)
             {
-                branchPoints2.Add(v);
+                string v = queue.Dequeue();
+                if (mutual.Contains(v))
+                {
+                    return v;
+                }
+
+                if (graph.ContainsVertex(v))
+                {
+                    foreach (TaggedEdge<string, Tag> edge in graph.InEdges(v))
+                    {
+                        if (visited.Add(edge.Source))
+                        {
+                            queue.Enqueue(edge.Source);
+                        }
+                    }
+                }
             }
 
-            List<string> m = new(branchPoints1.Intersect(branchPoints2));
-            switch (m.Count)
-            {
-                case 0:
-                    AsmLog.Warn("SIM", "GraphTools:Get_First_Branch_Point: no mutual branch point found");
-                    return null;
-                case 1:
-                    return m[0];
-                default:
-                    AsmLog.Warn("SIM", "GraphTools:Get_First_Branch_Point: multiple mutual branch points found, returning first.");
-                    return m[0];
-            }
+            // Unreachable in a well-formed graph (every mutual point is a backward-ancestor of vertex1); kept
+            // as a safety net so the result stays deterministic rather than throwing.
+            AsmLog.Debug("SIM", "GraphTools:Get_Branch_Point: nearest mutual branch point not reachable from " + vertex1);
+            return mutual.OrderBy(static s => s, StringComparer.Ordinal).First();
         }
     }
 }

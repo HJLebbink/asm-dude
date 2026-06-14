@@ -690,8 +690,7 @@ namespace AsmAnnotate
         private PdfTextElement? GetFirstElement()
         {
             if (TextElements.Count > 0) return TextElements[0];
-            if (Images.Count > 0) return null; // Images don't have PdfTextElement
-            return null;
+            return null; // Images don't have a PdfTextElement
         }
 
         /// <summary>

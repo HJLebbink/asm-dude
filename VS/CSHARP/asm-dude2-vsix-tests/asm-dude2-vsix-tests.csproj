@@ -19,12 +19,12 @@
 		<PackageReference Include="xunit.v3" Version="3.2.2" />
 	</ItemGroup>
 
-	<!-- Compile the pure planner SOURCE directly (the tagger calls this same code, so the tests
-	     exercise production logic — not a copy). The VSIX itself targets net10.0-windows8.0 + the
-	     VS.Extensibility SDK; the planner has no VS dependencies, so we link only the one file and
-	     avoid referencing the whole extension. -->
+	<!-- Compile dependency-light VSIX SOURCE files directly (the extension calls this same code, so the
+	     tests exercise production logic — not a copy). The VSIX targets net10.0-windows8.0 + the
+	     VS.Extensibility SDK; these files have no VS dependencies, so we link them and avoid referencing
+	     the whole extension. -->
 	<ItemGroup>
-		<Compile Include="..\asm-dude2-vsix\CodeLens\CodeLensPublishPlanner.cs" Link="CodeLensPublishPlanner.cs" />
+		<Compile Include="..\asm-dude2-vsix\LogFileTail.cs" Link="LogFileTail.cs" />
 	</ItemGroup>
 
 </Project>

@@ -491,7 +491,7 @@ public static class ArchTools
             default:
                 if (warn)
                 {
-                    Console.WriteLine($"WARNING: parseArch: no arch for str \"{str}\"");
+                    AsmLog.Warn("TOOLS", $"parseArch: no arch for str \"{str}\"");
                 }
                 return Arch.ARCH_NONE;
         }

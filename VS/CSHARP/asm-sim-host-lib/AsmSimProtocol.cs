@@ -33,7 +33,9 @@ public sealed record AsmSimSettings(
     string Engine,         // "linear" | "component" | "shadow"
     string LoopHandling,   // "accept" | "modsethavoc" | "peelonce" | "fullunroll" | "fixpoint"
     int Parallelism,
-    int Z3TimeoutMs);
+    int Z3TimeoutMs,
+    bool Incremental = false, // reuse unaffected lines + re-solve only the dataflow cone (default off)
+    bool ShowRedundant = false); // run the per-line redundant-instruction check (AsmDude1 parity; default off)
 
 /// <summary><c>asmsim/initialize</c> params / result.</summary>
 public sealed record AsmSimInitParams(int ClientProcessId, AsmSimSettings Settings);

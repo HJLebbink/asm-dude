@@ -205,8 +205,12 @@ public static class ExpressionEvaluator
             // second: if str is not a constant, test whether evaluating it yields a ulong
             try
             {
-                System.Threading.Tasks.Task<ulong> t = CSharpScript.EvaluateAsync<ulong>(str);
-                ulong value = t.Result;
+                // asm-tools-lib runs in the LSP server / CLI — there is no VS UI thread or sync context, so
+                // synchronously waiting on this Roslyn script evaluation cannot deadlock. ExpressionEvaluator
+                // is a synchronous API; GetAwaiter().GetResult() unwraps the exception (vs .Result's AggregateException).
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+                ulong value = CSharpScript.EvaluateAsync<ulong>(str).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
                 bool isNegative = false;
                 return (valid: true, value, nBits: AsmSourceToolsAlias.NBitsStorageNeeded(value, isNegative));
             }

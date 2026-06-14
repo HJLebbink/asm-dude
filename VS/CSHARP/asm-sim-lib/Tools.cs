@@ -459,6 +459,10 @@ namespace AsmSim
             return mem;
         }
 
+        /// <summary>N-ary symbolic merge of <paramref name="previousStates"/> (left-fold via the ITE/phi
+        /// merge ctor <c>new State(a, b, merge:true)</c>). The INPUT states are NOT disposed here — the caller
+        /// owns them. For a single input the input itself is returned (so the caller must not double-dispose;
+        /// see <c>DynamicFlow.Create_EndState</c>, which skips the returned ref).</summary>
         public static State Collapse(IEnumerable<State> previousStates)
         {
             ArgumentNullException.ThrowIfNull(previousStates);
@@ -469,7 +473,7 @@ namespace AsmSim
             {
                 if (counter == 0)
                 {
-                    result = prev;
+                    result = prev; // the first INPUT (owned by the caller — never disposed here)
                 }
                 else
                 {
@@ -477,9 +481,11 @@ namespace AsmSim
                     AsmLog.Debug("SIM", "Tools:Collapse: state1:\n" + result);
                     AsmLog.Debug("SIM", "Tools:Collapse: state2:\n" + prev);
                     State result2 = new(result, prev, true);
-                    if (counter > 2)
+                    if (counter > 1)
                     {
-                        //TODO HJ 26 okt 2019 investigate dispose
+                        // From the 3rd input on, `result` is the PREVIOUS intermediate merge (a state WE
+                        // created), so dispose it. counter==1's `result` is the first input (caller-owned) and
+                        // must NOT be disposed. (Was `> 2`, which leaked the first intermediate merge.)
                         result.Dispose();
                     }
 

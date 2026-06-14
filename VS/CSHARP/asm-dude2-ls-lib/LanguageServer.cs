@@ -135,7 +135,17 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         Engine: Environment.GetEnvironmentVariable("ASMDUDE_SIM_ENGINE") ?? "component",
         LoopHandling: Environment.GetEnvironmentVariable("ASMDUDE_SIM_LOOP") ?? "accept",
         Parallelism: 0,
-        Z3TimeoutMs: this.options?.AsmSim_Z3_Timeout_MS ?? 5000);
+        Z3TimeoutMs: this.options?.AsmSim_Z3_Timeout_MS ?? 5000,
+        // Incremental simulation is a normal setting (settings.json / VS settings UI), NOT an env var — so it
+        // toggles at runtime with no restart. Default ON: AsmSimIncrementalEffective resolves an ABSENT field
+        // (older settings.json) to the default (true), not to a bool's false.
+        Incremental: this.options?.AsmSimIncrementalEffective ?? true,
+        // Redundant-instruction detection runs unconditionally, like every other sim diagnostic category
+        // (unreachable/undefined are always computed and shown). Gating it on its per-category Show/Decorate
+        // settings made it the lone category that vanished, because those flags are coupled to the master
+        // AsmSim_On via `EnabledWhen` and a stale settings.json pins them false. SendDiagnostics shows the
+        // result unconditionally too. (The host's showRedundant_ remains a test-only opt-out seam.)
+        ShowRedundant: true);
 
     public static LanguageServer Create(Stream sender, Stream reader)
     {
@@ -460,9 +470,12 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         this.options = options;
 
         // Re-init also fires on a settings.json change (SettingsManager.SettingsChanged → server.Initialize).
-        // If the out-of-process sim server is running, push the new settings so they take effect WITHOUT a
-        // server restart (it applies engine/loop in place and re-simulates the re-sent open documents).
-        this.simClient_?.SettingsChanged(this.BuildSimSettings());
+        // Push the new settings so they take effect WITHOUT a restart: to the out-of-process sim server if
+        // running (it re-simulates the re-sent open documents), AND to the in-process simulator (the in-proc
+        // fallback path), so the AsmSim_Incremental / engine / loop settings apply live in both modes.
+        AsmSim.Host.AsmSimSettings simSettings = this.BuildSimSettings();
+        this.simClient_?.SettingsChanged(simSettings);
+        this.asmSimulator_?.ApplySettings(simSettings.Engine, simSettings.LoopHandling, simSettings.Incremental, simSettings.ShowRedundant);
     }
 
     /// <summary>
@@ -485,15 +498,15 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         string filename_Regular = Path.Combine(path, "signature-mar2026.txt");
         string filename_Hand = Path.Combine(path, "signature-hand-1.txt");
-        var mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand, options);
+        var mnemonics = new MnemonicStore(filename_Regular, filename_Hand, options);
         // WriteMnemonicUrlMapping removed — documentation links now handled by context menu command
 
         string path_performance = Path.Combine(path, "Performance");
-        var performanceStore = new PerformanceStore(path_performance, options);
+        var performance = new PerformanceStore(path_performance, options);
 
-        var asmDudeTools = AsmDude2Tools.Create(path, traceSource);
+        var tools = AsmDude2Tools.Create(path, traceSource);
 
-        return new ReferenceData(mnemonicStore, performanceStore, asmDudeTools);
+        return new ReferenceData(mnemonics, performance, tools);
     }
 
     /// <summary>Applies already-loaded <see cref="ReferenceData"/> instead of reading it from disk.</summary>
@@ -781,7 +794,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         int startKeywordLength = StartKeyword.Length;
         int endKeywordLength = EndKeyword.Length;
 
-        List<FoldingRange> foldingRanges = [];
+        List<FoldingRange> ranges = [];
         Stack<int> startLineNumbers = new();
         Stack<int> startCharacters = new();
         Stack<string> collapsedTexts = new();
@@ -825,7 +838,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         int startLine = startLineNumbers.Pop();
                         int startCharacter = startCharacters.Pop();
                         string collapsedText = collapsedTexts.Pop();
-                        foldingRanges.Add(new FoldingRange
+                        ranges.Add(new FoldingRange
                         {
                             StartLine = startLine,
                             StartCharacter = startCharacter,
@@ -838,7 +851,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 }
             }
         }
-        this.SetFoldingRanges(foldingRanges, uri);
+        this.SetFoldingRanges(ranges, uri);
     }
 
     public void UpdateServerSideTextDocument(string text, int version, string uri)
@@ -895,32 +908,47 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         foreach (SimDiagnostic sd in simDiags)
         {
+            // EVERY sim diagnostic category is surfaced unconditionally whenever the simulator produced it.
+            // The per-category Show/Decorate settings are coupled to the master AsmSim_On via `EnabledWhen`
+            // in the VSIX, so VS reports them ALL as false whenever AsmSim_On is off — keying visibility on
+            // those flags silently hid diagnostics that were otherwise being computed and shown (the user
+            // gets unreachable/undefined warnings regardless of the flags, so redundancy must behave the
+            // same; gating it alone made it the odd-one-out that never appeared). See REDUNDANT_DIAGNOSTICS_PLAN.md.
             DiagnosticSeverity severity = sd.Kind switch
             {
                 SimDiagnosticKind.SyntaxError => DiagnosticSeverity.Error,
                 SimDiagnosticKind.NotImplemented => DiagnosticSeverity.Information,
                 SimDiagnosticKind.Unreachable => DiagnosticSeverity.Warning,  // full wavy underline under entire instruction
+                SimDiagnosticKind.Redundant => DiagnosticSeverity.Warning,    // AsmDude1 rendered this as a "Semantic Warning"
                 _ => DiagnosticSeverity.Warning,
             };
 
-            // Use the actual line content to compute precise start/end character positions:
-            // start = first non-whitespace char, end = last non-whitespace char + 1.
+            // Underline the CODE only: start = first non-whitespace char, end = last non-whitespace char of
+            // the instruction, EXCLUDING any trailing #/; comment. (Spanning the comment squiggled the prose
+            // too.) GetRemarkCharPosition gives the comment start; the code is everything before it, trimmed.
             string rawLine = (docLines != null && sd.Line < docLines.Length) ? docLines[sd.Line] : string.Empty;
             int startChar = 0;
             int endChar = rawLine.Length;
             if (rawLine.Length > 0)
             {
                 startChar = rawLine.Length - rawLine.TrimStart().Length;
-                endChar = startChar + rawLine.TrimStart().TrimEnd().Length;
+                int remarkPos = AsmTools.AsmSourceTools.GetRemarkCharPosition(rawLine);
+                string codePart = remarkPos >= 0 ? rawLine[..remarkPos] : rawLine;
+                endChar = codePart.TrimEnd().Length;
+                if (endChar <= startChar)
+                {
+                    endChar = startChar + rawLine.TrimStart().TrimEnd().Length; // comment-only fallback
+                }
             }
 
-            // For unreachable code: fade the text (Unnecessary) AND show a full wavy underline
-            // (IntellisenseError). Both tags together give the same visual as C# unreachable code:
-            // faded/greyed text with a green squiggle covering the entire instruction.
-            // For all other diagnostics: keep IntellisenseError so they appear in the error list.
-            DiagnosticTag[] tags = sd.Kind == SimDiagnosticKind.Unreachable
-                ? [DiagnosticTag.Unnecessary, (DiagnosticTag)AsmDiagnosticTag.IntellisenseError]
-                : [(DiagnosticTag)AsmDiagnosticTag.IntellisenseError];
+            // Tags. Base: IntellisenseError (so it is a live IntelliSense diagnostic, not a build error).
+            // Unreachable also fades the text (Unnecessary) — the VS idiom for dead code. Redundant is a
+            // plain Warning squiggle (AsmDude1's "Semantic Warning"), no fade.
+            var tagList = new List<DiagnosticTag> { (DiagnosticTag)AsmDiagnosticTag.IntellisenseError };
+            if (sd.Kind == SimDiagnosticKind.Unreachable)
+            {
+                tagList.Add(DiagnosticTag.Unnecessary);
+            }
 
             allDiags.Add(new VSDiagnostic
             {
@@ -932,6 +960,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     SimDiagnosticKind.SyntaxError => "SIM-E001",
                     SimDiagnosticKind.NotImplemented => "SIM-I001",
                     SimDiagnosticKind.Unreachable => "SIM-W001",
+                    SimDiagnosticKind.Redundant => "SIM-W003",
                     _ => "SIM-W002",
                 },
                 Range = new Range
@@ -939,9 +968,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     Start = new Position(sd.Line, startChar),
                     End = new Position(sd.Line, endChar),
                 },
-                Tags = tags,
+                Tags = [.. tagList],
             });
-            AsmDudeLog.Debug($"[SendDiagnostics] diag: line={sd.Line}, severity={severity}, msg={sd.Message}");
+            AsmDudeLog.Debug($"[SendDiagnostics] diag: line={sd.Line}, kind={sd.Kind}, severity={severity}, msg={sd.Message}");
         }
 
         PublishDiagnosticParams parameter = new()
@@ -975,21 +1004,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     public object[] GetCodeActions(CodeActionParams parameter)
     {
-        var uri = parameter.TextDocument.Uri.ToString();
-        var lines = this.GetLines(uri);
-        if (lines == null || lines.Length == 0) return [];
-
-        // Check if cursor is on a mnemonic that has documentation
-        int line = (int)parameter.Range.Start.Line;
-        if (line >= lines.Length) return [];
-
-        var (word, _, _) = GetWord((int)parameter.Range.Start.Character, lines[line]);
-        if (string.IsNullOrEmpty(word)) return [];
-
-        string wordUpper = word.ToUpperInvariant();
-        Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(wordUpper, true);
-        if (mnemonic == Mnemonic.NONE) return [];
-
+        // Code actions are currently disabled; this always returns none. See the reference block below.
         return [];
 
         /* Disabled demo code actions — kept for reference
@@ -3551,7 +3566,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     {
         this.disconnectEvent.Set();
 
-        Disconnected?.Invoke(this, new EventArgs());
+        Disconnected?.Invoke(this, EventArgs.Empty);
     }
 
     public void Dispose()

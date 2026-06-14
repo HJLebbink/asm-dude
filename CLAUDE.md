@@ -159,6 +159,33 @@ branch-aware and ~on par with linear. Force the old single-path engine with `=li
 ≈ min(cores, 8)), `ASMDUDE_SIM_LOOP=accept|modsethavoc|peelonce|fullunroll|fixpoint`. All three are also
 runtime-settable on the out-of-process server via `settingsChanged` (no restart).
 
+#### Known limitation: truth-value flattening loses relational information (display sites)
+
+Symbolic register/flag **values** are flattened to per-bit truth-values (`Tv[]`) for display. The lossy
+primitive is **`ToolsZ3.GetTvArray(BitVecExpr, …)`** (`asm-sim-lib/ToolsZ3.cs:765/770/792`): it solves
+each bit **independently**, so everything *relational* the solver knows is discarded — `RAX == RBX`,
+`RAX = RBX + 1`, "RAX is even", "exactly one of these bits is set". Two registers Z3 knows are equal but
+otherwise unconstrained both render as `0x????????????????`, and the equality is **invisible** in the
+display. This is sound for "what is each bit pinned to" but is the wrong representation for showing or
+reasoning about *relationships*.
+
+- **Flatten primitives:** `ToolsZ3.GetTvArray`/`GetTv` (`ToolsZ3.cs`); `State.GetTvArray(Rn)` /
+  `GetTv(Flags)` / `GetTvArrayMem` (`State.cs:814/768/867`, memoized per-`State` when `Frozen` via
+  `cached_Reg_Values_`/`cached_Flag_Values_`).
+- **Display/diagnostic consumers (all in the host `AsmSimulator.cs` + `State.ToStringRegs`):**
+  `ComputeStateString` (`:1587`) → CodeLens sim-state; `ComputeReadLabel`/`ComputeWriteLabel`
+  (`:1614/:1661`) → CodeLens `r:`/`w:` labels; usage-of-undefined diagnostic message (`:2145/:2156`).
+  These feed CodeLens via `GetSimStatesSummary` (`:1460`) over the side pipe. **They are cached** — the
+  flattened per-line strings/labels live in `DocCache` (`lineStrings*`, `:89-107`), computed once per
+  (re)simulated line on the Phase-P worker pool and carried forward for unchanged lines on edit
+  (`RemapCache`/`RemapConeReuse`); the CodeLens request path only reads cached strings (no re-solve).
+- **NOT a value-flatten (the correct pattern):** redundancy `State.Is_Redundant(Rn/Flags)`
+  (`State.cs:617/646`) flattens only the *proposition* `MkEq(reg@key1, reg@key2)` to one `Tv`, preserving
+  the relationship. `State.EqualValues` (`:1213`) likewise. Inlay hints don't touch sim values.
+- **Forward-looking fix (not done):** a relational-aware label — e.g. render `RAX = RBX` when
+  `Is_Redundant`/`EqualValues` proves equality even though both registers are otherwise unknown — would
+  recover the most useful lost relationship for display without abandoning the `Tv[]` fast path.
+
 - **asm-annotate**: The instruction-data toolchain (CLI). Subcommands: `extract` (Intel SDM PDF→Markdown,
   stage 1), `gen-signatures` (wiki Markdown→`signature-*.txt`, stage 2 — formerly the standalone
   `intel-doc-2-data` project, folded in here), `perf-uops` (uops.info XML→perf TSVs), plus `check-latest`/
@@ -191,6 +218,30 @@ dotnet build VS\CSHARP\asm-dude2-vsix\asm-dude2-vsix.csproj
 Download .NET 10 from: https://dotnet.microsoft.com/download/dotnet/10.0
 
 **Language Version**: C# 14 (included with .NET 10)
+
+### Code analyzers
+
+Analyzer configuration is **centralized** — do not re-add these per-project:
+
+- **`VS/CSHARP/Directory.Build.props`** turns on the built-in .NET analyzers (`EnableNETAnalyzers`,
+  `AnalysisLevel=latest`, `EnforceCodeStyleInBuild`) for every active project and adds three analyzer
+  packages (all `PrivateAssets=all`): **Meziantou.Analyzer** (correctness / immutability / readonly),
+  **Microsoft.VisualStudio.Threading.Analyzers** (VSTHRD async / JoinableTask / StreamJsonRpc), and
+  **Microsoft.CodeAnalysis.BannedApiAnalyzers**. `VS/CSHARP/old/Directory.Build.props` deliberately does
+  **not** import the parent, so archived code is exempt (`RunAnalyzers=false`).
+- **Policy: warnings, never errors.** Nothing here sets `TreatWarningsAsErrors`, so the build stays green
+  (currently ~103 warnings) while findings are triaged. Per-rule severities live in **`VS/.editorconfig`**:
+  readonly/immutability rules are turned **up** (`IDE0044`, `dotnet_style_readonly_field`, `CA2227`);
+  deliberate patterns are kept quiet (`CA1051` for the `AsmSettingsData` public-field DTO, `CA1819` for the
+  `Tv[]`/semantic-token fast paths); and the noisiest opinionated Meziantou rules (`MA0006`, `MA0002`,
+  `MA0026`, …) are tamed to `none`/`suggestion`.
+- **`VS/CSHARP/BannedSymbols.txt`** enforces the [Logging](#logging-asmlog) rule: `System.Console` and
+  `File.AppendAll*` are banned (`RS0030`) so logging goes through `AsmLog`. **Exemptions:** the CLI tools
+  (`asm-annotate`, `asm-sim-main`), the fuzzer (`asm-fuzz`) and all `*-tests` projects opt out via a scoped
+  `NoWarn RS0030` in `Directory.Build.props` (Console is legit output there); `AsmLog.cs` itself — the
+  sanctioned sink — opts out with a file-level `#pragma warning disable RS0030`. Remaining `RS0030`
+  warnings (in `asm-dude2-ls`, `asm-dude2-vsix`, `asm-sim-server`, `asm-tools-lib`) are real ad-hoc-logging
+  sites to migrate to `AsmLog`.
 
 ## Testing
 

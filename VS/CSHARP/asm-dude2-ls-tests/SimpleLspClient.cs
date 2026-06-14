@@ -1,4 +1,6 @@
-class SimpleLspClient
+namespace AsmDude2LS.Tests;
+
+internal class SimpleLspClient
 {
     // Manual debug client (not an entry point — this is a test assembly; xUnit owns Main).
     static async Task RunAsync()

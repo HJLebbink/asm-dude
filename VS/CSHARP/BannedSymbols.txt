@@ -1,0 +1,3 @@
+T:System.Console;Use AsmLog for diagnostics (CLAUDE.md > Logging). Console is reserved for CLI tools (asm-annotate, asm-sim-main) and the AsmLog sink, which opt out via NoWarn RS0030.
+M:System.IO.File.AppendAllText(System.String,System.String);Use AsmLog instead of ad-hoc file logging (CLAUDE.md > Logging).
+M:System.IO.File.AppendAllLines(System.String,System.Collections.Generic.IEnumerable{System.String});Use AsmLog instead of ad-hoc file logging (CLAUDE.md > Logging).

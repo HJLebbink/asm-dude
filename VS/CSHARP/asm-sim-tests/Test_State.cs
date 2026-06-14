@@ -56,6 +56,31 @@ namespace unit_tests_asm_z3
             return new State(tools, tailKey, headKey);
         }
 
+        // CHARACTERIZATION (intentional behaviour): a FROZEN State keeps only the CURRENT value of each
+        // register; an overwritten register's prior-key binding is garbage-collected by Remove_History
+        // (essential for small/swift Z3 models). So asking Is_Redundant across two keys ON THE FROZEN
+        // after-state misses a value rewrite — `mov rax,10` twice keeps only `RAX!key2 = 10`, `RAX!key1` is
+        // gone. This is WHY the redundancy check must run on an UNFROZEN probe before the prune
+        // (Runner.IsRedundantInstruction); see Test_Runner.Test_Runner_IsRedundant_* and
+        // REDUNDANT_DIAGNOSTICS_PLAN.md. If this assertion ever flips, the freeze stopped pruning history.
+        [TestMethod]
+        public void Test_State_Frozen_DropsOverwrittenRegisterHistory()
+        {
+            Tools tools = this.CreateTools(100000);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+
+            using State state1 = this.CreateState(tools);
+            State state2 = AsmTestTools.Step_Forward("mov rax, 10", state1);
+            string key1 = state2.HeadKey;
+            State state3 = AsmTestTools.Step_Forward("mov rax, 10", state2);
+            string key2 = state3.HeadKey;
+
+            // state3 is frozen ⇒ only the current (key2) binding survives ⇒ cross-key equality unprovable.
+            Assert.IsFalse(state3.Is_Redundant(AsmTools.Rn.RAX, key1, key2),
+                "freezing prunes the overwritten register's prior-key binding (by design)");
+        }
+
         [TestMethod]
         public void Test_State_Redundant_Mem_1()
         {

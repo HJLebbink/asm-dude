@@ -222,6 +222,14 @@ internal static class AsmDudeSettings
         new("asmSimOn", "Enable assembly simulator", AsmSimCategory, defaultValue: true);
 
     [VisualStudioContribution]
+    internal static Setting.Boolean AsmSimIncremental { get; } =
+        new("asmSimIncremental", "Incremental simulation", AsmSimCategory, defaultValue: true)
+        {
+            Description = "On an edit, reuse the previous result for unaffected lines and re-solve only the dataflow cone, instead of re-simulating the whole document. Falls back to a full simulation when it can't safely reuse. Applies at runtime — no restart.",
+            EnabledWhen = SettingRule.Equal(AsmSimOn, true),
+        };
+
+    [VisualStudioContribution]
     internal static Setting.Integer AsmSimZ3Timeout { get; } =
         new("asmSimZ3Timeout", "Z3 timeout (ms)", AsmSimCategory, defaultValue: 5000)
         {
@@ -292,12 +300,12 @@ internal static class AsmDudeSettings
 
     [VisualStudioContribution]
     internal static Setting.Boolean AsmSimShowRedundantInstructions { get; } =
-        new("asmSimShowRedundantInstructions", "Redundant instructions: show in error list", AsmSimCategory, defaultValue: false)
+        new("asmSimShowRedundantInstructions", "Redundant instructions: show in error list", AsmSimCategory, defaultValue: true)
         { EnabledWhen = SettingRule.Equal(AsmSimOn, true) };
 
     [VisualStudioContribution]
     internal static Setting.Boolean AsmSimDecorateRedundantInstructions { get; } =
-        new("asmSimDecorateRedundantInstructions", "Redundant instructions: squiggle", AsmSimCategory, defaultValue: false)
+        new("asmSimDecorateRedundantInstructions", "Redundant instructions: squiggle", AsmSimCategory, defaultValue: true)
         { EnabledWhen = SettingRule.Equal(AsmSimOn, true) };
 
     [VisualStudioContribution]

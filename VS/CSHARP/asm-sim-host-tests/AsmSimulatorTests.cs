@@ -391,4 +391,154 @@ public class AsmSimulatorTests
 
         merged.Should().Be("rw:RAX=0b????_????");
     }
+
+    // ── Redundant-instruction detection (AsmDude1 parity; REDUNDANT_DIAGNOSTICS_PLAN.md) ────────────────
+    // These drive the REAL linear engine via SimulateSynchronouslyForTest. The seam does not touch
+    // showRedundant_, so ApplySettings(..., showRedundant: true) BEFORE the run enables the check (and the
+    // seam preserves it — it sets engine/incremental/computeFullState but not showRedundant_).
+
+    private static void SimulateWithRedundant(AsmSimulator sim, Uri uri, string[] lines, AsmSimulator.SimEngineMode engine = AsmSimulator.SimEngineMode.Linear)
+    {
+        // ApplySettings enables showRedundant_ (the seam preserves it); SimulateSynchronouslyForTest pins
+        // the engine + incremental-off.
+        sim.ApplySettings(engine: "linear", loop: "accept", incremental: false, showRedundant: true);
+        sim.SimulateSynchronouslyForTest(uri, lines, engine);
+    }
+
+    private static System.Collections.Generic.List<int> RedundantLines(AsmSimulator sim, Uri uri)
+    {
+        var result = new System.Collections.Generic.List<int>();
+        foreach (SimDiagnostic d in sim.GetDiagnostics(uri))
+        {
+            if (d.Kind == SimDiagnosticKind.Redundant) result.Add(d.Line);
+        }
+        return result;
+    }
+
+    [Fact]
+    public void Redundant_MovRegToItself_IsFlagged()
+    {
+        using var sim = new AsmSimulator();
+        var uri = new Uri("file:///redundant_movself.asm");
+        string[] lines =
+        [
+            "mov rax, rbx",   // line 0: changes rax (not redundant)
+            "mov rax, rax",   // line 1: writes rax = rax, no flags → provably unchanged → REDUNDANT
+        ];
+
+        SimulateWithRedundant(sim, uri, lines);
+
+        RedundantLines(sim, uri).Should().Contain(1, "\"mov rax, rax\" cannot change machine state");
+        RedundantLines(sim, uri).Should().NotContain(0, "\"mov rax, rbx\" changes rax");
+    }
+
+    [Fact]
+    public void Redundant_RewriteSameImmediate_Component_IsFlagged()
+    {
+        using var sim = new AsmSimulator();
+        var uri = new Uri("file:///redundant_reimm.asm");
+        string[] lines =
+        [
+            "mov rax, 0x10",   // line 0: defines rax = 0x10 (not redundant)
+            "mov rax, 0x10",   // line 1: rax is already 0x10 → SHOULD be redundant (AsmDude1 caught this)
+        ];
+
+        SimulateWithRedundant(sim, uri, lines, AsmSimulator.SimEngineMode.Component);
+
+        RedundantLines(sim, uri).Should().Contain(1, "rax already holds 0x10");
+        RedundantLines(sim, uri).Should().NotContain(0);
+    }
+
+    [Fact]
+    public void Redundant_MovRegToItself_Component_IsFlagged()
+    {
+        // Structural redundancy must also hold under the editor's DEFAULT engine (Component).
+        using var sim = new AsmSimulator();
+        var uri = new Uri("file:///redundant_movself_component.asm");
+        string[] lines =
+        [
+            "mov rax, rbx",
+            "mov rax, rax",   // REDUNDANT
+        ];
+
+        SimulateWithRedundant(sim, uri, lines, AsmSimulator.SimEngineMode.Component);
+
+        RedundantLines(sim, uri).Should().Contain(1);
+        RedundantLines(sim, uri).Should().NotContain(0);
+    }
+
+    [Fact]
+    public void Redundant_StateChangingInstructions_AreNotFlagged()
+    {
+        using var sim = new AsmSimulator();
+        var uri = new Uri("file:///redundant_negatives.asm");
+        string[] lines =
+        [
+            "mov rax, 0x10",   // line 0: defines rax
+            "add rax, 1",      // line 1: changes rax AND flags → not redundant
+            "xor rax, rax",    // line 2: changes rax to 0 + sets flags → not redundant
+            "nop",             // line 3: NOP is guarded out → never flagged
+        ];
+
+        SimulateWithRedundant(sim, uri, lines);
+
+        var redundant = RedundantLines(sim, uri);
+        redundant.Should().NotContain(1, "add changes rax and flags");
+        redundant.Should().NotContain(2, "xor self changes rax and flags");
+        redundant.Should().NotContain(3, "NOP is explicitly skipped, not warned");
+    }
+
+    [Fact]
+    public void Redundant_Disabled_ProducesNoRedundantDiagnostics()
+    {
+        using var sim = new AsmSimulator();
+        var uri = new Uri("file:///redundant_gate.asm");
+        string[] lines =
+        [
+            "mov rax, rbx",
+            "mov rax, rax",   // would be redundant IF the check were enabled
+        ];
+
+        // No ApplySettings(showRedundant: true) → the production gate is OFF.
+        sim.SimulateSynchronouslyForTest(uri, lines);
+
+        RedundantLines(sim, uri).Should().BeEmpty("the redundant check must be gated by the setting");
+    }
+
+    [Fact]
+    public void Redundant_MovBackKnownEqual_IsFlagged()
+    {
+        // The canonical demo case (example_semantic_analysis.asm "Redundant instruction warning" region):
+        // after `mov rax, rbx`, rbx==rax, so writing rax back into rbx is provably state-preserving.
+        // This is VALUE redundancy via known equality — distinct from the structural `mov rax, rax`.
+        using var sim = new AsmSimulator();
+        var uri = new Uri("file:///redundant_movback.asm");
+        string[] lines =
+        [
+            "mov rax, rbx",   // line 0: rax := rbx (changes rax)
+            "mov rbx, rax",   // line 1: rbx := rax, but rbx already == rax → REDUNDANT
+        ];
+
+        SimulateWithRedundant(sim, uri, lines);
+
+        RedundantLines(sim, uri).Should().Contain(1, "rbx already equals rax, so this mov preserves state");
+        RedundantLines(sim, uri).Should().NotContain(0);
+    }
+
+    [Fact]
+    public void Redundant_MovBackKnownEqual_Component_IsFlagged()
+    {
+        using var sim = new AsmSimulator();
+        var uri = new Uri("file:///redundant_movback_component.asm");
+        string[] lines =
+        [
+            "mov rax, rbx",
+            "mov rbx, rax",   // REDUNDANT
+        ];
+
+        SimulateWithRedundant(sim, uri, lines, AsmSimulator.SimEngineMode.Component);
+
+        RedundantLines(sim, uri).Should().Contain(1);
+        RedundantLines(sim, uri).Should().NotContain(0);
+    }
 }

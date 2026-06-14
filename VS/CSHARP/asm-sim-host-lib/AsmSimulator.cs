@@ -42,6 +42,7 @@ namespace AsmSim.Host
         UsageUndefined,
         Unreachable,
         NotImplemented,
+        Redundant,
     }
 
     internal readonly record struct SimDiagnostic(int Line, string Message, SimDiagnosticKind Kind);
@@ -109,6 +110,21 @@ namespace AsmSim.Host
         private readonly Dictionary<Uri, CancellationTokenSource> pendingTasks_ = [];
         private readonly Dictionary<Uri, long> simVersion_ = [];
         private readonly object lockObj_ = new();
+
+        /// <summary>The instruction sequence of the PREVIOUS simulation of each document, retained so an
+        /// edit can be diffed against it (<see cref="AsmSim.InstructionDiff"/>) to compute the dataflow cone
+        /// — the foundation of incremental simulation (INCREMENTAL_SIM_PLAN.md M0). Populated only when
+        /// <see cref="SimIncremental"/> is on; guarded by <see cref="lockObj_"/>.</summary>
+        private readonly Dictionary<Uri, IReadOnlyList<AsmSim.Instruction>> prevInstr_ = [];
+
+        /// <summary>The (instructions, result-cache) of the last COMPLETED simulation of each document — the
+        /// reusable unit for incremental simulation (INCREMENTAL_SIM_PLAN.md M1). Unlike
+        /// <see cref="prevInstr_"/> (updated eagerly for the diff log), this pairs the instructions with the
+        /// DocCache they produced, and is updated only when a run finishes, so the two are always coherent.
+        /// The cache is strings-only ⇒ retaining it is cheap and Z3-independent. <c>Lines</c> are the old
+        /// source lines, kept so the OLD CFG can be rebuilt for the topology edge-diff (M2 topology relax).
+        /// Guarded by <see cref="lockObj_"/>.</summary>
+        private readonly Dictionary<Uri, (IReadOnlyList<AsmSim.Instruction> Instr, DocCache Cache, IReadOnlyList<string> Lines)> committed_ = [];
 
         internal AsmSimulator()
         {
@@ -189,6 +205,10 @@ namespace AsmSim.Host
             // Tests pin the engine explicitly (default Linear, the golden-baseline engine) so they are
             // independent of the production default and of the ASMDUDE_SIM_ENGINE env var.
             this.engineMode_ = engine;
+            // This seam is the golden FULL-sim baseline: pin incremental OFF so a dev machine that happens to
+            // have ASMDUDE_SIM_INCREMENTAL set can't make a re-sim silently take the reuse fast path. The
+            // Tier-0/cone paths are exercised by their own seams (SimulateTier0ForTest/SimulateConeForTest).
+            this.incremental_ = false;
             // Most tests assert on the full before/after dumps (golden register values, getProvenStates), so
             // default to computing them even though the editor skips them. A parity test that compares against
             // the editor (out-of-process) path passes false to match. See computeFullState_.
@@ -209,6 +229,57 @@ namespace AsmSim.Host
             this.RunSimulation(uri, version, lines, CancellationToken.None, onCompleted: null, onProgress: null);
         }
 
+        /// <summary>Test seam — run the REAL incremental decision path synchronously (incremental ON), so a
+        /// soak test drives the production <see cref="RunSimulation"/> dispatch (Tier-0 → cone → full fallback)
+        /// exactly as the editor would. Requires a committed baseline from a prior run; commits a new baseline
+        /// for the next edit. Defaults to the editor's config (Component engine, labels-only).</summary>
+        internal void SimulateIncrementalForTest(Uri uri, IReadOnlyList<string> lines, SimEngineMode engine = SimEngineMode.Component, bool computeFullState = false)
+        {
+            this.engineMode_ = engine;
+            this.computeFullState_ = computeFullState;
+            long version;
+            lock (this.lockObj_)
+            {
+                if (this.pendingTasks_.TryGetValue(uri, out CancellationTokenSource? existing))
+                {
+                    existing.Cancel();
+                    existing.Dispose();
+                    this.pendingTasks_.Remove(uri);
+                }
+                version = this.simVersion_.TryGetValue(uri, out long v) ? v + 1 : 1;
+                this.simVersion_[uri] = version;
+                this.cache_[uri] = new DocCache();
+            }
+            this.incremental_ = true; // exercise the real reuse dispatch
+            this.RunSimulation(uri, version, lines, CancellationToken.None, onCompleted: null, onProgress: null);
+        }
+
+        /// <summary>Test seam — run the real dispatch synchronously but DO NOT touch <see cref="incremental_"/>,
+        /// so a test can verify that <see cref="ApplySettings"/> (i.e. the settings) actually controls reuse:
+        /// enable via ApplySettings, then a newline edit should reuse; disable, and it should recompute.</summary>
+        internal void SimulateRespectingFlagForTest(Uri uri, IReadOnlyList<string> lines, SimEngineMode engine = SimEngineMode.Component, bool computeFullState = false)
+        {
+            this.engineMode_ = engine;
+            this.computeFullState_ = computeFullState;
+            long version;
+            lock (this.lockObj_)
+            {
+                if (this.pendingTasks_.TryGetValue(uri, out CancellationTokenSource? existing))
+                {
+                    existing.Cancel();
+                    existing.Dispose();
+                    this.pendingTasks_.Remove(uri);
+                }
+                version = this.simVersion_.TryGetValue(uri, out long v) ? v + 1 : 1;
+                this.simVersion_[uri] = version;
+                this.cache_[uri] = new DocCache();
+            }
+            this.RunSimulation(uri, version, lines, CancellationToken.None, onCompleted: null, onProgress: null);
+        }
+
+        /// <summary>Test hook: the current value of the runtime incremental switch (set by <see cref="ApplySettings"/>).</summary>
+        internal bool IncrementalEnabledForTest => this.incremental_;
+
         /// <summary>
         /// Cancel any in-flight or pending simulation for <paramref name="uri"/> and release
         /// all cached data for that document. Called when the document is closed.
@@ -228,6 +299,8 @@ namespace AsmSim.Host
                 // Cancelling the token above makes the in-flight RunSimulation (if any) unwind and dispose
                 // its own Z3 states in its finally; the cache itself holds only strings.
                 this.cache_.Remove(uri);
+                this.prevInstr_.Remove(uri);
+                this.committed_.Remove(uri);
             }
         }
 
@@ -523,15 +596,24 @@ namespace AsmSim.Host
         /// <c>settingsChanged</c> path — see <c>AsmSimRpcServer.SettingsChanged</c>). Takes effect on the
         /// next simulation; the caller re-sends open documents to pick it up. Parallelism is structural
         /// (pool size fixed at construction) and intentionally NOT changed here.</summary>
-        public void ApplySettings(string? engine, string? loop)
+        public void ApplySettings(string? engine, string? loop, bool incremental, bool showRedundant = false)
         {
             this.engineMode_ = ParseEngine(engine);
             if (Enum.TryParse(loop, ignoreCase: true, out AsmSim.LoopHandling lh2))
             {
                 this.loopHandling_ = lh2;
             }
-            AsmLog.Info("ASMSIM", $"ApplySettings: engine={this.engineMode_}, loop={this.loopHandling_}");
+            this.incremental_ = incremental;
+            this.showRedundant_ = showRedundant;
+            AsmLog.Info("ASMSIM", $"ApplySettings: engine={this.engineMode_}, loop={this.loopHandling_}, incremental={this.incremental_}, showRedundant={this.showRedundant_}");
         }
+
+        /// <summary>When true, the engines run the (Z3-costly) redundant-instruction check per line — the
+        /// faithful port of AsmDude1's <c>Calculate_Redundant_Instruction_Warnings</c>. Gated by the
+        /// production setting <c>AsmSim_Show_Redundant_Instructions || AsmSim_Decorate_Redundant_Instructions</c>
+        /// (see <c>BuildSimSettings</c>), threaded in via <see cref="ApplySettings"/>. Default off so the extra
+        /// solves are never paid unless a redundant surface is enabled. See REDUNDANT_DIAGNOSTICS_PLAN.md.</summary>
+        private bool showRedundant_;
 
         /// <summary>Max concurrent per-line value-extractions the component engine runs (ASMDUDE_SIM_PARALLEL
         /// env var). Extraction (solve the displayed read/write registers of each line — see
@@ -545,6 +627,326 @@ namespace AsmSim.Host
             string? v = Environment.GetEnvironmentVariable("ASMDUDE_SIM_PARALLEL");
             if (int.TryParse(v, out int n) && n >= 1) return Math.Min(n, 64);
             return Math.Max(1, Math.Min(Environment.ProcessorCount, 8));
+        }
+
+        /// <summary>Back-compat env seed for <see cref="incremental_"/> (<c>ASMDUDE_SIM_INCREMENTAL</c>). Only
+        /// the PRE-settings value; the actual control is the <c>AsmSim_Incremental</c> setting (settings.json /
+        /// VS settings UI, **default ON**), applied at runtime via <see cref="ApplySettings"/> right after the
+        /// server initializes — no env var or restart needed. See INCREMENTAL_SIM_PLAN.md "Phase 3".</summary>
+        private static readonly bool SimIncremental = ParseBool(Environment.GetEnvironmentVariable("ASMDUDE_SIM_INCREMENTAL"));
+
+        /// <summary>Per-instance incremental switch (settings-driven via <see cref="ApplySettings"/>; seeded
+        /// from the <see cref="SimIncremental"/> env default). Gates the Tier-0 / cone reuse fast paths in
+        /// <see cref="RunSimulation"/>; the test seams bypass it.</summary>
+        private bool incremental_ = SimIncremental;
+
+        private static bool ParseBool(string? v)
+            => string.Equals(v, "1", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(v, "true", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(v, "on", StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>Retain the new instruction sequence for <paramref name="uri"/> and return the diff vs the
+        /// PREVIOUS retained sequence (null when there was none — a cold first run). This is the shared
+        /// retain+diff core of the incremental pipeline. Unconditional (the <see cref="SimIncremental"/> gate
+        /// lives in the callers) so the test seam can exercise it deterministically.</summary>
+        private AsmSim.InstructionDiff? RetainAndDiff(Uri uri, IReadOnlyList<string> lines)
+        {
+            IReadOnlyList<AsmSim.Instruction> newInstr = AsmSim.Instruction.ParseProgram(lines);
+            IReadOnlyList<AsmSim.Instruction>? prev;
+            lock (this.lockObj_)
+            {
+                this.prevInstr_.TryGetValue(uri, out prev);
+                this.prevInstr_[uri] = newInstr;
+            }
+            return prev == null ? null : AsmSim.InstructionDiff.Compute(prev, newInstr);
+        }
+
+        /// <summary>Test seam — the real retain+diff path (<see cref="RetainAndDiff"/>), independent of the
+        /// <see cref="SimIncremental"/> env flag, so a host test can prove the cross-edit behavior (Tier-0
+        /// recognition, line remapping, change localization) against the actual production state.</summary>
+        internal AsmSim.InstructionDiff? ComputeIncrementalDiffForTest(Uri uri, IReadOnlyList<string> lines)
+            => this.RetainAndDiff(uri, lines);
+
+        /// <summary>M0 plumbing (behavior-neutral): diff this edit against the previous run, log a one-line
+        /// summary of what an incremental pass WOULD reuse vs re-solve, and retain the new sequence for the
+        /// next edit. No reuse happens yet — the full re-simulation still runs — so this only OBSERVES the
+        /// cone an edit implies. No-op unless <see cref="SimIncremental"/>. Never throws into the sim path.</summary>
+        private void RecordIncrementalDiff(Uri uri, IReadOnlyList<string> lines)
+        {
+            if (!this.incremental_) return;
+            try
+            {
+                AsmSim.InstructionDiff? diff = this.RetainAndDiff(uri, lines);
+                if (diff == null)
+                {
+                    Log($"[INC] {uri.Segments[^1]}: no previous sim — full simulation (cold)");
+                }
+                else if (diff.HasNoInstructionChange)
+                {
+                    Log($"[INC] {uri.Segments[^1]}: Tier-0 reusable (no instruction change; +{diff.AddedNewLines.Count}/-{diff.RemovedOldLines.Count} non-instruction line(s))");
+                }
+                else
+                {
+                    Log($"[INC] {uri.Segments[^1]}: instruction change — added new line(s) [{string.Join(",", diff.AddedNewLines)}], removed old line(s) [{string.Join(",", diff.RemovedOldLines)}]; {diff.NewToOld.Count} line(s) matched/reusable");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"[INC] diff failed (non-fatal): {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>Record the just-completed simulation of <paramref name="uri"/> (its instruction sequence
+        /// paired with the cache it produced) as the reusable baseline for the next edit (M1). Called on the
+        /// success path of every engine. Under <see cref="lockObj_"/> + a version guard so a superseded run
+        /// never overwrites a newer baseline. Cheap (one parse + a reference to the strings-only cache).</summary>
+        private void CommitSim(Uri uri, long version, IReadOnlyList<string> lines)
+        {
+            try
+            {
+                IReadOnlyList<AsmSim.Instruction> instr = AsmSim.Instruction.ParseProgram(lines);
+                lock (this.lockObj_)
+                {
+                    if (this.simVersion_.TryGetValue(uri, out long cur) && cur == version
+                        && this.cache_.TryGetValue(uri, out DocCache? entry))
+                    {
+                        this.committed_[uri] = (instr, entry, lines);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"[INC] commit failed (non-fatal): {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>Remap a completed document's cache onto a Tier-0 edit: copy every per-line string and
+        /// diagnostic from <paramref name="prev"/> to the line it moved to (<paramref name="diff"/>'s
+        /// <see cref="AsmSim.InstructionDiff.NewToOld"/> for the per-line strings, the inverse for the
+        /// per-line diagnostics). Only valid when <see cref="AsmSim.InstructionDiff.HasOnlyInertChanges"/> —
+        /// then every instruction matched, so each instruction's symbolic state (hence its cached strings) is
+        /// unchanged and only its line number shifted. Pure string/struct copying — no Z3.</summary>
+        private static DocCache RemapCache(DocCache prev, AsmSim.InstructionDiff diff)
+        {
+            var next = new DocCache();
+            foreach (KeyValuePair<int, int> kv in diff.NewToOld)
+            {
+                int n = kv.Key, o = kv.Value;
+                if (prev.lineStringsBefore.TryGetValue(o, out string? b) && b != null) next.lineStringsBefore[n] = b;
+                if (prev.lineStringsAfter.TryGetValue(o, out string? a) && a != null) next.lineStringsAfter[n] = a;
+                if (prev.lineStringsReadLabels.TryGetValue(o, out string? r) && r != null) next.lineStringsReadLabels[n] = r;
+                if (prev.lineStringsWriteLabels.TryGetValue(o, out string? w) && w != null) next.lineStringsWriteLabels[n] = w;
+            }
+            foreach (SimDiagnostic d in prev.diagnostics)
+            {
+                if (diff.OldToNew.TryGetValue(d.Line, out int nn))
+                {
+                    next.diagnostics.Add(d with { Line = nn });
+                }
+            }
+            return next;
+        }
+
+        /// <summary>M1 Tier-0 fast path: if this edit changed no instruction and no label (only blank/comment
+        /// lines shifted — <see cref="AsmSim.InstructionDiff.HasOnlyInertChanges"/>), rebuild the cache by
+        /// remapping the last completed run's strings onto the shifted line numbers and install it WITHOUT
+        /// running Z3, then fire the same progress/completed callbacks a real run would. Returns true when it
+        /// reused (the caller must then return); false when a full simulation is required. Flag-agnostic — the
+        /// production gate (<see cref="SimIncremental"/>) is at the call site so the test seam can drive it.</summary>
+        private bool TryTier0Reuse(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
+        {
+            try
+            {
+                IReadOnlyList<AsmSim.Instruction> newInstr = AsmSim.Instruction.ParseProgram(lines);
+                (IReadOnlyList<AsmSim.Instruction> Instr, DocCache Cache, IReadOnlyList<string> Lines) committed;
+                lock (this.lockObj_)
+                {
+                    if (!this.committed_.TryGetValue(uri, out committed))
+                    {
+                        return false; // cold — nothing to reuse
+                    }
+                }
+
+                AsmSim.InstructionDiff diff = AsmSim.InstructionDiff.Compute(committed.Instr, newInstr);
+                if (!diff.HasOnlyInertChanges)
+                {
+                    return false; // a real instruction/label changed — needs a full (or cone) re-sim
+                }
+
+                DocCache remapped = RemapCache(committed.Cache, diff);
+                lock (this.lockObj_)
+                {
+                    if (ct.IsCancellationRequested
+                        || !this.simVersion_.TryGetValue(uri, out long cur) || cur != version)
+                    {
+                        return true; // superseded; still "handled" (no full sim wanted for this stale version)
+                    }
+                    this.cache_[uri] = remapped;
+                    this.committed_[uri] = (newInstr, remapped, lines);
+                }
+                LogInfo($"[INC] Tier-0 reuse: {remapped.lineStringsReadLabels.Count + remapped.lineStringsWriteLabels.Count} label(s) remapped, Z3 SKIPPED, {uri.Segments[^1]}");
+                onProgress?.Invoke(uri);
+                onCompleted?.Invoke(uri);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log($"[INC] Tier-0 reuse failed (non-fatal, falling back to full sim): {ex.GetType().Name}: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>Test seam — drive the real <see cref="TryTier0Reuse"/> synchronously, independent of the
+        /// <see cref="SimIncremental"/> env flag. Returns true iff the edit was satisfied by Tier-0 reuse (no
+        /// Z3). Used by the incremental==full shadow oracle tests.</summary>
+        internal bool SimulateTier0ForTest(Uri uri, IReadOnlyList<string> lines)
+        {
+            long version;
+            lock (this.lockObj_)
+            {
+                version = this.simVersion_.TryGetValue(uri, out long v) ? v + 1 : 1;
+                this.simVersion_[uri] = version;
+            }
+            return this.TryTier0Reuse(uri, version, lines, CancellationToken.None, onCompleted: null, onProgress: null);
+        }
+
+        // ── M2: Tier-1 static-cone partial re-solve (component engine) ──────────────────────────────────
+
+        /// <summary>Per-line static read/write footprints for the dynamic cone (M3), keyed by line index.
+        /// Instantiates each opcode for its metadata only — NO Z3 solving. <c>KillRegs</c> are the writes that
+        /// fully overwrite their 64-bit register (a 32- or 64-bit destination; a 32-bit write zero-extends),
+        /// the only ones safe to clear from the dirty set.</summary>
+        private static Dictionary<int, AsmSim.LineEffects> BuildLineEffects(IReadOnlyList<AsmSim.Instruction> instr, AsmSimTools tools)
+        {
+            var dummyKeys = ("d_p", "d_n", "d_b");
+            var result = new Dictionary<int, AsmSim.LineEffects>();
+            for (int i = 0; i < instr.Count; i++)
+            {
+                AsmSim.Instruction ins = instr[i];
+                if (ins.Mnemonic == Mnemonic.NONE) continue;
+                string[] args = ins.Args as string[] ?? [.. ins.Args];
+                using OpcodeBase? op = Runner.InstantiateOpcode(ins.Mnemonic, args, dummyKeys, tools);
+                if (op == null) continue;
+
+                var read = new HashSet<Rn>();
+                var write = new HashSet<Rn>();
+                var kill = new HashSet<Rn>();
+                foreach (Rn r in op.RegsReadStatic) read.Add(RegisterTools.Get64BitsRegister(r));
+                foreach (Rn r in op.RegsWriteStatic)
+                {
+                    Rn r64 = RegisterTools.Get64BitsRegister(r);
+                    write.Add(r64);
+                    if (RegisterTools.NBits(r) >= 32) kill.Add(r64); // 32/64-bit dest fully overwrites the 64-bit reg
+                }
+                result[i] = new AsmSim.LineEffects(read, write, kill, op.FlagsReadStatic, op.FlagsWriteStatic, op.MemReadStatic, op.MemWriteStatic);
+            }
+            return result;
+        }
+
+        /// <summary>Build the reuse-base cache for a cone re-solve: remap every NON-cone matched line's
+        /// strings and diagnostics from the baseline onto its new line number. Cone lines are intentionally
+        /// omitted — the component engine re-solves and writes them fresh. Pure string/struct copying.</summary>
+        private static DocCache RemapConeReuse(DocCache prev, AsmSim.InstructionDiff diff, IReadOnlySet<int> cone)
+        {
+            var next = new DocCache();
+            foreach (KeyValuePair<int, int> kv in diff.NewToOld)
+            {
+                int n = kv.Key, o = kv.Value;
+                if (cone.Contains(n)) continue; // re-solved fresh by the engine
+                if (prev.lineStringsBefore.TryGetValue(o, out string? b) && b != null) next.lineStringsBefore[n] = b;
+                if (prev.lineStringsAfter.TryGetValue(o, out string? a) && a != null) next.lineStringsAfter[n] = a;
+                if (prev.lineStringsReadLabels.TryGetValue(o, out string? r) && r != null) next.lineStringsReadLabels[n] = r;
+                if (prev.lineStringsWriteLabels.TryGetValue(o, out string? w) && w != null) next.lineStringsWriteLabels[n] = w;
+            }
+            foreach (SimDiagnostic d in prev.diagnostics)
+            {
+                if (diff.OldToNew.TryGetValue(d.Line, out int nn) && !cone.Contains(nn))
+                {
+                    next.diagnostics.Add(d with { Line = nn });
+                }
+            }
+            return next;
+        }
+
+        /// <summary>M2 fast path (component engine only): for a topology-PRESERVING instruction edit, re-solve
+        /// only the forward dataflow cone and reuse the remapped baseline for everything else. Returns true
+        /// when it handled the edit (cone re-solve dispatched); false to fall back to a full simulation
+        /// (cold, a topology change, the cone covering the whole document, or any error). Flag-agnostic — the
+        /// production gate is the call site.</summary>
+        private bool TryConeComponentReuse(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
+        {
+            try
+            {
+                IReadOnlyList<AsmSim.Instruction> newInstr = AsmSim.Instruction.ParseProgram(lines);
+                (IReadOnlyList<AsmSim.Instruction> Instr, DocCache Cache, IReadOnlyList<string> Lines) committed;
+                lock (this.lockObj_)
+                {
+                    if (!this.committed_.TryGetValue(uri, out committed)) return false; // cold
+                }
+
+                AsmSim.InstructionDiff diff = AsmSim.InstructionDiff.Compute(committed.Instr, newInstr);
+                if (diff.HasOnlyInertChanges) return false;            // Tier-0 territory (handled before this)
+
+                // Build the new CFG (pragma-lifted, same as the component engine).
+                var settings = new Dictionary<string, string> { { "timeout", "5000" }, { "random_seed", "0" } };
+                var cfgTools = new AsmSimTools(settings);
+                var sFlow = new StaticFlow(cfgTools);
+                sFlow.Update(string.Join(Environment.NewLine, RewritePragmasForCfg(lines)), removeEmptyLines: false);
+
+                HashSet<int> cone;
+                string coneKind;
+                if (!AsmSim.DataflowCone.IsTopologyPreserving(diff))
+                {
+                    // Topology change (label moved/added/removed, jump retargeted): the dirty-set/forward cones
+                    // are unsound (an edge deletion can change a node's merged value off the forward path), so
+                    // use the old∪new CFG-edge-diff cone — sound for both labels and full dumps.
+                    var oldFlow = new StaticFlow(new AsmSimTools(settings));
+                    oldFlow.Update(string.Join(Environment.NewLine, RewritePragmasForCfg(committed.Lines)), removeEmptyLines: false);
+                    cone = AsmSim.DataflowCone.StaticConeWithTopology(oldFlow, sFlow, diff);
+                    coneKind = "topology";
+                }
+                else if (this.computeFullState_)
+                {
+                    // Full register DUMP: any dirty location makes every downstream line's dump differ, so the
+                    // DYNAMIC cone is unsound here — forward reachability (static cone) is required.
+                    cone = AsmSim.DataflowCone.StaticCone(sFlow, diff);
+                    coneKind = "static";
+                }
+                else
+                {
+                    // Editor labels-only + topology-preserving: the tightest (dirty-set + kill) cone.
+                    Dictionary<int, AsmSim.LineEffects> newEff = BuildLineEffects(newInstr, cfgTools);
+                    Dictionary<int, AsmSim.LineEffects> oldEff = BuildLineEffects(committed.Instr, cfgTools);
+                    cone = AsmSim.DynamicCone.Compute(sFlow, diff, newEff, oldEff);
+                    coneKind = "dynamic";
+                }
+
+                DocCache reuseBase = RemapConeReuse(committed.Cache, diff, cone);
+                AsmLog.Info("ASMSIM", $"[INC] {coneKind}-cone re-solve: {cone.Count} cone line(s), {reuseBase.lineStringsReadLabels.Count + reuseBase.lineStringsWriteLabels.Count} label(s) reused, {uri.Segments[^1]}");
+                this.RunComponentSimulation(uri, version, lines, onCompleted, onProgress, ct, cone: cone, reuseBase: reuseBase);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log($"[INC] cone re-solve failed (non-fatal, falling back to full sim): {ex.GetType().Name}: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>Test seam — drive the real <see cref="TryConeComponentReuse"/> synchronously, independent
+        /// of the <see cref="SimIncremental"/> env flag. Returns true iff the edit was handled by a cone
+        /// re-solve. The instance must already have a committed Component baseline (run a full Component sim
+        /// first). Used by the incremental==full M2 oracle tests.</summary>
+        internal bool SimulateConeForTest(Uri uri, IReadOnlyList<string> lines)
+        {
+            long version;
+            lock (this.lockObj_)
+            {
+                version = this.simVersion_.TryGetValue(uri, out long v) ? v + 1 : 1;
+                this.simVersion_[uri] = version;
+                this.cache_[uri] = new DocCache(); // fresh slot; the cone path installs the reuse-base into it
+            }
+            return this.TryConeComponentReuse(uri, version, lines, CancellationToken.None, onCompleted: null, onProgress: null);
         }
 
         /// <summary>The same register/flag tracking the linear sim uses (RAX..R15 + CF/ZF/SF/OF). Shared by
@@ -568,16 +970,12 @@ namespace AsmSim.Host
             tools.StateConfig.R13 = true;
             tools.StateConfig.R14 = true;
             tools.StateConfig.R15 = true;
-            // All 6 ALU status flags, so flag-reading instructions are fully annotated — e.g. `jp`/`jnp`
-            // read PF (without PF tracked, a parity jump shows NO read label), the BCD/`adc`-family touch AF,
-            // and `cmp`/`add`/`sub` write the full set.
             tools.StateConfig.CF = true;
             tools.StateConfig.PF = true;
             tools.StateConfig.AF = true;
             tools.StateConfig.ZF = true;
             tools.StateConfig.SF = true;
             tools.StateConfig.OF = true;
-            // Enable memory tracking for instructions that read/write memory
             tools.StateConfig.Mem = true;
         }
 
@@ -649,8 +1047,9 @@ namespace AsmSim.Host
         /// the whole document. <paramref name="ct"/> stops the build between vertices.</para></summary>
         private Dictionary<int, ComponentLine> ComputeComponentLines(
             IReadOnlyList<string> lines,
+            Action<int, ComponentLine>? onLine = null,
             CancellationToken ct = default,
-            Action<int, ComponentLine>? onLine = null)
+            IReadOnlySet<int>? onlyLines = null)
         {
             var result = new Dictionary<int, ComponentLine>();
             try
@@ -668,6 +1067,16 @@ namespace AsmSim.Host
 
                 IReadOnlyDictionary<int, int> lineToComponent = sFlow.ComputeLineToComponent();
                 IReadOnlyDictionary<int, List<int>> entriesByComponent = sFlow.ComputeComponentEntryLines();
+
+                // CFG branch/merge points — the redundant-instruction check must skip them (redundancy at a
+                // phi/join is unsound). Precomputed here (sFlow is fully built) into an immutable set so the
+                // parallel ExtractComponentLine workers can read it without locking. AsmDude1 used the same
+                // dFlow.Is_Branch_Point / Is_Merge_Point guard.
+                var branchMergeLines = new HashSet<int>();
+                foreach (int ln in lineToComponent.Keys)
+                {
+                    if (sFlow.Is_Branch_Point(ln) || sFlow.Is_Merge_Point(ln)) branchMergeLines.Add(ln);
+                }
 
                 var linesByComponent = new Dictionary<int, List<int>>();
                 foreach (var (line, componentId) in lineToComponent)
@@ -696,6 +1105,22 @@ namespace AsmSim.Host
                 foreach (var (componentId, roots) in entriesByComponent)
                 {
                     if (ct.IsCancellationRequested) break;
+
+                    // M2 cone: a component the edit's dataflow cone never touches is skipped WHOLESALE — its
+                    // DynamicFlow is never even built; its lines reuse the remapped baseline strings.
+                    if (onlyLines != null)
+                    {
+                        bool touched = false;
+                        if (linesByComponent.TryGetValue(componentId, out List<int>? clCheck))
+                        {
+                            foreach (int ln in clCheck)
+                            {
+                                if (onlyLines.Contains(ln)) { touched = true; break; }
+                            }
+                        }
+                        if (!touched) continue;
+                    }
+
                     try
                     {
                         // Distinct seed per component ⇒ parallel-safe (no shared Random) + reproducible.
@@ -722,13 +1147,16 @@ namespace AsmSim.Host
                         {
                             if (ct.IsCancellationRequested) break;
                             if (line < 0 || line >= lines.Count || !dFlow.Has_LineNumber(line)) continue;
+                            if (onlyLines != null && !onlyLines.Contains(line)) continue; // M2 cone: extract only cone lines
 
-                            // Build the symbolic before/after states (ITE-merged at join points), then clone
-                            // them into a fresh worker context (the clone READS the shared dFlow context, so it
-                            // stays on this thread) and dispose the originals.
-                            AsmSimState? before = CollapseStates(dFlow.Create_States_Before(line));
+                            // The line's single symbolic before/after state. The ITE/phi merge at join vertices
+                            // already happened INSIDE Create_State_Private (DynamicFlow.Merge_State_Update_LOCAL),
+                            // so there is exactly one state per line (one key per line); index 0 is it, or null if
+                            // the line is unreached. The clone below READS the shared dFlow context, so this stays
+                            // on this thread; the caller disposes these originals in the finally.
+                            AsmSimState? before = dFlow.Create_States_Before(line, 0);
                             if (before == null) continue;
-                            AsmSimState? after = CollapseStates(dFlow.Create_States_After(line));
+                            AsmSimState? after = dFlow.Create_States_After(line, 0);
 
                             CloneSet clone;
                             try
@@ -764,7 +1192,7 @@ namespace AsmSim.Host
                                 try
                                 {
                                     var lineClock = System.Diagnostics.Stopwatch.StartNew();
-                                    ComponentLine? cl = this.ExtractComponentLine(lines, capturedLine, capturedClone.Before, capturedClone.After, capturedClone.Tools);
+                                    ComponentLine? cl = this.ExtractComponentLine(lines, capturedLine, capturedClone.Before, capturedClone.After, capturedClone.Tools, branchMergeLines);
                                     lineClock.Stop();
                                     if (cl != null && !ct.IsCancellationRequested)
                                     {
@@ -829,29 +1257,6 @@ namespace AsmSim.Host
             }
         }
 
-        /// <summary>Materialize the DynamicFlow's symbolic state(s) for a line into ONE state: a single path
-        /// is returned as-is; a merge point is combined with the ITE/phi <see cref="AsmSimTools.Collapse"/>
-        /// (the theorem-prover merge — NOT per-bit Tv collapsing). Returns null if the line has no state
-        /// (unreached). Caller owns and disposes the result.</summary>
-        private static AsmSimState? CollapseStates(IEnumerable<AsmSimState> states)
-        {
-            var list = new List<AsmSimState>(states);
-            switch (list.Count)
-            {
-                case 0:
-                    return null;
-                case 1:
-                    return list[0];
-                default:
-                    AsmSimState merged = AsmSimTools.Collapse(list);
-                    foreach (AsmSimState s in list)
-                    {
-                        if (!ReferenceEquals(s, merged)) s.Dispose();
-                    }
-                    return merged;
-            }
-        }
-
         /// <summary>Clone a line's before/after states into a fresh, isolated Z3 context so they can be
         /// solved on a worker thread without touching the shared component context. MUST be called on the
         /// evaluator thread — the clone (Z3 <c>Translate</c>) READS the shared source context. Cheap: copies
@@ -881,7 +1286,7 @@ namespace AsmSim.Host
         /// CodeLens read/write labels, diagnostics) — the SAME per-line logic the linear sim uses. The heavy
         /// Z3 value-solving (ComputeStateString → solve each register) happens HERE, per line, so this is
         /// what dominates a slow run. Returns null for non-instruction lines / nothing-to-show.</summary>
-        private ComponentLine? ExtractComponentLine(IReadOnlyList<string> lines, int line, AsmSimState? before, AsmSimState? after, AsmSimTools compTools)
+        private ComponentLine? ExtractComponentLine(IReadOnlyList<string> lines, int line, AsmSimState? before, AsmSimState? after, AsmSimTools compTools, IReadOnlySet<int>? branchMergeLines = null)
         {
             // Match the linear sim EXACTLY: only real instruction lines carry annotations.
             (_, _, Mnemonic mnemonic, string[] args, _) = AsmSourceTools.ParseLine(lines[line].Trim(), -1, -1, AssemblerEnum.UNKNOWN);
@@ -915,6 +1320,10 @@ namespace AsmSim.Host
                 readLabel = ComputeReadLabel(before, readRegs, readFlags);
                 if (after != null) writeLabel = ComputeWriteLabel(after, writtenRegs, writtenFlags);
                 this.CollectDiagnostics(lines[line], line, before, compTools, diags, op);
+                // Redundant check: re-applies the instruction to the (unfrozen-probe of the) BEFORE state, so
+                // it sees both keys. Skip CFG branch/merge points (redundancy across a phi/join isn't meaningful).
+                bool branchMerge = branchMergeLines?.Contains(line) ?? false;
+                this.TryCollectRedundant(lines[line], line, before, branchMerge, diags);
             }
 
             return (beforeStr != null || afterStr != null || readLabel != null || writeLabel != null || diags.Count > 0)
@@ -927,12 +1336,28 @@ namespace AsmSim.Host
         /// diagnostics) are unchanged — they serve from the same cache. Now INCREMENTAL: each line is
         /// written to the cache the instant it is extracted, with a throttled onProgress, so CodeLens appear
         /// progressively (like the linear engine) instead of after the whole document. Reversible via env var.</summary>
-        private void RunComponentSimulation(Uri uri, long version, IReadOnlyList<string> lines, CancellationToken ct, Action<Uri>? onCompleted, Action<Uri>? onProgress)
+        private void RunComponentSimulation(Uri uri, long version, IReadOnlyList<string> lines, Action<Uri>? onCompleted, Action<Uri>? onProgress, CancellationToken ct,
+            IReadOnlySet<int>? cone = null, DocCache? reuseBase = null)
         {
             var clock = System.Diagnostics.Stopwatch.StartNew();
             int linesWritten = 0;
             int diagCount = 0;
             long lastProgressMs = -ProgressNotifyThrottleMs;
+
+            // M2 cone path: seed the cache with the remapped reuse of NON-cone lines so they are visible
+            // immediately; the cone lines below overwrite their entries with freshly-solved values.
+            if (reuseBase != null)
+            {
+                lock (this.lockObj_)
+                {
+                    if (ct.IsCancellationRequested
+                        || !this.simVersion_.TryGetValue(uri, out long cv) || cv != version)
+                    {
+                        return;
+                    }
+                    this.cache_[uri] = reuseBase;
+                }
+            }
 
             // Called per line as each worker resolves it — CONCURRENTLY (Phase P). Writes that one line to
             // the cache under lockObj_ (vs the read paths) and decides the throttled refresh under the same
@@ -970,7 +1395,7 @@ namespace AsmSim.Host
 
             try
             {
-                this.ComputeComponentLines(lines, ct, Emit);
+                this.ComputeComponentLines(lines, Emit, ct, onlyLines: cone);
             }
             catch (Exception ex)
             {
@@ -980,7 +1405,9 @@ namespace AsmSim.Host
 
             if (ct.IsCancellationRequested) return;
 
-            LogInfo($"[component] SUCCESS: {linesWritten} lines, {diagCount} diagnostics, loop={this.loopHandling_}, total {clock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
+            string scope = cone != null ? $"[component+cone] SUCCESS: {linesWritten} cone line(s) re-solved (cone={cone.Count})" : $"[component] SUCCESS: {linesWritten} lines";
+            LogInfo($"{scope}, {diagCount} diagnostics, loop={this.loopHandling_}, total {clock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
+            this.CommitSim(uri, version, lines); // reusable baseline for the next edit (M1 Tier-0)
             onProgress?.Invoke(uri); // final flush
             onCompleted?.Invoke(uri);
         }
@@ -1317,12 +1744,29 @@ namespace AsmSim.Host
         {
             LogInfo($"sim started: engine={this.engineMode_} loop={this.loopHandling_}, {lines.Count} lines, {uri.Segments[^1]}");
             LogCfgPartition(uri, lines);
+            this.RecordIncrementalDiff(uri, lines); // M0: observe the edit's cone; no behavior change (no-op unless ASMDUDE_SIM_INCREMENTAL)
+
+            // M1 Tier-0: if only blank/comment lines shifted, remap the previous result and skip Z3 entirely.
+            // Gated by the AsmSim_Incremental setting (default OFF ⇒ the full sim below always runs, unchanged).
+            if (this.incremental_ && this.TryTier0Reuse(uri, version, lines, ct, onCompleted, onProgress))
+            {
+                return;
+            }
+
+            // M2 Tier-1: a topology-preserving instruction edit re-solves only the forward dataflow cone and
+            // reuses the remapped baseline for the rest (component engine only). Falls through to a full sim
+            // when cold / on a topology change / on error.
+            if (this.incremental_ && this.engineMode_ == SimEngineMode.Component
+                && this.TryConeComponentReuse(uri, version, lines, ct, onCompleted, onProgress))
+            {
+                return;
+            }
 
             // The merge engine is the editor default; drive the editor from the dynamic per-component
             // engine instead of the linear walk below. Read paths are unchanged (same cache).
             if (this.engineMode_ == SimEngineMode.Component)
             {
-                this.RunComponentSimulation(uri, version, lines, ct, onCompleted, onProgress);
+                this.RunComponentSimulation(uri, version, lines, onCompleted, onProgress, ct);
                 return;
             }
 
@@ -1448,7 +1892,7 @@ namespace AsmSim.Host
                                 stateToString.Remove(state);
                             }
                         }
-                        Log($"[THREAD] Line {i}: not an instruction ('{line.Substring(0, Math.Min(30, line.Length))}'), skipping");
+                        Log($"[THREAD] Line {i}: not an instruction ('{line[..Math.Min(30, line.Length)]}'), skipping");
                         continue;
                     }
 
@@ -1485,9 +1929,11 @@ namespace AsmSim.Host
 
 
                     // ── Diagnostics ───────────────────────────────────────────────
+                    // The 4 base checks need only the BEFORE state. The redundant check needs the AFTER state,
+                    // so it runs below (after the step) and appends to the same list; newDiagnostics is
+                    // accumulated AFTER that so its count includes redundant diagnostics.
                     var lineDiags = new List<SimDiagnostic>();
                     this.CollectDiagnostics(line, i, state, tools, lineDiags, opcodeBase);
-                    newDiagnostics.AddRange(lineDiags);
 
                     // Save before-state reference for read-only register queries below.
                     AsmSimState stateBeforeStep = state;
@@ -1522,6 +1968,13 @@ namespace AsmSim.Host
                     //   stored at key i; GetSimStatesSummary places them at display position i+1.
                     string? readLabel = ComputeReadLabel(stateBeforeStep, readRegsOfThis, readFlagsOfThis);
                     string? writeLabel = ComputeWriteLabel(state, writtenRegs, writtenFlags);
+
+                    // Redundant-instruction check against the BEFORE state (`stateBeforeStep`). The linear sim
+                    // is single-path (no merges) and branch instructions write nothing, so no branch/merge
+                    // guard is needed here. Appends to lineDiags before they are committed to the cache +
+                    // counted in newDiagnostics.
+                    this.TryCollectRedundant(line, i, stateBeforeStep, isBranchOrMergePoint: false, lineDiags);
+                    newDiagnostics.AddRange(lineDiags);
 
                     // ── Write to cache incrementally so hover and diagnostics are visible immediately ──
                     bool hadNewDiag = false;
@@ -1579,6 +2032,8 @@ namespace AsmSim.Host
                 }
 
                 LogInfo($"[linear] SUCCESS: {linesWritten} lines written, {newDiagnostics.Count} diagnostics, {slowLineCount} slow/timeout line(s) (>={SlowLineThresholdMs}ms), total {progressClock.ElapsedMilliseconds} ms; Z3 ctx live={AsmSim.Z3ContextTracker.Live} peak={AsmSim.Z3ContextTracker.Peak}");
+                // Record this completed run as the reusable baseline for the next edit (M1 Tier-0).
+                this.CommitSim(uri, version, lines);
                 // Notify client to refresh inlay hints (final flush) and republish diagnostics.
                 onProgress?.Invoke(uri);
                 onCompleted?.Invoke(uri);
@@ -1642,7 +2097,7 @@ namespace AsmSim.Host
                 if (opcodeType == typeof(NotImplemented) || opcodeType == typeof(DummySIMD))
                 {
                     diagnostics.Add(new SimDiagnostic(lineIndex,
-                        $"\"{mnemonic}\" is not (fully) implemented in the simulator.",
+                        $"\"{CodeOnly(line)}\" is not (fully) implemented in the simulator.",
                         SimDiagnosticKind.NotImplemented));
                     return;
                 }
@@ -1650,7 +2105,7 @@ namespace AsmSim.Host
                 // Syntax error
                 if (opcodeBase.IsHalted)
                 {
-                    string msg = opcodeBase.SyntaxError ?? $"Syntax error in \"{line.Trim()}\"";
+                    string msg = opcodeBase.SyntaxError ?? $"Syntax error in \"{CodeOnly(line)}\"";
                     diagnostics.Add(new SimDiagnostic(lineIndex, msg, SimDiagnosticKind.SyntaxError));
                     return; // no further checks on a halted instruction
                 }
@@ -1664,7 +2119,7 @@ namespace AsmSim.Host
                     {
                         Log($"[DIAG] Line {lineIndex}: UNREACHABLE detected");
                         diagnostics.Add(new SimDiagnostic(lineIndex,
-                            $"\"{line.Trim()}\" is unreachable.",
+                            $"\"{CodeOnly(line)}\" is unreachable.",
                             SimDiagnosticKind.Unreachable));
                         return; // no point checking usage-undefined on unreachable code
                     }
@@ -1684,7 +2139,10 @@ namespace AsmSim.Host
                     {
                         if (cfg.IsFlagOn(flag) && beforeState.Is_Undefined(flag))
                         {
-                            undefinedItems.Append(flag).Append(" is undefined; ");
+                            // Show the proven flag value (the simulator may know some bits even when "undefined"
+                            // overall — e.g. a flag that is partly constrained); '?' marks the unknown bit. The
+                            // "Usage of undefined value" prefix already states these are undefined, so no suffix.
+                            undefinedItems.Append(flag).Append("=").Append(ToolsZ3.ToStringBin(beforeState.GetTv(flag))).Append("; ");
                         }
                     }
 
@@ -1693,14 +2151,17 @@ namespace AsmSim.Host
                         Rn reg64 = RegisterTools.Get64BitsRegister(reg);
                         if (cfg.IsRegOn(reg64) && beforeState.Is_Undefined(reg))
                         {
-                            undefinedItems.Append(reg).Append(" has undefined content; ");
+                            // Append the simulator-determined (partial) value so the message carries the data we
+                            // already computed: known nibbles show as hex, unknown nibbles as '?'.
+                            string val = ToolsZ3.ToStringHex(beforeState.GetTvArray(reg64));
+                            undefinedItems.Append(reg64).Append("=").Append(val).Append("; ");
                         }
                     }
 
                     if (undefinedItems.Length > 0)
                     {
                         diagnostics.Add(new SimDiagnostic(lineIndex,
-                            $"Usage of undefined value in \"{mnemonic}\": {undefinedItems}",
+                            $"Usage of undefined value in \"{CodeOnly(line)}\": {undefinedItems}".TrimEnd(' ', ';'),
                             SimDiagnosticKind.UsageUndefined));
                     }
                 }
@@ -1712,6 +2173,52 @@ namespace AsmSim.Host
             catch (Exception ex)
             {
                 AsmLog.Debug("ASMSIM", $"diagnostics collection failed line {lineIndex}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Emits a <see cref="SimDiagnosticKind.Redundant"/> diagnostic when the instruction on
+        /// <paramref name="line"/> provably cannot change the tracked machine state. This is the editor
+        /// POLICY layer: it gates on the setting and skips CFG branch/merge points (where redundancy across a
+        /// phi/join is not meaningful); the symbolic decision is delegated to
+        /// <see cref="Runner.IsRedundantInstruction(string, AsmSimState)"/>, which is the only place that
+        /// answers it correctly (it queries an unfrozen probe so an overwritten register's pre-value is still
+        /// present — the freeze/Compress that keeps models small would otherwise drop it). NOP / not-implemented
+        /// / mock-SIMD / non-instruction lines are reported as "not redundant" by that method (null verdict).
+        /// See REDUNDANT_DIAGNOSTICS_PLAN.md.
+        /// </summary>
+        /// <summary>
+        /// The instruction text shown in a diagnostic: the source line with any trailing comment
+        /// (<c>#</c>/<c>;</c> remark) stripped, then trimmed. Diagnostics quote the code, not the prose.
+        /// </summary>
+        private static string CodeOnly(string line)
+        {
+            int remarkPos = AsmSourceTools.GetRemarkCharPosition(line);
+            return (remarkPos >= 0 ? line[..remarkPos] : line).Trim();
+        }
+
+        private void TryCollectRedundant(string line, int lineIndex, AsmSimState? beforeState, bool isBranchOrMergePoint, List<SimDiagnostic> diagnostics)
+        {
+            // Redundancy is computed unconditionally, like the other sim diagnostic categories (unreachable/
+            // undefined). The showRedundant_ field remains the explicit opt-out seam for tests; production
+            // keeps it on (BuildSimSettings forces ShowRedundant=true). Branch/merge points and a missing
+            // before-state are still skipped (redundancy across a phi/join is not meaningful).
+            if (!this.showRedundant_ || beforeState == null || isBranchOrMergePoint)
+            {
+                return;
+            }
+            try
+            {
+                RedundancyVerdict? verdict = Runner.IsRedundantInstruction(line, beforeState);
+                if (verdict is { IsRedundant: true })
+                {
+                    diagnostics.Add(new SimDiagnostic(lineIndex, $"\"{CodeOnly(line)}\" is redundant.", SimDiagnosticKind.Redundant));
+                    Log($"[DIAG] Line {lineIndex}: REDUNDANT ({verdict.Value.RedundantCount}/{verdict.Value.WrittenCount} writes unchanged)");
+                }
+            }
+            catch (Exception ex)
+            {
+                AsmLog.Debug("ASMSIM", $"redundant check failed line {lineIndex}: {ex.Message}");
             }
         }
 
@@ -1743,6 +2250,8 @@ namespace AsmSim.Host
                 // Each in-flight RunSimulation disposes its own Z3 states in its finally once its token is
                 // cancelled (above); the cache holds only strings, so just drop it.
                 this.cache_.Clear();
+                this.prevInstr_.Clear();
+                this.committed_.Clear();
             }
         }
     }

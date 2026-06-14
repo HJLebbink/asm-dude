@@ -32,6 +32,7 @@ namespace unit_tests
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Numerics;
 
     [TestClass]
     public class Test_AsmSourceTools
@@ -456,6 +457,56 @@ namespace unit_tests
                     Assert.AreEqual(t.Item2, x2, string.Empty);
                 }
             }
+        }
+
+        /// <summary>
+        /// Invariant guarded: each Ot2 value is a SINGLE distinct bit, so OR-combining allowed operand forms
+        /// and testing membership with HasFlag is a true set test. A 2-bit "packed nibble" encoding (the
+        /// historical bug, MA0062) makes HasFlag report PHANTOM members — e.g. {reg_mem | mem_reg} would
+        /// falsely contain reg_reg. This test fails under that encoding (PopCount != 1 and the phantom asserts).
+        /// </summary>
+        [TestMethod]
+        public void Test_AsmSourceTools_Ot2_SingleBitFlags_NoPhantomMembers()
+        {
+            Ot2[] values = Enum.GetValues<Ot2>();
+            foreach (Ot2 v in values)
+            {
+                Assert.AreEqual(1, BitOperations.PopCount((uint)v), $"{v} must be a single bit");
+            }
+            Assert.AreEqual(values.Length, values.Select(v => (uint)v).Distinct().Count(), "all bits distinct");
+
+            // MergeOt must land on the matching named value (HasFlag membership relies on this).
+            Assert.AreEqual(Ot2.reg_mem, AsmSourceTools.MergeOt(Ot1.reg, Ot1.mem));
+            Assert.AreEqual(Ot2.mem_reg, AsmSourceTools.MergeOt(Ot1.mem, Ot1.reg));
+            Assert.AreEqual(Ot2.UNKNOWN_UNKNOWN, AsmSourceTools.MergeOt(Ot1.UNKNOWN, Ot1.UNKNOWN));
+
+            // The bug case: a set of two "crossed" forms must NOT gain phantom members.
+            Ot2 allowed = Ot2.reg_mem | Ot2.mem_reg;
+            Assert.IsTrue(allowed.HasFlag(Ot2.reg_mem));
+            Assert.IsTrue(allowed.HasFlag(Ot2.mem_reg));
+            Assert.IsFalse(allowed.HasFlag(Ot2.reg_reg), "reg_reg is NOT allowed and must not be a phantom member");
+            Assert.IsFalse(allowed.HasFlag(Ot2.mem_mem), "mem_mem is NOT allowed and must not be a phantom member");
+        }
+
+        /// <summary>Same single-bit / no-phantom invariant for the 3-operand Ot3 set (backed by ulong).</summary>
+        [TestMethod]
+        public void Test_AsmSourceTools_Ot3_SingleBitFlags_NoPhantomMembers()
+        {
+            Ot3[] values = Enum.GetValues<Ot3>();
+            foreach (Ot3 v in values)
+            {
+                Assert.AreEqual(1, BitOperations.PopCount((ulong)v), $"{v} must be a single bit");
+            }
+            Assert.AreEqual(values.Length, values.Select(v => (ulong)v).Distinct().Count(), "all 64 bits distinct");
+
+            Assert.AreEqual(Ot3.reg_reg_imm, AsmSourceTools.MergeOt(Ot1.reg, Ot1.reg, Ot1.imm));
+            Assert.AreEqual(Ot3.mem_reg_imm, AsmSourceTools.MergeOt(Ot1.mem, Ot1.reg, Ot1.imm));
+
+            Ot3 allowed = Ot3.reg_mem_imm | Ot3.mem_reg_imm;
+            Assert.IsTrue(allowed.HasFlag(Ot3.reg_mem_imm));
+            Assert.IsTrue(allowed.HasFlag(Ot3.mem_reg_imm));
+            Assert.IsFalse(allowed.HasFlag(Ot3.reg_reg_imm), "reg_reg_imm must not be a phantom member");
+            Assert.IsFalse(allowed.HasFlag(Ot3.mem_mem_imm), "mem_mem_imm must not be a phantom member");
         }
 
         [TestMethod]

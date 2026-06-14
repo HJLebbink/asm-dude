@@ -1,5 +1,11 @@
 using AsmDude2LS;
 
+// These top-level statements are the process bootstrap: they run BEFORE the host is built and before
+// AsmDudeLog wires the AsmLog sinks, so AsmLog calls here would be dropped. Diagnostics therefore go
+// straight to stderr (never stdout — that is reserved for the LSP JSON-RPC channel). This is the one
+// bootstrap exemption from the "route logging through AsmLog" rule; see CLAUDE.md > Logging.
+#pragma warning disable RS0030 // Do not use banned APIs
+
 try
 {
     // Log build timestamp for debugging stale binaries

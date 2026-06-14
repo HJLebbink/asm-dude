@@ -1,4 +1,6 @@
-class LspTester
+namespace AsmDude2LS.Tests;
+
+internal class LspTester
 {
     // static void Main()
     // {

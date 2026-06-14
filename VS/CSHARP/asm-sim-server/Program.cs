@@ -23,9 +23,10 @@ AsmLog.Banner("ASMSIM", $"AsmSim.LS server starting (pid {Environment.ProcessId}
 
 try
 {
-    // The LSP parent owns the pipes; we speak JSON-RPC framed messages over our stdio.
-    Stream sending = Console.OpenStandardOutput();
-    Stream receiving = Console.OpenStandardInput();
+    // The LSP parent owns the pipes; we speak JSON-RPC framed messages over our stdio. The shared helper
+    // grabs the raw streams AND redirects Console.Out to stderr — important here because asm-sim-lib still
+    // contains debug Console.Write calls that would otherwise corrupt the protocol on stdout.
+    (Stream receiving, Stream sending) = StdioRpcChannel.OpenAndRedirectConsole();
 
     var server = new AsmSimRpcServer();
     var rpc = new JsonRpc(new HeaderDelimitedMessageHandler(sending, receiving));
@@ -33,12 +34,16 @@ try
     rpc.AddLocalRpcTarget(server);
     rpc.StartListening();
 
+    // VSTHRD003: this is a plain stdio console server with no JoinableTaskContext / UI thread, so awaiting
+    // StreamJsonRpc's Completion (the documented "run until the connection closes" pattern) cannot deadlock.
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
     await rpc.Completion.ConfigureAwait(false);
+#pragma warning restore VSTHRD003
     AsmLog.Info("ASMSIM", "JSON-RPC connection closed; exiting");
 }
 catch (Exception ex)
 {
+    // AsmLog's console sink already writes to stderr, so no separate Console.Error dump is needed.
     AsmLog.Error("ASMSIM", "AsmSim.LS server fatal", ex);
-    Console.Error.WriteLine(ex);
     Environment.ExitCode = 1;
 }

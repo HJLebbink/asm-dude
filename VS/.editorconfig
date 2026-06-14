@@ -2,3 +2,73 @@
 
 # CS0162: Unreachable code detected
 dotnet_diagnostic.CS0162.severity = warning
+
+# ============================================================================================
+# Analyzer rule severities (packages wired in VS/CSHARP/Directory.Build.props). All non-breaking:
+# warnings only, no project sets TreatWarningsAsErrors for the standard Debug/Release|AnyCPU builds.
+# ============================================================================================
+
+# ---- Readonly / immutability (turned UP — the data-structure hardening that was requested) ----
+# IDE0044: add 'readonly' to fields never written outside a ctor.
+dotnet_diagnostic.IDE0044.severity = warning
+dotnet_style_readonly_field = true:warning
+# CA2227: collection properties should be get-only (callers mutate the collection, not the reference).
+dotnet_diagnostic.CA2227.severity = warning
+# CA1822: members that don't use instance state -> mark static (perf). Kept as a hint: ~90 hits, cosmetic.
+dotnet_diagnostic.CA1822.severity = suggestion
+# MA0040-ish family is opt-in; the broadly useful Meziantou immutability rule:
+# MA0016: prefer returning a read-only abstraction over a concrete collection.
+dotnet_diagnostic.MA0016.severity = suggestion
+
+# ---- Intentional patterns in this codebase (kept quiet so they don't bury real findings) ----
+# CA1051: AsmSettingsData is a deliberate public-field DTO (serialized settings contract).
+dotnet_diagnostic.CA1051.severity = suggestion
+# CA1819: Tv[]-returning APIs (GetTvArray, semantic-token uint[]) are a deliberate fast path.
+dotnet_diagnostic.CA1819.severity = suggestion
+# CA1002: List<T> on internal/engine APIs is intentional.
+dotnet_diagnostic.CA1002.severity = suggestion
+
+# ---- High-volume rules tamed to keep the warning list actionable (ratchet up later if wanted) ----
+# Localization / culture noise:
+dotnet_diagnostic.CA1303.severity = none   # do not pass literals as localized parameters
+dotnet_diagnostic.MA0011.severity = suggestion # use an IFormatProvider
+dotnet_diagnostic.MA0074.severity = suggestion # use StringComparison overload
+# ConfigureAwait is governed by the VSTHRD (Threading) analyzer in this solution, not CA/MA:
+dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.MA0004.severity = none
+# Public-arg null validation is extremely noisy on internal engine code:
+dotnet_diagnostic.CA1062.severity = none
+# Cosmetic Meziantou rules that add churn without correctness value here:
+dotnet_diagnostic.MA0048.severity = none       # file name must match type name
+dotnet_diagnostic.MA0051.severity = suggestion # method too long
+
+# ---- Noisy/opinionated Meziantou style rules tamed so the warning list stays signal-heavy ----
+dotnet_diagnostic.MA0003.severity = none        # name the argument (literal as parameter) — cosmetic
+dotnet_diagnostic.MA0006.severity = none        # use string.Equals instead of == (opinionated, ~194 hits)
+dotnet_diagnostic.MA0026.severity = suggestion  # "TODO" comment flagged (informational, not a build warning)
+dotnet_diagnostic.MA0002.severity = suggestion  # use IEqualityComparer overload (~144 hits)
+dotnet_diagnostic.MA0009.severity = suggestion  # add regex timeout (ReDoS hardening; review, don't gate)
+dotnet_diagnostic.MA0017.severity = suggestion  # abstract type should not have public ctor
+
+# ---- Deliberate / risky-to-change patterns (tamed with rationale; see analyzer-warning-backlog) ----
+# MA0055: finalizers in the Z3 wrapper classes (State/StateUpdate/DynamicFlow/…) are a safety net for the
+# carefully-managed native Z3 context lifecycle — do NOT remove them blindly (regressed an AV before).
+dotnet_diagnostic.MA0055.severity = suggestion
+# MA0025: NotImplementedException marks genuinely-unimplemented opcodes (ADCX/ADOX/…); the simulator turns
+# them into a "not implemented" diagnostic. Intentional TODO markers, not shipping bugs.
+dotnet_diagnostic.MA0025.severity = suggestion
+# MA0008: StructLayoutAttribute on internal, non-interop structs — cosmetic.
+dotnet_diagnostic.MA0008.severity = suggestion
+# MA0099: '(flags & X) != 0' is the standard flags-test idiom; naming the 0 value adds no clarity.
+dotnet_diagnostic.MA0099.severity = suggestion
+# MA0046: internal pub/sub events use Action<T> deliberately; EventHandler<T> is for public API surface.
+dotnet_diagnostic.MA0046.severity = suggestion
+# MA0069: AsmLog.Threshold is a deliberately public 'volatile' static field (cheap cross-thread read on the
+# hot logging path); a property can't be volatile without extra Volatile.Read/Write ceremony.
+dotnet_diagnostic.MA0069.severity = suggestion
+
+# ---- Platform compatibility: N/A — AsmDude2 is a Windows-only VS extension (never runs cross-platform) ----
+dotnet_diagnostic.CA1416.severity = none
+
+# ---- Banned APIs (BannedSymbols.txt: Console / File.Append* -> use AsmLog) ----
+dotnet_diagnostic.RS0030.severity = warning

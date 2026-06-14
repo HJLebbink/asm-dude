@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
+// AsmLog is the sanctioned logging sink: it is the ONE place allowed to write to Console / File.Append*.
+// Everywhere else the BannedApiAnalyzers rule (RS0030, see VS/CSHARP/BannedSymbols.txt) routes logging here.
+#pragma warning disable RS0030 // Do not use banned APIs
+
 /// <summary>Severity levels, ordered. <see cref="Off"/> disables everything.</summary>
 public enum AsmLogLevel
 {

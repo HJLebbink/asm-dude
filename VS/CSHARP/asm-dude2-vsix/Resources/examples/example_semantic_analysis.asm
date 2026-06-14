@@ -24,7 +24,7 @@ label2:
 	#pragma assume HLT ; HLT instruction will reset the simulator
 
 
-	#region Jump test
+	#region Jump on UNKNOWN flag test
 	cmp al, 0
 	jp label1
 	mov al, 1

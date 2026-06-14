@@ -91,7 +91,7 @@ public sealed class LabelGraph
         if (options.MaxFileLines > 0 && lines.Length >= options.MaxFileLines)
         {
             this.Enabled = false;
-            AsmDudeLog.Warning($"{this}:LabelGraph; file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
+            AsmDudeLog.Warning($"LabelGraph: file {filename} contains {lines.Length} lines which is more than maxLines {options.MaxFileLines}; switching off label analysis");
         }
 
         for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)

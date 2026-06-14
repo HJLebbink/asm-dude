@@ -19,19 +19,13 @@
     <PackageReference Include="itext" Version="9.6.0" />
     <!-- Pin to fix CVE GHSA-5crp-9r3c-p9vr in transitive Newtonsoft.Json 9.0.1 from itext -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="4.14.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <!-- BannedApiAnalyzers + VisualStudio.Threading.Analyzers are provided centrally by
+         VS/CSHARP/Directory.Build.props. -->
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.301">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Composition.Analyzers" Version="1.2.0-beta2" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.0.59">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="System.Collections.Immutable.Analyzers" Version="1.2.0-beta2" />
   </ItemGroup>
 

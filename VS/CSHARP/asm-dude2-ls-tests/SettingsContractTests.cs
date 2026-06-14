@@ -28,6 +28,38 @@ public class SettingsContractTests
         Converters = { new ColorJsonConverter() },
     };
 
+    // ── AsmSim_Incremental default resolution (regression: an OLD settings.json silently disabled the
+    // feature because the absent bool field deserialized to false). These drive the REAL production
+    // deserializer (SettingsManager.DeserializeSettings) + the single-source effective resolver. ──
+
+    [Fact]
+    public void AsmSimIncremental_AbsentInOldSettings_DefaultsToEnabled()
+    {
+        // An older settings.json (written before the field existed) lacks AsmSim_Incremental. It MUST resolve
+        // to the default (ON), NOT a bool's false — otherwise incremental simulation silently never runs for
+        // existing users. (This is exactly the live-VS regression on 2026-06-14.)
+        AsmLanguageServerOptions? opts = AsmDude2LS.SettingsManager.DeserializeSettings("{ \"AsmSim_On\": false }");
+
+        opts.Should().NotBeNull();
+        opts!.AsmSim_Incremental.Should().BeNull("an absent field is null, not false");
+        opts.AsmSimIncrementalEffective.Should().BeTrue("absent must mean the default (ON)");
+    }
+
+    [Fact]
+    public void AsmSimIncremental_ExplicitFalse_IsRespected()
+    {
+        AsmLanguageServerOptions? opts = AsmDude2LS.SettingsManager.DeserializeSettings("{ \"AsmSim_Incremental\": false }");
+        opts!.AsmSim_Incremental.Should().BeFalse();
+        opts.AsmSimIncrementalEffective.Should().BeFalse("an explicit opt-out must be honored");
+    }
+
+    [Fact]
+    public void AsmSimIncremental_ExplicitTrue_IsRespected()
+    {
+        AsmLanguageServerOptions? opts = AsmDude2LS.SettingsManager.DeserializeSettings("{ \"AsmSim_Incremental\": true }");
+        opts!.AsmSimIncrementalEffective.Should().BeTrue();
+    }
+
     [Fact]
     public void Settings_RoundTrip_ProducerToConsumer_PreservesValues()
     {

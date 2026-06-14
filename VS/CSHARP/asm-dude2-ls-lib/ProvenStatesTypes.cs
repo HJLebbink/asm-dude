@@ -84,7 +84,7 @@ public class ProvenStatesResponse
     /// <summary>
     /// Proven states, one entry per line with proven values. Empty list if no data available.
     /// </summary>
-    public required List<ProvenLineState> States { get; set; }
+    public required List<ProvenLineState> States { get; init; }
 
     /// <summary>
     /// Total number of lines in the document.

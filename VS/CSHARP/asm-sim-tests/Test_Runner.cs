@@ -23,6 +23,7 @@
 namespace unit_tests_asm_z3
 {
     using AsmSim;
+    using AsmSim.Mnemonics;
 
     using AsmTools;
 
@@ -63,6 +64,85 @@ namespace unit_tests_asm_z3
             string tailKey = "!0"; // Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
             return new State(tools, tailKey, headKey);
+        }
+
+        // ── Runner.IsRedundantInstruction — the pre-freeze redundancy primitive ─────────────────────────
+        // This is the canonical "does this instruction change the tracked state?" query. Unlike asking
+        // Is_Redundant on a frozen after-state (see Test_State_Frozen_DropsOverwrittenRegisterHistory), it
+        // queries an UNFROZEN probe, so it sees both the before- and after-values — including for a VALUE
+        // rewrite over a register that the freeze/Compress would otherwise prune. See REDUNDANT_DIAGNOSTICS_PLAN.md.
+
+        /// <summary>Steps `before` through `setup` (left to right), returning the frozen state after the last.</summary>
+        private State StepThrough(Tools tools, params string[] setup)
+        {
+            State s = this.CreateState(tools);
+            foreach (string line in setup)
+            {
+                s = AsmTestTools.Step_Forward(line, s);
+            }
+            return s;
+        }
+
+        [TestMethod]
+        public void Test_Runner_IsRedundant_ValueRewrite()
+        {
+            // rax already holds 10 ⇒ a second `mov rax,10` is redundant. This is the case the frozen
+            // after-state cannot prove (history pruned) but the unfrozen probe can.
+            Tools tools = this.CreateTools(100000);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+
+            State before = this.StepThrough(tools, "mov rax, 10"); // rax = 10
+            RedundancyVerdict? v = Runner.IsRedundantInstruction("mov rax, 10", before);
+
+            Assert.IsTrue(v.HasValue && v.Value.IsRedundant, "rewriting rax with the value it already holds is redundant");
+        }
+
+        [TestMethod]
+        public void Test_Runner_IsRedundant_StructuralIdentity()
+        {
+            // `mov rax, rax` is redundant even when rax is UNKNOWN (the update links the two keys directly).
+            Tools tools = this.CreateTools(100000);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+
+            State before = this.CreateState(tools); // rax unknown
+            RedundancyVerdict? v = Runner.IsRedundantInstruction("mov rax, rax", before);
+
+            Assert.IsTrue(v.HasValue && v.Value.IsRedundant, "an identity move is redundant regardless of value");
+        }
+
+        [TestMethod]
+        public void Test_Runner_IsRedundant_StateChangingNotRedundant()
+        {
+            // A real definition (rax was unknown) and a value change must NOT be flagged.
+            Tools tools = this.CreateTools(100000);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+
+            State unknownRax = this.CreateState(tools);
+            RedundancyVerdict? define = Runner.IsRedundantInstruction("mov rax, 10", unknownRax);
+            Assert.IsFalse(define.HasValue && define.Value.IsRedundant, "defining rax (unknown -> 10) changes it");
+
+            State raxIs10 = this.StepThrough(tools, "mov rax, 10");
+            RedundancyVerdict? change = Runner.IsRedundantInstruction("mov rax, 11", raxIs10);
+            Assert.IsFalse(change.HasValue && change.Value.IsRedundant, "10 -> 11 changes rax");
+        }
+
+        [TestMethod]
+        public void Test_Runner_IsRedundant_NopAndNonInstruction_AreNull()
+        {
+            // NOP writes nothing ⇒ not "redundant" (WrittenCount 0). A non-instruction line ⇒ null.
+            Tools tools = this.CreateTools(100000);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+
+            State s = this.CreateState(tools);
+            RedundancyVerdict? nop = Runner.IsRedundantInstruction("nop", s);
+            Assert.IsFalse(nop.HasValue && nop.Value.IsRedundant, "NOP writes nothing, so it is not flagged redundant");
+
+            RedundancyVerdict? label = Runner.IsRedundantInstruction("some_label:", s);
+            Assert.IsFalse(label.HasValue, "a non-instruction line has no redundancy verdict");
         }
 
         /// <summary>Returns Forward, Backward State</summary>
@@ -1177,6 +1257,33 @@ namespace unit_tests_asm_z3
             {
                 Assert.Inconclusive("TODO");
             }
+        }
+
+        // ── Operand-type validation (Opcode2Base) end-to-end ─────────────────────────────────────────────
+        // Guards the REAL production path (parse line -> InstantiateOpcode -> Opcode2Base operand check),
+        // not just the Ot2 encoding. Opcode2Type1 (ALU ops) allows {reg_reg, reg_mem, reg_imm, mem_reg,
+        // mem_imm} but NOT mem_mem. Under the old packed-nibble Ot2 encoding, OR-ing the allowed set produced
+        // a bit-union that wrongly "contained" mem_mem (a phantom HasFlag member), so `add mem,mem` was
+        // silently accepted. See OperandType.cs and Test_AsmSourceTools_Ot2_SingleBitFlags_NoPhantomMembers.
+        [TestMethod]
+        public void Test_Runner_OperandValidation_RejectsMemMem_ForAluOp()
+        {
+            Tools tools = this.CreateTools();
+            (string prevKey, string nextKey, string nextKeyBranch) keys = ("!0", "!1", "!1B");
+
+            (_, _, Mnemonic mn1, string[] args1, _) =
+                AsmSourceTools.ParseLine("add ptr qword [rax], ptr qword [rbx]", -1, -1, AssemblerEnum.UNKNOWN);
+            using OpcodeBase? memMem = Runner.InstantiateOpcode(mn1, args1, keys, tools);
+            Assert.IsNotNull(memMem);
+            Assert.IsTrue(memMem!.IsHalted, "add mem,mem is an illegal operand form and must be rejected");
+            StringAssert.Contains(memMem.SyntaxError, "Invalid combination",
+                "rejection must come from operand-type validation, not a parse/size error");
+
+            (_, _, Mnemonic mn2, string[] args2, _) =
+                AsmSourceTools.ParseLine("add rax, rbx", -1, -1, AssemblerEnum.UNKNOWN);
+            using OpcodeBase? regReg = Runner.InstantiateOpcode(mn2, args2, keys, tools);
+            Assert.IsNotNull(regReg);
+            Assert.IsFalse(regReg!.IsHalted, "add reg,reg is a valid operand form");
         }
     }
 }

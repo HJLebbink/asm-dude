@@ -236,6 +236,18 @@ public class AsmSettingsData
     public bool KeywordHighlighting_BorderColor_On;
     [DataMember]
     public bool AsmSim_On;
+    /// <summary>Incremental simulation: on an edit, reuse the previous result for unaffected lines and
+    /// re-solve only the dataflow cone (INCREMENTAL_SIM_PLAN.md). Runtime-settable (no restart); falls back
+    /// to a full simulation whenever it can't safely reuse. <b>Nullable on purpose:</b> an OLDER settings.json
+    /// (written before this field existed) has it ABSENT, which must mean "use the default (ON)", not "off" —
+    /// a plain <c>bool</c> would deserialize absent → false and silently disable the feature. Resolve via
+    /// <see cref="AsmSimIncrementalEffective"/>, never read this raw.</summary>
+    [DataMember]
+    public bool? AsmSim_Incremental;
+
+    /// <summary>The effective incremental-simulation switch: the explicit setting if present, else the
+    /// default (ON). Single source of truth for the absent-means-default-ON rule.</summary>
+    public bool AsmSimIncrementalEffective => this.AsmSim_Incremental ?? true;
     [DataMember]
     public bool AsmSim_Show_Syntax_Errors;
     [DataMember]
@@ -458,5 +470,11 @@ public class AsmSettingsData
         this.AsmSim_Show_Register_In_Code_Completion_Numeration = string.Empty;
         this.AsmSim_Show_Register_In_Register_Tooltip_Numeration = string.Empty;
         this.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = string.Empty;
+
+        // Redundant-instruction detection defaults ON (an absent field in an older settings.json keeps this
+        // default; an explicit value in the JSON still wins). The other AsmSim flags default to bool-false
+        // here and get their real defaults from the VSIX setting definitions / SettingsSyncService.
+        this.AsmSim_Show_Redundant_Instructions = true;
+        this.AsmSim_Decorate_Redundant_Instructions = true;
     }
 }
