@@ -32,7 +32,7 @@ namespace AsmSim
     ///
     /// <para>Each OWNED context creation calls <see cref="Created"/>; each owned disposal calls
     /// <see cref="Disposed"/>. Borrowed / shared-context references are NOT re-counted (only the object that
-    /// actually allocates the native context counts it). The <c>ProgramSyntesizer</c> CLI experiment is out
+    /// actually allocates the native context counts it). The <c>ProgramSynthesizer</c> CLI experiment is out
     /// of scope. Therefore:</para>
     /// <list type="bullet">
     ///   <item><see cref="Live"/> — native Z3 contexts the simulator is holding right now (GC-invisible

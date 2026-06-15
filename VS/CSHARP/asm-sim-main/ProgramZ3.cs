@@ -55,6 +55,15 @@ namespace AsmSim
             System.Version? ver = thisAssemName.Version;
             Console.WriteLine(string.Format(Culture, "Loaded AsmSim version {0}.", ver));
 
+            // This is a console scratchpad: route AsmLog to stdout so the routines below (e.g. the program
+            // synthesizer) actually print. Unlike the server, this exe has no one wiring up the level, so
+            // honor ASMDUDE_LOGLEVEL here (the synthesizer prints each program at Trace level).
+            if (AsmLog.TryParseLevel(Environment.GetEnvironmentVariable("ASMDUDE_LOGLEVEL"), out var lvl))
+            {
+                AsmLog.Threshold = lvl;
+            }
+            AsmLog.AddSink(AsmLogSinks.Console(useStandardError: false));
+
             // ExpressionTest();
             // TestMem2();
             // TestExecutionTree();
@@ -62,7 +71,7 @@ namespace AsmSim
             // TestMnemonic();
             // Test_Rep();
             // Test_Usage();
-            if (true)
+            if (false)
             {
                 TestMemorySpeed_mov_mov();
                 TestMemorySpeed_push_pop();
@@ -79,16 +88,44 @@ namespace AsmSim
             // TestMemoryLeak();
             // Test_NullReference_Bsf_1();
 
-            if (true)
+            if (false)
             {
                 TestTactic();
             }
 
+            if (true)
+            {
+                /// <summary>
+                /// Drives the <see cref="ProgramSynthesizer"/> (a tiny Z3 superoptimizer): for each goal it asks Z3 for
+                /// every straight-line program (over the given registers, of the given length) that meets the goal for
+                /// ALL inputs, and logs them via AsmLog (category "SIM", Info level). The sound <c>∃ switches . ∀ inputs</c>
+                /// path (<see cref="ProgramSynthesizer.Synthesize(SynthSpec, int, System.Collections.Generic.IList{Rn})"/>)
+                /// is used, NOT the older un-quantified <c>Run()</c>. Expected results:
+                /// <list type="bullet">
+                ///   <item>ZeroRax  → <c>XOR RAX, RAX</c></item>
+                ///   <item>IncRax   → <c>INC RAX</c></item>
+                ///   <item>NegRax   → <c>NOT RAX; INC RAX</c></item>
+                ///   <item>SwapRaxRbx → <c>XOR RAX,RBX; XOR RBX,RAX; XOR RAX,RBX</c></item>
+                /// </list>
+                /// </summary>
+
+                ProgramSynthesizer.Synthesize(SynthSpec.ZeroRax, nLines: 1, new Rn[] { Rn.RAX });
+                ProgramSynthesizer.Synthesize(SynthSpec.IncRax, nLines: 1, new Rn[] { Rn.RAX });
+                ProgramSynthesizer.Synthesize(SynthSpec.NegRax, nLines: 2, new Rn[] { Rn.RAX });
+                ProgramSynthesizer.Synthesize(SynthSpec.SwapRaxRbx, nLines: 3, new Rn[] { Rn.RAX, Rn.RBX });
+
+                ProgramSynthesizer.RunSearchSpaceStudy();
+            }
+
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             Console.WriteLine(string.Format(Culture, "Elapsed time " + elapsedSec + " sec"));
-            Console.WriteLine(string.Format(Culture, "Press any key to continue."));
-            Console.ReadKey();
+            if (!Console.IsInputRedirected)
+            {
+                Console.WriteLine(string.Format(Culture, "Press any key to continue."));
+                Console.ReadKey();
+            }
         }
+        
 
         private static Tools CreateTools(int timeOut = 1000)
         {
@@ -1676,8 +1713,8 @@ namespace AsmSim
             }
             else
             {
-                // ProgramSyntesizer ps = new ProgramSyntesizer(3, new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX });
-                // ProgramSyntesizer ps = new ProgramSyntesizer(2, new Rn[] { Rn.RAX });
+                // ProgramSynthesizer ps = new ProgramSynthesizer(3, new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX });
+                // ProgramSynthesizer ps = new ProgramSynthesizer(2, new Rn[] { Rn.RAX });
                 // ps.Run();
             }
         }
