@@ -210,6 +210,16 @@ namespace AsmDude2LS
                     Documentation = ParamDoc(operandList[j]),
                 });
             }
+            // Surface the architecture in signature help: it lives on AsmSignatureInformation (Arch[][])
+            // but the LSP SignatureInformation only carries Label/Parameters/Documentation, so without this
+            // the client shows no arch. Rendered as DNF ("+"=AND within a group, ", "=OR between groups,
+            // e.g. "AVX512_VL+AVX512_F, AVX10"). It goes in Documentation (NOT Label): the Label is the
+            // value-based override key in AsmSignatureInformation.Equals, so it must stay arch-independent.
+            string archStr = string.Join(", ", archs.Select(group => string.Join("+", group.Select(a => ArchTools.ToString(a)))));
+            string documentation = string.IsNullOrEmpty(archStr)
+                ? doc
+                : (string.IsNullOrEmpty(doc) ? "Arch: " + archStr : doc + "\n\nArch: " + archStr);
+
             return new AsmSignatureInformation
             {
                 Mnemonic = mnemonic,
@@ -219,7 +229,7 @@ namespace AsmDude2LS
                 {
                     Label = sign,
                     Parameters = [.. parameters],
-                    Documentation = doc,
+                    Documentation = documentation,
                 }
             };
         }

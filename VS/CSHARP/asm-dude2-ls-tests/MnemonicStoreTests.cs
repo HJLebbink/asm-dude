@@ -428,10 +428,14 @@ public class MnemonicStoreTests
             Directory.GetCurrentDirectory(), "..", "..", "..", "..", "asm-dude2-ls-lib", "Resources");
         var mar2026 = Path.Combine(resourceDir, "signature-mar2026.txt");
 
+        // The individual ARCH_* toggles only take effect under the Custom profile; any other profile
+        // (the default is V4) overrides them with the profile's fixed arch set. This test exercises the
+        // per-toggle gating of AMX tiles, so it must opt into Custom.
+
         // AMX on: tile registers are offered, and an AMX instruction's tile operand expects TMMREG.
         var storeOn = new MnemonicStore(
             mar2026, this._handcraftedDataPath,
-            new AsmLanguageServerOptions { ARCH_X64 = true, ARCH_AMX = true });
+            new AsmLanguageServerOptions { ArchProfile = ArchProfileKeys.Custom, ARCH_X64 = true, ARCH_AMX = true });
 
         storeOn.Get_Allowed_Registers().Should().Contain(Rn.TMM0, "tiles must be offered when AMX is on");
 
@@ -443,7 +447,7 @@ public class MnemonicStoreTests
         // AMX off: tiles must not be offered.
         var storeOff = new MnemonicStore(
             mar2026, this._handcraftedDataPath,
-            new AsmLanguageServerOptions { ARCH_X64 = true });
+            new AsmLanguageServerOptions { ArchProfile = ArchProfileKeys.Custom, ARCH_X64 = true });
         storeOff.Get_Allowed_Registers().Should().NotContain(Rn.TMM0, "tiles are gated behind the AMX toggle");
     }
 

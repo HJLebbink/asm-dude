@@ -812,37 +812,6 @@ namespace AsmSim.Host
 
         // ── M2: Tier-1 static-cone partial re-solve (component engine) ──────────────────────────────────
 
-        /// <summary>Per-line static read/write footprints for the dynamic cone (M3), keyed by line index.
-        /// Instantiates each opcode for its metadata only — NO Z3 solving. <c>KillRegs</c> are the writes that
-        /// fully overwrite their 64-bit register (a 32- or 64-bit destination; a 32-bit write zero-extends),
-        /// the only ones safe to clear from the dirty set.</summary>
-        private static Dictionary<int, AsmSim.LineEffects> BuildLineEffects(IReadOnlyList<AsmSim.Instruction> instr, AsmSimTools tools)
-        {
-            var dummyKeys = ("d_p", "d_n", "d_b");
-            var result = new Dictionary<int, AsmSim.LineEffects>();
-            for (int i = 0; i < instr.Count; i++)
-            {
-                AsmSim.Instruction ins = instr[i];
-                if (ins.Mnemonic == Mnemonic.NONE) continue;
-                string[] args = ins.Args as string[] ?? [.. ins.Args];
-                using OpcodeBase? op = Runner.InstantiateOpcode(ins.Mnemonic, args, dummyKeys, tools);
-                if (op == null) continue;
-
-                var read = new HashSet<Rn>();
-                var write = new HashSet<Rn>();
-                var kill = new HashSet<Rn>();
-                foreach (Rn r in op.RegsReadStatic) read.Add(RegisterTools.Get64BitsRegister(r));
-                foreach (Rn r in op.RegsWriteStatic)
-                {
-                    Rn r64 = RegisterTools.Get64BitsRegister(r);
-                    write.Add(r64);
-                    if (RegisterTools.NBits(r) >= 32) kill.Add(r64); // 32/64-bit dest fully overwrites the 64-bit reg
-                }
-                result[i] = new AsmSim.LineEffects(read, write, kill, op.FlagsReadStatic, op.FlagsWriteStatic, op.MemReadStatic, op.MemWriteStatic);
-            }
-            return result;
-        }
-
         /// <summary>Build the reuse-base cache for a cone re-solve: remap every NON-cone matched line's
         /// strings and diagnostics from the baseline onto its new line number. Cone lines are intentionally
         /// omitted — the component engine re-solves and writes them fresh. Pure string/struct copying.</summary>
@@ -905,20 +874,16 @@ namespace AsmSim.Host
                     cone = AsmSim.DataflowCone.StaticConeWithTopology(oldFlow, sFlow, diff);
                     coneKind = "topology";
                 }
-                else if (this.computeFullState_)
-                {
-                    // Full register DUMP: any dirty location makes every downstream line's dump differ, so the
-                    // DYNAMIC cone is unsound here — forward reachability (static cone) is required.
-                    cone = AsmSim.DataflowCone.StaticCone(sFlow, diff);
-                    coneKind = "static";
-                }
                 else
                 {
-                    // Editor labels-only + topology-preserving: the tightest (dirty-set + kill) cone.
-                    Dictionary<int, AsmSim.LineEffects> newEff = BuildLineEffects(newInstr, cfgTools);
-                    Dictionary<int, AsmSim.LineEffects> oldEff = BuildLineEffects(committed.Instr, cfgTools);
-                    cone = AsmSim.DynamicCone.Compute(sFlow, diff, newEff, oldEff);
-                    coneKind = "dynamic";
+                    // Topology-preserving edit: re-solve every line forward-reachable from the edit (the static
+                    // cone). This is used for BOTH the full register dump and the editor's labels-only output.
+                    // The tighter DYNAMIC cone (dirty-set + kill) was retired from the editor path: it over-pruned
+                    // on branch/loop/label code — leaving downstream CodeLens labels showing stale values — and its
+                    // oracle tests only covered straight-line programs. The static cone is a sound superset (a
+                    // forward-reachable line is always re-solved), so it cannot leave a downstream line stale.
+                    cone = AsmSim.DataflowCone.StaticCone(sFlow, diff);
+                    coneKind = "static";
                 }
 
                 DocCache reuseBase = RemapConeReuse(committed.Cache, diff, cone);

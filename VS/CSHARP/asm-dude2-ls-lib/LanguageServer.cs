@@ -1426,7 +1426,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
 
             int fileID = 0; //TODO
-            (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, AssemblerEnum.UNKNOWN);
+            (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, this.options.Used_Assembler);
             AsmDudeLog.Debug($"GetTextDocumentSignatureHelp: ParseLine result: mnemonic={mnemonic}, args=[{string.Join(",", args)}], label=\"{label}\", remark=\"{remark}\"");
 
             if (remark.Length > 0)
@@ -2022,18 +2022,17 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                 // by default, the entry.Key is with capitals
                 string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
-                string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                 string descriptionStr = this.asmDudeTools.Get_Description(keyword); //TODO add additional info
-                string displayText = Truncate(keyword + archStr);
 
                 completions.Add(new CompletionItem
                 {
                     Kind = this.GetCompletionItemKind(AsmTokenType.Register),
-                    Label = displayText,
+                    Label = keyword,
+                    LabelDetails = DescriptionLabelDetails(descriptionStr),
                     InsertText = insertionText,
                     SortText = insertionText,
                     FilterText = insertionText,
-                    Documentation = descriptionStr
+                    Documentation = ArchDocumentation(arch),
                 });
             }
         }
@@ -2070,19 +2069,17 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                 // by default, the entry.Key is with capitals
                 string insertionText = useCapitals ? keyword2 : keyword2.ToLowerInvariant();
-                string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                 string descriptionStr = this.asmDudeTools.Get_Description(keyword);
-                descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
-                string displayText = Truncate(keyword2 + archStr + descriptionStr);
 
                 completions.Add(new CompletionItem
                 {
                     Kind = this.GetCompletionItemKind(type),
-                    Label = displayText,
+                    Label = keyword2,
+                    LabelDetails = DescriptionLabelDetails(descriptionStr),
                     InsertText = insertionText,
                     SortText = insertionText,
                     FilterText = insertionText,
-                    Documentation = descriptionStr
+                    Documentation = ArchDocumentation(arch),
                 });
             }
         }
@@ -2181,16 +2178,18 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 {
                     string keyword_uppercase = mnemonic2.ToString();
                     string insertionText = useCapitals ? keyword_uppercase : keyword_uppercase.ToLowerInvariant();
-                    string archStr = ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic2));
 
                     completions.Add(new CompletionItem
                     {
                         Kind = CompletionItemKind.Keyword,
-                        Label = $"{keyword_uppercase} {archStr}",
+                        Label = keyword_uppercase,
+                        // Always-visible: the description (semantics). On-selection (arch + doc link) is
+                        // filled lazily in ResolveCompletion, keyed by Data.
+                        LabelDetails = DescriptionLabelDetails(this.mnemonicStore.GetDescription(mnemonic2)),
                         InsertText = insertionText,
                         SortText = insertionText,
                         FilterText = insertionText,
-                        Documentation = this.mnemonicStore.GetDescription(mnemonic2),
+                        Data = keyword_uppercase,
                     });
                 }
             }
@@ -2233,20 +2232,17 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     {
                         // by default, the entry.Key is with capitals
                         string insertionText = useCapitals ? keyword_uppercase : keyword_uppercase.ToLowerInvariant();
-                        string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                         string descriptionStr = this.asmDudeTools.Get_Description(keyword_uppercase);
-                        descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
-                        string displayTextFull = keyword_uppercase + archStr + descriptionStr;
-                        string displayText = Truncate(displayTextFull);
 
                         completions.Add(new CompletionItem
                         {
                             Kind = this.GetCompletionItemKind(type),
-                            Label = displayText,
+                            Label = keyword_uppercase,
+                            LabelDetails = DescriptionLabelDetails(descriptionStr),
                             InsertText = insertionText,
                             SortText = insertionText,
                             FilterText = insertionText,
-                            Documentation = descriptionStr
+                            Documentation = ArchDocumentation(arch),
                         });
                     }
                 }
@@ -2282,7 +2278,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             char currentChar = this.GetChar(completeLineStr, pos - 1);
 
             int fileID = 0; //TODO
-            (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, AssemblerEnum.UNKNOWN);
+            (object _, string label, Mnemonic mnemonic, string[] args, string remark) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, this.options.Used_Assembler);
             if (extraLogging) AsmDudeLog.Info($"OnTextDocumentCompletion: lineStr=\"{lineStr}\"; mnemonic={mnemonic}; args={string.Join(',', args)}");
 
             // if we are typing in a remark: no code completion please
@@ -2307,6 +2303,11 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 return [.. items.Where(i => i.FilterText != null && i.FilterText.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))];
             }
 
+            // When FilterByPrefix narrows the list server-side (1-2 char prefix), the result is a subset:
+            // mark the list incomplete so the client re-queries as more characters are typed instead of
+            // filtering the truncated set itself (which would hide valid items).
+            bool incomplete = prefix.Length is 1 or 2;
+
             // if the mnemonic is NONE we should suggest mnemonics
             if (mnemonic == Mnemonic.NONE)
             {
@@ -2314,6 +2315,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 if (extraLogging) AsmDudeLog.Info($"OnTextDocumentCompletion: A");
                 return new CompletionList()
                 {
+                    IsIncomplete = incomplete,
                     Items = FilterByPrefix(Selected_Completions(useCapitals, selected, true)),
                 };
             }
@@ -2334,6 +2336,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 if (extraLogging) AsmDudeLog.Info($"OnTextDocumentCompletion: B");
                 return new CompletionList()
                 {
+                    IsIncomplete = incomplete,
                     Items = FilterByPrefix(Selected_Completions(useCapitals, selected, true)),
                 };
             }
@@ -2345,6 +2348,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 if (extraLogging) AsmDudeLog.Info($"OnTextDocumentCompletion: C");
                 return new CompletionList()
                 {
+                    IsIncomplete = incomplete,
                     Items = FilterByPrefix(this.Label_Completions(labelGraph, useCapitals, true)),
                 };
             }
@@ -2397,6 +2401,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             }
             return new CompletionList()
             {
+                IsIncomplete = incomplete,
                 Items = FilterByPrefix(this.Mnemonic_Operand_Completions(useCapitals, allowed, (int)parameter.Position.Line))
             };
         }
@@ -2406,6 +2411,79 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 AsmDudeLog.Error($"OnTextDocumentCompletion: e={e}");
                 return new CompletionList();
             }
+        }
+    }
+
+    /// <summary>
+    /// Lazily fill in a mnemonic completion item's on-selection documentation (LSP completionItem/resolve).
+    /// Mnemonic items carry their name in <see cref="CompletionItem.Data"/> and show their description
+    /// inline (always visible); here we attach the secondary info shown only when the item is selected —
+    /// the architecture and a documentation link — honoring the client's negotiated documentation markup
+    /// kind (<see cref="CompletionDocumentationKind"/>). Items without Data (registers, directives, …)
+    /// already carry their documentation eagerly and are returned unchanged.
+    /// </summary>
+    public CompletionItem ResolveCompletion(CompletionItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        try
+        {
+            string? mnemonicStr = item.Data switch
+            {
+                System.Text.Json.JsonElement je when je.ValueKind == System.Text.Json.JsonValueKind.String => je.GetString(),
+                string s => s,
+                _ => null,
+            };
+            if (string.IsNullOrEmpty(mnemonicStr))
+            {
+                return item; // not a deferred-documentation item
+            }
+
+            Mnemonic mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(mnemonicStr.ToUpperInvariant(), true);
+            if (mnemonic == Mnemonic.NONE)
+            {
+                return item;
+            }
+
+            string archStr = string.Join(",", this.mnemonicStore.GetArch(mnemonic).Select(a => ArchTools.ToString(a)));
+            string? archLine = string.IsNullOrEmpty(archStr) ? null : "Arch: " + archStr;
+            string? url = this.GetMnemonicUrl(mnemonicStr);
+
+            if (this.CompletionDocumentationKind == MarkupKind.Markdown)
+            {
+                System.Text.StringBuilder sb = new();
+                if (!string.IsNullOrEmpty(archLine))
+                {
+                    sb.Append(archLine);
+                }
+                if (!string.IsNullOrEmpty(url))
+                {
+                    if (sb.Length > 0) sb.Append("\n\n");
+                    sb.Append($"[Documentation]({url})");
+                }
+                if (sb.Length > 0)
+                {
+                    item.Documentation = new MarkupContent { Kind = MarkupKind.Markdown, Value = sb.ToString() };
+                }
+            }
+            else
+            {
+                string text = archLine ?? string.Empty;
+                if (!string.IsNullOrEmpty(url))
+                {
+                    if (text.Length > 0) text += "\n\n";
+                    text += url;
+                }
+                if (text.Length > 0)
+                {
+                    item.Documentation = text;
+                }
+            }
+            return item;
+        }
+        catch (Exception e)
+        {
+            AsmDudeLog.Error($"ResolveCompletion: e={e}");
+            return item;
         }
     }
 
@@ -2883,6 +2961,14 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     /// PlainText). Defaults to Markdown for direct/test callers that don't go through initialize.
     /// </summary>
     internal MarkupKind HoverMarkupKind { get; set; } = MarkupKind.Markdown;
+
+    /// <summary>
+    /// The <see cref="MarkupKind"/> used for completion-item documentation, filled lazily in
+    /// <see cref="ResolveCompletion"/>. Set at initialize from the client's advertised
+    /// <c>textDocument.completion.completionItem.documentationFormat</c> (Markdown when offered, else
+    /// PlainText). Defaults to Markdown for direct/test callers that don't go through initialize.
+    /// </summary>
+    internal MarkupKind CompletionDocumentationKind { get; set; } = MarkupKind.Markdown;
 
     /// <summary>
     /// Handle hover request. Returns a standard LSP Hover with MarkupContent for mnemonics, registers, and labels.
@@ -3447,6 +3533,26 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             AsmTokenType.Label => CompletionItemKind.Reference,
             _ => CompletionItemKind.Text,
         };
+    }
+
+    // The semantics (the human description) is the most useful thing to see while scanning the list, so
+    // it is the ALWAYS-VISIBLE inline annotation. It MUST go in CompletionItemLabelDetails.Description:
+    // Visual Studio renders that slot (it ignores .Detail), which is why the arch annotation was visible
+    // here before. Kept out of Label/FilterText so client-side fuzzy matching never matches on it.
+    private static CompletionItemLabelDetails? DescriptionLabelDetails(string? description)
+    {
+        return string.IsNullOrEmpty(description)
+            ? null
+            : new CompletionItemLabelDetails { Description = description };
+    }
+
+    // The architecture is secondary, so it is shown only when an item is SELECTED (the Documentation
+    // flyout), not inline. Returns null (no flyout) for architecture-agnostic items.
+    private static SumType<string, MarkupContent>? ArchDocumentation(Arch arch)
+    {
+        return (arch == Arch.ARCH_NONE)
+            ? (SumType<string, MarkupContent>?)null
+            : (SumType<string, MarkupContent>)("Arch: " + ArchTools.ToString(arch));
     }
 
     #region Logging

@@ -197,6 +197,14 @@ public class LanguageServerTarget(LanguageServer server)
             : MarkupKind.PlainText;
         AsmDudeLog.Info($"Initialize: hover contentFormat -> {server.HoverMarkupKind}");
 
+        // Same negotiation for completion-item documentation (textDocument.completion.completionItem.documentationFormat):
+        // send Markdown (with a clickable doc link) only when the client renders it, else plain text.
+        MarkupKind[]? completionDocFormats = parameter.Capabilities?.TextDocument?.Completion?.CompletionItem?.DocumentationFormat;
+        server.CompletionDocumentationKind = (completionDocFormats != null && System.Array.IndexOf(completionDocFormats, MarkupKind.Markdown) >= 0)
+            ? MarkupKind.Markdown
+            : MarkupKind.PlainText;
+        AsmDudeLog.Info($"Initialize: completion documentationFormat -> {server.CompletionDocumentationKind}");
+
         string backspaceStr = (char)8 + string.Empty;
         //string carriageReturnStr = (char)13 + string.Empty;
 
@@ -215,12 +223,15 @@ public class LanguageServerTarget(LanguageServer server)
                 {
                     TriggerCharacters = [backspaceStr],
                     AllCommitCharacters = ["\t"],
-                    ResolveProvider = false,
+                    ResolveProvider = true,
                     WorkDoneProgress = false,
                 },
                 SignatureHelpProvider = new SignatureHelpOptions
                 {
                     TriggerCharacters = [" ", ",", backspaceStr],
+                    // ';' starts a comment: declaring it a retrigger char forces a re-request the moment
+                    // the user leaves the operands, which GetTextDocumentSignatureHelp answers with null
+                    // (remark present) → the popup is dismissed promptly instead of lingering over the comment.
                     RetriggerCharacters = [";"],
                     WorkDoneProgress = false,
                 },
@@ -592,11 +603,10 @@ public class LanguageServerTarget(LanguageServer server)
     }
 
     [JsonRpcMethod(Methods.TextDocumentCompletionResolveName, UseSingleObjectParameterDeserialization = true)]
-    public object? TextDocumentCompletionResolve(CompletionItem parameter)
+    public CompletionItem TextDocumentCompletionResolve(CompletionItem parameter)
     {
-        AsmDudeLog.Info($"TextDocumentCompletionResolve: NOT IMPLEMENTED. label={parameter.Label}");
-        // TODO
-        return null;
+        AsmDudeLog.Debug($"TextDocumentCompletionResolve: label={parameter.Label}");
+        return server.ResolveCompletion(parameter);
     }
 
     [JsonRpcMethod(Methods.TextDocumentDidOpenName, UseSingleObjectParameterDeserialization = true)]

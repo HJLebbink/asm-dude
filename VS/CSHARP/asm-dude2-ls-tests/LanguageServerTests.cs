@@ -256,6 +256,55 @@ public class LanguageServerTests
             "typing 'Z' should only return Z-prefixed completions, not YMM/XMM");
     }
 
+    [Fact]
+    public void Completion_ShortPrefix_MarksListIncomplete()
+    {
+        // A 1-2 char prefix is filtered server-side, so the list is a subset: the client must re-query.
+        this.GetCompletions("m", 1)!.IsIncomplete.Should().BeTrue("a 1-char prefix is narrowed server-side");
+        this.GetCompletions("mo", 2)!.IsIncomplete.Should().BeTrue("a 2-char prefix is narrowed server-side");
+        // No prefix (cursor right after the separator): full list, nothing narrowed.
+        this.GetCompletions("add ", 4)!.IsIncomplete.Should().BeFalse("operand list with no typed prefix is complete");
+    }
+
+    [Fact]
+    public void Completion_MnemonicItem_ShowsDescriptionInlineAndDefersArch()
+    {
+        CompletionList? result = this.GetCompletions("mo", 2);
+        CompletionItem mov = result!.Items.Single(i => string.Equals(i.Label, "MOV", StringComparison.Ordinal));
+
+        mov.Label.Should().Be("MOV", "annotations must live in LabelDetails, not be jammed into the Label");
+        mov.LabelDetails.Should().NotBeNull("the description (semantics) is shown inline, always visible");
+        mov.LabelDetails!.Description.Should().NotBeNullOrEmpty("VS renders LabelDetails.Description inline; it carries the semantics");
+        mov.Data.Should().NotBeNull("mnemonic items carry their name in Data so the arch + doc link resolve lazily");
+        mov.Documentation.Should().BeNull("the arch + doc link are filled in completionItem/resolve, not eagerly");
+    }
+
+    [Fact]
+    public void ResolveCompletion_Mnemonic_FillsArchDocumentation()
+    {
+        // VADDPS is an AVX/AVX-512 instruction, so it has a non-empty architecture to surface on selection.
+        CompletionList? result = this.GetCompletions("vaddps", 6);
+        CompletionItem vaddps = result!.Items.Single(i => string.Equals(i.Label, "VADDPS", StringComparison.Ordinal));
+        vaddps.Documentation.Should().BeNull("precondition: the arch documentation is deferred");
+
+        CompletionItem resolved = this._server.ResolveCompletion(vaddps);
+
+        resolved.Documentation.Should().NotBeNull("resolve must attach the architecture for an arch-gated mnemonic");
+    }
+
+    [Fact]
+    public void ResolveCompletion_ItemWithoutData_IsUnchanged()
+    {
+        // Arch-bearing register items (ZMM here) carry their documentation eagerly and have no Data;
+        // resolve must not clobber it.
+        CompletionList? result = this.GetCompletions("VMOVAPS Z", 9);
+        CompletionItem register = result!.Items.First(i => i.Data == null && i.Documentation != null);
+
+        CompletionItem resolved = this._server.ResolveCompletion(register);
+
+        resolved.Documentation.Should().NotBeNull("eager documentation on a non-deferred item must survive resolve");
+    }
+
     #endregion
 
     #region Hover Tests
@@ -747,6 +796,31 @@ mov rax, rbx";
         // Assert
         result.Should().NotBeNull("signature help for MOV should return signatures");
         result?.Signatures.Should().NotBeEmpty("MOV has multiple signatures");
+    }
+
+    [Fact]
+    public void GetTextDocumentSignatureHelp_IncludesArchitecture()
+    {
+        // The architecture lives on AsmSignatureInformation but must be copied into the LSP
+        // SignatureInformation.Documentation, or the client shows no arch. VADDPS is arch-gated (AVX/AVX-512).
+        var uri = "file:///test_sig_arch.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "vaddps " }
+        });
+
+        var result = this._server.GetTextDocumentSignatureHelp(new SignatureHelpParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 7 },
+            Context = new SignatureHelpContext { TriggerKind = SignatureHelpTriggerKind.Invoked, IsRetrigger = false }
+        });
+
+        result.Should().NotBeNull();
+        result!.Signatures.Should().NotBeEmpty("VADDPS has signatures");
+        bool anyMentionsArch = result.Signatures.Any(
+            s => s.Documentation is { } sum && sum.Value is string str && str.Contains("Arch:", StringComparison.Ordinal));
+        anyMentionsArch.Should().BeTrue("an arch-gated instruction's signature help must mention the architecture");
     }
 
     [Theory]

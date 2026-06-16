@@ -138,7 +138,7 @@ label1:
 
 
 	#region Redundant instruction warning in memory (but AsmSim may not find it simply because it times out)
-	#mov qword [rdx], 0xFF #bug if memory content at rdx is known, then the redundant instruction is not flagged.
+	#mov qword [rdx], 0xFF
 	mov rax, qword [rcx]
 	mov rbx, qword [rdx]
 	cmp rcx, rdx
