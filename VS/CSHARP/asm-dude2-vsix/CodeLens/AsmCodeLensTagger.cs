@@ -215,64 +215,33 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
             labels = this.cachedLabels_;
         }
 
-        var labelsByLine = new Dictionary<int, AsmLabelRef>();
-        foreach (var lbl in labels)
-            labelsByLine[lbl.DefinitionLine] = lbl;
-
-        var tags = new List<TaggedTrackingTextRange<CodeLensTag>>();
-        var lines = new HashSet<int>();
-        var sig = new System.Text.StringBuilder();
-
+        // The per-line tag offsets/payloads + the dedup signature are computed by the VS-free
+        // AsmCodeLensTagBuilder (unit-tested in asm-dude2-vsix-tests); here we only wrap each spec in the
+        // SDK tag/tracking-range types. Keeping the math in the builder is what lets a test prove the
+        // signature changes when a downstream line's sim value changes (so a stale lens is re-published).
+        var lineInfos = new List<CodeLensLineInfo>();
         foreach (var line in document.Lines)
         {
-            int ln = line.LineNumber;
-            int lineLen = line.Text.Length;
-            if (lineLen == 0) continue; // only non-empty lines carry a lens
-
-            // ── Label reference-count tag (positioned on the label token reported by the server) ──
-            if (labelsByLine.TryGetValue(ln, out var lbl))
-            {
-                int col = Math.Max(0, Math.Min(lbl.DefinitionColumn, Math.Max(0, lineLen - 1)));
-                int len = Math.Max(1, Math.Min(lbl.DefinitionLength, lineLen - col));
-                int tagStart = line.Text.Start + col;
-
-                tags.Add(new(
-                    new(document, tagStart, len, TextRangeTrackingMode.ExtendForwardAndBackward),
-                    new(AsmLabelKind)
-                    {
-                        UniqueIdentifier = lbl.Label,
-                        Description = $"refcount:{lbl.ReferenceCount}|Label: {lbl.Label}",
-                        DisplayBeforeCreatingCodeLenses = true,
-                    }));
-                sig.Append("L|").Append(tagStart).Append(':').Append(len).Append(':')
-                   .Append(lbl.ReferenceCount).Append(':').Append(lbl.Label).Append(';');
-                lines.Add(ln);
-            }
-
-            // ── Sim-state tag (one per instruction line that has a known state) ──
-            if (simStates.TryGetValue(ln, out string? simLabel) && !string.IsNullOrEmpty(simLabel))
-            {
-                // 2 chars right of the first non-whitespace char, so VS renders the lens above the instruction.
-                string lineText = line.Text.CopyToString();
-                int instrCol = lineText.Length - lineText.TrimStart().Length;
-                int offsetCol = instrCol + 2;
-                int tagStart = line.Text.Start + Math.Min(offsetCol, Math.Max(0, lineLen - 1));
-                int tagLen = Math.Max(1, lineLen - Math.Min(offsetCol, lineLen - 1));
-
-                tags.Add(new(
-                    new(document, tagStart, tagLen, TextRangeTrackingMode.ExtendForwardAndBackward),
-                    new(AsmSimStateKind)
-                    {
-                        UniqueIdentifier = $"simstate:{ln}",
-                        Description = $"simstate:|{simLabel}",
-                        DisplayBeforeCreatingCodeLenses = true,
-                    }));
-                sig.Append("S|").Append(tagStart).Append(':').Append(tagLen).Append(':').Append(simLabel).Append(';');
-                lines.Add(ln);
-            }
+            lineInfos.Add(new CodeLensLineInfo(line.LineNumber, line.Text.Start, line.Text.CopyToString()));
         }
 
-        return (tags, lines.Count, sig.ToString());
+        (List<CodeLensTagSpec> specs, string signature) = AsmCodeLensTagBuilder.Build(lineInfos, simStates, labels);
+
+        var tags = new List<TaggedTrackingTextRange<CodeLensTag>>();
+        foreach (CodeLensTagSpec spec in specs)
+        {
+            CodeElementKind kind = spec.Kind == AsmCodeLensTagKind.Label ? AsmLabelKind : AsmSimStateKind;
+            tags.Add(new(
+                new(document, spec.TagStart, spec.TagLength, TextRangeTrackingMode.ExtendForwardAndBackward),
+                new(kind)
+                {
+                    UniqueIdentifier = spec.UniqueIdentifier,
+                    Description = spec.Description,
+                    DisplayBeforeCreatingCodeLenses = true,
+                }));
+        }
+
+        return (tags, AsmCodeLensTagBuilder.CountTaggedLines(specs), signature);
     }
 
     // ── Diagnostic logging (shared AsmLog, category "CodeLens") ──────────────────────────────────

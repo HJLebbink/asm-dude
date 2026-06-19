@@ -25,6 +25,8 @@
 	     the whole extension. -->
 	<ItemGroup>
 		<Compile Include="..\asm-dude2-vsix\LogFileTail.cs" Link="LogFileTail.cs" />
+		<Compile Include="..\asm-dude2-vsix\AsmLabelRef.cs" Link="AsmLabelRef.cs" />
+		<Compile Include="..\asm-dude2-vsix\CodeLens\AsmCodeLensTagBuilder.cs" Link="AsmCodeLensTagBuilder.cs" />
 	</ItemGroup>
 
 </Project>

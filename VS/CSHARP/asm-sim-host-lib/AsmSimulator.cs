@@ -171,12 +171,21 @@ namespace AsmSim.Host
                 // Bump version: any in-flight thread with the old version will stop writing.
                 version = this.simVersion_.TryGetValue(uri, out long v) ? v + 1 : 1;
                 this.simVersion_[uri] = version;
-                // Put a fresh (empty) cache entry immediately so stale data from the previous simulation
-                // is invisible while the new one runs. The cache holds only strings; the Z3 states of the
-                // previous run are owned and disposed by that run's own RunSimulation finally (the bumped
-                // version + cancelled token make it stop writing and unwind), so there is nothing to
-                // dispose here.
-                this.cache_[uri] = new DocCache();
+                // RETAIN the previous run's display strings (only create an empty slot on first sim). Reads
+                // (CodeLens) keep showing the last-known values until the new run OVERWRITES them in place —
+                // line-by-line via Emit, or wholesale via the cone path's remapped reuse-base. Blanking the
+                // cache here instead makes every keystroke collapse all CodeLens to nothing for ~1 s (the lens
+                // row's vertical space is reclaimed, so the code below jumps up, then back down when the new
+                // values arrive). The cache holds only strings; the previous run's Z3 states are owned and
+                // disposed by that run's own RunSimulation finally (the bumped version + cancelled token make it
+                // stop writing and unwind), so retaining the entry leaks nothing. Note: on a non-incremental
+                // FULL re-sim a line that changed from instruction→comment keeps a stale lens until the run
+                // finishes; the incremental cone path (the editor default) replaces the whole entry with the
+                // remapped reuse-base, so it has no such orphan.
+                if (!this.cache_.ContainsKey(uri))
+                {
+                    this.cache_[uri] = new DocCache();
+                }
             }
 
             _ = Task.Run(async () =>
@@ -812,16 +821,22 @@ namespace AsmSim.Host
 
         // ── M2: Tier-1 static-cone partial re-solve (component engine) ──────────────────────────────────
 
-        /// <summary>Build the reuse-base cache for a cone re-solve: remap every NON-cone matched line's
-        /// strings and diagnostics from the baseline onto its new line number. Cone lines are intentionally
-        /// omitted — the component engine re-solves and writes them fresh. Pure string/struct copying.</summary>
-        private static DocCache RemapConeReuse(DocCache prev, AsmSim.InstructionDiff diff, IReadOnlySet<int> cone)
+        /// <summary>Build the reuse-base cache for a cone re-solve: remap every matched line's strings from the
+        /// baseline onto its new line number. This INCLUDES the cone lines: seeding them with their previous
+        /// (now-stale) value keeps their CodeLens visible — holding its vertical space — during the ~1-2 s
+        /// re-solve; the component engine's per-line <c>Emit</c> then OVERWRITES each cone line in place with the
+        /// freshly-solved value. Without this seed the cone lines have no entry until solved, so their lenses
+        /// collapse to nothing (the row's space is reclaimed → the code below jumps up, then back down when the
+        /// new value arrives). A line ADDED by the edit has no <c>NewToOld</c> entry, so it correctly gets no
+        /// stale value. DIAGNOSTICS for cone lines are NOT carried forward — a stale squiggle is more confusing
+        /// than a brief absence, and the engine re-emits the correct ones as it solves each cone line. Pure
+        /// string/struct copying.</summary>
+        internal static DocCache RemapConeReuse(DocCache prev, AsmSim.InstructionDiff diff, IReadOnlySet<int> cone)
         {
             var next = new DocCache();
             foreach (KeyValuePair<int, int> kv in diff.NewToOld)
             {
                 int n = kv.Key, o = kv.Value;
-                if (cone.Contains(n)) continue; // re-solved fresh by the engine
                 if (prev.lineStringsBefore.TryGetValue(o, out string? b) && b != null) next.lineStringsBefore[n] = b;
                 if (prev.lineStringsAfter.TryGetValue(o, out string? a) && a != null) next.lineStringsAfter[n] = a;
                 if (prev.lineStringsReadLabels.TryGetValue(o, out string? r) && r != null) next.lineStringsReadLabels[n] = r;
@@ -835,6 +850,21 @@ namespace AsmSim.Host
                 }
             }
             return next;
+        }
+
+        /// <summary>Set <paramref name="map"/>[<paramref name="line"/>] to <paramref name="value"/>, or REMOVE
+        /// the entry when <paramref name="value"/> is null — so a freshly-solved line's strings fully replace any
+        /// previous (e.g. cone-seed) value, leaving no stale residue when the new solve has no value for a field.</summary>
+        private static void SetOrRemove(Dictionary<int, string?> map, int line, string? value)
+        {
+            if (value != null)
+            {
+                map[line] = value;
+            }
+            else
+            {
+                map.Remove(line);
+            }
         }
 
         /// <summary>M2 fast path (component engine only): for a topology-PRESERVING instruction edit, re-solve
@@ -1336,10 +1366,15 @@ namespace AsmSim.Host
                         && this.simVersion_.TryGetValue(uri, out long curVer) && curVer == version
                         && this.cache_.TryGetValue(uri, out DocCache? entry))
                     {
-                        if (cl.Before != null) entry.lineStringsBefore[line] = cl.Before;
-                        if (cl.After != null) entry.lineStringsAfter[line] = cl.After;
-                        if (cl.ReadLabel != null) entry.lineStringsReadLabels[line] = cl.ReadLabel;
-                        if (cl.WriteLabel != null) entry.lineStringsWriteLabels[line] = cl.WriteLabel;
+                        // Overwrite this line's display strings WHOLESALE (set when the freshly-solved value is
+                        // non-null, REMOVE when null). The remove is essential on the cone path: RemapConeReuse
+                        // seeds cone lines with their previous value (so the lens holds its space during the
+                        // re-solve instead of collapsing); if the new solve yields no value for a field, the
+                        // stale seed must be cleared or it lingers (and would break the incremental==full oracle).
+                        SetOrRemove(entry.lineStringsBefore, line, cl.Before);
+                        SetOrRemove(entry.lineStringsAfter, line, cl.After);
+                        SetOrRemove(entry.lineStringsReadLabels, line, cl.ReadLabel);
+                        SetOrRemove(entry.lineStringsWriteLabels, line, cl.WriteLabel);
                         if (cl.Diagnostics.Count > 0)
                         {
                             entry.diagnostics.AddRange(cl.Diagnostics);
