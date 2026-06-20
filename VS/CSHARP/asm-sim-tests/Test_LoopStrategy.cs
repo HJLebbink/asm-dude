@@ -51,7 +51,7 @@ namespace unit_tests_asm_z3
                 { "timeout", "60000" },
             };
             Tools t0 = new(settings);
-            Context ctx = new(t0.ContextSettings);
+            Context ctx = new(new Dictionary<string, string>(t0.ContextSettings));
             Tools tools = new(t0) { SharedCtx = ctx };
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;

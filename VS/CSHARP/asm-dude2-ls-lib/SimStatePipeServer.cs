@@ -64,7 +64,7 @@ internal sealed class SimStatePipeServer : IDisposable
     private readonly AsmSimulator simulator_;
     private readonly CancellationTokenSource cts_ = new();
     private volatile StreamWriter? clientWriter_;
-    private readonly object writerLock_ = new();
+    private readonly System.Threading.Lock writerLock_ = new();
     private int disposed_ = 0;
 
     internal SimStatePipeServer(AsmSimulator simulator)

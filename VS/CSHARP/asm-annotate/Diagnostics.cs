@@ -114,7 +114,7 @@ namespace AsmAnnotate
             string sourceInfo = ReadSourceInfo(parser);
             Console.WriteLine($"Source: {sourceInfo}");
 
-            List<ContentPile> piles = parser.ParseDocument(startPage, endPage);
+            IReadOnlyList<ContentPile> piles = parser.ParseDocument(startPage, endPage);
             Console.WriteLine($"Parsed {piles.Count} content piles.");
 
             var generator = new MarkdownGenerator(outputDir, sourceInfo);
@@ -139,12 +139,12 @@ namespace AsmAnnotate
                 var lines = parser.ExtractRawPage(1).TextElements.Select(t => t.GetText()).ToList();
 
                 var orderMatch = lines
-                    .Select(s => System.Text.RegularExpressions.Regex.Match(s, @"325462-\d+US"))
+                    .Select(s => System.Text.RegularExpressions.Regex.Match(s, @"325462-\d+US", System.Text.RegularExpressions.RegexOptions.None, System.TimeSpan.FromSeconds(2)))
                     .FirstOrDefault(m => m.Success);
                 string orderNo = orderMatch is { Success: true } ? orderMatch.Value : "325462";
 
                 string date = lines.FirstOrDefault(s => System.Text.RegularExpressions.Regex.IsMatch(
-                    s.Trim(), @"^(January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d\d$"))?.Trim() ?? "";
+                    s.Trim(), @"^(January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d\d$", System.Text.RegularExpressions.RegexOptions.None, System.TimeSpan.FromSeconds(2)))?.Trim() ?? "";
 
                 string suffix = date.Length > 0 ? $", {date}" : "";
                 return $"Intel® 64 and IA-32 Architectures Software Developer's Manual, Combined Volumes (Order Number {orderNo}{suffix})";

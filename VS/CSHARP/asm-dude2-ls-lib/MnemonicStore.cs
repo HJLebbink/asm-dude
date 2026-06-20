@@ -525,7 +525,7 @@ namespace AsmDude2LS
         {
             HashSet<Mnemonic> result = [];
 
-            HashSet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
+            IReadOnlySet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
             foreach (Mnemonic mnemonic in Enum.GetValues<Mnemonic>())
             {
                 // A mnemonic is offered if ANY of its signature forms is allowed under the selected
@@ -558,7 +558,7 @@ namespace AsmDude2LS
         {
             HashSet<Rn> result = [];
 
-            HashSet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
+            IReadOnlySet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
             foreach (Rn reg in Enum.GetValues<Rn>())
             {
                 if (reg != Rn.NOREG)

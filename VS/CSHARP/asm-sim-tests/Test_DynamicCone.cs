@@ -75,7 +75,7 @@ namespace unit_tests_asm_z3
                 [2] = E([Rn.RAX], [Rn.RDX]),
             };
 
-            HashSet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
+            IReadOnlySet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
 
             Assert.IsTrue(cone.Contains(0), "the changed line");
             Assert.IsFalse(cone.Contains(1), "reads only clean registers — excluded (tighter than the static cone)");
@@ -97,7 +97,7 @@ namespace unit_tests_asm_z3
                 [2] = E([Rn.RAX], [Rn.RCX]),
             };
 
-            HashSet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
+            IReadOnlySet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
 
             Assert.IsTrue(cone.Contains(0));
             Assert.IsFalse(cone.Contains(1), "a clean-input full overwrite recomputes the same value — excluded");
@@ -119,7 +119,7 @@ namespace unit_tests_asm_z3
                 [2] = E([Rn.RAX], [Rn.RCX]),
             };
 
-            HashSet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
+            IReadOnlySet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
 
             Assert.IsTrue(cone.Contains(2), "a partial write must NOT clear dirtiness (sound over-approximation)");
         }
@@ -137,7 +137,7 @@ namespace unit_tests_asm_z3
                 [2] = E([Rn.RSI], [Rn.RDX]),
             };
 
-            HashSet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
+            IReadOnlySet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
 
             Assert.IsTrue(cone.Contains(1), "adc reads the dirty CF");
             Assert.IsFalse(cone.Contains(2), "reads only the clean RSI");
@@ -155,7 +155,7 @@ namespace unit_tests_asm_z3
                 [1] = E([Rn.RDI], [Rn.RBX], rmem: true),
             };
 
-            HashSet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
+            IReadOnlySet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
 
             Assert.IsTrue(cone.Contains(1), "a memory read after a dirty memory write is conservatively in the cone");
         }
@@ -175,7 +175,7 @@ namespace unit_tests_asm_z3
                 [2] = E([], [], rf: Flags.ZF),
             };
 
-            HashSet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
+            IReadOnlySet<int> cone = DynamicCone.Compute(flow, diff, eff, new Dictionary<int, LineEffects>());
 
             Assert.IsTrue(cone.Contains(0), "the edited line");
             Assert.IsTrue(cone.Contains(1), "the loop body reads the dirty RBX");
@@ -196,7 +196,7 @@ namespace unit_tests_asm_z3
             var newEff = new Dictionary<int, LineEffects> { [0] = E([Rn.RAX, Rn.RBX], [Rn.RAX]) };
             var oldEff = new Dictionary<int, LineEffects> { [0] = E([], [Rn.RBX]) }; // the deleted mov rbx,5
 
-            HashSet<int> cone = DynamicCone.Compute(flow, diff, newEff, oldEff);
+            IReadOnlySet<int> cone = DynamicCone.Compute(flow, diff, newEff, oldEff);
 
             Assert.IsTrue(cone.Contains(0), "the consumer of a deleted instruction's output must be re-solved");
         }

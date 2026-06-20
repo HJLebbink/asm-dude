@@ -23,6 +23,7 @@
 namespace AsmTools;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -936,9 +937,11 @@ public static class ArchTools
         Arch.ARCH_CYRIX, Arch.ARCH_CYRIXM, Arch.ARCH_IA64, Arch.ARCH_UNDOC,
     ];
 
-    private static readonly Dictionary<string, HashSet<Arch>> ProfileSets = BuildProfileSets();
+    // Built once, read-only thereafter (TryGetProfileArchs per arch check). Frozen to document
+    // immutability and speed the per-mnemonic membership test; never mutate after build.
+    private static readonly FrozenDictionary<string, FrozenSet<Arch>> ProfileSets = BuildProfileSets();
 
-    private static Dictionary<string, HashSet<Arch>> BuildProfileSets()
+    private static FrozenDictionary<string, FrozenSet<Arch>> BuildProfileSets()
     {
         var v1 = new HashSet<Arch>(ProfileV1);
         var v2 = new HashSet<Arch>(v1); v2.UnionWith(ProfileV2Add);
@@ -954,15 +957,15 @@ public static class ArchTools
         var latest = new HashSet<Arch>(everything);
         latest.ExceptWith(LatestExclusions);
 
-        return new Dictionary<string, HashSet<Arch>>(StringComparer.OrdinalIgnoreCase)
+        return new Dictionary<string, FrozenSet<Arch>>(StringComparer.OrdinalIgnoreCase)
         {
-            [ArchProfileKeys.V1] = v1,
-            [ArchProfileKeys.V2] = v2,
-            [ArchProfileKeys.V3] = v3,
-            [ArchProfileKeys.V4] = v4,
-            [ArchProfileKeys.Latest] = latest,
-            [ArchProfileKeys.Everything] = everything,
-        };
+            [ArchProfileKeys.V1] = v1.ToFrozenSet(),
+            [ArchProfileKeys.V2] = v2.ToFrozenSet(),
+            [ArchProfileKeys.V3] = v3.ToFrozenSet(),
+            [ArchProfileKeys.V4] = v4.ToFrozenSet(),
+            [ArchProfileKeys.Latest] = latest.ToFrozenSet(),
+            [ArchProfileKeys.Everything] = everything.ToFrozenSet(),
+        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -972,14 +975,14 @@ public static class ArchTools
     /// <c>Arch.ARCH_NONE</c> (always-available instructions) is never part of a profile set; callers treat it
     /// as always-on regardless.
     /// </summary>
-    public static bool TryGetProfileArchs(string? profile, out HashSet<Arch> archs)
+    public static bool TryGetProfileArchs(string? profile, out IReadOnlySet<Arch> archs)
     {
-        if (!string.IsNullOrWhiteSpace(profile) && ProfileSets.TryGetValue(profile.Trim(), out HashSet<Arch>? set))
+        if (!string.IsNullOrWhiteSpace(profile) && ProfileSets.TryGetValue(profile.Trim(), out FrozenSet<Arch>? set))
         {
             archs = set;
             return true;
         }
-        archs = [];
+        archs = new HashSet<Arch>();
         return false;
     }
 

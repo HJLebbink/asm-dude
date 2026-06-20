@@ -90,7 +90,7 @@ public class AsmLanguageServerOptions : AsmSettingsData
         }
     }
 
-    public HashSet<Arch> Get_Arch_Switched_On()
+    public IReadOnlySet<Arch> Get_Arch_Switched_On()
     {
         HashSet<Arch> set = [];
         foreach (Arch arch in Enum.GetValues(typeof(Arch)))
@@ -107,7 +107,7 @@ public class AsmLanguageServerOptions : AsmSettingsData
     {
         // A non-Custom instruction-set profile overrides the individual ARCH_* toggles: an arch is on iff
         // it belongs to the profile's set (ARCH_NONE — always-available instructions — is always on).
-        if (ArchTools.TryGetProfileArchs(this.ArchProfile, out HashSet<Arch> profileArchs))
+        if (ArchTools.TryGetProfileArchs(this.ArchProfile, out IReadOnlySet<Arch> profileArchs))
         {
             return (arch == Arch.ARCH_NONE) || profileArchs.Contains(arch);
         }

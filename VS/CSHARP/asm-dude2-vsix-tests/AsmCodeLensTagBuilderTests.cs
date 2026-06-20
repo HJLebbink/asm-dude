@@ -68,15 +68,62 @@ public class AsmCodeLensTagBuilderTests
     }
 
     [Fact]
-    public void EmptyLines_AndEmptySimValues_CarryNoTag()
+    public void EmptySimValue_CarriesNoTag_ButBlankLineWithAValueDoes()
     {
-        List<CodeLensLineInfo> lines = [new(0, 0, ""), new(1, 5, "mov rax, 1")];
-        var states = new Dictionary<int, string> { [0] = "ignored (blank line)", [1] = "" }; // empty value ⇒ no tag
+        // A sim label at a blank line cannot be rendered there (VS shifts the layout), so it floats to the
+        // next non-empty line. An empty value produces no tag at all.
+        List<CodeLensLineInfo> lines = [new(0, 0, "mov rax, 1"), new(1, 11, ""), new(2, 12, "ret")];
+        var states = new Dictionary<int, string> { [0] = "", [1] = "→RAX=1" };
 
-        (List<CodeLensTagSpec> specs, string sig) = AsmCodeLensTagBuilder.Build(lines, states, []);
+        (List<CodeLensTagSpec> specs, _) = AsmCodeLensTagBuilder.Build(lines, states, []);
 
-        Assert.Empty(specs); // a blank line and an empty sim value produce no lens
-        Assert.Equal(string.Empty, sig);
+        Assert.DoesNotContain(specs, s => s.LineNumber == 0); // empty value ⇒ no lens
+        Assert.DoesNotContain(specs, s => s.LineNumber == 1); // never on the blank line itself
+        Assert.Contains(specs, s => s.LineNumber == 2 && s.Kind == AsmCodeLensTagKind.SimState); // floated to next line
+    }
+
+    [Fact]
+    public void WriteBelowAnInstruction_OverABlankLine_FloatsToTheNextNonEmptyLine()
+    {
+        // The reported scenario: 'mov rbx, 10', a BLANK line (just typed — note VS AUTO-INDENTS it with
+        // whitespace, so it is NOT length 0), then 'add rax, rbx'. The mov's after-state is at display
+        // position 1 (the whitespace line). It must float to line 2 (the add) — exactly where it sat before
+        // the blank existed — not vanish and not render on the whitespace line.
+        List<CodeLensLineInfo> lines = [new(0, 0, "mov rbx, 10"), new(1, 12, "    "), new(2, 17, "add rax, rbx")];
+        var states = new Dictionary<int, string> { [1] = "w:RBX=0xA" };
+
+        (List<CodeLensTagSpec> specs, _) = AsmCodeLensTagBuilder.Build(lines, states, []);
+
+        CodeLensTagSpec sim = specs.Single(s => s.Kind == AsmCodeLensTagKind.SimState);
+        Assert.Equal(2, sim.LineNumber); // floated down to the next non-empty line, never the blank line
+    }
+
+    [Fact]
+    public void RelocatedWrite_CombinesWithTheNextLinesReads_RegisterShownOnce()
+    {
+        // mov rbx's write (over a whitespace-indented blank line) lands on the add line, which reads rbx. The
+        // shared register collapses to rw: (shown once), not duplicated as both r:RBX and w:RBX.
+        List<CodeLensLineInfo> lines = [new(0, 0, "mov rbx, 10"), new(1, 12, "\t"), new(2, 13, "add rax, rbx")];
+        var states = new Dictionary<int, string>
+        {
+            [1] = "w:RBX=0xA",            // mov rbx's write, displayed below it (on the blank line)
+            [2] = "r:RAX=0x6, r:RBX=0xA", // add's reads, displayed above it
+        };
+
+        (List<CodeLensTagSpec> specs, _) = AsmCodeLensTagBuilder.Build(lines, states, []);
+
+        CodeLensTagSpec sim = specs.Single(s => s.Kind == AsmCodeLensTagKind.SimState && s.LineNumber == 2);
+        Assert.Contains("rw:RBX=0xA", sim.Description); // read+write of RBX merged to rw:
+        Assert.DoesNotContain("w:RBX", sim.Description.Replace("rw:RBX", "")); // not also a separate w:RBX
+        Assert.Contains("r:RAX=0x6", sim.Description); // read-only RAX stays r:
+    }
+
+    [Fact]
+    public void CombineLabels_PromotesSharedNameToReadWrite_AndPrefersConcreteValue()
+    {
+        // Read-only and write-only items pass through; a name on both sides becomes rw: with the concrete value.
+        Assert.Equal("rw:RBX=0xA", AsmCodeLensTagBuilder.CombineLabels("r:RBX=0x?", "w:RBX=0xA"));
+        Assert.Equal("r:RAX=0x6, w:RCX=0x7", AsmCodeLensTagBuilder.CombineLabels("r:RAX=0x6", "w:RCX=0x7"));
     }
 
     [Fact]

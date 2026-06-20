@@ -72,7 +72,7 @@ namespace AsmSim
         private readonly Dictionary<Rn, Tv[]> cached_Reg_Values_ = new();
         private readonly Dictionary<Flags, Tv> cached_Flag_Values_ = new();
 
-        private readonly object ctxLock_ = new();
+        private readonly System.Threading.Lock ctxLock_ = new();
 
         private BranchInfoStore? branchInfoStore_;
 
@@ -96,7 +96,7 @@ namespace AsmSim
             }
             else
             {
-                this.ctx_ = new Context(this.tools_.ContextSettings); // housekeeping in Dispose();
+                this.ctx_ = new Context(new Dictionary<string, string>(this.tools_.ContextSettings)); // housekeeping in Dispose();
                 this.ownsCtx_ = true;
                 Z3ContextTracker.Created();
             }
@@ -1128,10 +1128,10 @@ namespace AsmSim
 
         public void Compress(string keep)
         {
-            this.Compress([keep]);
+            this.Compress(new HashSet<string> { keep });
         }
 
-        public void Compress(HashSet<string> keep)
+        public void Compress(IReadOnlySet<string> keep)
         {
             HashSet<string> used = new(keep);
             BoolExpr[] s = this.Solver.Assertions;

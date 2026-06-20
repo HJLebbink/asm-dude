@@ -57,7 +57,7 @@ namespace unit_tests_asm_z3
             string[] newL = ["mov rax, 1", "mov rbx, 3", "add rax, rbx"]; // operand edit at line 1
             (StaticFlow flow, InstructionDiff diff) = Setup(oldL, newL);
 
-            HashSet<int> cone = DataflowCone.StaticCone(flow, diff);
+            IReadOnlySet<int> cone = DataflowCone.StaticCone(flow, diff);
 
             Assert.IsFalse(cone.Contains(0), "line 0 precedes the edit and cannot be affected — it must be reusable");
             Assert.IsTrue(cone.Contains(1), "the edited line must be re-solved");
@@ -73,7 +73,7 @@ namespace unit_tests_asm_z3
             string[] newL = ["funcA: mov rax, 9", "ret", "funcB: mov rbx, 2", "ret"]; // edit funcA line 0
             (StaticFlow flow, InstructionDiff diff) = Setup(oldL, newL);
 
-            HashSet<int> cone = DataflowCone.StaticCone(flow, diff);
+            IReadOnlySet<int> cone = DataflowCone.StaticCone(flow, diff);
 
             Assert.IsTrue(cone.Contains(0), "the edited funcA line is in the cone");
             Assert.IsFalse(cone.Contains(2), "funcB is a separate component — must be reusable");
@@ -89,7 +89,7 @@ namespace unit_tests_asm_z3
             string[] newL = ["mov rax, 1", "add rax, rbx"];
             (StaticFlow flow, InstructionDiff diff) = Setup(oldL, newL);
 
-            HashSet<int> cone = DataflowCone.StaticCone(flow, diff);
+            IReadOnlySet<int> cone = DataflowCone.StaticCone(flow, diff);
 
             Assert.IsTrue(cone.Contains(1), "the consumer downstream of the deleted instruction must be re-solved");
             Assert.IsFalse(cone.Contains(0), "the line before the deletion is unaffected — reusable");
@@ -104,7 +104,7 @@ namespace unit_tests_asm_z3
             string[] newL = ["cmp rax, 1", "je skip", "mov rbx, 1", "skip: mov rcx, 2"]; // edit line 0
             (StaticFlow flow, InstructionDiff diff) = Setup(oldL, newL);
 
-            HashSet<int> cone = DataflowCone.StaticCone(flow, diff);
+            IReadOnlySet<int> cone = DataflowCone.StaticCone(flow, diff);
 
             Assert.IsTrue(cone.Contains(1), "the jump itself");
             Assert.IsTrue(cone.Contains(2), "the fall-through path");
@@ -119,7 +119,7 @@ namespace unit_tests_asm_z3
             string[] newL = ["cmp rax, 0", "je skip", "mov rbx, 1", "skip: mov rcx, 9"]; // edit line 3
             (StaticFlow flow, InstructionDiff diff) = Setup(oldL, newL);
 
-            HashSet<int> cone = DataflowCone.StaticCone(flow, diff);
+            IReadOnlySet<int> cone = DataflowCone.StaticCone(flow, diff);
 
             Assert.IsTrue(cone.Contains(3), "the edited merge line");
             Assert.IsFalse(cone.Contains(0), "the compare precedes the edit — reusable");
@@ -194,7 +194,7 @@ namespace unit_tests_asm_z3
             string[] newL = ["cmp rax, 0", "je end", "mov rbx, 1", "far: mov rcx, 2", "end: mov rdx, 3"];
             (StaticFlow oldF, StaticFlow newF, InstructionDiff diff) = Setup2(oldL, newL);
 
-            HashSet<int> cone = DataflowCone.StaticConeWithTopology(oldF, newF, diff);
+            IReadOnlySet<int> cone = DataflowCone.StaticConeWithTopology(oldF, newF, diff);
 
             Assert.IsTrue(cone.Contains(1), "the retargeted jump");
             Assert.IsTrue(cone.Contains(3), "the OLD target lost an in-edge");
@@ -212,7 +212,7 @@ namespace unit_tests_asm_z3
             string[] newL = ["mov rax, 1", "tgt: mov rbx, 9", "mov rcx, rbx", "ret"];
             (StaticFlow oldF, StaticFlow newF, InstructionDiff diff) = Setup2(oldL, newL);
 
-            HashSet<int> cone = DataflowCone.StaticConeWithTopology(oldF, newF, diff);
+            IReadOnlySet<int> cone = DataflowCone.StaticConeWithTopology(oldF, newF, diff);
 
             Assert.IsFalse(cone.Contains(0), "the line before a no-edge-change labeled edit is reusable");
             Assert.IsTrue(cone.Contains(1), "the edited labeled line");
@@ -228,7 +228,7 @@ namespace unit_tests_asm_z3
             string[] newL = ["mov rax, 1", "mov rbx, 2", "mov rcx, 3", "mov rdx, 9"]; // edit last line
             (StaticFlow flow, InstructionDiff diff) = Setup(oldL, newL);
 
-            HashSet<int> cone = DataflowCone.StaticCone(flow, diff);
+            IReadOnlySet<int> cone = DataflowCone.StaticCone(flow, diff);
 
             CollectionAssert.AreEquivalent(new[] { 3 }, new List<int>(cone),
                 "an independent edit to the last instruction cones only itself");

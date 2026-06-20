@@ -64,7 +64,7 @@ namespace AsmAnnotate
         /// Matches the revision number in an Intel SDM combined-volumes filename,
         /// e.g. "325462-091-sdm-vol-1-2abcd-3abcd-4-v2.pdf" -> 091.
         /// </summary>
-        [GeneratedRegex(@"325462-(?<rev>\d+)-sdm", RegexOptions.IgnoreCase)]
+        [GeneratedRegex(@"325462-(?<rev>\d+)-sdm", RegexOptions.IgnoreCase, 2000)]
         private static partial Regex RevisionRegex();
 
         /// <summary>

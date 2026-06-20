@@ -53,7 +53,7 @@ public sealed class AsmSimSettingsChangedTests
     public async Task SettingsChanged_SwitchesEngine_OnTheRunningServer()
     {
         var engineMarkers = new List<string>();
-        var markerLock = new object();
+        System.Threading.Lock markerLock = new();
         void Sink(AsmLogEntry e)
         {
             // Filter on this test's unique document name so concurrent sims from other classes can't

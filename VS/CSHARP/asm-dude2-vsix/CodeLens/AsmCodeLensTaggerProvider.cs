@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 [VisualStudioContribution]
 internal class AsmCodeLensTaggerProvider : ExtensionPart, ITextViewTaggerProvider<CodeLensTag>
 {
-    private readonly object lockObject = new();
+    private readonly System.Threading.Lock lockObject = new();
     private readonly Dictionary<Uri, List<AsmCodeLensTagger>> taggers = new();
 
     public TextViewExtensionConfiguration TextViewExtensionConfiguration => new()

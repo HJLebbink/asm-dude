@@ -28,16 +28,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Meziantou: pragmatic correctness / immutability / readonly rules (the "readonly data structures"
-         ask). 2.0.138 is pinned because it is already in the local NuGet cache. -->
-    <PackageReference Include="Meziantou.Analyzer" Version="2.0.138">
+    <!-- Meziantou: pragmatic correctness / immutability / readonly rules (the "readonly data structures" ask). -->
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.105">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
 
     <!-- VSTHRD async / JoinableTask / StreamJsonRpc deadlock rules — important for the LSP server,
-         the VSIX and the sim server. Version matches the one asm-annotate already used. -->
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.0.61">
+         the VSIX and the sim server. -->
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.7.23">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

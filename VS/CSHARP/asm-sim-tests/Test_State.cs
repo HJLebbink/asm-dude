@@ -37,7 +37,7 @@ namespace unit_tests_asm_z3
         private const bool LogToDisplay = AsmTestTools.LOG_TO_DISPLAY;
         private static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
 
-        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
+        private static Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             Dictionary<string, string> settings = new()
             {
@@ -49,7 +49,7 @@ namespace unit_tests_asm_z3
             return new Tools(settings);
         }
 
-        private State CreateState(Tools tools)
+        private static State CreateState(Tools tools)
         {
             string tailKey = "!0"; // Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
@@ -66,11 +66,11 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_State_Frozen_DropsOverwrittenRegisterHistory()
         {
-            Tools tools = this.CreateTools(100000);
+            Tools tools = CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
-            using State state1 = this.CreateState(tools);
+            using State state1 = CreateState(tools);
             State state2 = AsmTestTools.Step_Forward("mov rax, 10", state1);
             string key1 = state2.HeadKey;
             State state3 = AsmTestTools.Step_Forward("mov rax, 10", state2);
@@ -84,7 +84,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_State_Redundant_Mem_1()
         {
-            Tools tools = this.CreateTools(100000);
+            Tools tools = CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.Mem = true;
@@ -92,7 +92,7 @@ namespace unit_tests_asm_z3
             string line1 = "mov ptr qword [rax], 10";
             string line2 = "mov ptr qword [rax], 10";
 
-            using State state1 = this.CreateState(tools);
+            using State state1 = CreateState(tools);
             State state2 = AsmTestTools.Step_Forward(line1, state1);
             if (LogToDisplay)
             {
@@ -115,7 +115,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_State_Redundant_Mem_2()
         {
-            Tools tools = this.CreateTools(100000);
+            Tools tools = CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -124,7 +124,7 @@ namespace unit_tests_asm_z3
             string line1 = "mov ptr qword [rax], rbx";
             string line2 = "mov ptr qword [rax], rbx";
 
-            State state = this.CreateState(tools);
+            State state = CreateState(tools);
             state = AsmTestTools.Step_Forward(line1, state);
             if (LogToDisplay)
             {
@@ -147,7 +147,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_State_Redundant_Mem_3()
         {
-            Tools tools = this.CreateTools(100000);
+            Tools tools = CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -158,7 +158,7 @@ namespace unit_tests_asm_z3
             string line1 = "mov ptr byte [rax], cl";
             string line2 = "mov ptr byte [rax], bl";
 
-            State state = this.CreateState(tools);
+            State state = CreateState(tools);
             state = AsmTestTools.Step_Forward(line0, state);
             state = AsmTestTools.Step_Forward(line1, state);
             if (LogToDisplay)

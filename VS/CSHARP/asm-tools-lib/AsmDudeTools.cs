@@ -23,6 +23,7 @@
 namespace AsmTools;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -35,10 +36,14 @@ public sealed class AsmDude2Tools : IDisposable
 {
     private readonly TraceSource traceSource;
     private readonly XmlDocument xmlData_;
-    private readonly Dictionary<string, AsmTokenType> type_;
-    private readonly Dictionary<string, AssemblerEnum> assembler_;
-    private readonly Dictionary<string, Arch> arch_;
-    private readonly Dictionary<string, string> description_;
+
+    // Built once in Init_Data from AsmDudeData.xml, then read-only on the hot parse path
+    // (Get_Token_Type_*/Get_Assembler/Get_Description per keyword). Frozen for faster lookups;
+    // stay Empty if the data file fails to load. Never mutate after Init_Data.
+    private FrozenDictionary<string, AsmTokenType> type_ = FrozenDictionary<string, AsmTokenType>.Empty;
+    private FrozenDictionary<string, AssemblerEnum> assembler_ = FrozenDictionary<string, AssemblerEnum>.Empty;
+    private FrozenDictionary<string, Arch> arch_ = FrozenDictionary<string, Arch>.Empty;
+    private FrozenDictionary<string, string> description_ = FrozenDictionary<string, string>.Empty;
 
     public static AsmDude2Tools Create(string path, TraceSource traceSource)
     {
@@ -59,10 +64,6 @@ public sealed class AsmDude2Tools : IDisposable
     {
         this.traceSource = traceSource;
         this.xmlData_ = new XmlDocument() { XmlResolver = null };
-        this.type_ = [];
-        this.arch_ = [];
-        this.assembler_ = [];
-        this.description_ = [];
     }
 
     #region Public Methods
@@ -228,6 +229,13 @@ public sealed class AsmDude2Tools : IDisposable
         }
 
 
+        // Populate mutable locals, then freeze once at the end. Ordinal matches the default string
+        // comparer the dictionaries used before and the upper-cased keys/lookups.
+        var type = new Dictionary<string, AsmTokenType>(StringComparer.Ordinal);
+        var assembler = new Dictionary<string, AssemblerEnum>(StringComparer.Ordinal);
+        var arch = new Dictionary<string, Arch>(StringComparer.Ordinal);
+        var description = new Dictionary<string, string>(StringComparer.Ordinal);
+
         foreach (XmlNode? node in this.xmlData_.SelectNodes("//misc"))
         {
             if (node.Attributes != null)
@@ -240,9 +248,9 @@ public sealed class AsmDude2Tools : IDisposable
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this.type_[name] = AsmTokenType.Misc;
-                    this.arch_[name] = Retrieve_Arch(node);
-                    this.description_[name] = Retrieve_Description(node);
+                    type[name] = AsmTokenType.Misc;
+                    arch[name] = Retrieve_Arch(node);
+                    description[name] = Retrieve_Description(node);
                 }
             }
         }
@@ -258,10 +266,10 @@ public sealed class AsmDude2Tools : IDisposable
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this.type_[name] = AsmTokenType.Directive;
-                    this.arch_[name] = Retrieve_Arch(node);
-                    this.assembler_[name] = Retrieve_Assembler(node);
-                    this.description_[name] = Retrieve_Description(node);
+                    type[name] = AsmTokenType.Directive;
+                    arch[name] = Retrieve_Arch(node);
+                    assembler[name] = Retrieve_Assembler(node);
+                    description[name] = Retrieve_Description(node);
                 }
             }
         }
@@ -277,9 +285,9 @@ public sealed class AsmDude2Tools : IDisposable
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    //this.type_[name] = AsmTokenType.Register; //TODO why is this line removed?
-                    this.arch_[name] = Retrieve_Arch(node);
-                    this.description_[name] = Retrieve_Description(node);
+                    //type[name] = AsmTokenType.Register; //TODO why is this line removed?
+                    arch[name] = Retrieve_Arch(node);
+                    description[name] = Retrieve_Description(node);
                 }
             }
         }
@@ -295,8 +303,8 @@ public sealed class AsmDude2Tools : IDisposable
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this.type_[name] = AsmTokenType.UserDefined1;
-                    this.description_[name] = Retrieve_Description(node);
+                    type[name] = AsmTokenType.UserDefined1;
+                    description[name] = Retrieve_Description(node);
                 }
             }
         }
@@ -312,8 +320,8 @@ public sealed class AsmDude2Tools : IDisposable
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this.type_[name] = AsmTokenType.UserDefined2;
-                    this.description_[name] = Retrieve_Description(node);
+                    type[name] = AsmTokenType.UserDefined2;
+                    description[name] = Retrieve_Description(node);
                 }
             }
         }
@@ -329,11 +337,17 @@ public sealed class AsmDude2Tools : IDisposable
                 else
                 {
                     string name = nameAttribute.Value.ToUpperInvariant();
-                    this.type_[name] = AsmTokenType.UserDefined3;
-                    this.description_[name] = Retrieve_Description(node);
+                    type[name] = AsmTokenType.UserDefined3;
+                    description[name] = Retrieve_Description(node);
                 }
             }
         }
+
+        // Freeze the now-complete tables for fast, read-only lookups on the parse path.
+        this.type_ = type.ToFrozenDictionary(StringComparer.Ordinal);
+        this.assembler_ = assembler.ToFrozenDictionary(StringComparer.Ordinal);
+        this.arch_ = arch.ToFrozenDictionary(StringComparer.Ordinal);
+        this.description_ = description.ToFrozenDictionary(StringComparer.Ordinal);
     }
 
     private static Arch Retrieve_Arch(XmlNode node)
@@ -393,16 +407,16 @@ public sealed class AsmDude2Tools : IDisposable
 
     public void Dispose()
     {
-        this.Dispose(true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 
     ~AsmDude2Tools()
     {
-        this.Dispose(false);
+        Dispose(false);
     }
 
-    private void Dispose(bool disposing)
+    private static void Dispose(bool disposing)
     {
         if (disposing)
         {

@@ -65,14 +65,14 @@ namespace AsmAnnotate
         /// Parses all pages in the PDF and returns ContentPile objects.
         /// Each pile represents a logical section (table or paragraph).
         /// </summary>
-        public List<ContentPile> ParseDocument() => ParseDocument(1, int.MaxValue);
+        public IReadOnlyList<ContentPile> ParseDocument() => ParseDocument(1, int.MaxValue);
 
         /// <summary>
         /// Parses pages in the inclusive range [<paramref name="startPage"/>, <paramref name="endPage"/>]
         /// (1-based) and returns ContentPile objects. Useful for iterating on a few instructions
         /// without processing the whole ~5000-page manual.
         /// </summary>
-        public List<ContentPile> ParseDocument(int startPage, int endPage)
+        public IReadOnlyList<ContentPile> ParseDocument(int startPage, int endPage)
         {
             var allPiles = new List<ContentPile>();
 
@@ -131,8 +131,8 @@ namespace AsmAnnotate
             foreach (var line in ExtractLines(page, pageBox))
                 pile.AddLineSnapped(line);
 
-            var fragments = new PdfPageTextExtractor().ExtractFragments(page, pageBox);
-            pile.TextElements.AddRange(PdfPageTextExtractor.GroupIntoLines(fragments, pile.VerticalLines));
+            var fragments = PdfPageTextExtractor.ExtractFragments(page, pageBox);
+            pile.AddTextElements(PdfPageTextExtractor.GroupIntoLines(fragments, pile.VerticalLines));
 
             return pile;
         }
@@ -140,7 +140,7 @@ namespace AsmAnnotate
         /// <summary>
         /// Parses a single page and extracts text/lines into ContentPile objects.
         /// </summary>
-        private List<ContentPile> ParsePage(PdfDocument pdfDocument, int pageNum)
+        private static IReadOnlyList<ContentPile> ParsePage(PdfDocument pdfDocument, int pageNum)
         {
             var pile = new ContentPile();
             var page = pdfDocument.GetPage(pageNum);
@@ -158,8 +158,8 @@ namespace AsmAnnotate
                 }
 
                 // Text, grouped into per-line runs that never straddle a column border.
-                var fragments = new PdfPageTextExtractor().ExtractFragments(page, pageBox);
-                pile.TextElements.AddRange(PdfPageTextExtractor.GroupIntoLines(fragments, pile.VerticalLines));
+                var fragments = PdfPageTextExtractor.ExtractFragments(page, pageBox);
+                pile.AddTextElements(PdfPageTextExtractor.GroupIntoLines(fragments, pile.VerticalLines));
 
                 // NOTE: no heuristic text-position fallback here. pdfminer (and thus the Python
                 // reference) only ever sees real vector borders; synthesizing fake grid lines on
@@ -180,7 +180,7 @@ namespace AsmAnnotate
         /// Extracts vector line elements (borders, rules) from a page.
         /// These define table boundaries using custom PDF operator processing.
         /// </summary>
-        private List<PdfLineElement> ExtractLines(PdfPage page, Rectangle pageBox)
+        private static List<PdfLineElement> ExtractLines(PdfPage page, Rectangle pageBox)
         {
             var lines = new List<PdfLineElement>();
 
@@ -407,7 +407,7 @@ namespace AsmAnnotate
         /// Callers group them with <see cref="GroupIntoLines"/>, supplying the page's vertical
         /// grid lines so runs never merge across a table-column boundary.
         /// </summary>
-        public List<PdfTextElement> ExtractFragments(PdfPage page, Rectangle pageBox)
+        public static List<PdfTextElement> ExtractFragments(PdfPage page, Rectangle pageBox)
         {
             var fragments = new List<PdfTextElement>();
 

@@ -181,7 +181,7 @@ public sealed class LabelGraph
         }
     }
 
-    public List<VSDiagnostic> Diagnostics
+    public IReadOnlyList<VSDiagnostic> Diagnostics
     {
         get
         {
@@ -239,7 +239,7 @@ public sealed class LabelGraph
         }
     }
 
-    public Dictionary<string, List<KeywordID>> Definitions => this.defAt_;
+    public IReadOnlyDictionary<string, List<KeywordID>> Definitions => this.defAt_;
     public FrozenDictionary<string, List<KeywordID>>? DefinitionsFrozen => this.defAtFrozen_;
     public FrozenDictionary<string, List<KeywordID>>? UsagesFrozen => this.usagesFrozen_;
 

@@ -37,7 +37,7 @@ public static partial class AsmSourceTools
     /// <summary>Guess whether the provided buffer has assembly in Intel syntax (return true) or AT&T syntax (return false)</summary>
     public static bool Guess_Intel_Syntax(string[] lines)
     {
-        bool contains_register_att(List<string> line)
+        bool contains_register_att(IReadOnlyList<string> line)
         {
             foreach (string asmToken in line)
             {
@@ -52,7 +52,7 @@ public static partial class AsmSourceTools
             }
             return false;
         }
-        bool contains_register_intel(List<string> line)
+        bool contains_register_intel(IReadOnlyList<string> line)
         {
             foreach (string asmToken in line)
             {
@@ -63,7 +63,7 @@ public static partial class AsmSourceTools
             }
             return false;
         }
-        bool contains_constant_att(List<string> line)
+        bool contains_constant_att(IReadOnlyList<string> line)
         {
             foreach (string asmToken in line)
             {
@@ -74,11 +74,11 @@ public static partial class AsmSourceTools
             }
             return false;
         }
-        bool contains_constant_intel(List<string> line)
+        bool contains_constant_intel(IReadOnlyList<string> line)
         {
             return false;
         }
-        bool contains_mnemonic_att(List<string> line)
+        bool contains_mnemonic_att(IReadOnlyList<string> line)
         {
             foreach (string word in line)
             {
@@ -92,7 +92,7 @@ public static partial class AsmSourceTools
             }
             return false;
         }
-        bool contains_mnemonic_intel(List<string> line)
+        bool contains_mnemonic_intel(IReadOnlyList<string> line)
         {
             return false;
         }
@@ -107,7 +107,7 @@ public static partial class AsmSourceTools
             string line_uppercase = lines[i].ToUpper();
             //Output_INFO(string.Format(CultureUI, "{0}:Guess_Intel_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_uppercase));
 
-            List<string> keywords_uppercase = SplitIntoKeywordsList(line_uppercase);
+            IReadOnlyList<string> keywords_uppercase = SplitIntoKeywordsList(line_uppercase);
 
             if (contains_register_att(keywords_uppercase))
             {
@@ -162,7 +162,7 @@ public static partial class AsmSourceTools
             string line_uppercase = lines[i].ToUpper();
             //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Masm_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
 
-            List<string> keywords_uppercase = AsmSourceTools.SplitIntoKeywordsList(line_uppercase);
+            IReadOnlyList<string> keywords_uppercase = AsmSourceTools.SplitIntoKeywordsList(line_uppercase);
 
             foreach (string keyword_uppercase in keywords_uppercase)
             {
@@ -348,7 +348,7 @@ public static partial class AsmSourceTools
         return (k.ToArray<KeywordID>(), label, mnemonic, args, remark);
     }
 
-    public static List<Operand> MakeOperands(string[] operandStrArray) // TODO consider Array
+    public static IReadOnlyList<Operand> MakeOperands(string[] operandStrArray) // TODO consider Array
     {
         ArgumentNullException.ThrowIfNull(operandStrArray);
 
@@ -501,7 +501,7 @@ public static partial class AsmSourceTools
         }
     }
 
-    public static List<string> SplitIntoKeywordsList(string line)
+    public static IReadOnlyList<string> SplitIntoKeywordsList(string line)
     {
         List<string> keywords = [];
         foreach ((int beginPos, int endPos, AsmTokenType _) pos in SplitIntoKeywordsType(line))

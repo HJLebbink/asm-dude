@@ -63,7 +63,7 @@ internal static class VsixLog
 
     private static int outputChannelCreated_;
     private static OutputChannel? outputChannel_;
-    private static readonly object outputWriteLock_ = new();
+    private static readonly System.Threading.Lock outputWriteLock_ = new();
 
     /// <summary>
     /// Creates the dedicated "AsmDude2" Visual Studio output pane (once) and attaches an Info+ sink to

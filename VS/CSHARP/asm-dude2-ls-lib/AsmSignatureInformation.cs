@@ -70,7 +70,7 @@ public class AsmSignatureInformation
     /// <summary>Return true if this Signature Element is allowed in the provided architectures.
     /// DNF semantics: allowed iff ANY OR-group has ALL its AND-members enabled. An empty requirement
     /// (no groups) means the instruction has no architecture gate and is always allowed.</summary>
-    public bool Is_Allowed(HashSet<Arch> selectedArchitectures)
+    public bool Is_Allowed(IReadOnlySet<Arch> selectedArchitectures)
     {
         ArgumentNullException.ThrowIfNull(selectedArchitectures);
         if (this.Arch.Length == 0)

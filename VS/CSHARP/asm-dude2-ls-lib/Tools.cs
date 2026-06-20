@@ -116,6 +116,6 @@ public static partial class Tools
         return label;
     }
 
-    [System.Text.RegularExpressions.GeneratedRegex(@"\s+")]
+    [System.Text.RegularExpressions.GeneratedRegex(@"\s+", System.Text.RegularExpressions.RegexOptions.None, 2000)]
     private static partial System.Text.RegularExpressions.Regex MyRegex();
 }

@@ -95,7 +95,7 @@ namespace AsmSim
         /// (the old ones are needed only to seed the dirtiness of a DELETED instruction's writes at the line
         /// that now follows it). Changed (added) instruction lines are always in the cone.
         /// </summary>
-        public static HashSet<int> Compute(
+        public static IReadOnlySet<int> Compute(
             StaticFlow newFlow,
             InstructionDiff diff,
             IReadOnlyDictionary<int, LineEffects> newEffects,

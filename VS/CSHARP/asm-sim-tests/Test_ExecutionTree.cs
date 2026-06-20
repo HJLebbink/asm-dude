@@ -47,7 +47,7 @@ namespace unit_tests_asm_z3
     {
         private const bool LogToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
-        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
+        private static Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             Dictionary<string, string> settings = new()
             {
@@ -59,7 +59,7 @@ namespace unit_tests_asm_z3
             return new Tools(settings);
         }
 
-        private State CreateState(Tools tools)
+        private static State CreateState(Tools tools)
         {
             string tailKey = "!0"; // Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
@@ -69,7 +69,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_DynamicFlow_Forward_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -179,7 +179,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_DynamicFlow_Backward_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;

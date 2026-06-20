@@ -1083,7 +1083,7 @@ public class LanguageServerTarget(LanguageServer server)
         string[] textLines = fullText.Split([Environment.NewLine], StringSplitOptions.None);
         for (int i = 0; i < textLines.Length; i++)
         {
-            foreach (Match match in Regex.Matches(textLines[i], word).Cast<Match>())
+            foreach (Match match in Regex.Matches(textLines[i], word, RegexOptions.None, TimeSpan.FromSeconds(2)).Cast<Match>())
             {
                 ranges.Add(new Range
                 {

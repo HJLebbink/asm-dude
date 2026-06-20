@@ -175,7 +175,7 @@ namespace asm_annotate
             // Collapse ALL newlines (the wiki uses LF, not CRLF) — a long title wraps across lines
             // ("...Floating-Point\nValues"), and a newline here would split the tab-separated GENERAL
             // line across two output lines, breaking the signature file format.
-            string Description = Regex.Replace(substr1[(pos_Hyphen + 1)..].Trim(), @"\s+", " ");
+            string Description = Regex.Replace(substr1[(pos_Hyphen + 1)..].Trim(), @"\s+", " ", RegexOptions.None, System.TimeSpan.FromSeconds(2));
 
             // 2] parse EVERY opcode table (a long instruction's opcode list is split across page
             // breaks into multiple <table> blocks, each with its own "Opcode" header). Reading only
@@ -489,8 +489,8 @@ namespace asm_annotate
             // form (<XMM0>, <XMM0-7>, <XMM4-6>, …) maps to the recognised XMM_ZERO token
             // (AsmSignatureEnum.REG_XMM0); any other implicit register ("<EAX>") just loses its
             // brackets. Leaving the angle brackets in would break signature help (unrecognised token).
-            str = Regex.Replace(str, "<[XYZ]MM[0-9][^>]*>", "XMM_ZERO");
-            str = Regex.Replace(str, "<([A-Za-z][A-Za-z0-9]*)>", "$1");
+            str = Regex.Replace(str, "<[XYZ]MM[0-9][^>]*>", "XMM_ZERO", RegexOptions.None, System.TimeSpan.FromSeconds(2));
+            str = Regex.Replace(str, "<([A-Za-z][A-Za-z0-9]*)>", "$1", RegexOptions.None, System.TimeSpan.FromSeconds(2));
 
             var tmp = str.Replace("IMM16", "XYZZY");
             tmp = tmp.
@@ -505,7 +505,7 @@ namespace asm_annotate
             tmp = tmp.Replace("XYZZY", "IMM16");
             // AMX tile operands: normalise TMM0..TMM7 -> TMM (the MM1/MM2 rules above already catch
             // TMM1/TMM2, but TMM3 and higher need this).
-            tmp = Regex.Replace(tmp, "TMM[0-9]", "TMM");
+            tmp = Regex.Replace(tmp, "TMM[0-9]", "TMM", RegexOptions.None, System.TimeSpan.FromSeconds(2));
             return tmp;
         }
 
@@ -518,9 +518,9 @@ namespace asm_annotate
         /// </summary>
         internal static string AbbreviateDescription(string description)
         {
-            description = Regex.Replace(description, @"floating[- ]+point", "FP", RegexOptions.IgnoreCase);
-            description = Regex.Replace(description, @"double[- ]+precision", "DP", RegexOptions.IgnoreCase);
-            description = Regex.Replace(description, @"single[- ]+precision", "SP", RegexOptions.IgnoreCase);
+            description = Regex.Replace(description, @"floating[- ]+point", "FP", RegexOptions.IgnoreCase, System.TimeSpan.FromSeconds(2));
+            description = Regex.Replace(description, @"double[- ]+precision", "DP", RegexOptions.IgnoreCase, System.TimeSpan.FromSeconds(2));
+            description = Regex.Replace(description, @"single[- ]+precision", "SP", RegexOptions.IgnoreCase, System.TimeSpan.FromSeconds(2));
             return description;
         }
 
@@ -537,7 +537,7 @@ namespace asm_annotate
             var results = new List<IList<string>>();
             // Drop footnote-reference superscripts ("imm32<sup>1</sup>" -> "imm32") and bold tags
             // so they don't leak into the parsed mnemonic/parameters.
-            string str2 = Regex.Replace(str, "<sup>[^<]*</sup>", "").Replace("<b>", "").Replace("</b>", "");
+            string str2 = Regex.Replace(str, "<sup>[^<]*</sup>", "", RegexOptions.None, System.TimeSpan.FromSeconds(2)).Replace("<b>", "").Replace("</b>", "");
 
             while (str2.Length > 0)
             {
@@ -566,7 +566,7 @@ namespace asm_annotate
             // Split on any opening <td ...> (cells may carry colspan/rowspan attributes), dropping
             // the text before the first cell. </td> tags are removed.
             string str2 = str.Replace("</td>", "");
-            string[] parts = Regex.Split(str2, "<td[^>]*>");
+            string[] parts = Regex.Split(str2, "<td[^>]*>", RegexOptions.None, System.TimeSpan.FromSeconds(2));
             for (int i = 1; i < parts.Length; i++) // [0] is the text before the first <td>
             {
                 Results.Add(parts[i].Trim());

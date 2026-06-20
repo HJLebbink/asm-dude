@@ -48,7 +48,7 @@ namespace AsmSim
         public LoopBudget LoopBudget { get; set; } = LoopBudget.Default;
 
         public Tools()
-            : this([], string.Empty) { }
+            : this(new Dictionary<string, string>(), string.Empty) { }
 
         public Tools(Tools other)
         {
@@ -65,7 +65,7 @@ namespace AsmSim
             this.LoopBudget = other.LoopBudget;
         }
 
-        public Tools(Dictionary<string, string> contextSettings, string solverSetting = "")
+        public Tools(IReadOnlyDictionary<string, string> contextSettings, string solverSetting = "")
         {
             this.ContextSettings = contextSettings;
             this.SolverSetting = solverSetting;
@@ -91,7 +91,7 @@ namespace AsmSim
         ///   a failing simulation can be replayed in a test without VS.</item>
         /// </list>
         /// </summary>
-        public Tools(Dictionary<string, string> contextSettings, string solverSetting, int randomSeed)
+        public Tools(IReadOnlyDictionary<string, string> contextSettings, string solverSetting, int randomSeed)
         {
             this.ContextSettings = contextSettings;
             this.SolverSetting = solverSetting;
@@ -103,7 +103,7 @@ namespace AsmSim
             this.StateConfig.GetRegOn();
         }
 
-        public Dictionary<string, string> ContextSettings { get; private set; }
+        public IReadOnlyDictionary<string, string> ContextSettings { get; private set; }
 
         /// <summary>
         /// Optional shared Z3 Context for one simulation unit (e.g. a CFG component). When non-null,
@@ -273,24 +273,21 @@ namespace AsmSim
                 (uint high, uint low) = SIMD_Extract_Range(reg);
                 return ctx.MkExtract(high, low, ctx.MkBVConst(Reg_Name(reg, key), 32 * 512));
             }
-            else if (RegisterTools.IsGeneralPurposeRegister(reg))
+            
+            if (RegisterTools.IsGeneralPurposeRegister(reg))
             {
                 if (nBits == 64)
                 {
                     return ctx.MkBVConst(Reg_Name(reg, key), 64);
                 }
-                else
-                {
-                    Rn reg64 = RegisterTools.Get64BitsRegister(reg);
-                    return RegisterTools.Is8BitHigh(reg)
-                        ? ctx.MkExtract(15, 8, ctx.MkBVConst(Reg_Name(reg64, key), 64))
-                        : ctx.MkExtract(nBits - 1, 0, ctx.MkBVConst(Reg_Name(reg64, key), 64));
-                }
+                
+                Rn reg64 = RegisterTools.Get64BitsRegister(reg);
+                return RegisterTools.Is8BitHigh(reg)
+                    ? ctx.MkExtract(15, 8, ctx.MkBVConst(Reg_Name(reg64, key), 64))
+                    : ctx.MkExtract(nBits - 1, 0, ctx.MkBVConst(Reg_Name(reg64, key), 64));
             }
-            else
-            {
-                return ctx.MkBVConst(Reg_Name(reg, key), nBits);
-            }
+            
+            return ctx.MkBVConst(Reg_Name(reg, key), nBits);
         }
 
         public static BoolExpr Create_Key(Flags flag, string key, Context ctx)
@@ -341,7 +338,8 @@ namespace AsmSim
             {
                 return Create_Key(op.Rn, key, ctx);
             }
-            else if (op.IsMem)
+            
+            if (op.IsMem)
             {
                 //Console.WriteLine("INFO: MemZ3:Calc_Effective_Address: operand=" + op);
 
@@ -417,10 +415,8 @@ namespace AsmSim
                 }
                 return address;
             }
-            else
-            {
-                throw new Exception();
-            }
+            
+            throw new Exception();
         }
 
         public static BitVecExpr Create_Value_From_Mem(BitVecExpr address, int nBytes, string key, Context ctx)

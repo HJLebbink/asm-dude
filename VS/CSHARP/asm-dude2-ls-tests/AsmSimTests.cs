@@ -105,7 +105,7 @@ public class AsmSimTests
         result.Should().NotBeNull("GetProvenStates should return a response");
         result!.TotalLines.Should().Be(2, "Should report correct total line count");
         // States may be empty if simulator hasn't finished, so just check structure
-        result.States.Should().BeOfType<List<ProvenLineState>>();
+        result.States.Should().BeAssignableTo<IReadOnlyList<ProvenLineState>>();
 
         // Verify response structure is correct
         if (result.States.Count > 0)
@@ -441,7 +441,7 @@ public class AsmSimTests
         newResult.Should().NotBeNull();
         newResult!.TotalLines.Should().Be(3, "New document should have 3 lines");
         // Just verify the cache is accessible, not that simulator has data
-        newResult.States.Should().BeOfType<List<ProvenLineState>>();
+        newResult.States.Should().BeAssignableTo<IReadOnlyList<ProvenLineState>>();
     }
 
     #endregion
@@ -476,7 +476,7 @@ public class AsmSimTests
         result.Should().NotBeNull();
         result!.TotalLines.Should().Be(3, "Total lines should be 3");
         // Simulator should handle blank lines gracefully
-        result.States.Should().BeOfType<List<ProvenLineState>>();
+        result.States.Should().BeAssignableTo<IReadOnlyList<ProvenLineState>>();
     }
 
     [Fact]
@@ -508,7 +508,7 @@ public class AsmSimTests
         result!.TotalLines.Should().Be(2, "Total lines should be 2");
         // The simulator should handle comments and blank lines gracefully
         // States will only exist for actual instructions
-        result.States.Should().BeOfType<List<ProvenLineState>>();
+        result.States.Should().BeAssignableTo<IReadOnlyList<ProvenLineState>>();
     }
 
     [Fact]

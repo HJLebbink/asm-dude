@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpFuzz" Version="2.2.0" />
+    <PackageReference Include="SharpFuzz" Version="2.3.0" />
     <PackageReference Include="Microsoft.VisualStudio.LanguageServer.Protocol" Version="18.9.2" />
   </ItemGroup>
 

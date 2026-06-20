@@ -47,7 +47,7 @@ namespace unit_tests_asm_z3
 
         #region Private Methods
 
-        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
+        private static Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             Dictionary<string, string> settings = new()
             {
@@ -59,7 +59,7 @@ namespace unit_tests_asm_z3
             return new Tools(settings);
         }
 
-        private State CreateState(Tools tools)
+        private static State CreateState(Tools tools)
         {
             string tailKey = "!0"; // Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
@@ -73,9 +73,9 @@ namespace unit_tests_asm_z3
         // rewrite over a register that the freeze/Compress would otherwise prune. See REDUNDANT_DIAGNOSTICS_PLAN.md.
 
         /// <summary>Steps `before` through `setup` (left to right), returning the frozen state after the last.</summary>
-        private State StepThrough(Tools tools, params string[] setup)
+        private static State StepThrough(Tools tools, params string[] setup)
         {
-            State s = this.CreateState(tools);
+            State s = CreateState(tools);
             foreach (string line in setup)
             {
                 s = AsmTestTools.Step_Forward(line, s);
@@ -88,11 +88,11 @@ namespace unit_tests_asm_z3
         {
             // rax already holds 10 ⇒ a second `mov rax,10` is redundant. This is the case the frozen
             // after-state cannot prove (history pruned) but the unfrozen probe can.
-            Tools tools = this.CreateTools(100000);
+            Tools tools = CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
-            State before = this.StepThrough(tools, "mov rax, 10"); // rax = 10
+            State before = StepThrough(tools, "mov rax, 10"); // rax = 10
             RedundancyVerdict? v = Runner.IsRedundantInstruction("mov rax, 10", before);
 
             Assert.IsTrue(v.HasValue && v.Value.IsRedundant, "rewriting rax with the value it already holds is redundant");
@@ -102,11 +102,11 @@ namespace unit_tests_asm_z3
         public void Test_Runner_IsRedundant_StructuralIdentity()
         {
             // `mov rax, rax` is redundant even when rax is UNKNOWN (the update links the two keys directly).
-            Tools tools = this.CreateTools(100000);
+            Tools tools = CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
-            State before = this.CreateState(tools); // rax unknown
+            State before = CreateState(tools); // rax unknown
             RedundancyVerdict? v = Runner.IsRedundantInstruction("mov rax, rax", before);
 
             Assert.IsTrue(v.HasValue && v.Value.IsRedundant, "an identity move is redundant regardless of value");
@@ -116,15 +116,15 @@ namespace unit_tests_asm_z3
         public void Test_Runner_IsRedundant_StateChangingNotRedundant()
         {
             // A real definition (rax was unknown) and a value change must NOT be flagged.
-            Tools tools = this.CreateTools(100000);
+            Tools tools = CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
-            State unknownRax = this.CreateState(tools);
+            State unknownRax = CreateState(tools);
             RedundancyVerdict? define = Runner.IsRedundantInstruction("mov rax, 10", unknownRax);
             Assert.IsFalse(define.HasValue && define.Value.IsRedundant, "defining rax (unknown -> 10) changes it");
 
-            State raxIs10 = this.StepThrough(tools, "mov rax, 10");
+            State raxIs10 = StepThrough(tools, "mov rax, 10");
             RedundancyVerdict? change = Runner.IsRedundantInstruction("mov rax, 11", raxIs10);
             Assert.IsFalse(change.HasValue && change.Value.IsRedundant, "10 -> 11 changes rax");
         }
@@ -133,11 +133,11 @@ namespace unit_tests_asm_z3
         public void Test_Runner_IsRedundant_NopAndNonInstruction_AreNull()
         {
             // NOP writes nothing ⇒ not "redundant" (WrittenCount 0). A non-instruction line ⇒ null.
-            Tools tools = this.CreateTools(100000);
+            Tools tools = CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
-            State s = this.CreateState(tools);
+            State s = CreateState(tools);
             RedundancyVerdict? nop = Runner.IsRedundantInstruction("nop", s);
             Assert.IsFalse(nop.HasValue && nop.Value.IsRedundant, "NOP writes nothing, so it is not flagged redundant");
 
@@ -146,7 +146,7 @@ namespace unit_tests_asm_z3
         }
 
         /// <summary>Returns Forward, Backward State</summary>
-        private State Equal_Forward_Backward(string programStr, bool logToDispay2, Tools tools)
+        private static State Equal_Forward_Backward(string programStr, bool logToDispay2, Tools tools)
         {
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
@@ -182,7 +182,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Several_Mnemonics()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -201,12 +201,12 @@ namespace unit_tests_asm_z3
                 string line2 = "mov rbx, " + value_rbx.ToString(Culture);
                 string line3 = mnemonic + " rax, rbx";
 
-                State state_forward = this.CreateState(tools);
+                State state_forward = CreateState(tools);
                 state_forward = AsmTestTools.Step_Forward(line1, state_forward);
                 state_forward = AsmTestTools.Step_Forward(line2, state_forward);
                 state_forward = AsmTestTools.Step_Forward(line3, state_forward);
 
-                State state_backward = this.CreateState(tools);
+                State state_backward = CreateState(tools);
                 state_backward = AsmTestTools.Step_Backward(line3, state_backward);
                 state_backward = AsmTestTools.Step_Backward(line2, state_backward);
                 state_backward = AsmTestTools.Step_Backward(line1, state_backward);
@@ -220,7 +220,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_CF_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.CF = true;
 
@@ -228,14 +228,14 @@ namespace unit_tests_asm_z3
                 "           clc       ; clear CF                " + Environment.NewLine +
                 "           stc       ; set CF                  " + Environment.NewLine +
                 "           cmc       ; complement CF           ";
-            State state = this.Equal_Forward_Backward(programStr, LogToDisplay, tools);
+            State state = Equal_Forward_Backward(programStr, LogToDisplay, tools);
             AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
         }
 
         [TestMethod]
         public void Test_Runner_Mov_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -244,7 +244,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0               " + Environment.NewLine +
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "           mov     rbx,        rax             ";
-            State state = this.Equal_Forward_Backward(programStr, LogToDisplay, tools);
+            State state = Equal_Forward_Backward(programStr, LogToDisplay, tools);
             AsmTestTools.AreEqual(Rn.RAX, 0, state);
             AsmTestTools.AreEqual(Rn.RBX, 0, state);
         }
@@ -252,7 +252,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Add_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -262,7 +262,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        10              " + Environment.NewLine +
                 "           mov     rbx,        20              " + Environment.NewLine +
                 "           add     rax,        rbx             ";
-            State state = this.Equal_Forward_Backward(programStr, LogToDisplay, tools);
+            State state = Equal_Forward_Backward(programStr, LogToDisplay, tools);
 
             ulong result = 10 + 20;
             uint nBits = 64;
@@ -279,7 +279,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Add_2()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -291,7 +291,7 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        20              " + Environment.NewLine +
                 string.Empty + Environment.NewLine +
                 "           add     rax,        rbx             ";
-            State state = this.Equal_Forward_Backward(programStr, LogToDisplay, tools);
+            State state = Equal_Forward_Backward(programStr, LogToDisplay, tools);
 
             ulong result = 10 + 20;
             uint nBits = 64;
@@ -308,7 +308,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Xor_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -318,7 +318,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "           mov     rbx,        rax             " + Environment.NewLine +
                 "           xor     rbx,        rax             ";
-            State state = this.Equal_Forward_Backward(programStr, LogToDisplay, tools);
+            State state = Equal_Forward_Backward(programStr, LogToDisplay, tools);
 
             ulong result = 20 ^ 20;
             uint nBits = 64;
@@ -344,7 +344,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -376,7 +376,7 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "label2:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -403,7 +403,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        10              " + Environment.NewLine +
                 "label2:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -432,7 +432,7 @@ namespace unit_tests_asm_z3
                 "label2:                                        " + Environment.NewLine +
                 "           mov     rax,        20              ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -458,7 +458,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "label2:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -521,7 +521,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "label2:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -555,7 +555,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "label2:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -583,7 +583,7 @@ namespace unit_tests_asm_z3
                 "           jz      label1                      " + Environment.NewLine +
                 "label1:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -638,7 +638,7 @@ namespace unit_tests_asm_z3
                 "           jz      label3                      " + Environment.NewLine +
                 "label3:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -693,7 +693,7 @@ namespace unit_tests_asm_z3
                 "label1:                                        " + Environment.NewLine +
                 "           mov     rcx,        3               ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
@@ -808,7 +808,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        3               " + Environment.NewLine +
                 "label1:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
@@ -913,7 +913,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        2               " + Environment.NewLine +
                 "label1:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
@@ -981,7 +981,7 @@ namespace unit_tests_asm_z3
                 "           mov     al,         2               " + Environment.NewLine +
                 "label1:                                        ";
 
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             StaticFlow sFlow = new(tools);
             sFlow.Update(programStr);
             if (LogToDisplay)
@@ -1041,7 +1041,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Mem_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RCX = true;
@@ -1065,7 +1065,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Mem_2()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1093,7 +1093,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Mem_3()
         {
-            Tools tools = this.CreateTools(); // test is slow (9min - 17min)
+            Tools tools = CreateTools(); // test is slow (9min - 17min)
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1131,7 +1131,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Mem_Merge_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1176,7 +1176,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Loop_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1221,7 +1221,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Loop_2()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.ZF = true;
@@ -1268,7 +1268,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_OperandValidation_RejectsMemMem_ForAluOp()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             (string prevKey, string nextKey, string nextKeyBranch) keys = ("!0", "!1", "!1B");
 
             (_, _, Mnemonic mn1, string[] args1, _) =

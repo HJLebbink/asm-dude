@@ -33,7 +33,7 @@ namespace unit_tests_asm_z3
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
     public class Test_FlagTools
     {
-        private Context CreateContext()
+        private static Context CreateContext()
         {
             /* The following parameters can be set:
                     - proof (Boolean) Enable proof generation
@@ -63,7 +63,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_FlagTools_Create_OF_Add()
         {
-            Context ctx = this.CreateContext();
+            Context ctx = CreateContext();
             {
                 uint nBits = 8;
                 ulong a = 10;
@@ -81,7 +81,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_FlagTools_Create_ZF()
         {
-            Context ctx = this.CreateContext();
+            Context ctx = CreateContext();
             {
                 uint nBits = 8;
                 ulong a = 10;

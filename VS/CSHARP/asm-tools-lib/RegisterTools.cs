@@ -23,6 +23,7 @@
 namespace AsmTools;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 
 using AsmSourceToolsAlias = AsmTools.AsmSourceTools;
@@ -48,11 +49,13 @@ public enum RegisterType
 
 public static partial class RegisterTools
 {
-    private static readonly Dictionary<string, Rn> Register_cache_ = [];
-    private static readonly Dictionary<Rn, string[]> RelatedRegisterNewCache = InitializeRelatedRegisterCache();
+    // Both built once (static ctor / Initialize) then read-only. Register_cache_ is read on the hot
+    // parse path (ParseRn/IsRn per token); frozen for faster string-keyed lookups. Never mutate after build.
+    private static readonly FrozenDictionary<string, Rn> Register_cache_;
+    private static readonly FrozenDictionary<Rn, string[]> RelatedRegisterNewCache = InitializeRelatedRegisterCache();
 
     /// <summary>Initialize cached related register arrays</summary>
-    private static Dictionary<Rn, string[]> InitializeRelatedRegisterCache()
+    private static FrozenDictionary<Rn, string[]> InitializeRelatedRegisterCache()
     {
         var cache = new Dictionary<Rn, string[]>();
         cache[Rn.RAX] = cache[Rn.EAX] = cache[Rn.AX] = cache[Rn.AL] = cache[Rn.AH] = ["RAX", "EAX", "AX", "AH", "AL"];
@@ -103,12 +106,13 @@ public static partial class RegisterTools
         cache[Rn.XMM29] = cache[Rn.YMM29] = cache[Rn.ZMM29] = ["XMM29", "YMM29", "ZMM29"];
         cache[Rn.XMM30] = cache[Rn.YMM30] = cache[Rn.ZMM30] = ["XMM30", "YMM30", "ZMM30"];
         cache[Rn.XMM31] = cache[Rn.YMM31] = cache[Rn.ZMM31] = ["XMM31", "YMM31", "ZMM31"];
-        return cache;
+        return cache.ToFrozenDictionary();
     }
 
     /// <summary>Static class initializer for RegisterTools</summary>
     static RegisterTools()
     {
+        var cache = new Dictionary<string, Rn>(StringComparer.Ordinal);
         foreach (Rn rn in Enum.GetValues<Rn>())
         {
             // Skip the NOREG sentinel: registering "NOREG" as a key makes IsRn("NOREG") report true
@@ -120,8 +124,10 @@ public static partial class RegisterTools
                 continue;
             }
 
-            Register_cache_[rn.ToString()] = rn;
+            cache[rn.ToString()] = rn;
         }
+
+        Register_cache_ = cache.ToFrozenDictionary(StringComparer.Ordinal);
     }
 
     public static (bool valid, Rn reg, int nBits) ToRn(string? str, bool isCapitals = false)

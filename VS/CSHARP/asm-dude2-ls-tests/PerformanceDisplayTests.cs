@@ -106,7 +106,7 @@ public class PerformanceDisplayTests
 
     #region SelectBestMatch — masked AVX-512 (EVEX)
 
-    private List<PerformanceItem> SkxVaddps()
+    private static List<PerformanceItem> SkxVaddps()
     {
         var testDir = Directory.GetCurrentDirectory();
         var perfPath = Path.Combine(testDir, "..", "..", "..", "..", "asm-dude2-ls-lib", "Resources", "Performance");
@@ -119,7 +119,7 @@ public class PerformanceDisplayTests
     public void SelectBestMatch_MaskedRegForm_AlignsWriteMaskOperand()
     {
         // Line has 3 operands (mask folded into dest as {k1}); uops form is "ZMM, K, ZMM, ZMM" (4 tokens).
-        var pick = PerformanceDisplay.SelectBestMatch(this.SkxVaddps(), new[] { "zmm0{k1}", "zmm1", "zmm2" });
+        var pick = PerformanceDisplay.SelectBestMatch(SkxVaddps(), new[] { "zmm0{k1}", "zmm1", "zmm2" });
 
         pick.Should().NotBeNull();
         pick!.Value.args_.Should().Be("ZMM, K, ZMM, ZMM");
@@ -129,7 +129,7 @@ public class PerformanceDisplayTests
     public void SelectBestMatch_MaskedForm_MatchesVectorWidth()
     {
         // Width discrimination must survive masking: XMM line must not pick a ZMM form (lat 4 vs 5).
-        var pick = PerformanceDisplay.SelectBestMatch(this.SkxVaddps(), new[] { "xmm0{k1}", "xmm1", "xmm2" });
+        var pick = PerformanceDisplay.SelectBestMatch(SkxVaddps(), new[] { "xmm0{k1}", "xmm1", "xmm2" });
 
         pick.Should().NotBeNull();
         pick!.Value.args_.Should().Be("XMM, K, XMM, XMM");
@@ -138,7 +138,7 @@ public class PerformanceDisplayTests
     [Fact]
     public void SelectBestMatch_MaskedForm_DistinguishesMemoryOperand()
     {
-        var pick = PerformanceDisplay.SelectBestMatch(this.SkxVaddps(), new[] { "zmm0{k1}", "zmm1", "[rax]" });
+        var pick = PerformanceDisplay.SelectBestMatch(SkxVaddps(), new[] { "zmm0{k1}", "zmm1", "[rax]" });
 
         pick.Should().NotBeNull();
         pick!.Value.args_.Should().MatchRegex("^ZMM, K, ZMM, M", "the masked memory form should be chosen");
@@ -148,7 +148,7 @@ public class PerformanceDisplayTests
     public void SelectBestMatch_UnmaskedZmm_PicksUnmaskedForm()
     {
         // Without a {k} decorator the line is still 3 operands; the unmasked form matches directly.
-        var pick = PerformanceDisplay.SelectBestMatch(this.SkxVaddps(), new[] { "zmm0", "zmm1", "zmm2" });
+        var pick = PerformanceDisplay.SelectBestMatch(SkxVaddps(), new[] { "zmm0", "zmm1", "zmm2" });
 
         pick.Should().NotBeNull();
         pick!.Value.args_.Should().Be("ZMM, ZMM, ZMM");

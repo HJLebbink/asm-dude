@@ -106,7 +106,7 @@ namespace AsmSim
                     }
                     else
                     {
-                        this.ctx_ = new Context(t.ContextSettings);
+                        this.ctx_ = new Context(new Dictionary<string, string>(t.ContextSettings));
                         this.ownsCtx_ = true;
                         Z3ContextTracker.Created();
                     }

@@ -77,7 +77,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     private readonly int highlightChunkSize = 10; // number of highlights returned before going to sleep for some delay
 
-    private readonly object updateLock = new();
+    private readonly System.Threading.Lock updateLock = new();
     private readonly Dictionary<string, CancellationTokenSource> pendingUpdates = [];
 
     // Tracks semantic token invalidation version per document (incremented when sim unreachable lines change)
@@ -1316,8 +1316,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
     /// SEE ALSO: MnemonicStore.GetSignatures, AsmSignatureInformation.Is_Allowed, Operand
     private IEnumerable<AsmSignatureInformation> Constrain_Signatures(
             IEnumerable<AsmSignatureInformation> data,
-            List<Operand> operands2,
-            HashSet<Arch> selectedArchitectures2)
+            IReadOnlyList<Operand> operands2,
+            IReadOnlySet<Arch> selectedArchitectures2)
     {
         AsmDudeLog.Debug($"Constrain_Signatures: operands.Count={operands2?.Count ?? 0}, operands=[{string.Join(',', operands2 ?? [])}]");
 
@@ -1454,9 +1454,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             AsmDudeLog.Debug($"GetTextDocumentSignatureHelp: mnemonicOffset={mnemonicOffset}, argsOffset={argsOffset}, argStrLength={argStrLength}");
             AsmDudeLog.Debug($"GetTextDocumentSignatureHelp: mnemonic={mnemonic}, args=[{string.Join(",", args)}]");
 
-            List<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
+            IReadOnlyList<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
             AsmDudeLog.Debug($"GetTextDocumentSignatureHelp: operands.Count={operands.Count}");
-            HashSet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
+            IReadOnlySet<Arch> selectedArchitectures = this.options.Get_Arch_Switched_On();
 
             IEnumerable<AsmSignatureInformation> x = this.mnemonicStore.GetSignatures(mnemonic);
             int totalSignatures = x.Count();
@@ -1578,6 +1578,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             ? this.asmSimulator_.GetUnreachableLines(new Uri(uri))
             : [];
 
+        // Source lines — used to recover a mnemonic/register token's text for arch-gating below.
+        this.textDocumentLines.TryGetValue(uri, out string[]? docLines);
+
         var data = new List<int>();
         int prevLine = 0;
         int prevChar = 0;
@@ -1608,6 +1611,29 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 int tokenLength = token.End_Pos - token.Start_Pos;
                 if (tokenLength <= 0) continue;
 
+                // Arch-gating (display-only): grey out instructions/registers that the active
+                // architecture profile does NOT enable, so highlighting reflects the selected ISA.
+                // Reuses the 0x4 "deprecated" modifier — exactly the effect the never-emitted
+                // MnemonicOff type would have had (MnemonicOff = Mnemonic + 0x4). The parsed token
+                // type is left unchanged; this only tints the display. Skipped on unreachable lines
+                // (already greyed) and when the profile enables everything (nothing is switched off).
+                if (!lineIsUnreachable && docLines != null && lineNumber < docLines.Length)
+                {
+                    string lineStr = docLines[lineNumber];
+                    if (token.Type is AsmTokenType.Mnemonic or AsmTokenType.Jump)
+                    {
+                        Mnemonic m = AsmTools.AsmSourceTools.ParseMnemonic(TokenText(lineStr, token.Start_Pos, tokenLength), true);
+                        if (m != Mnemonic.NONE && !this.mnemonicStore.IsMnemonicSwitchedOn(m))
+                            tokenModifiers |= 0x4;
+                    }
+                    else if (token.Type == AsmTokenType.Register)
+                    {
+                        Rn r = RegisterTools.ParseRn(TokenText(lineStr, token.Start_Pos, tokenLength), true);
+                        if (r != Rn.NOREG && !this.mnemonicStore.IsRegisterSwitchedOn(r))
+                            tokenModifiers |= 0x4;
+                    }
+                }
+
                 // Encode token as delta from previous token
                 int deltaLine = lineNumber - prevLine;
                 int deltaStart = (deltaLine == 0) ? (token.Start_Pos - prevChar) : token.Start_Pos;
@@ -1626,6 +1652,18 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         }
 
         return new SemanticTokens { ResultId = this.GetDocumentResultId(uri), Data = [.. data] };
+    }
+
+    /// <summary>
+    /// Extracts a token's text (upper-cased) from its source line for re-classification, or empty
+    /// string if the position/length fall outside the line. Callers pass <c>strIsCapitals: true</c>
+    /// to the parser since this already upper-cases.
+    /// </summary>
+    private static string TokenText(string lineStr, int startPos, int length)
+    {
+        if (startPos < 0 || length <= 0 || startPos + length > lineStr.Length)
+            return string.Empty;
+        return lineStr.Substring(startPos, length).ToUpperInvariant();
     }
 
     /// <summary>
@@ -2254,8 +2292,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
         try
         {
+            // Verbose per-step completion tracing: on in Debug builds, off in Release.
 #if DEBUG
-            bool extraLogging = false;
+            bool extraLogging = true;
 #else
             bool extraLogging = false;
 #endif
@@ -2356,9 +2395,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             // if we are here: there is a mnemonic, and not a jump, the cursor is not in the mnemonic, thus we analyse the
             // parameters of the mnemonic and make suggestions based on the allowed parameters
 
-            HashSet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
+            IReadOnlySet<Arch> arch_switched_on = this.options.Get_Arch_Switched_On();
             HashSet<AsmSignatureEnum> allowed = [];
-            List<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
+            IReadOnlyList<Operand> operands = AsmTools.AsmSourceTools.MakeOperands(args);
 
             // Count actual commas in the argument portion to determine current operand position.
             int mnemonicOffset2 = lineStr.AsSpan().IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);

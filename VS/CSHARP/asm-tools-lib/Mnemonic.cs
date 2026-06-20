@@ -23,6 +23,7 @@
 namespace AsmTools;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 
 public enum Mnemonic
@@ -2876,12 +2877,14 @@ public enum AttType
 
 public static partial class AsmSourceTools
 {
-    private static readonly Dictionary<string, Mnemonic> Mnemonic_cache_;
+    // Built once in the static ctor, then read-only on the hot parse path (ParseMnemonic/IsMnemonic
+    // per token). Frozen for faster string-keyed lookups; never mutate after construction.
+    private static readonly FrozenDictionary<string, Mnemonic> Mnemonic_cache_;
 
     /// <summary>Static class initializer for AsmSourceTools</summary>
     static AsmSourceTools()
     {
-        Mnemonic_cache_ = [];
+        var cache = new Dictionary<string, Mnemonic>(StringComparer.Ordinal);
         foreach (Mnemonic mnemonic in Enum.GetValues<Mnemonic>())
         {
             // Skip the NONE sentinel: registering "NONE" as a key makes IsMnemonic("NONE") report true
@@ -2893,8 +2896,10 @@ public static partial class AsmSourceTools
                 continue;
             }
 
-            Mnemonic_cache_.Add(mnemonic.ToString(), mnemonic);
+            cache.Add(mnemonic.ToString(), mnemonic);
         }
+
+        Mnemonic_cache_ = cache.ToFrozenDictionary(StringComparer.Ordinal);
     }
 
     public static string ToCapitals(string str, bool strIsCapitals)

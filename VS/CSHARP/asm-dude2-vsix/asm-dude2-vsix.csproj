@@ -13,8 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="3.1.7" />
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="18.5.39115-Preview" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="18.5.39115-Preview" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="18.8.1030-Preview" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="18.8.1030-Preview" PrivateAssets="all" />
     <!-- VSSDK.BuildTools comes transitively from Extensibility.Build -->
     <!-- Pin to fix CVEs in transitive Nerdbank.MessagePack 1.0.11 from Extensibility SDK's StreamJsonRpc 2.25.6 -->
     <PackageReference Include="Nerdbank.MessagePack" Version="1.2.4" />

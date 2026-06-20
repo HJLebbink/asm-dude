@@ -32,7 +32,7 @@
     <PackageReference Include="FluentAssertions" Version="8.10.0" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
     <!-- For the in-memory AsmSimRpcServer ↔ client end-to-end test (no process launch). -->
-    <PackageReference Include="StreamJsonRpc" Version="2.25.29" />
+    <PackageReference Include="StreamJsonRpc" Version="2.26.8" />
     <PackageReference Include="MessagePack" Version="3.1.7" />
     <PackageReference Include="Nerdbank.Streams" Version="2.13.16" />
   </ItemGroup>

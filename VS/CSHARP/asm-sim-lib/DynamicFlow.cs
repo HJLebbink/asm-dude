@@ -52,14 +52,14 @@ namespace AsmSim
         private readonly IDictionary<int, string> lineNumber_2_Key_;
         private readonly IDictionary<string, int> key_2_LineNumber_;
         private string? rootKey_;
-        private readonly object updateLock_ = new();
+        private readonly System.Threading.Lock updateLock_ = new();
         #endregion
 
         #region Constructors
         public DynamicFlow(Tools tools)
         {
             ArgumentNullException.ThrowIfNull(tools);
-            this.ctx_ = new Context(tools.ContextSettings);
+            this.ctx_ = new Context(new Dictionary<string, string>(tools.ContextSettings));
             Z3ContextTracker.Created();
             this.tools_ = new Tools(tools) { SharedCtx = this.ctx_ };
             this.graph_ = new BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>>(true); // allowParallelEdges because of conditional branches to the next line of code
@@ -207,7 +207,7 @@ namespace AsmSim
                     return this.Create_State_Private(key, false);
                 }
 
-                counter++;
+                counter++; //FIXME this must be bug!!
             }
             return null;
         }
@@ -230,7 +230,7 @@ namespace AsmSim
                     return this.Create_State_Private(key, true);
                 }
 
-                counter++;
+                counter++; //FIXME this must be bug!!
             }
             return null;
         }

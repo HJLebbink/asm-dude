@@ -109,7 +109,7 @@ namespace AsmSim.Host
         private readonly Dictionary<Uri, DocCache> cache_ = [];
         private readonly Dictionary<Uri, CancellationTokenSource> pendingTasks_ = [];
         private readonly Dictionary<Uri, long> simVersion_ = [];
-        private readonly object lockObj_ = new();
+        private readonly System.Threading.Lock lockObj_ = new();
 
         /// <summary>The instruction sequence of the PREVIOUS simulation of each document, retained so an
         /// edit can be diffed against it (<see cref="AsmSim.InstructionDiff"/>) to compute the dataflow cone
@@ -892,7 +892,7 @@ namespace AsmSim.Host
                 var sFlow = new StaticFlow(cfgTools);
                 sFlow.Update(string.Join(Environment.NewLine, RewritePragmasForCfg(lines)), removeEmptyLines: false);
 
-                HashSet<int> cone;
+                IReadOnlySet<int> cone;
                 string coneKind;
                 if (!AsmSim.DataflowCone.IsTopologyPreserving(diff))
                 {
@@ -1094,8 +1094,8 @@ namespace AsmSim.Host
                 // thread-safe, hence the per-worker clone (NOT a shared ctx).
                 using var pool = new System.Threading.SemaphoreSlim(SimParallelism, SimParallelism);
                 var tasks = new List<Task>();
-                var resultLock = new object();
-                var tasksLock = new object();
+                System.Threading.Lock resultLock = new();
+                System.Threading.Lock tasksLock = new();
 
                 foreach (var (componentId, roots) in entriesByComponent)
                 {
@@ -1314,7 +1314,7 @@ namespace AsmSim.Host
 
                 readLabel = ComputeReadLabel(before, readRegs, readFlags);
                 if (after != null) writeLabel = ComputeWriteLabel(after, writtenRegs, writtenFlags);
-                this.CollectDiagnostics(lines[line], line, before, compTools, diags, op);
+                CollectDiagnostics(lines[line], line, before, compTools, diags, op);
                 // Redundant check: re-applies the instruction to the (unfrozen-probe of the) BEFORE state, so
                 // it sees both keys. Skip CFG branch/merge points (redundancy across a phi/join isn't meaningful).
                 bool branchMerge = branchMergeLines?.Contains(line) ?? false;
@@ -1450,12 +1450,14 @@ namespace AsmSim.Host
         /// Returns a thread-safe snapshot of the CodeLens label strings for each display position.
         /// Used by the pipe server to serve CodeLens requests.
         ///
-        /// Each instruction at line N contributes two display positions:
-        ///   • N   — reads of instruction N  (r: prefix, before-state values; shown ABOVE line N)
-        ///   • N+1 — writes of instruction N (w: prefix, after-state values;  shown BELOW line N)
+        /// Each instruction at line N contributes two display positions (CodeLens render ABOVE their line):
+        ///   • N   — reads of instruction N  (r: prefix, before-state values; rendered ABOVE line N)
+        ///   • N+1 — writes of instruction N (w: prefix, after-state values;  rendered ABOVE line N+1 = BELOW N)
         ///
-        /// When the write label of N and the read label of N+1 share a register or flag,
-        /// that item is merged to <c>rw:</c> instead of appearing twice.
+        /// When the write label of N and the read label of N+1 share a register or flag, that item is merged
+        /// to <c>rw:</c> instead of appearing twice (the value flowing between two adjacent instructions). The
+        /// write display position N+1 may fall on a BLANK line (a newline pressed under an instruction); the
+        /// tagger renders the lens on that blank line — directly below the instruction, where it belongs.
         /// </summary>
         internal Dictionary<int, string> GetSimStatesSummary(Uri uri)
         {
@@ -1464,7 +1466,7 @@ namespace AsmSim.Host
                 if (!this.cache_.TryGetValue(uri, out DocCache? entry))
                     return [];
 
-                // Collect all distinct display positions
+                // Collect all distinct display positions: reads at N, writes at N+1.
                 var allPositions = new HashSet<int>();
                 foreach (int k in entry.lineStringsReadLabels.Keys) allPositions.Add(k);
                 foreach (int k in entry.lineStringsWriteLabels.Keys) allPositions.Add(k + 1);
@@ -1656,7 +1658,7 @@ namespace AsmSim.Host
         /// <summary>
         /// Builds the write-side CodeLens label for instruction N: registers and flags that N writes,
         /// with <c>w:</c> prefix, values taken from the after-state (what N produced).
-        /// Shown BELOW instruction N (i.e., as the CodeLens above line N+1).
+        /// Shown BELOW instruction N (i.e., as the CodeLens above line N+1; see GetSimStatesSummary).
         /// </summary>
         private static string? ComputeWriteLabel(
             AsmSimState afterState,
@@ -1933,7 +1935,7 @@ namespace AsmSim.Host
                     // so it runs below (after the step) and appends to the same list; newDiagnostics is
                     // accumulated AFTER that so its count includes redundant diagnostics.
                     var lineDiags = new List<SimDiagnostic>();
-                    this.CollectDiagnostics(line, i, state, tools, lineDiags, opcodeBase);
+                    CollectDiagnostics(line, i, state, tools, lineDiags, opcodeBase);
 
                     // Save before-state reference for read-only register queries below.
                     AsmSimState stateBeforeStep = state;
@@ -1965,7 +1967,7 @@ namespace AsmSim.Host
                     // ── Per-instruction CodeLens labels ──────────────────────────
                     // Reads of instruction i → shown ABOVE line i (r: prefix, before-state values)
                     // Writes of instruction i → shown BELOW line i (w: prefix, after-state values)
-                    //   stored at key i; GetSimStatesSummary places them at display position i+1.
+                    //   stored at key i; GetSimStatesSummary places writes at display position i+1.
                     string? readLabel = ComputeReadLabel(stateBeforeStep, readRegsOfThis, readFlagsOfThis);
                     string? writeLabel = ComputeWriteLabel(state, writtenRegs, writtenFlags);
 
@@ -2078,7 +2080,7 @@ namespace AsmSim.Host
             }
         }
 
-        private void CollectDiagnostics(string line, int lineIndex, AsmSimState beforeState, AsmSimTools tools, List<SimDiagnostic> diagnostics, OpcodeBase? opcodeBase)
+        private static void CollectDiagnostics(string line, int lineIndex, AsmSimState beforeState, AsmSimTools tools, List<SimDiagnostic> diagnostics, OpcodeBase? opcodeBase)
         {
             try
             {

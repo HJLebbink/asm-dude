@@ -52,7 +52,7 @@ namespace AsmSim
 
         private BranchInfo? branchInfo_;
 
-        private readonly object ctxLock_ = new();
+        private readonly System.Threading.Lock ctxLock_ = new();
 
         #endregion
 
@@ -145,7 +145,7 @@ namespace AsmSim
             }
             else
             {
-                this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
+                this.ctx_ = new Context(new Dictionary<string, string>(tools.ContextSettings)); // housekeeping in Dispose();
                 this.ownsCtx_ = true;
                 Z3ContextTracker.Created();
             }
@@ -167,7 +167,7 @@ namespace AsmSim
             }
             else
             {
-                this.ctx_ = new Context(tools.ContextSettings); // housekeeping in Dispose();
+                this.ctx_ = new Context(new Dictionary<string, string>(tools.ContextSettings)); // housekeeping in Dispose();
                 this.ownsCtx_ = true;
                 Z3ContextTracker.Created();
             }

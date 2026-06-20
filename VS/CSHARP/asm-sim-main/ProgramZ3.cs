@@ -118,10 +118,10 @@ namespace AsmSim
             }
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
-            Console.WriteLine(string.Format(Culture, "Elapsed time " + elapsedSec + " sec"));
+            Console.WriteLine("Elapsed time " + elapsedSec + " sec");
             if (!Console.IsInputRedirected)
             {
-                Console.WriteLine(string.Format(Culture, "Press any key to continue."));
+                Console.WriteLine("Press any key to continue.");
                 Console.ReadKey();
             }
         }
@@ -1937,7 +1937,7 @@ namespace AsmSim
                 // System.GC.Collect();
             }
 
-            Console.WriteLine(string.Format(Culture, "When a key is pressed ctxArray goes out of scope and may be garbage collected."));
+            Console.WriteLine("When a key is pressed ctxArray goes out of scope and may be garbage collected.");
             Console.ReadKey();
             GC.Collect();
         }

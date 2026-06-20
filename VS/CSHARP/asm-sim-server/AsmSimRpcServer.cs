@@ -24,7 +24,7 @@ using System.Linq;
 internal sealed class AsmSimRpcServer : IDisposable
 {
     private readonly AsmSimulator simulator_ = new();
-    private readonly object lock_ = new();
+    private readonly System.Threading.Lock lock_ = new();
     private readonly Dictionary<string, long> versions_ = [];          // uri → latest version
     private readonly Dictionary<string, Stopwatch> clocks_ = [];       // uri → wall clock for the current run
     private JsonRpc? rpc_;

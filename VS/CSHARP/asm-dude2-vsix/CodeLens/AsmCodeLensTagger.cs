@@ -227,18 +227,33 @@ internal class AsmCodeLensTagger : TextViewTagger<CodeLensTag>
 
         (List<CodeLensTagSpec> specs, string signature) = AsmCodeLensTagBuilder.Build(lineInfos, simStates, labels);
 
+        int docLength = document.Length;
         var tags = new List<TaggedTrackingTextRange<CodeLensTag>>();
+        int eofGuardSkips = 0;
         foreach (CodeLensTagSpec spec in specs)
         {
+            // Guard the document-end edge: a sim lens for a write below the LAST instruction can target a
+            // trailing blank line whose start == document end, where a tracking range has no room (this froze
+            // the tagger historically). Clamp the length; skip only when there is genuinely no room.
+            int start = spec.TagStart;
+            int len = spec.TagLength;
+            if (start >= docLength) { eofGuardSkips++; continue; }
+            if (start + len > docLength) len = docLength - start;
+            if (len <= 0) { eofGuardSkips++; continue; }
+
             CodeElementKind kind = spec.Kind == AsmCodeLensTagKind.Label ? AsmLabelKind : AsmSimStateKind;
             tags.Add(new(
-                new(document, spec.TagStart, spec.TagLength, TextRangeTrackingMode.ExtendForwardAndBackward),
+                new(document, start, len, TextRangeTrackingMode.ExtendForwardAndBackward),
                 new(kind)
                 {
                     UniqueIdentifier = spec.UniqueIdentifier,
                     Description = spec.Description,
                     DisplayBeforeCreatingCodeLenses = true,
                 }));
+        }
+        if (eofGuardSkips > 0)
+        {
+            TaggerLog($"sim-state drop: {eofGuardSkips} lens(es) skipped at document end (no room for a tracking range); docLines={lineInfos.Count} ver={document.RpcContract.Version}");
         }
 
         return (tags, AsmCodeLensTagBuilder.CountTaggedLines(specs), signature);

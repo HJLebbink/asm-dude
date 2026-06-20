@@ -1005,6 +1005,58 @@ add rcx, rdx
     }
 
     [Fact]
+    public void GetSemanticTokens_ArchGating_MarksOutOfProfileTokensDeprecated()
+    {
+        // Arch-gating: an instruction/register that the active architecture profile does NOT enable
+        // is rendered greyed via the LSP "deprecated" modifier (bit 0x4). VADDPD + ZMM0 are AVX-512:
+        // OFF under the v1 baseline profile, ON under "everything". Same source, different profile —
+        // so the contrast isolates the gating logic (would fail if gating were removed or always-on).
+        const string text = "vaddpd zmm0, zmm1, zmm2";
+
+        var (mnemonicV1, registerV1) = ArchGateModifiers(ArchProfileKeys.V1, text);
+        (mnemonicV1 & 0x4).Should().NotBe(0, "VADDPD is AVX-512, absent from the v1 profile -> deprecated");
+        (registerV1 & 0x4).Should().NotBe(0, "ZMM0 is AVX-512, absent from the v1 profile -> deprecated");
+
+        var (mnemonicAll, registerAll) = ArchGateModifiers(ArchProfileKeys.Everything, text);
+        (mnemonicAll & 0x4).Should().Be(0, "VADDPD is enabled under 'everything' -> not deprecated");
+        (registerAll & 0x4).Should().Be(0, "ZMM0 is enabled under 'everything' -> not deprecated");
+    }
+
+    // Returns the semantic-token modifier bitmask for the mnemonic (column 0) and the first register
+    // (column 7, "zmm0") of a one-line document parsed under the given architecture profile.
+    private static (int mnemonicModifiers, int registerModifiers) ArchGateModifiers(string archProfile, string text)
+    {
+        var server = new LanguageServer();
+        server.Initialize(new AsmLanguageServerOptions { ArchProfile = archProfile, AsmSim_On = false, Global_MaxFileLines = 10000 });
+        server.Initialized();
+
+        var uri = $"file:///archgate_{archProfile}.asm";
+        server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = text }
+        });
+
+        var result = server.GetSemanticTokens(new SemanticTokensParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) }
+        });
+
+        // Decode the delta-encoded 5-int groups (deltaLine, deltaStart, length, type, modifiers) to
+        // absolute positions, then pick the tokens by their start column.
+        int[] data = result.Data!;
+        int line = 0, ch = 0, mnemonicMods = 0, registerMods = 0;
+        for (int i = 0; i + 4 < data.Length; i += 5)
+        {
+            int deltaLine = data[i], deltaStart = data[i + 1], modifiers = data[i + 4];
+            line += deltaLine;
+            ch = (deltaLine == 0) ? ch + deltaStart : deltaStart;
+            if (line == 0 && ch == 0) mnemonicMods = modifiers;     // "vaddpd"
+            else if (line == 0 && ch == 7) registerMods = modifiers; // "zmm0"
+        }
+        return (mnemonicMods, registerMods);
+    }
+
+    [Fact]
     public void GetSemanticTokens_ShouldReturnResultId()
     {
         // Arrange — ResultId is required for the delta protocol to work (prevents VS polling every 2s)

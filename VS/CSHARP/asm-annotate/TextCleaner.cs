@@ -120,7 +120,7 @@ namespace AsmAnnotate
             // BOTH sides and are not matched). The negative lookahead keeps elisions like
             // "16- or 32-bit" / "8- to 64-bit" intact (the continuation is a conjunction, not the
             // rest of the word).
-            text = Regex.Replace(text, @"([A-Za-z0-9])- +(?!(?:or|and|to|nor)\b)([A-Za-z])", "$1-\n$2");
+            text = Regex.Replace(text, @"([A-Za-z0-9])- +(?!(?:or|and|to|nor)\b)([A-Za-z])", "$1-\n$2", RegexOptions.None, System.TimeSpan.FromSeconds(2));
 
             // De-hyphenate the curated single-word splits: "excep-\ntion" -> "exception".
             foreach (string w in SplitWords)
@@ -136,7 +136,7 @@ namespace AsmAnnotate
             // of a hyphenated word break ("Reg-\n®\nisters" -> "Registers"). A lone ®/™ on a line
             // is always noise (a real one is attached, e.g. "Intel®"), so drop the glyph and the
             // hyphen and rejoin the word.
-            text = Regex.Replace(text, @"([A-Za-z])-\n[®™]\n([a-z])", "$1$2");
+            text = Regex.Replace(text, @"([A-Za-z])-\n[®™]\n([a-z])", "$1$2", RegexOptions.None, System.TimeSpan.FromSeconds(2));
 
             // General rule for every remaining line-ending hyphen: pull the continuation up onto
             // the same line but KEEP the hyphen. This removes the rendered "foo- bar" space and
@@ -144,7 +144,7 @@ namespace AsmAnnotate
             // ("floating-\npoint" -> "floating-point", "64-\nbit" -> "64-bit",
             // "general-\nprotection" -> "general-protection"). The lookahead keeps "16-\nor 32-bit"
             // as an elision (renders "16- or 32-bit").
-            text = Regex.Replace(text, @"([A-Za-z0-9])-\n(?!(?:or|and|to|nor)\b)([A-Za-z0-9])", "$1-$2");
+            text = Regex.Replace(text, @"([A-Za-z0-9])-\n(?!(?:or|and|to|nor)\b)([A-Za-z0-9])", "$1-$2", RegexOptions.None, System.TimeSpan.FromSeconds(2));
 
             // (The old explicit "single- precision" etc. fixes are now covered by the hyphen-space
             // normalisation above plus the general rule, which keeps the hyphen for those compounds.)
@@ -168,10 +168,10 @@ namespace AsmAnnotate
             if (string.IsNullOrEmpty(text)) return text;
 
             // Collapse multiple spaces to single space
-            text = Regex.Replace(text, @"  +", " ");
+            text = Regex.Replace(text, @"  +", " ", RegexOptions.None, System.TimeSpan.FromSeconds(2));
 
             // Collapse multiple newlines to double newline (paragraph break)
-            text = Regex.Replace(text, @"\n{3,}", "\n\n");
+            text = Regex.Replace(text, @"\n{3,}", "\n\n", RegexOptions.None, System.TimeSpan.FromSeconds(2));
 
             return text;
         }

@@ -39,7 +39,7 @@ namespace unit_tests_asm_z3
     {
         private const bool LogToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
-        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
+        private static Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             /* The following parameters can be set:
                     - proof (Boolean) Enable proof generation
@@ -67,7 +67,7 @@ namespace unit_tests_asm_z3
             return new Tools(settings);
         }
 
-        private State CreateState(Tools tools)
+        private static State CreateState(Tools tools)
         {
             string tailKey = "!INIT"; // Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
@@ -92,7 +92,7 @@ namespace unit_tests_asm_z3
             */
 
             #region Stateconfig
-            Tools tools = this.CreateTools(0);
+            Tools tools = CreateTools(0);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.CF = true;
             tools.StateConfig.ZF = true;
@@ -154,7 +154,7 @@ namespace unit_tests_asm_z3
             mod3_B    ENDP
             */
 
-            Tools tools = this.CreateTools(0);
+            Tools tools = CreateTools(0);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RCX = true;
@@ -180,7 +180,7 @@ namespace unit_tests_asm_z3
 
             if (false)
             {
-                State state = this.CreateState(tools);
+                State state = CreateState(tools);
 
                 state = AsmTestTools.Step_Forward(line0, state);
                 state = AsmTestTools.Step_Forward(line1, state);
@@ -296,7 +296,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_BitTricks_Min_Unsigned()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Reg_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -309,7 +309,7 @@ namespace unit_tests_asm_z3
             string line4 = "add rbx, rdx";
 
             { // forward
-                State state = this.CreateState(tools);
+                State state = CreateState(tools);
 
                 BitVecExpr rax0 = state.Create(Rn.RAX);
                 BitVecExpr rbx0 = state.Create(Rn.RBX);
@@ -387,7 +387,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_BitTricks_Min_Signed()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Reg_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -401,7 +401,7 @@ namespace unit_tests_asm_z3
             string line4 = "add rbx, rdx";  // rbx1 = (rax0 > rbx0) ? (rbx0 + 0) : (rbx0 + rax0 - rbx0)
 
             { // forward
-                State state = this.CreateState(tools);
+                State state = CreateState(tools);
                 Context ctx = state.Ctx;
 
                 if (true)
@@ -520,7 +520,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_BitTricks_Parallel_Search_GPR_1()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Reg_Off();
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
@@ -533,7 +533,7 @@ namespace unit_tests_asm_z3
             string line5 = "and ecx, 80808080h";
 
             { // forward
-                State state = this.CreateState(tools);
+                State state = CreateState(tools);
                 BitVecExpr bytes = state.Create(Rn.EBX);
 
                 if (false)
@@ -605,7 +605,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_BitTricks_Parallel_Search_GPR_2()
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Reg_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -623,7 +623,7 @@ namespace unit_tests_asm_z3
             string line7 = "and rcx, rax";
 
             { // forward
-                State state = this.CreateState(tools);
+                State state = CreateState(tools);
                 BitVecExpr bytes = state.Create(Rn.RBX);
 
                 state = AsmTestTools.Step_Forward(line1, state);

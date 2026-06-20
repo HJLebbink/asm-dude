@@ -55,7 +55,7 @@ namespace AsmSim
         /// </list>
         /// A deletion at the very tail (nothing downstream survives) contributes no seed.
         /// </summary>
-        public static HashSet<int> ChangedLineSeeds(InstructionDiff diff)
+        public static IReadOnlySet<int> ChangedLineSeeds(InstructionDiff diff)
         {
             ArgumentNullException.ThrowIfNull(diff);
             var seeds = new HashSet<int>();
@@ -97,7 +97,7 @@ namespace AsmSim
         /// returned set are guaranteed unaffected by the edit and can reuse their cached result; lines IN it
         /// must be re-solved. A seed that is not a CFG vertex contributes only itself.
         /// </summary>
-        public static HashSet<int> StaticCone(StaticFlow newFlow, IEnumerable<int> seeds)
+        public static IReadOnlySet<int> StaticCone(StaticFlow newFlow, IEnumerable<int> seeds)
         {
             ArgumentNullException.ThrowIfNull(newFlow);
             ArgumentNullException.ThrowIfNull(seeds);
@@ -119,7 +119,7 @@ namespace AsmSim
         }
 
         /// <summary>Convenience: the static cone of an edit, directly from its diff and the new CFG.</summary>
-        public static HashSet<int> StaticCone(StaticFlow newFlow, InstructionDiff diff)
+        public static IReadOnlySet<int> StaticCone(StaticFlow newFlow, InstructionDiff diff)
             => StaticCone(newFlow, ChangedLineSeeds(diff));
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace AsmSim
         /// are mapped into new-line space via <see cref="InstructionDiff.OldToNew"/>; a predecessor with no new
         /// counterpart (deleted) counts as a lost edge.
         /// </remarks>
-        public static HashSet<int> StaticConeWithTopology(StaticFlow oldFlow, StaticFlow newFlow, InstructionDiff diff)
+        public static IReadOnlySet<int> StaticConeWithTopology(StaticFlow oldFlow, StaticFlow newFlow, InstructionDiff diff)
         {
             ArgumentNullException.ThrowIfNull(oldFlow);
             ArgumentNullException.ThrowIfNull(newFlow);

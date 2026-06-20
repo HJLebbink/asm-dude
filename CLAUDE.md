@@ -33,7 +33,7 @@ AsmDude2 is a Visual Studio 2022/2026 extension that provides assembly language 
 ### Active Extension
 
 **asm-dude2-vsix** (net10.0-windows8.0) — **Modern out-of-process extension**
-   - ✅ Uses VisualStudio.Extensibility SDK v18.5.39115-Preview
+   - ✅ Uses VisualStudio.Extensibility SDK v18.8.1030-Preview (matched to the installed VS 18.8; see matching rule below)
    - ✅ LSP-based architecture (launches separate asm-dude2-ls process)
    - ✅ Targets Visual Studio 2022 & 2026
    - ✅ Fully debuggable with F5 (debug target provided by Extensibility.Build package)
@@ -596,7 +596,7 @@ unknown word (correct LSP semantics).
 **Note:** Starting with Extensibility SDK 18.5, the VSIX can target `net10.0-windows8.0`. The extension host in VS 18.5+ supports .NET 10. Previous versions required `net8.0-windows8.0` (see [microsoft/VSExtensibility#544](https://github.com/microsoft/VSExtensibility/issues/544)).
 
 **⚠ The `Microsoft.VisualStudio.Extensibility.Sdk` minor version MUST match the installed Visual Studio minor version.**
-The SDK generates `Microsoft.VisualStudio.RpcContracts` with a matching version at build time. If the SDK minor version is higher than VS (e.g., SDK 18.6 on VS 18.5), VS rejects the extension because it doesn't have the newer RpcContracts. If the SDK version is too old (e.g., SDK 18.2 on VS 18.5), commands may silently fail to register. Check your VS version via Help → About, then use the matching SDK preview from the vssdk feed. Example: VS 2026 **18.5** → SDK **18.5**.39115-Preview.
+The SDK generates `Microsoft.VisualStudio.RpcContracts` with a matching version at build time. If the SDK minor version is higher than VS (e.g., SDK 18.6 on VS 18.5), VS rejects the extension because it doesn't have the newer RpcContracts. If the SDK version is too old (e.g., SDK 18.2 on VS 18.5), commands may silently fail to register. Check your VS version via Help → About (or `vswhere -property installationVersion`), then use the matching SDK preview from the vssdk feed. Current: installed VS is **18.8** (Insiders, the `0fafafd7` Exp hive) → SDK **18.8**.1030-Preview. Do NOT jump to the absolute-latest 18.9 SDK while VS is 18.8 — a higher SDK than VS is rejected (RpcContracts mismatch). Latest per-band on the vssdk feed (June 2026): 18.7.1240 / 18.8.1030 / 18.9.750.
 
 **NuGet Sources**: Requires both nuget.org and vssdk feed (configured in `NuGet.config`):
 ```

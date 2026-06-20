@@ -14,11 +14,13 @@ dotnet_diagnostic.IDE0044.severity = warning
 dotnet_style_readonly_field = true:warning
 # CA2227: collection properties should be get-only (callers mutate the collection, not the reference).
 dotnet_diagnostic.CA2227.severity = warning
-# CA1822: members that don't use instance state -> mark static (perf). Kept as a hint: ~90 hits, cosmetic.
-dotnet_diagnostic.CA1822.severity = suggestion
-# MA0040-ish family is opt-in; the broadly useful Meziantou immutability rule:
-# MA0016: prefer returning a read-only abstraction over a concrete collection.
-dotnet_diagnostic.MA0016.severity = suggestion
+# CA1822: members that don't use instance state -> mark static (perf/clarity). ENFORCED — all 88 hits were
+# made static (dotnet format + Roslyn fixer, which also fixed call sites). Keep at warning to catch new ones.
+dotnet_diagnostic.CA1822.severity = warning
+# MA0016: prefer returning a read-only abstraction (IReadOnlyList<T>/…) over a concrete List<T>. Objective
+# immutability win, but it changes RETURN SIGNATURES and has NO code fixer, so each of ~26 sites must be
+# converted by hand + every caller checked for mutation/ripple. Parked at suggestion until done deliberately.
+dotnet_diagnostic.MA0016.severity = warning
 
 # ---- Intentional patterns in this codebase (kept quiet so they don't bury real findings) ----
 # CA1051: AsmSettingsData is a deliberate public-field DTO (serialized settings contract).
@@ -26,7 +28,7 @@ dotnet_diagnostic.CA1051.severity = suggestion
 # CA1819: Tv[]-returning APIs (GetTvArray, semantic-token uint[]) are a deliberate fast path.
 dotnet_diagnostic.CA1819.severity = suggestion
 # CA1002: List<T> on internal/engine APIs is intentional.
-dotnet_diagnostic.CA1002.severity = suggestion
+dotnet_diagnostic.CA1002.severity = warning
 
 # ---- High-volume rules tamed to keep the warning list actionable (ratchet up later if wanted) ----
 # Localization / culture noise:
@@ -47,8 +49,17 @@ dotnet_diagnostic.MA0003.severity = none        # name the argument (literal as 
 dotnet_diagnostic.MA0006.severity = none        # use string.Equals instead of == (opinionated, ~194 hits)
 dotnet_diagnostic.MA0026.severity = suggestion  # "TODO" comment flagged (informational, not a build warning)
 dotnet_diagnostic.MA0002.severity = suggestion  # use IEqualityComparer overload (~144 hits)
-dotnet_diagnostic.MA0009.severity = suggestion  # add regex timeout (ReDoS hardening; review, don't gate)
+# MA0009: regexes carry a match timeout (ReDoS hardening). ENFORCED — all 24 sites got an explicit 2s cap
+# (TimeSpan.FromSeconds(2) / 2000ms on GeneratedRegex). Keep at warning so new untimed regexes get caught.
+dotnet_diagnostic.MA0009.severity = warning
 dotnet_diagnostic.MA0017.severity = suggestion  # abstract type should not have public ctor
+# MA0023 (use RegexOptions.ExplicitCapture): surfaced only because adding MA0009 match-timeouts forces an
+# explicit RegexOptions argument. Most flagged regexes use NUMBERED captures ($1/$2 in the replacement), which
+# ExplicitCapture would silently break — so it's not safely actionable without rewriting working regexes to
+# named groups for no real benefit. Suggestion.
+dotnet_diagnostic.MA0023.severity = suggestion
+# MA0158 (use System.Threading.Lock over a plain object lock) is ENFORCED — all lock fields were modernized
+# to System.Threading.Lock (the faster .NET 9+ lock type). Leave it at warning so new object-locks get caught.
 
 # ---- Deliberate / risky-to-change patterns (tamed with rationale; see analyzer-warning-backlog) ----
 # MA0055: finalizers in the Z3 wrapper classes (State/StateUpdate/DynamicFlow/…) are a safety net for the

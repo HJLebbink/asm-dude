@@ -60,10 +60,21 @@ namespace AsmAnnotate
         private const double SEARCH_DISTANCE_VERTICAL = 1.0;
         private const double SEARCH_DISTANCE_HORIZONTAL = 8.0;
 
-        public List<PdfLineElement> VerticalLines { get; } = [];
-        public List<PdfLineElement> HorizontalLines { get; } = [];
-        public List<PdfTextElement> TextElements { get; } = [];
-        public List<object> Images { get; } = []; // Placeholder for image support
+        // Mutable backing buffers — filled while parsing/splitting a page. Exposed read-only
+        // below; external callers append via the Add* methods. Private members are type-scoped,
+        // so the split/find helpers can fill another pile's buffers directly (e.g. table.verticalLines_).
+        private readonly List<PdfLineElement> verticalLines_ = [];
+        private readonly List<PdfLineElement> horizontalLines_ = [];
+        private readonly List<PdfTextElement> textElements_ = [];
+        private readonly List<object> images_ = []; // Placeholder for image support
+
+        public IReadOnlyList<PdfLineElement> VerticalLines => this.verticalLines_;
+        public IReadOnlyList<PdfLineElement> HorizontalLines => this.horizontalLines_;
+        public IReadOnlyList<PdfTextElement> TextElements => this.textElements_;
+        public IReadOnlyList<object> Images => this.images_; // Placeholder for image support
+
+        /// <summary>Appends grouped text lines to this pile (used by the page parser).</summary>
+        public void AddTextElements(IEnumerable<PdfTextElement> elements) => this.textElements_.AddRange(elements);
 
         /// <summary>
         /// The kind of this pile, inferred from its content (lines =&gt; table, images =&gt; image,
@@ -158,7 +169,7 @@ namespace AsmAnnotate
 
                 foreach (var xCoord in xClusters)
                 {
-                    VerticalLines.Add(new PdfLineElement
+                    this.verticalLines_.Add(new PdfLineElement
                     {
                         X0 = xCoord,
                         X1 = xCoord,
@@ -176,7 +187,7 @@ namespace AsmAnnotate
 
                 foreach (var yCoord in yClusters)
                 {
-                    HorizontalLines.Add(new PdfLineElement
+                    this.horizontalLines_.Add(new PdfLineElement
                     {
                         X0 = minX,
                         X1 = maxX,
@@ -248,7 +259,9 @@ namespace AsmAnnotate
             return System.Text.RegularExpressions.Regex.Replace(
                 title,
                 @"(?<=\S )\b(?:Without|With)\b",
-                m => m.Value.ToLowerInvariant());
+                m => m.Value.ToLowerInvariant(),
+                System.Text.RegularExpressions.RegexOptions.None,
+                System.TimeSpan.FromSeconds(2));
         }
 
         /// <summary>
@@ -346,10 +359,10 @@ namespace AsmAnnotate
             if (token.Length is 0 or > 80) return false;
 
             string t = token.Replace("cc", "");                 // condition-code placeholder
-            t = Regex.Replace(t, "x[0-9]+", "");                // EVEX tuple width (x4/x8/x16)
+            t = Regex.Replace(t, "x[0-9]+", "", RegexOptions.None, System.TimeSpan.FromSeconds(2));  // EVEX tuple width (x4/x8/x16)
             // single-letter operand placeholder after a space/start, before a slash/comma/end
             // ("INT n/INTO" -> "INT/INTO"); a real prose word ("and", "in") is longer and survives.
-            t = Regex.Replace(t, @"(?:^|(?<=[/,A-Z0-9])) [a-z](?=[/,]|$)", "");
+            t = Regex.Replace(t, @"(?:^|(?<=[/,A-Z0-9])) [a-z](?=[/,]|$)", "", RegexOptions.None, System.TimeSpan.FromSeconds(2));
 
             bool hasUpper = false;
             int otherLower = 0;
@@ -389,7 +402,7 @@ namespace AsmAnnotate
         /// - TextLines contain characters and spacing
         /// This recursively unwraps the hierarchy.
         /// </summary>
-        public void ParsePageLayout(List<object> layoutObjects)
+        public void ParsePageLayout(IReadOnlyList<object> layoutObjects)
         {
             // Stack-based traversal to handle nested structures
             var stack = new Stack<object>(layoutObjects.AsEnumerable().Reverse());
@@ -452,7 +465,7 @@ namespace AsmAnnotate
                 };
                 if (element.Height > 0 && element.Width > 0)
                 {
-                    TextElements.Add(element);
+                    this.textElements_.Add(element);
                 }
             }
             catch { /* Ignore extraction errors */ }
@@ -468,13 +481,13 @@ namespace AsmAnnotate
         {
             if (line.IsVertical)
             {
-                AdjustToClose(line, VerticalLines, SEARCH_DISTANCE_VERTICAL);
-                VerticalLines.Add(line);
+                AdjustToClose(line, this.verticalLines_, SEARCH_DISTANCE_VERTICAL);
+                this.verticalLines_.Add(line);
             }
             else if (line.IsHorizontal)
             {
-                AdjustToClose(line, HorizontalLines, SEARCH_DISTANCE_HORIZONTAL);
-                HorizontalLines.Add(line);
+                AdjustToClose(line, this.horizontalLines_, SEARCH_DISTANCE_HORIZONTAL);
+                this.horizontalLines_.Add(line);
             }
         }
 
@@ -495,13 +508,13 @@ namespace AsmAnnotate
 
                 if (line.IsVertical)
                 {
-                    AdjustToClose(line, VerticalLines, SEARCH_DISTANCE_VERTICAL);
-                    VerticalLines.Add(line);
+                    AdjustToClose(line, this.verticalLines_, SEARCH_DISTANCE_VERTICAL);
+                    this.verticalLines_.Add(line);
                 }
                 else if (line.IsHorizontal)
                 {
-                    AdjustToClose(line, HorizontalLines, SEARCH_DISTANCE_HORIZONTAL);
-                    HorizontalLines.Add(line);
+                    AdjustToClose(line, this.horizontalLines_, SEARCH_DISTANCE_HORIZONTAL);
+                    this.horizontalLines_.Add(line);
                 }
             }
             catch { /* Ignore extraction errors */ }
@@ -514,7 +527,7 @@ namespace AsmAnnotate
         /// For vertical lines: snaps to close X coordinate
         /// For horizontal lines: snaps to close Y coordinate
         /// </summary>
-        private void AdjustToClose(PdfLineElement line, List<PdfLineElement> existingLines, double searchDistance)
+        private static void AdjustToClose(PdfLineElement line, IReadOnlyList<PdfLineElement> existingLines, double searchDistance)
         {
             PdfLineElement? closest = null;
             double closestDistance = searchDistance;
@@ -564,7 +577,7 @@ namespace AsmAnnotate
         /// 2. Find horizontal lines to form table rows
         /// 3. Group text into tables vs paragraphs based on table boundaries
         /// </summary>
-        public List<ContentPile> SplitIntoPiles()
+        public IReadOnlyList<ContentPile> SplitIntoPiles()
         {
             var piles = new List<ContentPile>();
 
@@ -608,9 +621,9 @@ namespace AsmAnnotate
                 var includedTexts = FindIncluded(top, bottom, TextElements);
 
                 var table = new ContentPile();
-                table.VerticalLines.AddRange(nearVerticals);
-                table.HorizontalLines.AddRange(includedHorizontals);
-                table.TextElements.AddRange(includedTexts);
+                table.verticalLines_.AddRange(nearVerticals);
+                table.horizontalLines_.AddRange(includedHorizontals);
+                table.textElements_.AddRange(includedTexts);
 
                 tables.Add(table);
                 foreach (var v in nearVerticals) visited.Add(v);
@@ -661,7 +674,7 @@ namespace AsmAnnotate
                 {
                     if (text.Y0 > tops[idx])
                     {
-                        paragraphs[idx].TextElements.Add(text);
+                        paragraphs[idx].textElements_.Add(text);
                         break;
                     }
                 }
@@ -677,7 +690,7 @@ namespace AsmAnnotate
             foreach (var image in Images)
             {
                 var pile = new ContentPile();
-                pile.Images.Add(image);
+                pile.images_.Add(image);
                 images.Add(pile);
             }
             return images;
@@ -769,7 +782,7 @@ namespace AsmAnnotate
         /// (verticals reverse=False, horizontals reverse=True). Getting this backwards inverts
         /// each cell's left/right edges so no text ever falls "in range" and tables come out empty.
         /// </summary>
-        private List<double> CalcCoordinates(List<PdfLineElement> lines, bool isVertical)
+        private static List<double> CalcCoordinates(IReadOnlyList<PdfLineElement> lines, bool isVertical)
         {
             var coordSet = new HashSet<double>();
             foreach (var line in lines)
@@ -806,7 +819,7 @@ namespace AsmAnnotate
         /// <summary>
         /// Checks if a text element is within cell boundaries.
         /// </summary>
-        private bool IsInRange(double left, double top, double right, double bottom, PdfTextElement obj)
+        private static bool IsInRange(double left, double top, double right, double bottom, PdfTextElement obj)
         {
             // Check for invalid dimensions
             if (obj.X0 >= obj.X1) return false;
@@ -909,7 +922,7 @@ namespace AsmAnnotate
         /// Converts intermediate table structure to HTML markdown.
         /// Handles opcode table detection and merging.
         /// </summary>
-        private string IntermediateToMarkdown(List<List<Dictionary<string, object>>> intermediate, MarkdownState state)
+        private static string IntermediateToMarkdown(List<List<Dictionary<string, object>>> intermediate, MarkdownState state)
         {
             var sb = new StringBuilder();
 
@@ -1253,7 +1266,7 @@ namespace AsmAnnotate
             }
         }
 
-        private bool IsExceptionHeader(string content)
+        private static bool IsExceptionHeader(string content)
         {
             return content is "Other Exceptions" or
                 "Compatibility Mode Exceptions" or
@@ -1271,7 +1284,7 @@ namespace AsmAnnotate
                 "Real-Address Mode Exceptions";
         }
 
-        private string CreateIndent(double xPos)
+        private static string CreateIndent(double xPos)
         {
             const double offset = 47;
             const double width = 18;
@@ -1306,7 +1319,7 @@ namespace AsmAnnotate
             return near;
         }
 
-        private (double Top, double Bottom) CalcTopBottom(List<PdfLineElement> objects)
+        private static (double Top, double Bottom) CalcTopBottom(IReadOnlyList<PdfLineElement> objects)
         {
             double top = double.NegativeInfinity;
             double bottom = double.PositiveInfinity;
@@ -1320,7 +1333,7 @@ namespace AsmAnnotate
             return (top, bottom);
         }
 
-        private (double Top, double Bottom) CalcTopBottom(List<PdfTextElement> objects)
+        private static (double Top, double Bottom) CalcTopBottom(IReadOnlyList<PdfTextElement> objects)
         {
             double top = double.NegativeInfinity;
             double bottom = double.PositiveInfinity;
@@ -1334,14 +1347,14 @@ namespace AsmAnnotate
             return (top, bottom);
         }
 
-        private bool IsOverlap(double top, double bottom, PdfLineElement obj)
+        private static bool IsOverlap(double top, double bottom, PdfLineElement obj)
         {
             const double searchDistance = 0.7;
             return ((bottom - searchDistance) <= obj.Y0 && obj.Y0 <= (top + searchDistance)) ||
                    ((bottom - searchDistance) <= obj.Y1 && obj.Y1 <= (top + searchDistance));
         }
 
-        private List<T> FindIncluded<T>(double top, double bottom, List<T> objects) where T : class
+        private static List<T> FindIncluded<T>(double top, double bottom, IReadOnlyList<T> objects) where T : class
         {
             var included = new List<T>();
             foreach (T obj in objects)
@@ -1354,7 +1367,7 @@ namespace AsmAnnotate
             return included;
         }
 
-        private bool IsOverlap(double top, double bottom, PdfTextElement obj)
+        private static bool IsOverlap(double top, double bottom, PdfTextElement obj)
         {
             const double searchDistance = 0.7;
             return ((bottom - searchDistance) <= obj.Y0 && obj.Y0 <= (top + searchDistance)) ||

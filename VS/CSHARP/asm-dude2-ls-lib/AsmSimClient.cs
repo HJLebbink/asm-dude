@@ -40,7 +40,7 @@ internal sealed class AsmSimClient : IDisposable
     private readonly AsmSimulator mirror_;
     private AsmSimSettings settings_; // mutable: updated on settingsChanged so respawns use the latest engine
     private readonly string exePath_;
-    private readonly object lock_ = new();
+    private readonly System.Threading.Lock lock_ = new();
     private readonly Dictionary<string, OpenDoc> openDocs_ = []; // tracked so we can re-send after a respawn
 
     private Process? process_;

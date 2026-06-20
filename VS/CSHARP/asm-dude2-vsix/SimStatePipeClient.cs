@@ -33,7 +33,7 @@ internal sealed class SimStatePipeClient : IDisposable
 {
     // ── Singleton ─────────────────────────────────────────────────────────────
     private static SimStatePipeClient? instance_;
-    private static readonly object instanceLock_ = new();
+    private static readonly System.Threading.Lock instanceLock_ = new();
 
     internal static SimStatePipeClient Instance
     {

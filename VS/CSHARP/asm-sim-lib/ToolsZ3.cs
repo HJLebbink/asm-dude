@@ -34,7 +34,7 @@ namespace AsmSim
 
     public static class ToolsZ3
     {
-        private static readonly object Object_ = new();
+        private static readonly System.Threading.Lock Object_ = new();
 
         #region Public Methods
 
@@ -83,7 +83,7 @@ namespace AsmSim
         /// <summary>Cleans the provided line by removing multiple white spaces and cropping if the line is too long</summary>
         public static string Cleanup(string line, int maxNumberOfCharsOnLine = 150)
         {
-            string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
+            string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ", System.Text.RegularExpressions.RegexOptions.None, System.TimeSpan.FromSeconds(2)).Trim();
             return (cleanedString.Length > maxNumberOfCharsOnLine)
                 ? cleanedString[..(maxNumberOfCharsOnLine - 3)] + "..."
                 : cleanedString;
@@ -344,14 +344,7 @@ namespace AsmSim
         public static string ToString(Expr e)
         {
             ArgumentNullException.ThrowIfNull(e);
-            if (false)
-            {
-                return e.ToString();
-            }
-            else
-            {
-                return System.Text.RegularExpressions.Regex.Replace(e.ToString(), @"\s+", " ");
-            }
+            return System.Text.RegularExpressions.Regex.Replace(e.ToString(), @"\s+", " ", System.Text.RegularExpressions.RegexOptions.None, System.TimeSpan.FromSeconds(2));
         }
 
         public static string ToString(Solver solver, string identStr)

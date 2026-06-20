@@ -49,7 +49,7 @@ namespace AsmAnnotate
         /// <summary>
         /// Processes a list of piles and generates one markdown file per instruction.
         /// </summary>
-        public void Write(List<ContentPile> piles)
+        public void Write(IReadOnlyList<ContentPile> piles)
         {
             if (piles.Count == 0) return;
 
@@ -109,7 +109,7 @@ namespace AsmAnnotate
         /// opcode table and wrongly merges, dropping this table's header row and "&lt;table&gt;" tag
         /// (the FBLD/FDIV/... bug).
         /// </summary>
-        private bool FindPreviousOpcodeTable(int currentIndex, List<ContentPile> piles, string? instructionCurrent)
+        private static bool FindPreviousOpcodeTable(int currentIndex, IReadOnlyList<ContentPile> piles, string? instructionCurrent)
         {
             for (int j = currentIndex - 1; j >= 0; j--)
             {
@@ -136,7 +136,7 @@ namespace AsmAnnotate
         /// Stops at ANY title pile so an instruction's opcode table never merges with the NEXT
         /// instruction's table.
         /// </summary>
-        private bool FindNextOpcodeTable(int currentIndex, List<ContentPile> piles, string? instructionCurrent)
+        private static bool FindNextOpcodeTable(int currentIndex, IReadOnlyList<ContentPile> piles, string? instructionCurrent)
         {
             for (int j = currentIndex + 1; j < piles.Count; j++)
             {

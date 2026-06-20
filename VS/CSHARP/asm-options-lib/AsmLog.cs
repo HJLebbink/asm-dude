@@ -99,7 +99,7 @@ public static class AsmLog
 #endif
 
     private static readonly List<Action<AsmLogEntry>> Sinks = [];
-    private static readonly object SinkLock = new();
+    private static readonly System.Threading.Lock SinkLock = new();
 
     /// <summary>Registers a destination. The sink should not throw and should be cheap (logging is on the hot path).</summary>
     public static void AddSink(Action<AsmLogEntry> sink)
@@ -188,7 +188,7 @@ public static class AsmLogSinks
     /// <summary>Appends the detailed (call-site-tagged) rendering of each event to <paramref name="path"/>.</summary>
     public static Action<AsmLogEntry> File(string path)
     {
-        var fileLock = new object();
+        System.Threading.Lock fileLock = new();
         return entry =>
         {
             try
