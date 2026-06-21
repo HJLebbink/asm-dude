@@ -340,6 +340,54 @@ public class LanguageServerTests
     }
 
     [Fact]
+    public void GetHover_Mnemonic_IsOperandAware()
+    {
+        // Hovering the mnemonic in "add rax, rbx" must produce the context-aware lead line built from
+        // the actual operands, not just the static "Add" description. Catches a break in the wiring
+        // between GetHover and InstructionDescription (operand parsing + prepend).
+        var uri = "file:///test_ctxhover.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "add rax, rbx" }
+        });
+
+        var result = this._server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 1 }, // on "add"
+        });
+
+        var markup = (MarkupContent)result.Should().BeOfType<Hover>().Subject.Contents!;
+        markup.Value.Should().Contain("Add rbx to rax", "hover must describe the instruction using its operands");
+    }
+
+    [Fact]
+    public void GetHover_Mnemonic_PicksPerFormTemplate_ByOperandCount()
+    {
+        // Templates aren't restricted to the per-mnemonic GENERAL row: a per-FORM description (matched by
+        // operand count) is preferred, so IMUL's 2-operand and 3-operand forms render differently.
+        var uri = "file:///test_imul.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "imul rax, rbx\nimul rax, rbx, 4" }
+        });
+
+        var two = (MarkupContent)this._server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 1 },
+        }).Should().BeOfType<Hover>().Subject.Contents!;
+        two.Value.Should().Contain("Multiply rax by rbx (signed), result in rax", "2-operand IMUL form template");
+
+        var three = (MarkupContent)this._server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 1, Character = 1 },
+        }).Should().BeOfType<Hover>().Subject.Contents!;
+        three.Value.Should().Contain("Multiply rbx by 4 (signed), result in rax", "3-operand IMUL form template (dst=rax, src=rbx*4)");
+    }
+
+    [Fact]
     public void GetHover_WithMnemonic_WithAsmDocUrl_ShouldReturnStyledHover()
     {
         // Arrange – create a fresh server with AsmDoc_Url configured

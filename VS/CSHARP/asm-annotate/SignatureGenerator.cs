@@ -15,7 +15,7 @@ namespace asm_annotate
     /// <summary>
     /// Stage 2 of the instruction-data pipeline (md→txt): loads the AsmDude wiki's HTML opcode tables
     /// (produced from the Intel SDM by stage 1, <see cref="Extractor"/>) and turns them into the AsmDude
-    /// signature file (<c>signature-mar2026.txt</c>) + <c>overview.txt</c> + the wiki <c>Home.md</c>.
+    /// signature file (<c>signature-mar2026.txt</c>) + the wiki <c>Home.md</c> (instruction-table overview).
     /// Invoked via the <c>gen-signatures</c> command. Previously the standalone <c>intel-doc-2-data</c>
     /// project; folded into asm-annotate so the whole data toolchain (extract / gen-signatures / perf-uops)
     /// lives in one tool.
@@ -24,7 +24,7 @@ namespace asm_annotate
     {
         /// <summary>
         /// Reads every <c>*.md</c> in <paramref name="wikiDir"/> and writes the signature file to
-        /// <paramref name="outFile"/> (plus <c>overview.txt</c> beside it and the wiki <c>Home.md</c>).
+        /// <paramref name="outFile"/> (plus the wiki <c>Home.md</c> instruction-table overview).
         /// </summary>
         public static int Run(string wikiDir, string outFile)
         {
@@ -114,9 +114,8 @@ namespace asm_annotate
             Console.WriteLine("Wrote " + sb.ToString().Split('\n').Length + " lines to " + outFile);
 
             sb2.AppendLine("</table>");
-            File.WriteAllText(Path.Combine(outDir ?? ".", "overview.txt"), sb2.ToString());
 
-            // The wiki's Home.md IS this overview (a preamble followed by the instruction table).
+            // The wiki's Home.md IS the instruction-table overview (a preamble followed by the table).
             // Update it in place: keep whatever preamble it currently has (everything before the
             // first "<table>") and replace the table with the freshly generated one. `path` is the
             // wiki's doc/ dir, so Home.md sits in its parent.
@@ -457,7 +456,7 @@ namespace asm_annotate
                 if (pos_mnemonic != -1)
                 {
                     mnemonic = m;
-                    string tmp = str2[(pos_mnemonic + mnemonic_str.Length)..].Replace(" ", "").Trim().ToUpper();
+                    string tmp = SeparateFusedImplicitOperand(str2[(pos_mnemonic + mnemonic_str.Length)..].Replace(" ", "").Trim().ToUpper());
                     parameters = Cleanup_Parameters(tmp);
                     parameter_descriptions = (tmp.Length > 0) ? (mnemonic_str + " " + tmp) : mnemonic_str;
                     break;
@@ -468,7 +467,7 @@ namespace asm_annotate
                     if (pos_mnemonic != -1)
                     {
                         mnemonic = m;
-                        string tmp = str2[(pos_mnemonic + mnemonic_str.Length)..].Replace("[", "").Replace("]", "").Replace(" ", "").Trim().ToUpper();
+                        string tmp = SeparateFusedImplicitOperand(str2[(pos_mnemonic + mnemonic_str.Length)..].Replace("[", "").Replace("]", "").Replace(" ", "").Trim().ToUpper());
                         parameters = Cleanup_Parameters(tmp);
                         parameter_descriptions = (tmp.Length > 0) ? (mnemonic_str + " " + tmp) : mnemonic_str;
                         break;
@@ -482,6 +481,15 @@ namespace asm_annotate
             return (mnemonic, parameters, parameter_descriptions);
         }
 
+        // Ensure an implicit operand the SDM fused onto the previous one is comma-SEPARATED
+        // ("R32,R32<XMM0-6>" -> "R32,R32,<XMM0-6>"). Applied to the SHARED operand string so the abbreviated
+        // `parameters` (where Cleanup_Parameters turns "<...>" into XMM_ZERO) and the human-readable
+        // `parameter_descriptions` (which keeps "<...>") end up with the SAME operand COUNT. The LSP
+        // MnemonicStore rejects a row whose args and sign disagree on operand count (IndexOutOfRange).
+        // ENCODEKEY128/BLENDVPD already carry the comma in the SDM; ENCODEKEY256 does not.
+        internal static string SeparateFusedImplicitOperand(string operands) =>
+            Regex.Replace(operands, "(?<=[^,])<", ",<", RegexOptions.None, System.TimeSpan.FromSeconds(2));
+
         internal static string Cleanup_Parameters(string str)
         {
             // Normalise implicit-operand angle-bracket notation FIRST — before the digit-stripping
@@ -489,8 +497,14 @@ namespace asm_annotate
             // form (<XMM0>, <XMM0-7>, <XMM4-6>, …) maps to the recognised XMM_ZERO token
             // (AsmSignatureEnum.REG_XMM0); any other implicit register ("<EAX>") just loses its
             // brackets. Leaving the angle brackets in would break signature help (unrecognised token).
-            str = Regex.Replace(str, "<[XYZ]MM[0-9][^>]*>", "XMM_ZERO", RegexOptions.None, System.TimeSpan.FromSeconds(2));
-            str = Regex.Replace(str, "<([A-Za-z][A-Za-z0-9]*)>", "$1", RegexOptions.None, System.TimeSpan.FromSeconds(2));
+            // Insert a SEPARATING comma: the SDM sometimes fuses the implicit operand onto the previous one
+            // with no comma (ENCODEKEY256 "r32, r32<XMM0-6>" would otherwise yield the invalid
+            // "R32,R32XMM_ZERO"); the comma makes it a proper operand — consistent with ENCODEKEY128/BLENDVPD,
+            // which already write ",<XMM0…>". The ,{2,} collapse + TrimStart removes the duplicate/leading
+            // comma this creates when a comma was already present.
+            str = Regex.Replace(str, "<[XYZ]MM[0-9][^>]*>", ",XMM_ZERO", RegexOptions.None, System.TimeSpan.FromSeconds(2));
+            str = Regex.Replace(str, "<([A-Za-z][A-Za-z0-9]*)>", ",$1", RegexOptions.None, System.TimeSpan.FromSeconds(2));
+            str = Regex.Replace(str, ",{2,}", ",", RegexOptions.None, System.TimeSpan.FromSeconds(2)).TrimStart(',');
 
             var tmp = str.Replace("IMM16", "XYZZY");
             tmp = tmp.

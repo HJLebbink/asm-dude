@@ -118,12 +118,9 @@ namespace AsmDude2LS
             List<AsmSignatureEnum> ParseOperands(string str)
             {
                 List<AsmSignatureEnum> result = [];
-                str = str.Replace("R/M", "R_M")
-                         .Replace("R32/64", "R32_64")
-                         .Replace("R16/32/64", "R16_32_64")
-                         .Replace("M14/28", "M14_28")
-                         .Replace("M94/108", "M94_108");
-                foreach (string op in str.Split('/'))
+                // Same tokenization the generator validates against (AsmSignatureTools.SplitOperandTokens),
+                // but here via the WARNING parser so an unmodelled token still surfaces at load time.
+                foreach (string op in AsmSignatureTools.SplitOperandTokens(str))
                 {
                     result.AddRange(AsmSignatureTools.Parse_Operand_Type_Enum(op, true));
                 }
@@ -225,6 +222,7 @@ namespace AsmDude2LS
                 Mnemonic = mnemonic,
                 Arch = archs,
                 Operands = operandList,
+                RawDescription = doc,
                 SignatureInformation = new SignatureInformation
                 {
                     Label = sign,

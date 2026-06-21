@@ -50,8 +50,7 @@
 
   <!-- Include the LSP server (and its Resources\, which carry the declared signature/perf data) in the
        VSIX. The server build output already contains exactly the runtime resources, so a second glob over
-       the lib's Resources folder is intentionally NOT used — it would also drag in non-runtime artifacts
-       (overview.txt, retired signature-may2019.txt). -->
+       the lib's Resources folder is intentionally NOT used — it could also drag in non-runtime artifacts. -->
   <ItemGroup>
     <Content Include="..\asm-dude2-ls\bin\$(Configuration)\net10.0-windows\**\*.*">
       <Link>Server\%(RecursiveDir)%(Filename)%(Extension)</Link>

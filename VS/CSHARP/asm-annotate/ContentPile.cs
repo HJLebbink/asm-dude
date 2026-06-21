@@ -27,6 +27,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using AsmTools;        // Mnemonic, AsmSourceTools.ParseMnemonic
+using AsmSourceTools;  // AsmSignatureTools (operand-grammar validator) for stage-1 operand repair
+
 namespace AsmAnnotate
 {
 
@@ -726,7 +729,25 @@ namespace AsmAnnotate
         public string GenerateTableMarkdown(MarkdownState state)
         {
             var intermediate = GenerateTableIntermediate();
-            return IntermediateToMarkdown(intermediate, state);
+            return IntermediateToMarkdown(intermediate, state, this.IsInstructionTable());
+        }
+
+        // Like IsOpcodeTable, but also matches the COMBINED "Opcode/Instruction" header newer SDM tables use
+        // (VPAND, VMOVDQU32, VREDUCESD, ENCODEKEY256, …). Used ONLY to gate the instruction-cell operand
+        // repair; kept separate from IsOpcodeTable so the table-merge logic (which keys on the exact "Opcode"
+        // header) is untouched. Misfires are harmless: the repair only rewrites genuine operand cells.
+        private bool IsInstructionTable()
+        {
+            if (Kind != PileKind.Table) return false;
+            // Scan the leading (header) text elements rather than only TextElements[0]: a footnote digit or the
+            // first opcode byte can sort ahead of "Opcode" in reading order (e.g. LAR), so keying on [0] alone
+            // misses real instruction tables. A header cell is "Opcode"/"Opcode/Instruction"/"Instruction".
+            foreach (PdfTextElement t in TextElements.Take(12))
+            {
+                string s = t.GetText();
+                if (s.StartsWith("Opcode", StringComparison.Ordinal) || s == "Instruction") return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -922,7 +943,7 @@ namespace AsmAnnotate
         /// Converts intermediate table structure to HTML markdown.
         /// Handles opcode table detection and merging.
         /// </summary>
-        private static string IntermediateToMarkdown(List<List<Dictionary<string, object>>> intermediate, MarkdownState state)
+        private static string IntermediateToMarkdown(List<List<Dictionary<string, object>>> intermediate, MarkdownState state, bool isOpcodeTable)
         {
             var sb = new StringBuilder();
 
@@ -947,6 +968,13 @@ namespace AsmAnnotate
                 {
                     var texts = (List<PdfTextElement>)cell["texts"];
                     var cellTexts = RenderCellText(texts);
+
+                    // Stage-1 root fix: clean the KNOWN PDF-extraction noise out of the instruction cell so the
+                    // wiki .md (and everything downstream) comes out clean. Only data rows of opcode tables.
+                    if (isOpcodeTable && !firstLine)
+                    {
+                        cellTexts = RepairInstructionCell(cellTexts);
+                    }
 
                     int colspan = cell.ContainsKey("colspan") ? (int)cell["colspan"] : 1;
                     int rowspan = cell.ContainsKey("rowspan") ? (int)cell["rowspan"] : 1;
@@ -1034,6 +1062,101 @@ namespace AsmAnnotate
             foreach (char c in s)
                 if (c < '0' || c > '9') return false;
             return t.Height < bodyHeight - 1.0;
+        }
+
+        // Stage-1 root fix for the KNOWN classes of PDF-extraction noise that the SDM opcode tables leak into
+        // the INSTRUCTION cell (see KNOWN-DATA-ISSUES.md): an Op/En code bled onto the operand ("r/m16RM"),
+        // a footnote digit ("r32/m161"), a stray "." ("ymm3/.m256"), a doubled "m" ("xmm2/mm128"), a stray
+        // "/r" ("imm8/r"). It is GRAMMAR-DIRECTED (validates against the real operand grammar,
+        // AsmSignatureTools.Is_Known_Operand) and case-preserving (the wiki .md keeps its lowercase). It is
+        // SAFE: it only rewrites a cell whose post-mnemonic text is a pure operand list — a description cell
+        // that merely mentions a mnemonic ("POPCNT on r/m16") has a non-operand token and is left untouched,
+        // and any operand that cannot be repaired leaves the WHOLE cell unchanged so a genuinely new/
+        // unmodelled token still surfaces downstream instead of being silently truncated.
+        internal static string RepairInstructionCell(string cellText)
+        {
+            if (!cellText.Contains(',', StringComparison.Ordinal)) return cellText; // operand lists have a comma
+
+            string[] tokens = cellText.Split(' ');
+            int mnIdx = -1;
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                if (tokens[i].Length == 0) continue;
+                // Skip 2-hex-digit opcode bytes: a combined "Opcode/Instruction" cell prefixes the mnemonic
+                // with the encoding (e.g. "VEX.256.66.0F.WIG DB /r VPAND …"), and "DB"/"DD"/… collide with
+                // data-directive mnemonics. No real x86 mnemonic is two hex digits, so this is safe.
+                if (Regex.IsMatch(tokens[i], "^[0-9A-Fa-f]{2}$", RegexOptions.None, TimeSpan.FromSeconds(2))) continue;
+                if (AsmTools.AsmSourceTools.ParseMnemonic(tokens[i], false) != Mnemonic.NONE)
+                {
+                    mnIdx = i;
+                    break;
+                }
+            }
+            if (mnIdx < 0 || mnIdx + 1 >= tokens.Length) return cellText;
+
+            // A real instruction cell is "[opcode-encoding…] MNEMONIC operands"; everything BEFORE the
+            // mnemonic must be opcode/encoding tokens. This rejects a DESCRIPTION cell that merely contains a
+            // short-word mnemonic mid-sentence (e.g. "…store the result in xmm1." — "in" is the IN mnemonic),
+            // which would otherwise have its trailing "." stripped.
+            for (int i = 0; i < mnIdx; i++)
+            {
+                if (!IsOpcodeEncodingToken(tokens[i])) return cellText;
+            }
+
+            string operandPart = string.Join(' ', tokens[(mnIdx + 1)..]);
+            string[] operands = operandPart.Split(',');
+            var rebuilt = new string[operands.Length];
+            for (int i = 0; i < operands.Length; i++)
+            {
+                string raw = operands[i];
+                string lead = raw[..(raw.Length - raw.TrimStart().Length)]; // keep the ", " spacing
+                if (!TryRepairOperand(raw.Trim(), out string fixedTok)) return cellText; // not a pure operand list
+                rebuilt[i] = lead + fixedTok;
+            }
+            return string.Join(' ', tokens[..(mnIdx + 1)]) + " " + string.Join(",", rebuilt);
+        }
+
+        // True for an opcode/encoding token that legitimately precedes the mnemonic in an instruction cell:
+        // a hex byte ("DB","0F","6F"), an encoding specifier carrying a digit or one of . / : + - ("VEX.256.66.0F.WIG",
+        // "EVEX.128…", "REX.W", "/r", "11:rrr:bbb", a footnote "1"), or a bare prefix keyword ("NP","NFx").
+        // Plain prose words ("Perform","store","the") match none, so a description cell is rejected.
+        private static bool IsOpcodeEncodingToken(string t)
+        {
+            if (t.Length == 0) return true;
+            foreach (char c in t)
+                if (char.IsDigit(c) || c is '.' or '/' or ':' or '+' or '-') return true;
+            if (Regex.IsMatch(t, "^[0-9A-Fa-f]{2}$", RegexOptions.None, TimeSpan.FromSeconds(2))) return true; // hex byte (DB, FB, …)
+            return t is "NP" or "NFx" or "REX" or "VEX" or "EVEX" or "XOP";
+        }
+
+        private static bool TryRepairOperand(string token, out string result)
+        {
+            result = token;
+            if (token.Length == 0) return true; // trailing empty operand: harmless
+
+            // A footnote superscript ("m16<sup>1</sup>") is appended to the last operand: set it aside, repair
+            // the operand text, then re-attach it so the wiki keeps the footnote marker. (Some rows ALSO carry
+            // an INLINE footnote digit before the sup — "r32/m16 1<sup>1</sup>" — which the trim below removes.)
+            string suffix = string.Empty;
+            Match sup = Regex.Match(token, "<sup>[^<]*</sup>\\s*$", RegexOptions.None, TimeSpan.FromSeconds(2));
+            string body = (sup.Success ? token[..sup.Index] : token).TrimEnd();
+            if (sup.Success) suffix = token[sup.Index..];
+
+            if (body.Contains('<', StringComparison.Ordinal)) return true;  // implicit "<XMM0-6>": valid SDM notation, leave it
+            if (body.Contains('+', StringComparison.Ordinal)) return true;  // register-block "zmm2+3" / "k+1": valid notation, leave it
+
+            string cleaned = body.Replace(".", string.Empty, StringComparison.Ordinal);   // stray dot
+            cleaned = Regex.Replace(cleaned, "(?i)mm(128|256|512)", "m$1", RegexOptions.None, TimeSpan.FromSeconds(2)); // doubled m
+            if (AsmSignatureTools.Is_Known_Operand(cleaned)) { result = cleaned.TrimEnd() + suffix; return true; }
+
+            // a SHORT trailing run of noise (fused Op/En code, footnote digit, stray "/r"): trim the fewest
+            // chars that make it parse; cap at 4 so a NEW unmodelled operand is not silently truncated.
+            for (int cut = 1; cut <= 4 && cut < cleaned.Length; cut++)
+            {
+                string candidate = cleaned[..^cut];
+                if (AsmSignatureTools.Is_Known_Operand(candidate)) { result = candidate.TrimEnd() + suffix; return true; }
+            }
+            return false; // unrepairable -> caller leaves the whole cell unchanged
         }
 
         /// <summary>

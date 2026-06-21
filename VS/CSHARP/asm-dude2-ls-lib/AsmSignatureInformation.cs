@@ -44,6 +44,14 @@ public class AsmSignatureInformation
     public required Arch[][] Arch;
     public required IList<IList<AsmSignatureEnum>> Operands;
 
+    /// <summary>
+    /// The raw per-form description text (the signature row's description column), BEFORE the arch
+    /// string is appended into <see cref="SignatureInformation"/>.Documentation. May contain operand
+    /// placeholders ({0},{1},…) that the operand-aware hover fills in per form — see
+    /// InstructionDescription.Render. Empty when the form has no description.
+    /// </summary>
+    public string RawDescription = string.Empty;
+
     /// <summary>Return true if this Signature Element is allowed with the constraints of the provided operand</summary>
     public bool Is_Allowed(Operand op, int operandIndex)
     {

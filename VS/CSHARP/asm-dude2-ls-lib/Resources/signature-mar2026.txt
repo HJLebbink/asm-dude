@@ -941,7 +941,7 @@ GENERAL	ENCODEKEY128	Encode 128-Bit Key with Key Locker	ENCODEKEY128
 ENCODEKEY128	R32,R32,XMM_ZERO,XMM_ZERO	KEYLOCKER	ENCODEKEY128 R32,R32,<XMM0-2>,<XMM4-6>	Wrap a 128-bit AES key from XMM0 into a key handle and output handle in XMM0—2.
 ;--------------------------------------------------------
 GENERAL	ENCODEKEY256	Encode 256-Bit Key with Key Locker	ENCODEKEY256
-ENCODEKEY256	R32,R32XMM_ZERO	KEYLOCKER	ENCODEKEY256 R32,R32<XMM0-6>	Wrap a 256-bit AES key from XMM1:XMM0 into a key handle and store it in XMM0—3.
+ENCODEKEY256	R32,R32,XMM_ZERO	KEYLOCKER	ENCODEKEY256 R32,R32,<XMM0-6>	Wrap a 256-bit AES key from XMM1:XMM0 into a key handle and store it in XMM0—3.
 ;--------------------------------------------------------
 GENERAL	ENDBR32	Terminate an Indirect Branch in 32-bit and Compatibility Mode	ENDBR32
 ENDBR32		CET_IBT	ENDBR32	Terminate indirect branch in 32-bit and compatibility mode.
@@ -1740,7 +1740,7 @@ LAHF		8086	LAHF	Load: AH := EFLAGS(SF:ZF:0:AF:0:PF:1:CF).
 ;--------------------------------------------------------
 GENERAL	LAR	Load Access Rights	LAR
 LAR	R16,R16/M16	8086	LAR R16,R16/M16	Load access rights from specified descriptor.
-LAR	R32,R32/M161	386	LAR R32,R32/M161	Load access rights from specified descriptor.
+LAR	R32,R32/M16	386	LAR R32,R32/M16	Load access rights from specified descriptor.
 LAR	R32,R64/M16	X64	LAR R32,R64/M16	Load access rights from specified descriptor.
 ;--------------------------------------------------------
 GENERAL	LDDQU	Load Unaligned Integer 128 Bits	LDDQU
@@ -2086,7 +2086,7 @@ VMOVDQU16	XMM/M128{K}{Z},XMM	AVX512_VL+AVX512_BW,AVX10	VMOVDQU16 XMM2/M128{K1}{Z
 VMOVDQU16	YMM/M256{K}{Z},YMM	AVX512_VL+AVX512_BW,AVX10	VMOVDQU16 YMM2/M256{K1}{Z},YMM1	Move unaligned packed word integer values from ymm1 to ymm2/m256 using writemask k1.
 VMOVDQU16	ZMM/M512{K}{Z},ZMM	AVX512_BW,AVX10	VMOVDQU16 ZMM2/M512{K1}{Z},ZMM1	Move unaligned packed word integer values from zmm1 to zmm2/m512 using writemask k1.
 GENERAL	VMOVDQU32	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
-VMOVDQU32	XMM{K}{Z},XMM/MM8	AVX512_VL+AVX512_F,AVX10	VMOVDQU32 XMM1{K1}{Z},XMM2/MM128	Move unaligned packed doubleword integer values from xmm2/m128 to xmm1 using writemask k1.
+VMOVDQU32	XMM{K}{Z},XMM/M128	AVX512_VL+AVX512_F,AVX10	VMOVDQU32 XMM1{K1}{Z},XMM2/M128	Move unaligned packed doubleword integer values from xmm2/m128 to xmm1 using writemask k1.
 VMOVDQU32	YMM{K}{Z},YMM/M256	AVX512_VL+AVX512_F,AVX10	VMOVDQU32 YMM1{K1}{Z},YMM2/M256	Move unaligned packed doubleword integer values from ymm2/m256 to ymm1 using writemask k1.
 VMOVDQU32	ZMM{K}{Z},ZMM/M512	AVX512_F,AVX10	VMOVDQU32 ZMM1{K1}{Z},ZMM2/M512	Move unaligned packed doubleword integer values from zmm2/m512 to zmm1 using writemask k1.
 VMOVDQU32	XMM/M128{K}{Z},XMM	AVX512_VL+AVX512_F,AVX10	VMOVDQU32 XMM2/M128{K1}{Z},XMM1	Move unaligned packed doubleword integer values from xmm1 to xmm2/m128 using writemask k1.
@@ -2609,7 +2609,7 @@ PAND	MM,MM/M64	MMX	PAND MM,MM/M64	Bitwise AND mm/m64 and mm.
 PAND	XMM,XMM/M128	SSE2	PAND XMM1,XMM2/M128	Bitwise AND of xmm2/m128 and xmm1.
 GENERAL	VPAND	Logical AND	PAND
 VPAND	XMM,XMM,XMM/M128	AVX	VPAND XMM1,XMM2,XMM3/M128	Bitwise AND of xmm3/m128 and xmm.
-VPAND	YMM,YMM,YMM/.M256	AVX2	VPAND YMM1,YMM2,YMM3/.M256	Bitwise AND of ymm2, and ymm3/m256 and store result in ymm1.
+VPAND	YMM,YMM,YMM/M256	AVX2	VPAND YMM1,YMM2,YMM3/M256	Bitwise AND of ymm2, and ymm3/m256 and store result in ymm1.
 GENERAL	VPANDD	Logical AND	PAND
 VPANDD	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL+AVX512_F,AVX10	VPANDD XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Bitwise AND of packed doubleword integers in xmm2 and xmm3/m128/m32bcst and store result in xmm1 using writemask k1.
 VPANDD	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL+AVX512_F,AVX10	VPANDD YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Bitwise AND of packed doubleword integers in ymm2 and ymm3/m256/m32bcst and store result in ymm1 using writemask k1.
@@ -3222,8 +3222,8 @@ GENERAL	POPAD	Pop All General-Purpose Registers	POPA_POPAD
 POPAD		8086	POPAD	Pop EDI, ESI, EBP, EBX, EDX, ECX, and EAX.
 ;--------------------------------------------------------
 GENERAL	POPCNT	Return the Count of Number of Bits Set to 1	POPCNT
-POPCNT	R16,R/M16RM	8086	POPCNT R16,R/M16RM	POPCNT on r/m16
-POPCNT	R32,R/M32RM	386	POPCNT R32,R/M32RM	POPCNT on r/m32
+POPCNT	R16,R/M16	8086	POPCNT R16,R/M16	POPCNT on r/m16
+POPCNT	R32,R/M32	386	POPCNT R32,R/M32	POPCNT on r/m32
 POPCNT	R64,R/M64	X64	POPCNT R64,R/M64	POPCNT on r/m64
 ;--------------------------------------------------------
 GENERAL	POPF	Pop Stack Into EFLAGS Register	POPF_POPFD_POPFQ
@@ -6398,7 +6398,7 @@ VREDUCEPS	YMM{K}{Z},YMM/M256/M32BCST,IMM8	AVX512_VL+AVX512_DQ,AVX10	VREDUCEPS YM
 VREDUCEPS	ZMM{K}{Z},ZMM/M512/M32BCST{SAE},IMM8	AVX512_DQ,AVX10	VREDUCEPS ZMM1{K1}{Z},ZMM2/M512/M32BCST{SAE},IMM8	Perform reduction transformation on packed SP FP values in zmm2/m512/m32bcst by subtracting a number of fraction bits specified by the imm8 field. Stores the result in zmm1 register under writemask k1.
 ;--------------------------------------------------------
 GENERAL	VREDUCESD	Perform a Reduction Transformation on a Scalar Float64 Value	VREDUCESD
-VREDUCESD	XMM{K}{Z},XMM,XMM/M64{SAE},IMM8/R	AVX512_DQ,AVX10	VREDUCESD XMM1{K1}{Z},XMM2,XMM3/M64{SAE},IMM8/R	Perform a reduction transformation on a scalar DP FP value in xmm3/m64 by subtracting a number of fraction bits specified by the imm8 field. Also, upper DP FP value (bits[127:64]) from xmm2 are copied to xmm1[127:64]. Stores the result in xmm1 register.
+VREDUCESD	XMM{K}{Z},XMM,XMM/M64{SAE},IMM8	AVX512_DQ,AVX10	VREDUCESD XMM1{K1}{Z},XMM2,XMM3/M64{SAE},IMM8	Perform a reduction transformation on a scalar DP FP value in xmm3/m64 by subtracting a number of fraction bits specified by the imm8 field. Also, upper DP FP value (bits[127:64]) from xmm2 are copied to xmm1[127:64]. Stores the result in xmm1 register.
 ;--------------------------------------------------------
 GENERAL	VREDUCESH	Perform Reduction Transformation on Scalar FP16 Value	VREDUCESH
 VREDUCESH	XMM{K}{Z},XMM,XMM/M16{SAE},IMM8	AVX512_FP16,AVX10	VREDUCESH XMM1{K1}{Z},XMM2,XMM3/M16{SAE},IMM8	Perform a reduction transformation on the low binary encoded FP16 value in xmm3/m16 by subtracting a number of fraction bits specified by the imm8 field. Store the result in xmm1 subject to writemask k1. Bits 127:16 from xmm2 are copied to xmm1[127:16].

@@ -37,6 +37,18 @@ namespace AsmAnnotate
     public class MarkdownGenerator
     {
         private readonly string _sourceInfo;
+
+        /// <summary>Optional one-off override for the footer's "Generated:" date — set it to pin the tree to a
+        /// specific value when diffing extractor changes (see the note at the footer). Null ⇒ BaselineDate.</summary>
+        internal static string? GeneratedDateForDiff;
+
+        // The footer "Generated:" date is PINNED to the value already committed in the wiki, so a regen of
+        // unchanged content is byte-identical (zero git churn) and `git diff` surfaces ONLY real extraction
+        // changes. It is deliberately NOT DateTime.Now and NOT the SDM revision date — either of those would
+        // differ from the committed value and stamp a fresh date into all ~860 .md, burying real changes.
+        // To re-baseline (after intentionally regenerating against a new SDM), bump this in the SAME commit
+        // as the regen; for a one-off pin without editing code, set GeneratedDateForDiff before running.
+        private const string BaselineDate = "7-6-2026";
         private readonly string _outputDirectory;
 
         public MarkdownGenerator(string outputDirectory = "./output", string sourceInfo = "Intel® 64 and IA-32 Architectures Software Developer's Manual, Combined Volumes (Order Number 325462)")
@@ -191,14 +203,20 @@ namespace AsmAnnotate
                 safeFileName = safeFileName.Replace(bad, '_');
             string filePath = System.IO.Path.Combine(_outputDirectory, $"{safeFileName}.md");
 
-            var now = DateTime.Now;
-            string generatedTime = $"{now.Day}-{now.Month}-{now.Year}";
+            // THE DIFF TRICK (don't forget): the "Generated:" date is pinned to BaselineDate (the value already
+            // committed in the wiki) so a regen of unchanged content is byte-identical — `git diff` then shows
+            // ONLY real extraction changes instead of ~860 files all "changed" on this one date line. Override
+            // for a one-off via MarkdownGenerator.GeneratedDateForDiff; re-baseline by bumping BaselineDate.
+            string generatedTime = GeneratedDateForDiff ?? BaselineDate;
             markdown += $"\n --- \n<p align=\"right\"><i>Source: {_sourceInfo}<br>Generated: {generatedTime}</i></p>\n";
 
-            // UTF-8 without a BOM (the reference files have no BOM).
+            // UTF-8 without a BOM (the reference files have no BOM). Emit the PLATFORM line ending
+            // (markdown is all-LF here): the asm-dude.wiki checkout is CRLF (core.autocrlf=true, no
+            // .gitattributes), so writing LF would mark all ~860 files modified on EOL alone and bury the
+            // real diff. Environment.NewLine matches the autocrlf checkout on Windows (CRLF) and Linux (LF).
             var utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
             Console.WriteLine($"Writing {filePath}");
-            File.WriteAllText(filePath, markdown, utf8NoBom);
+            File.WriteAllText(filePath, markdown.Replace("\n", Environment.NewLine), utf8NoBom);
         }
     }
 }

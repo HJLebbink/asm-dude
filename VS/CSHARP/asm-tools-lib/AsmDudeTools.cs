@@ -84,10 +84,7 @@ public sealed class AsmDude2Tools : IDisposable
             Rn reg = RegisterTools.ParseRn(keyword2, true);
             if (reg != Rn.NOREG)
             {
-                // return (this.RegisterSwitchedOn(reg))
-                //    ? AsmTokenType.Register
-                //    : AsmTokenType.Register; //TODO
-                return AsmTokenType.Register; //TODO
+                return AsmTokenType.Register;
             }
         }
         #endregion
@@ -102,11 +99,7 @@ public sealed class AsmDude2Tools : IDisposable
             (Mnemonic mnemonic, _) = AsmSourceToolsAlias.ParseMnemonic_Att(keyword, true);
             if (mnemonic != Mnemonic.NONE)
             {
-                //TODO
-                // return (this.MnemonicSwitchedOn(mnemonic))
-                //     ? AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
-                //     : AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
-
+                // Arch-gating is applied at the display layer (LanguageServer.GetSemanticTokens); see Get_Token_Type_Intel.
                 return AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
         }
@@ -122,11 +115,9 @@ public sealed class AsmDude2Tools : IDisposable
         Mnemonic mnemonic = AsmSourceToolsAlias.ParseMnemonic(keyword, true);
         if (mnemonic != Mnemonic.NONE)
         {
-            //TODO
-            //return (this.MnemonicSwitchedOn(mnemonic))
-            //    ? AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
-            //    : AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
-
+            // Arch-gating (greying out instructions not in the active profile) is applied at the display
+            // layer in LanguageServer.GetSemanticTokens via MnemonicStore.IsMnemonicSwitchedOn — not here,
+            // because this lower layer (asm-tools-lib) has no access to the profile/MnemonicStore.
             return AsmSourceToolsAlias.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
         }
         Rn reg = RegisterTools.ParseRn(keyword, true);

@@ -6,8 +6,7 @@ remains. The relevant warnings are emitted at generation time via `AsmLog.Warn("
 **stderr** (see `SignatureGenerator.To_Signature`).
 
 > ⚠ **The generator's output is not live until regenerated.** Fixing `gen-signatures` only changes the
-> bundled `signature-mar2026.txt` after you re-run the command (which also rewrites `overview.txt` and the
-> wiki `Home.md`):
+> bundled `signature-mar2026.txt` after you re-run the command (which also rewrites the wiki `Home.md`):
 > ```
 > dotnet run --project VS/CSHARP/asm-annotate -- gen-signatures
 > ```
@@ -67,6 +66,54 @@ secondary **"FXSAVE Field Definition"** sub-table that merely contains the subst
 - **Fix option (low-risk):** tighten opcode-table detection so a sub-table that only *mentions* "Opcode"
   in a body cell isn't parsed — e.g. require "Opcode" in the **header row**, or that the header also
   contains "Instruction". Until then it is a known, harmless warning.
+
+## Garbled operand tokens — FIXED in the generator (grammar-directed repair)
+`MnemonicStore` parses each form's operand string via `AsmSignatureTools.Parse_Operand_Type_Enum`; an
+operand token it doesn't recognise logs `WRN TOOLS … unknown content <tok>` (visible in the LS pane). All
+**legitimate** memory/FP16/decoration tokens are handled explicitly in the grammar (incl. `M16BCST`,
+`M16{ER}/{SAE}`, `M384`, `M14_28BYTE`/`M94_108BYTE`, `XMM0{K}{Z}`). The rest were **genuine stage-1
+PDF-extraction defects** that leak into the instruction-cell text of the wiki `.md`:
+
+| Defect class | `.md` cell | Was | Now |
+|---|---|---|---|
+| Op/En code bled into operand | `POPCNT r16, r/m16RM` | `R/M16RM` | `R/M16` |
+| footnote superscript digit | `LAR …, r32/m161` | `R32/M161` | `R32/M16` |
+| stray `.` | `VPAND …, ymm3/.m256` | `YMM/.M256` | `YMM/M256` |
+| doubled `m` in mem size | `VMOVDQU32 …, xmm2/mm128` | `XMM/MM8`¹ | `XMM/M128` |
+| stray `/r` (ModRM fragment) | `VREDUCESD …, imm8/r` | `IMM8/R` | `IMM8` |
+| implicit operand fused (no comma) | `ENCODEKEY256 r32, r32<XMM0-6>` | `R32,R32XMM_ZERO` | `R32,R32,XMM_ZERO`² |
+
+¹ worsened by `Cleanup_Parameters`' `MM1`/`MM2` register-number stripping cascading `MM128`→`MM8`.
+² now consistent with `ENCODEKEY128`/`BLENDVPD`, which already emit `,XMM_ZERO` for the implicit operand.
+
+**Where it's fixed — STAGE 1 (`extract`), so the wiki `.md` itself comes out clean** (the signature file is
+then clean for free, and there is NO downstream stage-2 repair). `ContentPile.RepairInstructionCell` runs as
+each opcode-table instruction cell is written (`IntermediateToMarkdown`, gated by `IsInstructionTable` which
+matches both the `Opcode` and combined `Opcode/Instruction` headers). It is **grammar-directed, not a
+hardcoded list of broken strings**, and **case-preserving** (the wiki keeps its lowercase):
+
+- It only rewrites a cell whose post-mnemonic text is a pure operand list. The mnemonic must be preceded
+  ONLY by opcode/encoding tokens (`IsOpcodeEncodingToken`) — this rejects a *description* cell that merely
+  mentions a short-word mnemonic (`…store the result in xmm1.` — `in` is the `IN` mnemonic). Opcode bytes
+  that look like mnemonics (`DB`, `DD`) are skipped (no real mnemonic is two hex digits).
+- Per operand (`TryRepairOperand`): a trailing footnote `<sup>…</sup>` is set aside and re-attached;
+  `<XMM0-6>` implicit operands and `zmm2+3` register-block notation are left untouched; a stray `.` and a
+  doubled-`m` memory size (`mm128`→`m128`) are fixed; then it **validates against the real consumer grammar**
+  via `AsmSignatureTools.Is_Known_Operand` (mirrors `MnemonicStore`'s tokenization + tolerates `.md`-form
+  register indices/decoration spaces). If still invalid it trims a **short (≤4-char)** trailing run (fused
+  Op/En code, inline footnote digit, stray `/r`) to the longest form that parses.
+- **If no repair makes it parse, the operand — and the whole cell — is left UNCHANGED so the LSP still
+  warns**: a genuinely new/unmodelled token must never be silently truncated.
+
+The implicit operand is handled in **stage-2** (signature *formatting* from the kept `.md` notation, not
+garble repair): `Parse_Parameters` calls `SeparateFusedImplicitOperand` to put a comma before a fused
+`<…>` ("R32,R32<XMM0-6>" → "R32,R32,<XMM0-6>") on the SHARED operand string, so the abbreviated `parameters`
+(`<…>`→`XMM_ZERO`) and the kept-notation `parameter_descriptions` end up with the **same operand count** —
+`MnemonicStore.CreateAsmSignatureElement` throws `IndexOutOfRange` if a row's args and sign disagree on
+count (ENCODEKEY256 hit this; ENCODEKEY128/BLENDVPD already carried the comma). Tested by
+`RepairInstructionCell_*` and `ParseParameters_FusedImplicitOperand_*` (asm-annotate-tests). The grammar
+lives in `AsmSignatureTools` (asm-tools-lib); `Is_Known_Operand` is the no-warn validator,
+`Parse_Operand_Type_Enum` the warning one — both share `Parse_Operand_Type_Enum_Core` + `SplitOperandTokens`.
 
 ## Tests
 - `asm-annotate-tests` — stage-2 MD→signature generation (column/title heuristics).

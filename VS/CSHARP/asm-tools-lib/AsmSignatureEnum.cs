@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public enum AsmSignatureEnum
 {
@@ -124,6 +125,9 @@ public enum AsmSignatureEnum
     /// <summary>AMX tile register (TMM0-TMM7)</summary>
     TMMREG,
 
+    /// <summary>vector broadcasted from a 16-bit memory location (AVX-512 FP16)</summary>
+    M16BCST,
+
     /// <summary>vector broadcasted from a 32-bit memory location</summary>
     M32BCST,
 
@@ -141,7 +145,21 @@ public static class AsmSignatureTools
 {
     public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str, bool strIsCapitals)
     {
-        switch (AsmSourceTools.ToCapitals(str, strIsCapitals).Trim())
+        AsmSignatureEnum[] result = Parse_Operand_Type_Enum_Core(str, strIsCapitals);
+        if (result.Length == 1 && result[0] == AsmSignatureEnum.UNKNOWN)
+        {
+            AsmLog.Warn("TOOLS", "AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
+        }
+        return result;
+    }
+
+    /// <summary>The operand-token grammar with NO warning side-effect (the default case returns UNKNOWN
+    /// silently). <see cref="Parse_Operand_Type_Enum"/> wraps this and warns; <see cref="Is_Known_Operand"/>
+    /// uses it to validate operands silently (e.g. while the signature generator repairs them).</summary>
+    private static AsmSignatureEnum[] Parse_Operand_Type_Enum_Core(string str, bool strIsCapitals)
+    {
+        string operandToken = AsmSourceTools.ToCapitals(str, strIsCapitals).Trim();
+        switch (operandToken)
         {
             #region Memory
             case "M": return [AsmSignatureEnum.MEM];
@@ -317,8 +335,15 @@ public static class AsmSignatureTools
             case "XMM_ZERO": return [AsmSignatureEnum.REG_XMM0];
             case "XMM{K}": return [AsmSignatureEnum.XMMREG, AsmSignatureEnum.K];
             case "XMM{K}{Z}": return [AsmSignatureEnum.XMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z];
+            case "XMM0{K}{Z}": return [AsmSignatureEnum.XMMREG, AsmSignatureEnum.K, AsmSignatureEnum.Z]; // a specific XMM register, type-wise just XMM
 
+            case "M16{K}": return [AsmSignatureEnum.M16, AsmSignatureEnum.K];
             case "M16{K}{Z}": return [AsmSignatureEnum.M16, AsmSignatureEnum.K, AsmSignatureEnum.Z];
+            case "M16{ER}": return [AsmSignatureEnum.M16, AsmSignatureEnum.ER];   // AVX-512 FP16
+            case "M16{SAE}": return [AsmSignatureEnum.M16, AsmSignatureEnum.SAE]; // AVX-512 FP16
+            case "M16BCST": return [AsmSignatureEnum.M16BCST];
+            case "M16BCST{ER}": return [AsmSignatureEnum.M16BCST, AsmSignatureEnum.ER];
+            case "M16BCST{SAE}": return [AsmSignatureEnum.M16BCST, AsmSignatureEnum.SAE];
 
             case "M32{K}": return [AsmSignatureEnum.M32, AsmSignatureEnum.K];
             case "M32{K}{Z}": return [AsmSignatureEnum.M32, AsmSignatureEnum.K, AsmSignatureEnum.Z];
@@ -378,16 +403,66 @@ public static class AsmSignatureTools
             case "BND/M64": return [AsmSignatureEnum.BNDREG, AsmSignatureEnum.M64];
             case "BND/M128": return [AsmSignatureEnum.BNDREG, AsmSignatureEnum.M128];
             case "MIB": return [AsmSignatureEnum.MEM];
+            // x87 FSAVE/FXSAVE/FRSTOR state areas (variable-size memory blobs) and the Key Locker 384-bit
+            // key handle — generic MEM: there's no single fixed size to match, only "this is memory".
             case "M14_28":
-            case "M94_108": return [AsmSignatureEnum.MEM];
+            case "M94_108":
+            case "M14_28BYTE":
+            case "M94_108BYTE":
+            case "M384": return [AsmSignatureEnum.MEM];
             #endregion
 
             case "NONE": return [AsmSignatureEnum.NONE];
 
             default:
-                AsmLog.Warn("TOOLS", "AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
                 return [AsmSignatureEnum.UNKNOWN];
         }
+    }
+
+    /// <summary>Split one signature operand into the '/'-separated tokens the grammar matches, protecting the
+    /// multi-part tokens that legitimately contain '/' (R/M, R32/64, R16/32/64, M14/28, M94/108). This is the
+    /// SAME tokenization the LSP consumer applies (see MnemonicStore.CreateAsmSignatureElement), kept here so
+    /// the generator validates exactly what the consumer will parse.</summary>
+    public static string[] SplitOperandTokens(string operand)
+    {
+        return operand
+            .Replace("R/M", "R_M", StringComparison.Ordinal)
+            .Replace("R32/64", "R32_64", StringComparison.Ordinal)
+            .Replace("R16/32/64", "R16_32_64", StringComparison.Ordinal)
+            .Replace("M14/28", "M14_28", StringComparison.Ordinal)
+            .Replace("M94/108", "M94_108", StringComparison.Ordinal)
+            .Split('/');
+    }
+
+    /// <summary>True iff every '/'-token of <paramref name="operand"/> is a recognised operand, WITHOUT the
+    /// warning side-effect of <see cref="Parse_Operand_Type_Enum"/>. Lets the signature generator validate
+    /// (and repair) operands against the exact grammar the LSP consumes.</summary>
+    public static bool Is_Known_Operand(string operand)
+    {
+        if (string.IsNullOrEmpty(operand)) return false;
+        // Normalise to the form the grammar matches: uppercase, drop the spaces the SDM puts around a
+        // decoration ("xmm1 {k1}{z}" -> "XMM1{K1}{Z}"), and collapse a SPECIFIC register index to its type
+        // token ("XMM3" -> "XMM") so a concrete register operand from the raw .md is recognised.
+        string normalized = NormalizeRegisterIndex(operand.ToUpperInvariant().Replace(" ", string.Empty));
+        foreach (string part in SplitOperandTokens(normalized))
+        {
+            AsmSignatureEnum[] e = Parse_Operand_Type_Enum_Core(part, true);
+            if (e.Length == 1 && e[0] == AsmSignatureEnum.UNKNOWN) return false;
+        }
+        return true;
+    }
+
+    // Collapse a SPECIFIC register's index to its type token so the grammar recognises a concrete operand
+    // (xmm3->XMM, k2->K, tmm5->TMM, r32a->R32). Memory sizes (M128/M256/M512) and the I of IMM are protected:
+    // the standalone-MM rule requires MM not be preceded by another letter, and there is no size rule.
+    private static string NormalizeRegisterIndex(string s)
+    {
+        s = Regex.Replace(s, "(XMM|YMM|ZMM|TMM)[0-9]+", "$1", RegexOptions.None, TimeSpan.FromSeconds(2));
+        s = Regex.Replace(s, "(?<![A-Z])MM[0-9]+", "MM", RegexOptions.None, TimeSpan.FromSeconds(2));
+        s = Regex.Replace(s, "(?<![A-Z])K[0-9]+", "K", RegexOptions.None, TimeSpan.FromSeconds(2));
+        s = Regex.Replace(s, "BND[0-9]", "BND", RegexOptions.None, TimeSpan.FromSeconds(2));
+        return s.Replace("R32A", "R32", StringComparison.Ordinal).Replace("R32B", "R32", StringComparison.Ordinal)
+                .Replace("R64A", "R64", StringComparison.Ordinal).Replace("R64B", "R64", StringComparison.Ordinal);
     }
 
     /// <summary>Get brief description of the operand</summary>
@@ -447,6 +522,7 @@ public static class AsmSignatureTools
             AsmSignatureEnum.YMMREG => "ymm register",
             AsmSignatureEnum.ZMMREG => "zmm register",
             AsmSignatureEnum.K => "mask register",
+            AsmSignatureEnum.M16BCST => "vector broadcasted from a 16-bit memory location",
             AsmSignatureEnum.M32BCST => "vector broadcasted from a 32-bit memory location",
             AsmSignatureEnum.M64BCST => "vector broadcasted from a 64-bit memory location",
             AsmSignatureEnum.MEM_OFFSET => "memory offset",
@@ -530,6 +606,7 @@ public static class AsmSignatureTools
             AsmSignatureEnum.VM64Y => "ymem64",
             AsmSignatureEnum.VM32Z => "zmem32",
             AsmSignatureEnum.VM64Z => "zmem64",
+            AsmSignatureEnum.M16BCST => "M16bcst",
             AsmSignatureEnum.M32BCST => "M32bcst",
             AsmSignatureEnum.M64BCST => "M64bcst",
             AsmSignatureEnum.MEM_OFFSET => "mem_offs",
@@ -611,6 +688,7 @@ public static class AsmSignatureTools
             case AsmSignatureEnum.ZMMREG: return op.IsReg && RegisterTools.IsAvx512Register(op.Rn);
             case AsmSignatureEnum.TMMREG: return op.IsReg && RegisterTools.IsTileRegister(op.Rn);
 
+            case AsmSignatureEnum.M16BCST: return op.IsMem && op.NBits == 16;
             case AsmSignatureEnum.M32BCST: return op.IsMem && op.NBits == 32;
             case AsmSignatureEnum.M64BCST: return op.IsMem && op.NBits == 64;
             case AsmSignatureEnum.MEM_OFFSET: return op.IsImm;

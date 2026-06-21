@@ -12,6 +12,14 @@ namespace asm_annotate
         /// <summary>Directory holding the Intel source PDFs (relative to the working dir).</summary>
         private const string DataDir = @".\data";
 
+        // The AsmDude wiki's per-instruction doc folder: the single home for the generated *.md (stage-1
+        // output) AND the input gen-signatures reads (stage-2). `extract` writes here BY DEFAULT so the
+        // pipeline lives in one place with no manual copy step. Safe to write directly because the stable
+        // footer (MarkdownGenerator — see the diff-trick note there) keeps re-extracts diffable for review.
+        // Relative to the asm-annotate project dir (the run CWD, same assumption as DataDir): the wiki is a
+        // sibling of the asm-dude repo, and asm-annotate is 4 levels deep (asm-dude/VS/CSHARP/asm-annotate).
+        private const string WikiDocDir = @"..\..\..\..\asm-dude.wiki\doc";
+
         static async Task<int> Main(string[] args)
         {
             // Route AsmLog ("ANNOTATE" category) to stderr so diagnostic warnings never interleave with the
@@ -55,13 +63,15 @@ namespace asm_annotate
 
                 case "extract":
                     {
-                        // extract [startPage] [endPage]  — run the full pipeline to ./output.
+                        // extract [startPage] [endPage] [outDir]  — PDF->MD for every instruction. Writes to
+                        // the wiki doc folder by default (override with [outDir], e.g. .\output to stage). Stage 1.
                         (string? pdf, int? rev) = IntelDocChecker.FindLocalPdf(DataDir);
                         if (pdf == null) { Console.WriteLine($"❌ No 325462-*.pdf in {DataDir}"); return 1; }
                         int start = (args.Length > 1 && int.TryParse(args[1], out int s)) ? s : 1;
                         int end = (args.Length > 2 && int.TryParse(args[2], out int e)) ? e : int.MaxValue;
-                        Console.WriteLine($"Using {Path.GetFileName(pdf)} (revision {rev:000}).\n");
-                        Extractor.Run(pdf, @".\output", start, end);
+                        string extractOutDir = args.Length > 3 ? args[3] : WikiDocDir;
+                        Console.WriteLine($"Using {Path.GetFileName(pdf)} (revision {rev:000}). Writing to {extractOutDir}\n");
+                        Extractor.Run(pdf, extractOutDir, start, end);
                         break;
                     }
 
@@ -77,8 +87,8 @@ namespace asm_annotate
                 case "gen-signatures":
                     {
                         // gen-signatures [wikiDocDir] [outFile]  — turn the wiki's HTML opcode tables (stage 1
-                        // output) into the AsmDude signature file (+ overview.txt + wiki Home.md). Stage 2.
-                        string wikiDir = args.Length > 1 ? args[1] : "C:/Source/Github/asm-dude.wiki/doc";
+                        // output) into the AsmDude signature file (+ wiki Home.md). Stage 2.
+                        string wikiDir = args.Length > 1 ? args[1] : WikiDocDir;
                         string outFile = args.Length > 2 ? args[2]
                             : "C:/Source/Github/asm-dude/VS/CSHARP/asm-dude2-ls-lib/Resources/signature-mar2026.txt";
                         return SignatureGenerator.Run(wikiDir, outFile);
@@ -89,7 +99,7 @@ namespace asm_annotate
                     Console.WriteLine("  check-latest            verify the local SDM PDF is the latest revision");
                     Console.WriteLine("  find <text>             locate the page(s) containing <text>");
                     Console.WriteLine("  dump <page>             print raw text/line elements for one page");
-                    Console.WriteLine("  extract [start] [end]   extract all instructions to .\\output (stage 1: PDF->MD)");
+                    Console.WriteLine("  extract [start] [end] [outDir]  extract all instructions to the wiki doc folder (stage 1: PDF->MD)");
                     Console.WriteLine("  gen-signatures [dir] [out] wiki MD -> signature file (stage 2: MD->TXT)");
                     Console.WriteLine("  perf-uops <xml> [out]   convert uops.info instructions.xml to per-arch perf TSVs");
                     return command.Length == 0 ? 0 : 1;

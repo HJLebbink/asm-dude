@@ -625,6 +625,15 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             this.labelGraphDirty.Add(uri);
 
             AsmDudeLog.Debug($"[UpdateInternals] starting AsmSim simulation");
+            // Only run the (expensive, Z3-backed) simulation when AsmSim is enabled. It used to be
+            // scheduled unconditionally, so a user who switched AsmSim OFF still paid a full background
+            // Z3 run ~DebounceMs after every edit/open. Gating here makes "off" actually off; the read
+            // paths (GetUnreachableLines, CodeLens sim-state, sim diagnostics) already no-op on an empty cache.
+            if (this.options?.AsmSim_On != true)
+            {
+                AsmDudeLog.Debug($"[UpdateInternals] AsmSim off — skipping simulation for {uri}");
+            }
+            else
             try
             {
                 // Callbacks are identical whether the sim runs in-process or in the out-of-process server;
@@ -2222,8 +2231,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         Kind = CompletionItemKind.Keyword,
                         Label = keyword_uppercase,
                         // Always-visible: the description (semantics). On-selection (arch + doc link) is
-                        // filled lazily in ResolveCompletion, keyed by Data.
-                        LabelDetails = DescriptionLabelDetails(this.mnemonicStore.GetDescription(mnemonic2)),
+                        // filled lazily in ResolveCompletion, keyed by Data. Render with no operands so a
+                        // placeholder description ("Move {1} into {0}") shows generic "op1/op2" here, not raw braces.
+                        LabelDetails = DescriptionLabelDetails(InstructionDescription.Render(this.mnemonicStore.GetDescription(mnemonic2), [])),
                         InsertText = insertionText,
                         SortText = insertionText,
                         FilterText = insertionText,
@@ -3094,6 +3104,32 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                     string archStr = ArchTools.ToString(this.mnemonicStore.GetArch(mnemonic));
                     string descr = this.mnemonicStore.GetDescription(mnemonic);
+
+                    // Operand-aware: if the description contains {0},{1},… placeholders, fill them from the
+                    // hovered line's operands — e.g. "Move {1} into {0}" + "mov rax, rbx" -> "Move rbx into
+                    // rax". A per-FORM description (matched by operand count) that carries placeholders is
+                    // preferred over the per-mnemonic GENERAL one, so multi-form mnemonics (IMUL 1/2/3-op)
+                    // can each have their own template. Descriptions without placeholders pass through.
+                    {
+                        AssemblerEnum docAsm = this._documentAssemblerTypes.TryGetValue(uri, out AssemblerEnum found)
+                            ? found : this.options.Used_Assembler;
+                        var parsed = AsmTools.AsmSourceTools.ParseLine(
+                            lines[(int)parameter.Position.Line], (int)parameter.Position.Line, 0, docAsm);
+                        if (parsed.mnemonic == mnemonic)
+                        {
+                            foreach (AsmSignatureInformation sig in this.mnemonicStore.GetSignatures(mnemonic))
+                            {
+                                if (sig.Operands.Count == parsed.args.Length
+                                    && sig.RawDescription.Contains('{', StringComparison.Ordinal))
+                                {
+                                    descr = sig.RawDescription;
+                                    break;
+                                }
+                            }
+                            descr = InstructionDescription.Render(descr, parsed.args);
+                        }
+                    }
+
                     string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonic} :[{archStr}] {descr}", MaxNumberOfCharsInToolTips);
                     string performanceStr = "";
 
@@ -3112,8 +3148,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
                     hoverContent = [
                         full_Descr,
-                        // BuildPerformanceTable already emits the "Performance:" title (in the spanner's
-                        // first column); just separate it from the description with a blank line.
+                        // BuildPerformanceTable already emits the "Performance:" title; separate with a blank line.
                         performanceInfoAvailable ? "\n" + performanceStr : "",
                     ];
                     break;

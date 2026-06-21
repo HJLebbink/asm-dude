@@ -135,6 +135,12 @@ The symbolic Z3 simulation is split into **three layers**, each its own project,
   hosted either in-process by the LSP server or out-of-process by the sim server). Depends on
   `asm-sim-lib` + `asm-tools-lib` + `asm-options-lib`. *(Was `asm-dude2-sim-lib`; `AsmSimulator` was
   `LspAsmSimulator` — both renamed 2026-06-13 to stop lying about being LSP-specific.)*
+  - **`AsmSim_On` gates COMPUTATION, not just display (fixed 2026-06-21):** `LanguageServer.UpdateInternals`
+    now skips the whole sim invocation when `options.AsmSim_On != true`. Previously it called
+    `InvalidateAndSimulate`/`DocumentChanged` unconditionally, so a user who switched AsmSim **off** still
+    paid a full background Z3 run ~`DebounceMs` (3 s) after every edit/open — `AsmSim_On` only gated the
+    *display* (diagnostics/decorations). Read paths (`GetUnreachableLines`, CodeLens sim-state) already
+    no-op on an empty cache, so gating the run is safe.
 
 - **`asm-sim-server`** — the **out-of-process server exe** (AssemblyName `AsmSim.Server`, namespace
   `AsmSim.Host`). Hosts `asm-sim-host-lib` behind a `StreamJsonRpc` stdio interface (`AsmSimProtocol`) so
@@ -262,9 +268,9 @@ dotnet test VS\CSHARP\asm-dude2-ls-tests\asm-dude2-ls-tests.csproj
 **Test Results Summary**:
 | Project | Passed | Skipped | Notes |
 |---------|--------|---------|-------|
-| asm-tools-tests | 31 | 0 | Core assembly tools (incl. arch DNF parse, tile/operand) |
+| asm-tools-tests | 42 | 0 | Core assembly tools (incl. arch DNF parse, tile/operand, `InstructionDescription.Render`) |
 | asm-sim-tests | 178 | 3 | Z3 simulator (DynamicFlow merge crash FIXED; 3 skips unrelated) |
-| asm-dude2-ls-tests | 154 | 37 | Unit + AsmSim integration; `LspProcessIntegrationTests` hover/semantic-token are flaky under parallel load (pass in isolation) |
+| asm-dude2-ls-tests | 168 | 37 | Unit + AsmSim integration (incl. `GetSemanticTokens_ArchGating_*`, `GetHover_Mnemonic_*` operand-aware/per-form); `LspProcessIntegrationTests` hover/semantic-token are flaky under parallel load (pass in isolation) |
 | asm-dude2-vsix-tests | 8 | 0 | **NEW** — `CodeLensPublishPlanner` (CodeLens scroll-loop fix), replays the captured VS request stream |
 | asm-annotate-tests | 16 | 0 | stage-1 PDF→MD text/title heuristics |
 | asm-annotate-tests (gen-signatures) | 14 | 0 | stage-2 MD→signature generator (was intel-doc-2-data-tests, now folded into asm-annotate-tests) |
@@ -430,10 +436,13 @@ share. **When debugging, prefer adding `AsmLog` statements + reading the files a
   (generated from the wiki by `asm-annotate gen-signatures`, rev-091/March 2026) **+ `signature-hand-1.txt`**
   (hand-maintained, OVERRIDES the regular file by `(Mnemonic, signature-label)`). (`signature-may2019.txt`
   was retired and deleted.) Loaded name is hard-coded in `LanguageServer.cs:~420` + bundled via the csproj.
+  `signature-hand-1.txt` is the single hand-authored data home (signature/description overrides). The
+  per-mnemonic description it overrides may embed `{0}`,`{1}`,… operand placeholders that the hover fills in
+  — see [Operand-aware mnemonic hover](#hover-tooltips-asm-dude2-ls-lib). (No separate template file/column.)
 
 ### Instruction-data pipeline (pdf → md → txt)
 `asm-annotate extract` (PDF→MD, stage 1) → copy `output/*.md` to `asm-dude.wiki/doc/` →
-`asm-annotate gen-signatures` (MD→`signature-mar2026.txt` + `overview.txt` + wiki `Home.md`, stage 2) →
+`asm-annotate gen-signatures` (MD→`signature-mar2026.txt` + wiki `Home.md`, stage 2) →
 LSP server (stage 3). All stages are now subcommands of the one `asm-annotate` tool (the old
 `intel-doc-2-data` project was folded in as `gen-signatures`).
 The arch column is **DNF** (`+`=AND, `,`=OR, e.g. `AVX512_VL+AVX512_F,AVX10`); `Home.md`'s arch column
@@ -447,8 +456,7 @@ instructions — handled by `To_Signature`'s operand-width heuristic) or a garbl
 noise, since it parses to `ARCH_NONE` = always-on, leaking the instruction into every arch profile. See
 [`asm-annotate/KNOWN-DATA-ISSUES.md`](VS/CSHARP/asm-annotate/KNOWN-DATA-ISSUES.md) for the fixed/open
 issues (incl. the EEXIT scrambled-table stage-1 defect and the FXSAVE false-positive warning). **Generator
-fixes are inert until `gen-signatures` is re-run** (rewrites `signature-mar2026.txt` + `overview.txt` + wiki
-`Home.md`).
+fixes are inert until `gen-signatures` is re-run** (rewrites `signature-mar2026.txt` + wiki `Home.md`).
 
 ### Performance data pipeline (uops.info → TSV), separate from the SDM pipeline
 The latency/throughput TSVs are regenerated independently of the PDF/signature pipeline:
@@ -503,8 +511,16 @@ The asm-dude2-ls-lib implements LSP Semantic Tokens for rich syntax highlighting
 |-----|----------|----------|
 | 0x1 | `declaration` | Label definitions |
 | 0x2 | `definition` | Procedure definitions |
-| 0x4 | `deprecated` | Deprecated instructions (MnemonicOff) |
+| 0x4 | `deprecated` | Unreachable lines, **and arch-gated tokens** (instructions/registers not enabled by the active `archProfile`) |
 | 0x8 | `readonly` | Immediate values |
+
+> **Arch-gating (the `MnemonicOff` story):** `MnemonicOff` exists in the enum but is **never emitted** —
+> `MnemonicOff` would be `Mnemonic` + the `0x4 deprecated` modifier, so `GetSemanticTokens` instead applies
+> `0x4` *directly* to any `Mnemonic`/`Jump`/`Register` token the active profile doesn't enable
+> (`mnemonicStore.IsMnemonicSwitchedOn` / `IsRegisterSwitchedOn`). Display-only — the parsed `AsmTokenType`
+> is unchanged. There is no `RegisterOff` type (the modifier covers it). This is the live implementation of
+> the old `//TODO MnemonicSwitchedOn` markers that sat in the **dead** `AsmDude2Tools.Get_Token_Type_*` /
+> `Parse.cs` path (see note below).
 
 **AsmTokenType to LSP Mapping** (in `LanguageServer.cs`):
 ```csharp
@@ -532,9 +548,21 @@ NasmOperator   → operator (5)
 
 **How It Works:**
 1. Client requests `textDocument/semanticTokens/full` for a document
-2. Server retrieves parsed tokens from `parsedDocuments` dictionary
+2. Server retrieves parsed tokens from `parsedDocuments` dictionary (populated by `AsmSourceTools.ParseLine`)
 3. Each `KeywordID` (with `AsmTokenType`) is mapped to LSP semantic token type/modifiers
-4. Returns encoded `uint[]` array with delta-encoded positions and token info
+4. Arch-gating: a `Mnemonic`/`Jump`/`Register` token not enabled by the active `archProfile` gets the
+   `0x4 deprecated` modifier OR'd in (greyed) — same mechanism as unreachable lines (skipped on unreachable
+   lines, which are already greyed). Tested by `LanguageServerTests.GetSemanticTokens_ArchGating_*`.
+5. Returns encoded `uint[]` array with delta-encoded positions and token info
+
+> **⚠ The live tokenizer is `AsmSourceTools.ParseLine`, NOT `Parse.cs` / `AsmDude2Tools.Get_Token_Type_*`.**
+> `Parse.cs` (per-assembler classifier) + `AsmDude2Tools.Get_Token_Type_Att` are **dead in the active build**:
+> their only callers were the old MEF/WPF taggers (`NasmIntelTokenTagger`, `MasmTokenTagger`, …) removed in the
+> LSP migration (commit `33a0376`) and now living only in the non-built archive
+> `old/asm-dude2-vsix-archived/SyntaxHighlighting/` (which still references `AsmTools.Parse`). They are kept,
+> not deleted, so that archive stays coherent. `AsmDude2Tools.Get_Token_Type_Intel`/`Get_Assembler`/
+> `Get_Description`/`Get_Keywords` ARE still live (completion + hover). Don't "implement" the arch-gating
+> TODOs there — it's done at the display layer in `GetSemanticTokens` (above).
 
 ### Hover Tooltips (asm-dude2-ls-lib)
 
@@ -562,6 +590,31 @@ past their headers. Tested by `GetHover_PerformanceTable_ColumnsAreAligned` and
 `AsmTokenType` incl. `LabelDef`/`Constant`), falling back to a string heuristic. Mnemonic/Jump,
 Register, Constant, Label and LabelDef all produce content; `null` is returned only for a genuinely
 unknown word (correct LSP semantics).
+
+**Operand-aware mnemonic hover (the description IS the template):** for a Mnemonic/Jump token, `GetHover`
+re-parses the hovered line (`AsmSourceTools.ParseLine`) for its operands and **substitutes them into the
+mnemonic's existing description** — e.g. `add rax, rbx` → "Add rbx into rax". Design — deliberately minimal,
+**no new field/column/row/map**:
+- **Placeholders live on the PER-FORM signature rows, NOT the GENERAL row.** The per-form description
+  column (exposed as `AsmSignatureInformation.RawDescription`) may contain `{0}`,`{1}`,… ({0}=first operand),
+  authored in `signature-hand-1.txt`'s 5-column signature rows (`ADD ⇥ R/M64,R64 ⇥ X64 ⇥ ADD R/M64,R64 ⇥
+  Add {1} to {0}, result in {0}`). **`GetHover` prefers a per-form description matched by operand count that
+  contains `{`**, else falls back to the (clean) GENERAL description; then renders. This is what lets
+  multi-form mnemonics differ per form — `imul rax,rbx` → "Multiply rax by rbx (signed), result in rax";
+  `imul rax,rbx,4` → "Multiply rbx by 4 (signed), result in rax". (Matching is by operand *count*, not type,
+  so a same-arity/different-size form like 1-operand `imul r/m8` vs `r/m64` uses a size-agnostic line.)
+- **The per-mnemonic `GENERAL ⇥ MNEM ⇥ desc ⇥ htmlref` rows stay CLEAN (no placeholders).** `GetDescription`
+  returns them and **completion** uses them, so a templatized mnemonic shows its normal description in the
+  completion list (e.g. `XOR` → "Logical Exclusive OR"), NOT operand noise. *Putting placeholders in GENERAL
+  is a bug — it leaks "op1/op2" into completion.* **To add operand-aware hover: put `{i}` on the form rows.**
+- **The engine is one pure function:** `AsmTools.InstructionDescription.Render(description, operands)` —
+  replaces `{i}` with `operands[i]`; an index with no operand renders as a generic `op{i+1}` (defensive).
+  Descriptions without `{` pass through unchanged.
+Pure/testable: `Test_InstructionDescription` (the `Render` engine, asm-tools-tests) +
+`GetHover_Mnemonic_IsOperandAware` / `GetHover_Mnemonic_PicksPerFormTemplate_ByOperandCount` (end-to-end over
+the real placeholder descriptions, asm-dude2-ls-tests).
+> History: an earlier draft used a separate `templates.tsv`, then `TEMPLATE` rows + a `(mnemonic,opCount)`
+> map. Both removed — the description field doubles as the template (no parallel structure).
 
 > **History:** June 2026 hover was rewritten from `VSInternalHover`/`_vs_rawContent` to the portable
 > `Hover`/`MarkupContent` for VS Code support — but that dropped VS's monospace tables (proportional font
