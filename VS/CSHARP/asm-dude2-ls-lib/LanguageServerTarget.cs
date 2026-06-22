@@ -37,6 +37,31 @@ using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 
 namespace AsmDude2LS;
 
+/// <summary>
+/// The client identity that an LSP client reports about itself in the <c>initialize</c> request
+/// (the standard LSP <c>clientInfo</c> object). Visual Studio fills this with its product name and
+/// build number, which is what we want to log to tell which VS build is talking to the server.
+/// </summary>
+public sealed class ClientInfoData
+{
+    [System.Text.Json.Serialization.JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("version")]
+    public string? Version { get; set; }
+}
+
+/// <summary>
+/// Our own <see cref="InitializeParams"/> that also captures the standard LSP <c>clientInfo</c>.
+/// The protocol library's <see cref="InitializeParams"/> does not expose that field, so the build
+/// number the client reports would otherwise be dropped during deserialization.
+/// </summary>
+public sealed class AsmInitializeParams : InitializeParams
+{
+    [System.Text.Json.Serialization.JsonPropertyName("clientInfo")]
+    public ClientInfoData? ClientInfo { get; set; }
+}
+
 public class LanguageServerTarget(LanguageServer server)
 {
     private int version = 1;
@@ -96,6 +121,51 @@ public class LanguageServerTarget(LanguageServer server)
         PerformanceInfo_Skylake_On = true,
     };
 
+    /// <summary>
+    /// Logs which Visual Studio build is connected to this server. The build number comes from the
+    /// standard LSP <c>clientInfo</c> the client sends in <c>initialize</c>. Some clients do not send
+    /// it; in that case we fall back to reading the file version of the running <c>devenv.exe</c>.
+    /// </summary>
+    private static void LogClientBuild(AsmInitializeParams parameter)
+    {
+        ClientInfoData? info = parameter.ClientInfo;
+        if (info != null && !string.IsNullOrEmpty(info.Name))
+        {
+            AsmDudeLog.Info($"Initialize: client (VS build) -> {info.Name} {info.Version}");
+            return;
+        }
+
+        // No clientInfo was sent. Read the file version of each running Visual Studio process instead.
+        bool found = false;
+        foreach (System.Diagnostics.Process proc in System.Diagnostics.Process.GetProcessesByName("devenv"))
+        {
+            try
+            {
+                string? path = proc.MainModule?.FileName;
+                if (path == null)
+                {
+                    continue;
+                }
+                System.Diagnostics.FileVersionInfo fileVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
+                AsmDudeLog.Info($"Initialize: client (VS build) -> devenv.exe PID={proc.Id} version={fileVersion.FileVersion} product={fileVersion.ProductVersion}");
+                found = true;
+            }
+            catch (Exception ex)
+            {
+                AsmDudeLog.Warning($"Initialize: could not read devenv.exe PID={proc.Id} version: {ex.Message}");
+            }
+            finally
+            {
+                proc.Dispose();
+            }
+        }
+
+        if (!found)
+        {
+            AsmDudeLog.Info("Initialize: client (VS build) -> unknown (no clientInfo and no readable devenv.exe)");
+        }
+    }
+
     [JsonRpcMethod(Methods.InitializeName, UseSingleObjectParameterDeserialization = true)]
     /// <!-- LLM-ANNOTATION -->
     /// LLM KEYWORDS: LSP initialize, server capabilities, initialization options, protocol handshake
@@ -134,9 +204,10 @@ public class LanguageServerTarget(LanguageServer server)
     /// LLM KEYWORDS: LSP initialize, server capabilities, initialization options, protocol handshake
     /// USED IN: LanguageServer initialization, LSP protocol handshake
     /// SEE ALSO: Initialized, AsmLanguageServerOptions, ServerCapabilities
-    public object Initialize(InitializeParams parameter)
+    public object Initialize(AsmInitializeParams parameter)
     {
         AsmDudeLog.Info($"Initialize: Received: {System.Text.Json.JsonSerializer.Serialize(parameter)}");
+        LogClientBuild(parameter);
 
 #if DEBUG
         this.traceSetting = TraceSetting.Verbose;
@@ -221,6 +292,10 @@ public class LanguageServerTarget(LanguageServer server)
                 },
                 CompletionProvider = new CompletionOptions
                 {
+                    // Only backspace. VS already re-queries the server on each typed identifier char
+                    // (triggerKind=Invoked, confirmed in the log), so the server's prefix-filtered list
+                    // reaches the popup without forcing every letter to be a trigger char (which made VS
+                    // re-pop completion too eagerly).
                     TriggerCharacters = [backspaceStr],
                     AllCommitCharacters = ["\t"],
                     ResolveProvider = true,
@@ -330,8 +405,9 @@ public class LanguageServerTarget(LanguageServer server)
 
                 // "Peek Definition (Alt+F12)"
 
-                // Unknown what this does
-                //DocumentSymbolProvider = true,
+                // Powers the navigation-bar dropdown, the breadcrumb bar, and sticky-scroll headers from the
+                // document outline (labels + #region sections — see LanguageServer.UpdateSymbols).
+                DocumentSymbolProvider = true,
 
                 CodeActionProvider = new CodeActionOptions()
                 {
@@ -596,9 +672,15 @@ public class LanguageServerTarget(LanguageServer server)
     [JsonRpcMethod(Methods.TextDocumentCompletionName, UseSingleObjectParameterDeserialization = true)]
     public CompletionList? OnTextDocumentCompletion(CompletionParams parameter)
     {
-        AsmDudeLog.Info($"OnTextDocumentCompletion: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
+        // GROUND-TRUTH DIAGNOSTIC (unconditional; Release build hides the #if DEBUG lines). The Context
+        // tells us what VS actually did: TriggerKind 1=Invoked, 2=TriggerCharacter('<x>'),
+        // 3=TriggerForIncompleteCompletions (VS re-querying an incomplete list). This is the one field that
+        // settles whether VS re-queries with the typed prefix.
+        var ctx = parameter.Context;
+        AsmDudeLog.Info($"OnTextDocumentCompletion: line={parameter.Position.Line}, char={parameter.Position.Character}, triggerKind={ctx?.TriggerKind.ToString() ?? "null"}, triggerChar='{ctx?.TriggerCharacter}'");
         var result = server.GetTextDocumentCompletion(parameter);
-        AsmDudeLog.Info($"OnTextDocumentCompletion: itemCount={result?.Items?.Length ?? 0}");
+        string first = result?.Items is { Length: > 0 } a ? a[0].FilterText ?? a[0].Label : "-";
+        AsmDudeLog.Info($"OnTextDocumentCompletion: itemCount={result?.Items?.Length ?? 0}, isIncomplete={result?.IsIncomplete}, firstItem={first}");
         return result;
     }
 
@@ -644,20 +726,17 @@ public class LanguageServerTarget(LanguageServer server)
     {
         AsmDudeLog.Info($"GetDocumentHighlights: uri={parameter.TextDocument.Uri}, line={parameter.Position.Line}, char={parameter.Position.Character}");
 
-        if (parameter.PartialResultToken != null)
-        {
-            // LSP spec: when partialResultToken is present, send results via $/progress and return null.
-            // VS always sends a partialResultToken and only processes $/progress notifications.
-            var progress = new Progress<DocumentHighlight[]>(highlights =>
-            {
-                _ = server.SendPartialResultAsync(parameter.PartialResultToken, highlights);
-            });
-            server.GetDocumentHighlights(progress, parameter.Position, parameter.TextDocument.Uri.ToString(), token);
-            AsmDudeLog.Info($"GetDocumentHighlights: Sent via $/progress");
-            return null;
-        }
+        // Return the highlights in the RESPONSE. documentHighlight results are tiny (occurrences of one
+        // register family in a single file), so partial-result streaming is unnecessary — and the previous
+        // "$/progress + return null" path rendered NOTHING in VS (the register family was computed, the log
+        // showed currentHighlightedWords, yet no decorations appeared). If a client supplied a
+        // PartialResultToken we ALSO stream the chunks (harmless: re-reporting the same ranges is idempotent
+        // for highlighting), but the response itself now always carries the full result.
+        IProgress<DocumentHighlight[]> progress = parameter.PartialResultToken != null
+            ? new Progress<DocumentHighlight[]>(highlights => _ = server.SendPartialResultAsync(parameter.PartialResultToken, highlights))
+            : new Progress<DocumentHighlight[]>(_ => { });
 
-        var result = server.GetDocumentHighlights(new Progress<DocumentHighlight[]>(_ => { }), parameter.Position, parameter.TextDocument.Uri.ToString(), token);
+        DocumentHighlight[] result = server.GetDocumentHighlights(progress, parameter.Position, parameter.TextDocument.Uri.ToString(), token);
         AsmDudeLog.Info($"GetDocumentHighlights: highlightCount={result?.Length ?? 0}");
         return result;
     }

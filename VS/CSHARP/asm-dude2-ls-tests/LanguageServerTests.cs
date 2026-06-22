@@ -257,22 +257,122 @@ public class LanguageServerTests
     }
 
     [Fact]
-    public void Completion_ShortPrefix_MarksListIncomplete()
+    public void Completion_Vpxord_FirstOperand_NoMaskRegistersBeforeBrace()
     {
-        // A 1-2 char prefix is filtered server-side, so the list is a subset: the client must re-query.
-        this.GetCompletions("m", 1)!.IsIncomplete.Should().BeTrue("a 1-char prefix is narrowed server-side");
-        this.GetCompletions("mo", 2)!.IsIncomplete.Should().BeTrue("a 2-char prefix is narrowed server-side");
-        // No prefix (cursor right after the separator): full list, nothing narrowed.
-        this.GetCompletions("add ", 4)!.IsIncomplete.Should().BeFalse("operand list with no typed prefix is complete");
+        // VPXORD's first operand is xmm/ymm/zmm{k}{z}; the {k} write-mask is a decorator, NOT a standalone
+        // first operand, so k0-k7 must not be offered before the register/brace is typed.
+        CompletionList? r = this.GetCompletions("vpxord ", 7);
+        r!.Items.Should().NotBeEmpty();
+        string[] maskRegs = ["K0", "K1", "K2", "K3", "K4", "K5", "K6", "K7"];
+        r.Items.Should().NotContain(
+            i => maskRegs.Contains(i.FilterText, StringComparer.OrdinalIgnoreCase),
+            "the {k} write-mask must not be offered as a standalone first operand");
+        r.Items.Should().Contain(
+            i => i.FilterText != null && i.FilterText.StartsWith("xmm", StringComparison.OrdinalIgnoreCase),
+            "vector registers must still be offered for the first operand");
+    }
+
+    [Fact]
+    public void Completion_Vpxord_InsideMaskBrace_OffersMaskRegisters()
+    {
+        // After the register and an opening brace ("zmm0{"), the {k} mask registers SHOULD be offered.
+        CompletionList? r = this.GetCompletions("vpxord zmm0{", 12);
+        r!.Items.Should().Contain(
+            i => i.FilterText != null && i.FilterText.StartsWith("k", StringComparison.OrdinalIgnoreCase),
+            "inside the mask brace, k0-k7 must be offered");
+    }
+
+    [Fact]
+    public void Completion_VpxordX_VsPositionAtTypedChar_StillFilters()
+    {
+        // GROUND-TRUTH regression: VS sends the completion Position AT the just-typed char, not after it.
+        // For "vpxord x" the operand 'x' is at index 7, and VS sends char=7 (the index of 'x'), so the
+        // [..pos] slice would drop the 'x' -> empty prefix -> the whole 104-item operand list. With the
+        // wordAnchor fix the server still sees "x" and filters to xmm*. char=7 (NOT 8) is the whole point.
+        CompletionList? r = this.GetCompletions("vpxord x", 7);
+        r!.Items.Should().NotBeEmpty();
+        r.Items.Should().OnlyContain(
+            i => i.FilterText != null && i.FilterText.StartsWith("x", StringComparison.OrdinalIgnoreCase),
+            "VS reports the caret AT the typed register char; the server must still filter to xmm*");
+    }
+
+    [Fact]
+    public void Completion_VpxordX_OnlyXmm_NoYmmOrKMask()
+    {
+        // VPXORD allows XMM/YMM/ZMM + a {k} mask, but typing "x" must narrow to XMM only — no YMM, no K.
+        CompletionList? r = this.GetCompletions("vpxord x", 8);
+        r!.Items.Should().NotBeEmpty();
+        r.Items.Should().OnlyContain(
+            i => i.FilterText != null && i.FilterText.StartsWith("x", StringComparison.OrdinalIgnoreCase),
+            "typing 'x' must not surface YMM/ZMM/K-mask operands");
+        r.IsIncomplete.Should().BeFalse("a typed-prefix list is complete so VS won't fuzzy-in YMM/K");
+    }
+
+    [Theory]
+    [InlineData("\tvpxord x")]      // tab-indented (real .asm files are indented)
+    [InlineData("    vpxord x")]    // space-indented
+    [InlineData("\tvpxord xmm0, x")] // second operand, indented
+    public void Completion_IndentedVpxord_StillFiltersToX(string line)
+    {
+        int caret = line.Length; // caret right after the trailing 'x'
+        CompletionList? r = this.GetCompletions(line, caret);
+        r!.Items.Should().NotBeEmpty($"line=\"{line}\" caret={caret}");
+        r.Items.Should().OnlyContain(
+            i => i.FilterText != null && i.FilterText.StartsWith("x", StringComparison.OrdinalIgnoreCase),
+            $"indented line \"{line}\" must still strict-filter the trailing 'x' prefix");
+    }
+
+    [Fact]
+    public void Completion_ShortPrefix_LowercaseAlsoFilters()
+    {
+        // Same strict server-side prefix filter must apply regardless of typed case (registers are
+        // usually typed lower-case): "vmovaps z" must not return YMM/XMM operands.
+        CompletionList? result = this.GetCompletions("vmovaps z", 9);
+        result!.Items.Should().NotBeEmpty();
+        result.Items.Should().OnlyContain(
+            i => i.FilterText != null && i.FilterText.StartsWith("z", StringComparison.OrdinalIgnoreCase),
+            "lowercase 'z' should also be strictly filtered server-side");
+    }
+
+    [Fact]
+    public void Completion_IncompleteFlag_MnemonicEmptyOnly()
+    {
+        // Empty-prefix MNEMONIC list -> incomplete so VS re-queries as you type (first-char casing); VS
+        // does re-query mnemonics per char.
+        this.GetCompletions("", 0)!.IsIncomplete.Should().BeTrue("empty mnemonic list must re-query for casing");
+        // Typed mnemonic prefix -> complete (authoritative, already strict-filtered).
+        this.GetCompletions("m", 1)!.IsIncomplete.Should().BeFalse("a typed-prefix mnemonic list is authoritative");
+        // Operand (register) list -> ALWAYS complete: VS never re-queries operands, so a complete list
+        // makes VS use its standard prefix matcher instead of the loose fuzzy one that leaks YMM/K.
+        this.GetCompletions("add ", 4)!.IsIncomplete.Should().BeFalse("operand list must be complete so VS prefix-filters, not fuzzy-filters");
+    }
+
+    // Casing: an all-caps prefix completes upper-case, otherwise lower-case. The case lives on the
+    // Label (and InsertText) — VS commits the Label and computes the replace range itself, so an
+    // upper-case-only Label would force "xo" -> "XOR". The canonical name stays in Data for resolve.
+    // No explicit TextEdit: an absolute server range goes stale on the next keystroke ("Xo" -> "XORo").
+    [Theory]
+    [InlineData("Xo", "xor")]
+    [InlineData("XO", "XOR")]
+    [InlineData("xo", "xor")]
+    public void Completion_Mnemonic_CasingFollowsTypedPrefix(string typed, string expected)
+    {
+        CompletionList? result = this.GetCompletions(typed, typed.Length);
+        CompletionItem xor = result!.Items.Single(
+            i => string.Equals(i.Data?.ToString(), "XOR", StringComparison.Ordinal));
+
+        xor.Label.Should().Be(expected, "VS commits the Label, so it must carry the typed case");
+        xor.InsertText.Should().Be(expected);
+        xor.TextEdit.Should().BeNull("a server-supplied absolute TextEdit range goes stale on the next keystroke");
     }
 
     [Fact]
     public void Completion_MnemonicItem_ShowsDescriptionInlineAndDefersArch()
     {
         CompletionList? result = this.GetCompletions("mo", 2);
-        CompletionItem mov = result!.Items.Single(i => string.Equals(i.Label, "MOV", StringComparison.Ordinal));
+        CompletionItem mov = result!.Items.Single(i => string.Equals(i.Data?.ToString(), "MOV", StringComparison.Ordinal));
 
-        mov.Label.Should().Be("MOV", "annotations must live in LabelDetails, not be jammed into the Label");
+        mov.Label.Should().Be("mov", "the Label follows the typed (lower) case; annotations live in LabelDetails, not the Label");
         mov.LabelDetails.Should().NotBeNull("the description (semantics) is shown inline, always visible");
         mov.LabelDetails!.Description.Should().NotBeNullOrEmpty("VS renders LabelDetails.Description inline; it carries the semantics");
         mov.Data.Should().NotBeNull("mnemonic items carry their name in Data so the arch + doc link resolve lazily");
@@ -284,7 +384,7 @@ public class LanguageServerTests
     {
         // VADDPS is an AVX/AVX-512 instruction, so it has a non-empty architecture to surface on selection.
         CompletionList? result = this.GetCompletions("vaddps", 6);
-        CompletionItem vaddps = result!.Items.Single(i => string.Equals(i.Label, "VADDPS", StringComparison.Ordinal));
+        CompletionItem vaddps = result!.Items.Single(i => string.Equals(i.Data?.ToString(), "VADDPS", StringComparison.Ordinal));
         vaddps.Documentation.Should().BeNull("precondition: the arch documentation is deferred");
 
         CompletionItem resolved = this._server.ResolveCompletion(vaddps);
@@ -1745,6 +1845,136 @@ add rcx, rdx
         HitTest(50, 10, 80, 14, 200, 12).Should().BeFalse("click to the right should miss");
         HitTest(50, 10, 80, 14, 60, 30).Should().BeFalse("click below should miss");
         HitTest(50, 10, 80, 14, 60, 5).Should().BeFalse("click above should miss");
+    }
+
+    #endregion
+
+    #region Register highlighting (documentHighlight) — regression guards
+
+    [Theory]
+    // The LSP caret position is the index of the char to the RIGHT of the caret, so FindWordBoundary must
+    // return the whole word for a caret anywhere ON it AND at its END (caret on the trailing separator). The
+    // end-of-word case is "select/double-click al," — it previously returned a zero-length word, so NO
+    // register highlights were ever produced.
+    [InlineData("cmp al, 0", 4, "al")]        // caret on 'a'
+    [InlineData("cmp al, 0", 5, "al")]        // caret on 'l'
+    [InlineData("cmp al, 0", 6, "al")]        // caret on the ',' right after "al" (end-of-word) -> still "al"
+    [InlineData("mov rax, rbx", 4, "rax")]    // caret on 'r' (start of word)
+    [InlineData("mov rax, rbx", 7, "rax")]    // caret on ',' after rax (end-of-word)
+    [InlineData("\tmov rax, rbx", 8, "rax")]  // tab-indented, caret on ',' after rax
+    public void FindWordBoundary_ReturnsWholeWord_IncludingCaretAtEnd(string line, int caret, string expected)
+    {
+        // anchorAtWordEnd: the documentHighlight mode that accepts a caret at a word's end.
+        (int start, int end) = LanguageServer.FindWordBoundary(caret, line, anchorAtWordEnd: true);
+        end.Should().BeGreaterThan(start, "a non-empty word must be found");
+        line.Substring(start, end - start).Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("", 0)]    // empty line
+    [InlineData("\t", 0)]  // separator only, nothing to the left
+    public void FindWordBoundary_NoWord_ReturnsEmpty(string line, int caret)
+    {
+        (int start, int end) = LanguageServer.FindWordBoundary(caret, line, anchorAtWordEnd: true);
+        (end - start).Should().BeLessThanOrEqualTo(0, "there is no significant word at this position");
+    }
+
+    [Theory]
+    // Default (hover/quick-info) mode is STRICT: a caret ON a separator must NOT fall back to the neighbouring
+    // word — hovering on whitespace returns nothing. Guards against re-introducing anchor-left into hover
+    // (which broke Hover_OnWhitespace_ShouldReturnNull).
+    [InlineData("cmp al, 0", 6)]   // the ',' after "al"
+    [InlineData("cmp al, 0", 3)]   // the space before "al"
+    public void FindWordBoundary_DefaultMode_OnSeparator_ReturnsEmpty(string line, int caret)
+    {
+        (int start, int end) = LanguageServer.FindWordBoundary(caret, line); // default anchorAtWordEnd: false
+        (end - start).Should().BeLessThanOrEqualTo(0, "strict mode must not snap to a neighbouring word");
+    }
+
+    [Fact]
+    public void GetDocumentHighlights_Register_HighlightsWholeWidthFamily()
+    {
+        // Selecting AL must highlight every alias of the SAME physical register, incl. RAX (different width).
+        var uri = "file:///test_highlight.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx\nmov al, cl" }
+        });
+
+        // line 1 = "mov al, cl"; char 4 is the 'a' of "al".
+        DocumentHighlight[] highlights = this._server.GetDocumentHighlights(
+            new Progress<DocumentHighlight[]>(_ => { }), new Position { Line = 1, Character = 4 }, uri, CancellationToken.None);
+
+        highlights.Should().Contain(h => h.Range.Start.Line == 1, "the selected AL must be highlighted");
+        highlights.Should().Contain(h => h.Range.Start.Line == 0, "RAX (same register family as AL) must also be highlighted");
+    }
+
+    [Fact]
+    public void GetDocumentHighlights_CaretAtEndOfRegister_StillHighlightsFamily()
+    {
+        // THE reported regression: selecting/double-clicking "al," leaves the caret at the END of "al" (on the
+        // ','), which previously yielded a zero-length word and therefore NO highlights at all.
+        var uri = "file:///test_highlight_end.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx\nmov al, cl" }
+        });
+
+        // line 1 = "mov al, cl"; char 6 is the ',' immediately after "al".
+        DocumentHighlight[] highlights = this._server.GetDocumentHighlights(
+            new Progress<DocumentHighlight[]>(_ => { }), new Position { Line = 1, Character = 6 }, uri, CancellationToken.None);
+
+        highlights.Should().NotBeNullOrEmpty("a caret at AL's end must still highlight the register family");
+        highlights.Should().Contain(h => h.Range.Start.Line == 0, "RAX must be highlighted even when the caret is at AL's end");
+    }
+
+    [Fact]
+    public void GetDocumentHighlights_NonRegisterWord_HighlightsOnlyThatWord()
+    {
+        // A plain (non-register) identifier highlights only its own occurrences — no family expansion.
+        var uri = "file:///test_highlight_label.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "jmp myLabel\nmyLabel:\nmov rax, rbx" }
+        });
+
+        DocumentHighlight[] highlights = this._server.GetDocumentHighlights(
+            new Progress<DocumentHighlight[]>(_ => { }), new Position { Line = 0, Character = 6 }, uri, CancellationToken.None);
+
+        highlights.Should().OnlyContain(h => h.Range.Start.Line == 0 || h.Range.Start.Line == 1,
+            "only the two 'myLabel' occurrences should highlight, not the rax line");
+        highlights.Should().HaveCountGreaterThanOrEqualTo(2);
+    }
+
+    #endregion
+
+    #region Document outline (documentSymbol)
+
+    [Fact]
+    public void GetDocumentSymbols_ReturnsLabelsAndRegions_NotPerMnemonic()
+    {
+        // The outline must be navigation anchors only: #region sections + labels. Emitting one symbol per
+        // mnemonic (the old behaviour) floods the dropdown/breadcrumbs with "MOV/ADD/…" and is useless.
+        var uri = "file:///test_outline.asm";
+        this._server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem
+            {
+                Uri = new Uri(uri),
+                LanguageId = "asm",
+                Version = 1,
+                Text = "#region init\nmov rax, rbx\nmyLabel:\n\tadd rax, 1\n#endregion",
+            },
+        });
+
+        VSSymbolInformation[] symbols = this._server.GetDocumentSymbols(new DocumentSymbolParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+        });
+
+        symbols.Should().Contain(s => s.Name.Contains("myLabel", StringComparison.Ordinal), "labels are the navigation anchors");
+        symbols.Should().Contain(s => s.Name.Contains("init", StringComparison.Ordinal), "the #region becomes a section header");
+        symbols.Should().NotContain(s => s.Name == "MOV" || s.Name == "ADD", "per-mnemonic entries would flood the outline");
     }
 
     #endregion

@@ -192,7 +192,10 @@ public static partial class RegisterTools
     public static string[] GetRelatedRegisterNew(Rn reg)
     {
         // NOTE: first return longer string before shorter string, such that the first match can be used.
-        return RelatedRegisterNewCache.TryGetValue(reg, out string[]? cached) ? cached : ["UNKNOWN"];
+        // Registers without width-aliases (MM/K/segment/CR/DR/BND/TMM) aren't in the cache; fall back to the
+        // register ITSELF (not an "UNKNOWN" sentinel) so the editor still highlights e.g. MM0/K1 occurrences
+        // instead of highlighting nothing. (Guarded by Test_RegisterTools.)
+        return RelatedRegisterNewCache.TryGetValue(reg, out string[]? cached) ? cached : [reg.ToString()];
     }
 
     /// <summary>

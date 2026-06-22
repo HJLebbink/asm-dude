@@ -297,6 +297,25 @@ public sealed class LspProcessTestClient : IAsyncDisposable
     }
 
     /// <summary>
+    /// Requests document highlights at a position. Sends a partialResultToken to mimic Visual Studio (which
+    /// always does) — this is the case that previously returned null and rendered nothing; the RESPONSE must
+    /// still carry the highlight ranges.
+    /// </summary>
+    public async Task<JsonNode?> DocumentHighlightAsync(string uri, int line, int character)
+    {
+        this.EnsureInitialized();
+
+        var highlightParams = new
+        {
+            textDocument = new { uri },
+            position = new { line, character },
+            partialResultToken = "documentHighlight-test-token"
+        };
+
+        return await this.SendRequestAsync("textDocument/documentHighlight", highlightParams);
+    }
+
+    /// <summary>
     /// Requests semantic tokens for a document.
     /// </summary>
     public async Task<JsonNode?> SemanticTokensAsync(string uri)
