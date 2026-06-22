@@ -63,10 +63,7 @@
     <ItemGroup>
       <_SimServerFiles Include="$(MSBuildThisFileDirectory)..\asm-sim-server\bin\$(Configuration)\$(TargetFramework)\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(_SimServerFiles)"
-          DestinationFiles="@(_SimServerFiles->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true"
-          Condition="Exists('$(MSBuildThisFileDirectory)..\asm-sim-server\bin\$(Configuration)\$(TargetFramework)')" />
+    <Copy SourceFiles="@(_SimServerFiles)" DestinationFiles="@(_SimServerFiles->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="Exists('$(MSBuildThisFileDirectory)..\asm-sim-server\bin\$(Configuration)\$(TargetFramework)')" />
   </Target>
 
   <ItemGroup>

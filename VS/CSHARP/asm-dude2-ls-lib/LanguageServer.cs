@@ -246,15 +246,28 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
 
     #region Tools
 
-    private static (int, int) FindWordBoundary(int position, string lineStr)
+    internal static (int, int) FindWordBoundary(int position, string lineStr, bool anchorAtWordEnd = false)
     {
         // AsmDudeLog.Info($"FindWordBoundary: position = {position}; lineStr=\"{lineStr}\"");
         int lineLength = lineStr.Length;
-        if (position >= lineLength)
+        if (lineLength == 0)
         {
             return (-1, -1);
         }
-        if (AsmTools.AsmSourceTools.IsSeparatorChar(lineStr[position]))
+
+        // An LSP caret position points BETWEEN characters: position is the index of the char to the RIGHT of
+        // the caret. For documentHighlight (anchorAtWordEnd=true) the caret often sits at the END of a word
+        // ("select/double-click al," -> caret on the following ','), so fall back to the char on the LEFT;
+        // without this, an end-of-word caret yields a zero-length word and NO highlights. For hover/quick-info
+        // (anchorAtWordEnd=false, the default) we must NOT do this: hovering ON whitespace must return nothing,
+        // not the neighbouring word. (Guarded by FindWordBoundary_* and GetDocumentHighlights_* tests, and by
+        // Hover_OnWhitespace_ShouldReturnNull.)
+        int anchor = position;
+        if (anchorAtWordEnd && (anchor >= lineLength || AsmTools.AsmSourceTools.IsSeparatorChar(lineStr[anchor])))
+        {
+            anchor = position - 1;
+        }
+        if (anchor < 0 || anchor >= lineLength || AsmTools.AsmSourceTools.IsSeparatorChar(lineStr[anchor]))
         {
             return (-1, -1);
         }
@@ -263,7 +276,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         int startPos = 0;
         int endPos = lineLength;
 
-        for (int i = position + 1; i < lineLength; ++i)
+        for (int i = anchor + 1; i < lineLength; ++i)
         {
             if (AsmTools.AsmSourceTools.IsSeparatorChar(lineSpan[i]))
             {
@@ -271,7 +284,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 break;
             }
         }
-        for (int i = position; i >= 0; --i)
+        for (int i = anchor; i >= 0; --i)
         {
             if (AsmTools.AsmSourceTools.IsSeparatorChar(lineSpan[i]))
             {
@@ -670,12 +683,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 AsmDudeLog.Warning($"[UpdateInternals] InvalidateAndSimulate failed: {ex.GetType().Name}: {ex.Message}");
             }
 
-            if (false)
-            {
-#pragma warning disable CS0162 // Unreachable code detected
-                this.UpdateSymbols(uri);
-#pragma warning restore CS0162 // Unreachable code detected
-            }
+            this.UpdateSymbols(uri); // document outline (navigation dropdown / breadcrumbs / sticky-scroll)
             this.SendDiagnostics(uri);
             AsmDudeLog.Debug($"[UpdateInternals] EXIT uri={uri}");
         }
@@ -2074,7 +2082,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 completions.Add(new CompletionItem
                 {
                     Kind = this.GetCompletionItemKind(AsmTokenType.Register),
-                    Label = keyword,
+                    // Label follows the typed case: VS commits the Label, not InsertText.
+                    Label = insertionText,
                     LabelDetails = DescriptionLabelDetails(descriptionStr),
                     InsertText = insertionText,
                     SortText = insertionText,
@@ -2121,7 +2130,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 completions.Add(new CompletionItem
                 {
                     Kind = this.GetCompletionItemKind(type),
-                    Label = keyword2,
+                    // Label follows the typed case: VS commits the Label, not InsertText.
+                    Label = insertionText,
                     LabelDetails = DescriptionLabelDetails(descriptionStr),
                     InsertText = insertionText,
                     SortText = insertionText,
@@ -2140,7 +2150,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             yield return new CompletionItem
             {
                 Kind = this.GetCompletionItemKind(AsmTokenType.Misc),
-                Label = "SHORT",
+                // Label follows the typed case: VS commits the Label, not InsertText.
+                Label = useCapitals ? "SHORT" : "short",
                 InsertText = useCapitals ? "SHORT" : "short",
                 FilterText = useCapitals ? "SHORT" : "short",
                 SortText = "\tSHORT", // use a tab to get on top when sorting
@@ -2149,7 +2160,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
             yield return new CompletionItem
             {
                 Kind = this.GetCompletionItemKind(AsmTokenType.Misc),
-                Label = "NEAR",
+                // Label follows the typed case: VS commits the Label, not InsertText.
+                Label = useCapitals ? "NEAR" : "near",
                 InsertText = useCapitals ? "NEAR" : "near",
                 FilterText = useCapitals ? "NEAR" : "near",
                 SortText = "\tNEAR", // use a tab to get on top when sorting
@@ -2229,7 +2241,9 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     completions.Add(new CompletionItem
                     {
                         Kind = CompletionItemKind.Keyword,
-                        Label = keyword_uppercase,
+                        // Label follows the typed case (VS commits the Label, not InsertText), so a
+                        // lower-case "xo" completes to "xor", an upper-case "XO" to "XOR".
+                        Label = insertionText,
                         // Always-visible: the description (semantics). On-selection (arch + doc link) is
                         // filled lazily in ResolveCompletion, keyed by Data. Render with no operands so a
                         // placeholder description ("Move {1} into {0}") shows generic "op1/op2" here, not raw braces.
@@ -2285,7 +2299,8 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         completions.Add(new CompletionItem
                         {
                             Kind = this.GetCompletionItemKind(type),
-                            Label = keyword_uppercase,
+                            // Label follows the typed case: VS commits the Label, not InsertText.
+                            Label = insertionText,
                             LabelDetails = DescriptionLabelDetails(descriptionStr),
                             InsertText = insertionText,
                             SortText = insertionText,
@@ -2336,12 +2351,27 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 return new CompletionList();
             }
 
-            // determine if the current word we are typing is all capitals
-            (string currentWord, _, _) = GetWord(pos - 1, lineStr);
+            // Determine the word being typed and whether it is all capitals.
+            // VS sends the completion Position AT the just-typed character (confirmed via Context.triggerChar
+            // in the log: typing 'x' -> Position char = the index of 'x', NOT after it). So completeLineStr[pos]
+            // is the typed char and the [..pos] slice in `lineStr` excludes it; anchoring on `pos-1` then
+            // yields an empty word and we'd return the whole, unfiltered operand list. Anchor on the FULL
+            // line at `pos` when there's a non-separator char there (typed-char trigger); otherwise fall back
+            // to pos-1 (caret sits after the word / on a separator, e.g. mnemonics finished with a space).
+            int wordAnchor = (pos < completeLineStr.Length && !AsmTools.AsmSourceTools.IsSeparatorChar(completeLineStr[pos]))
+                ? pos
+                : pos - 1;
+            (string currentWord, _, _) = GetWord(wordAnchor, completeLineStr);
             bool useCapitals = (currentWord == currentWord.ToUpper());
             string prefix = currentWord.ToUpperInvariant();
 
             if (extraLogging) AsmDudeLog.Info($"OnTextDocumentCompletion: currentWord=\"{currentWord}\"; useCapitals={useCapitals}");
+
+            // Casing is carried on the items' Label/InsertText (see useCapitals at each item site); we
+            // deliberately do NOT set an explicit TextEdit. A server-supplied TextEdit has an ABSOLUTE
+            // range computed at request time, which goes stale the moment the user types one more char
+            // (with IsIncomplete the item is committed against a longer word) -> "Xo" became "XORo".
+            // Letting VS compute the replace range from the current word avoids that.
 
             // Filter completion items by the prefix the user has typed so far.
             // With only 1-2 characters typed, VS fuzzy matching is too broad (e.g., "Z" matches YMM via "[AVX512]"),
@@ -2352,10 +2382,16 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 return [.. items.Where(i => i.FilterText != null && i.FilterText.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))];
             }
 
-            // When FilterByPrefix narrows the list server-side (1-2 char prefix), the result is a subset:
-            // mark the list incomplete so the client re-queries as more characters are typed instead of
-            // filtering the truncated set itself (which would hide valid items).
-            bool incomplete = prefix.Length is 1 or 2;
+            // Incomplete ONLY for the empty prefix; a typed prefix yields a COMPLETE list. Why each:
+            // - Empty prefix -> incomplete: forces VS to re-query the moment the user types a char, so the
+            //   first-char case is honored (trigger on empty = useCapitals=True -> "MOV"; then typing "x"
+            //   re-queries -> lower-case). Without this VS caches the all-caps list and commits "XOR".
+            // - Typed prefix -> COMPLETE: our list is already strictly prefix-filtered (Z-only for "Z"),
+            //   so marking it complete makes VS filter WITHIN it instead of running its typo-tolerant fuzzy
+            //   matcher over a broader cached list (which otherwise leaks YMM when you type "Z"). Trade-off:
+            //   VS won't re-query mid-word, so casing is fixed by the FIRST char (a mixed "Xo" inserts
+            //   "XOR"); accepted to keep the register list clean.
+            bool incomplete = prefix.Length == 0;
 
             // if the mnemonic is NONE we should suggest mnemonics
             if (mnemonic == Mnemonic.NONE)
@@ -2440,6 +2476,30 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     }
                 }
             }
+
+            // K (write-mask) and Z (zero-mask) are AVX-512 brace DECORATORS on a register/memory operand
+            // (e.g. "zmm0{k1}{z}"), not standalone operands. The signature "ZMM{K}{Z}" parses to
+            // {ZMMREG, K, Z}, which would otherwise offer K0-K7 as completions before the register is even
+            // typed. Only offer K/Z once the user is inside the mask braces (current operand contains '{');
+            // otherwise drop them — unless K is the ONLY allowed type (e.g. KMOV's standalone mask operand),
+            // in which case it is a real operand and stays.
+            {
+                int lastComma = lineStr.LastIndexOf(',');
+                string currentOperandText = lastComma >= 0 ? lineStr[(lastComma + 1)..] : lineStr;
+                bool inMaskBraces = currentOperandText.Contains('{', StringComparison.Ordinal);
+                bool hasNonDecorator = allowed.Any(a => a != AsmSignatureEnum.K && a != AsmSignatureEnum.Z);
+                if (inMaskBraces && hasNonDecorator)
+                {
+                    // inside "{...}" only the {k}/{z} decorators apply — drop the register/memory operands
+                    allowed.RemoveWhere(a => a != AsmSignatureEnum.K && a != AsmSignatureEnum.Z);
+                }
+                else if (hasNonDecorator)
+                {
+                    // before the brace: the register/memory operand applies, not the decorators
+                    allowed.Remove(AsmSignatureEnum.K);
+                    allowed.Remove(AsmSignatureEnum.Z);
+                }
+            }
             if (extraLogging)
             {
                 AsmDudeLog.Info($"OnTextDocumentCompletion: D: useCapitals={useCapitals}; allowed.Count={allowed.Count}");
@@ -2448,10 +2508,14 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                     AsmDudeLog.Info($"OnTextDocumentCompletion: D: allowed signature {sig}");
                 }
             }
+            CompletionItem[] operandItems = FilterByPrefix(this.Mnemonic_Operand_Completions(useCapitals, allowed, (int)parameter.Position.Line));
+            // The server now sees the typed register prefix (see the wordAnchor fix above), so it filters the
+            // operand list itself (e.g. "x" -> only xmm*). VS requests once per typed char, so a complete
+            // (IsIncomplete=false) filtered list is correct; no TextEdit needed.
             return new CompletionList()
             {
-                IsIncomplete = incomplete,
-                Items = FilterByPrefix(this.Mnemonic_Operand_Completions(useCapitals, allowed, (int)parameter.Position.Line))
+                IsIncomplete = false,
+                Items = operandItems,
             };
         }
         catch (Exception e)
@@ -2553,7 +2617,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         var lines = this.GetLines(uri);
         if ((int)position.Line >= lines.Length) return [];
         var lineStr2 = lines[(int)position.Line];
-        (int startPos, int endPos) = FindWordBoundary((int)position.Character, lineStr2);
+        (int startPos, int endPos) = FindWordBoundary((int)position.Character, lineStr2, anchorAtWordEnd: true);
         int length = endPos - startPos;
 
         if (length <= 0)
@@ -3505,82 +3569,68 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         return [.. this.Symbols];
     }
 
+    // Builds the document outline (powers the navigation dropdown, breadcrumb bar, and sticky-scroll). We emit
+    // only the NAVIGATION ANCHORS — `#region` sections and labels (jump/call targets, procs) — NOT one symbol
+    // per mnemonic (that produced a useless wall of "MOV/ADD/…" entries). Labels are grouped under their
+    // enclosing `#region` via ContainerName so the breadcrumb reads "region > label".
     private void UpdateSymbols(string uri)
     {
         IList<VSSymbolInformation> symbolInfo = [];
-        var lines = this.GetLines(uri);
+        string[] lines = this.GetLines(uri);
+        const int fileID = 0;
 
-        int fileID = 0; //TODO
+        Stack<string> regionStack = new();
 
         for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
         {
             string lineStr = lines[lineNumber];
-            (object _, string label, Mnemonic mnemonic, _, _) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, AssemblerEnum.UNKNOWN);
+            string trimmed = lineStr.TrimStart();
+            int indent = lineStr.Length - trimmed.Length;
+
+            if (trimmed.StartsWith("#region", StringComparison.OrdinalIgnoreCase))
+            {
+                string name = trimmed.Length > "#region".Length ? trimmed["#region".Length..].Trim() : string.Empty;
+                if (name.Length == 0) name = "region";
+#pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
+                symbolInfo.Add(new VSSymbolInformation
+                {
+                    Name = name,
+                    Kind = SymbolKind.Namespace,
+                    ContainerName = regionStack.Count > 0 ? regionStack.Peek() : null,
+                    Location = new Location
+                    {
+                        Uri = new Uri(uri),
+                        Range = new Range { Start = new Position(lineNumber, indent), End = new Position(lineNumber, lineStr.Length) },
+                    },
+                });
+#pragma warning restore CS0618
+                regionStack.Push(name);
+                continue;
+            }
+            if (trimmed.StartsWith("#endregion", StringComparison.OrdinalIgnoreCase))
+            {
+                if (regionStack.Count > 0) regionStack.Pop();
+                continue;
+            }
+
+            (object _, string label, Mnemonic _, _, _) = AsmTools.AsmSourceTools.ParseLine(lineStr, lineNumber, fileID, AssemblerEnum.UNKNOWN);
             if (label.Length > 0)
             {
-                int pos = lineStr.IndexOf(label);
+                int pos = lineStr.IndexOf(label, StringComparison.Ordinal);
+                if (pos < 0) pos = indent;
 #pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
                 symbolInfo.Add(new VSSymbolInformation
                 {
                     Name = label,
-                    Kind = SymbolKind.Key,
-                    Location = new Location
-                    {
-                        Uri = new Uri(uri),
-                        Range = new Range
-                        {
-                            Start = new Position(lineNumber, pos),
-                            End = new Position(lineNumber, pos + label.Length)
-                        }
-                    },
-                    #region VS specific
-                    HintText = "some hinttext here?",
-                    Description = "some description here?",
-                    //Icon = // If specified, this icon is used instead of SymbolKind.
-                    #endregion
-                });
-#pragma warning restore CS0618
-            }
-            if (mnemonic != Mnemonic.NONE)
-            {
-                int pos = lineStr.IndexOf(mnemonic.ToString(), StringComparison.OrdinalIgnoreCase);
-                string mnemonicStr = mnemonic.ToString();
-#pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
-                symbolInfo.Add(new VSSymbolInformation
-                {
-                    Name = mnemonicStr,
                     Kind = SymbolKind.Function,
-                    HintText = "some hint text here?",
-                    Description = "some description here?",
+                    ContainerName = regionStack.Count > 0 ? regionStack.Peek() : null,
                     Location = new Location
                     {
                         Uri = new Uri(uri),
-                        Range = new Range
-                        {
-                            Start = new Position(lineNumber, pos),
-                            End = new Position(lineNumber, pos + mnemonicStr.Length)
-                        }
-                    }
+                        Range = new Range { Start = new Position(lineNumber, pos), End = new Position(lineNumber, pos + label.Length) },
+                    },
                 });
 #pragma warning restore CS0618
-                if (false)
-                {
-                    string[] args;
-#pragma warning disable CS0162 // Unreachable code detected
-#pragma warning disable CS0618 // VSSymbolInformation requires deprecated SymbolInformation base properties
-                    for (int i = 0; i < args.Length; ++i)
-                    {
-                        symbolInfo.Add(new VSSymbolInformation
-                        {
-                            Name = mnemonic.ToString(),
-                            Kind = SymbolKind.Function,
-                            HintText = "some hint text here?",
-                            Description = "some description here?",
-                        });
-                    }
-#pragma warning restore CS0618
-#pragma warning restore CS0162 // Unreachable code detected
-                }
             }
         }
         this.SetDocumentSymbols(symbolInfo);

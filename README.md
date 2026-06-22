@@ -69,6 +69,26 @@ may not be flawless at this stage; only valid code completions should be propose
 
 ![code-completion](https://github.com/HJLebbink/asm-dude/blob/main/Images/AsmDude2-code-completion.png?raw=true "Code Completion")
 
+#### ⚠ "Silly" gray suggestions are GitHub Copilot, not AsmDude
+
+If you see **gray, multi-line "ghost text" suggestions** in your `.asm` files that look like nonsensical
+assembly, those come from **GitHub Copilot**, *not* from AsmDude. Copilot treats `.asm` as source code and
+offers its own AI completions, which it is not good at for assembly. AsmDude cannot disable Copilot for you
+— Copilot is a separate product with no per-language opt-out an extension can set, and the VS Code
+`github.copilot.enable` JSON does **not** apply to Visual Studio. You can switch it off yourself in seconds:
+
+**Turn off Copilot completions for assembly only (recommended):**
+1. Open any `.asm` file.
+2. Click the **GitHub Copilot icon** (status bar / upper-right of the Visual Studio window).
+3. Choose **Disable Completions** → pick the **language-specific** option (disables Copilot for the active
+   asm language only, leaving C#/C++/etc. untouched).
+
+**Or via Options:** *Tools → Options → GitHub → Copilot → Copilot Completions*, and turn completions off
+(globally, or use the language-specific control).
+
+AsmDude's own completion list (mnemonics, registers, etc. — shown in the popup, not as gray ghost text)
+is unaffected by this and keeps working.
+
 #### Signature Help
 Signature Help, also referred to as Parameter Info, presents the method's signature in a tooltip when
 a user enters the character marking the start of the parameter list (e.g., in C++, an opening parenthesis). 

@@ -135,6 +135,26 @@ public class LspProcessIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task DocumentHighlight_OnRegister_ReturnsFamilyInResponse_WithPartialResultToken()
+    {
+        // Guards the WHOLE register-highlight path over real JSON-RPC: the word-boundary fix (caret at the
+        // END of "al", on the ','), the register-family expansion (AL -> RAX), AND the delivery path — VS
+        // always sends a partialResultToken, and the ranges must come back IN THE RESPONSE (the old
+        // "$/progress + return null" path computed the family but rendered nothing).
+        await this._client!.InitializeAsync();
+        await this._client.OpenDocumentAsync("file:///test_hl.asm", "mov rax, rbx\nmov al, cl");
+
+        // line 1 = "mov al, cl"; char 6 is the ',' immediately after "al".
+        var result = await this._client.DocumentHighlightAsync("file:///test_hl.asm", line: 1, character: 6);
+
+        result.Should().NotBeNull("documentHighlight must return ranges in the response, not only via $/progress");
+        var arr = result!.AsArray();
+        arr.Count.Should().BeGreaterThanOrEqualTo(2, "AL and RAX (same register family) should both be highlighted");
+        arr.Any(n => (int)n!["range"]!["start"]!["line"]! == 0)
+            .Should().BeTrue("RAX on line 0 must be highlighted when AL is selected");
+    }
+
+    [Fact]
     public async Task Hover_OnWhitespace_ShouldReturnNull()
     {
         // Arrange
