@@ -628,67 +628,19 @@ mov rax, rbx";
 
     #region Performance-table alignment Tests
 
+    // Invariant for Markdown hover clients: the performance section is a bold "**Performance (Arch)**"
+    // heading paragraph followed by a SLIM fenced monospace table. The VS markdown hover host renders
+    // only a small markdown subset: it does not render GFM pipe tables, it silently strips raw HTML
+    // (such as <details>) and standalone "---" rules, and it wraps fenced monospace text at roughly
+    // 55 characters, which tears any wider column layout apart mid-row. The slim table therefore shows
+    // only Operands / µOps / Ports / Latency / Throughput (no mnemonic repeated per row, no µOps
+    // spanner, no arch baked into a column) so it stays under that wrap width. See
+    // PerformanceDisplay.BuildPerformanceMarkdown.
 
-    // The performance hover renders a monospaced columnar table (Instruction | µOps Fused | µOps
-    // Unfused | µOps Port | Latency | Throughput | remark). The columns are space-padded, so they only
-    // line up if every data cell starts at exactly the character offset of its header. A previous
-    // fixed-width layout (hard-coded 26-char instruction column) broke this for AVX-512 forms whose
-    // "instr + operands" overflowed 26 chars, shoving the numeric columns past their headers and making
-    // them ragged from row to row. These tests retrieve the real hover and verify the alignment.
-
-    // "mov" — every operand form fits in a short instruction column.
-    // "vfixupimmps" — operand forms run to ~40 chars, the case that used to overflow and misalign.
-    [Theory]
-    [InlineData("mov rax, rbx", 1)]
-    [InlineData("vfixupimmps zmm0, zmm1, zmm2, 0", 1)]
-    public void GetHover_PerformanceTable_ColumnsAreAligned(string sourceLine, int hoverCharacter)
-    {
-        // Arrange — a server with the perf info and the microarchitectures these mnemonics have data for.
-        var server = new LanguageServer();
-        server.Initialize(new AsmLanguageServerOptions
-        {
-            ARCH_8086 = true,
-            ARCH_186 = true,
-            ARCH_286 = true,
-            ARCH_386 = true,
-            ARCH_X64 = true,
-            ARCH_AVX = true,
-            ARCH_AVX2 = true,
-            ARCH_AVX512_F = true,
-            ARCH_AVX512_VL = true,
-            ARCH_AVX512_DQ = true,
-            ARCH_AVX512_BW = true,
-            AsmDoc_On = true,
-            PerformanceInfo_On = true,
-            PerformanceInfo_Skylake_On = true,
-            PerformanceInfo_SkylakeX_On = true,
-        });
-        server.Initialized();
-
-        var uri = "file:///test.asm";
-        server.OnTextDocumentOpened(new DidOpenTextDocumentParams
-        {
-            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = sourceLine }
-        });
-
-        // Act
-        var result = server.GetHover(new TextDocumentPositionParams
-        {
-            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
-            Position = new Position { Line = 0, Character = hoverCharacter }
-        });
-
-        // Assert
-        var hover = result.Should().BeOfType<Hover>().Subject;
-        var text = ((MarkupContent)hover.Contents!).Value;
-        AssertPerformanceTableColumnsAligned(text);
-    }
-
-    // The compact header packs the first column: "Performance:" shares the µOps-spanner line, and the
-    // microarchitecture shares the "Fused/Unfused/…" label line (no separate "Instruction" label, no
-    // standalone arch line). This pins that layout.
+    // Pins the section shape: heading paragraph outside the fence, slim header row inside it, and none
+    // of the constructs this host cannot render.
     [Fact]
-    public void GetHover_PerformanceTable_ArchitectureFollowsPerformanceHeader()
+    public void GetHover_PerformanceSection_IsSlimFencedTableWithHeadingParagraph()
     {
         var server = new LanguageServer();
         server.Initialize(new AsmLanguageServerOptions
@@ -699,10 +651,12 @@ mov rax, rbx";
             ARCH_386 = true,
             ARCH_X64 = true,
             AsmDoc_On = true,
+            AsmDoc_Url = "https://example.com/wiki/",
             PerformanceInfo_On = true,
             PerformanceInfo_Skylake_On = true,
         });
         server.Initialized();
+        server.HoverMarkupKind = MarkupKind.Markdown;
 
         var uri = "file:///test.asm";
         server.OnTextDocumentOpened(new DidOpenTextDocumentParams
@@ -716,25 +670,124 @@ mov rax, rbx";
             Position = new Position { Line = 0, Character = 1 }
         }).Should().BeOfType<Hover>().Subject;
 
-        var lines = ((MarkupContent)hover.Contents!).Value
-            .Replace("\r\n", "\n")
-            .Split('\n')
-            .Select(l => l.TrimEnd())
-            .ToList();
+        string body = ((MarkupContent)hover.Contents!).Value;
 
-        // No "Instruction" column label anywhere in the table.
-        lines.Should().NotContain(l => l.StartsWith("Instruction"), "the instruction column header was dropped");
+        body.Should().StartWith("[MOV](", "the description (with the linkified mnemonic) comes first, outside the fence");
+        body.Should().NotContain("|", "the VS markdown hover does not render GFM pipe tables");
+        body.Should().NotContain("<details>", "the VS markdown hover silently strips raw HTML");
 
-        // "Performance:" shares its line with the µOps spanner (first column = title).
-        int perfIdx = lines.FindIndex(l => l.StartsWith("Performance:"));
-        perfIdx.Should().BeGreaterThanOrEqualTo(0, "the table starts with a 'Performance:' spanner line");
-        lines[perfIdx].Should().Contain("µOps", "the µOps spanner shares the 'Performance:' line");
+        body.Should().Contain("**Performance (Skylake)**", "the arch heading is a bold paragraph outside the fence");
+        int fenceStart = body.IndexOf("```text", StringComparison.Ordinal);
+        fenceStart.Should().BeGreaterThan(0, "the slim table lives in its own fenced block");
+        body[..fenceStart].Should().NotContain("```", "the fence must not also enclose the description");
 
-        // The very next line is the architecture sharing the Fused/Unfused/… label line (first column = arch).
-        string labelLine = lines[perfIdx + 1];
-        labelLine.TrimStart().Should().StartWith("Skylake", "the architecture sits in the first column of the label line");
-        labelLine.Should().Contain("Fused").And.Contain("Unfused").And.Contain("Throughput",
-            "the column labels share the architecture line");
+        var lines = body.Replace("\r\n", "\n").Split('\n').ToList();
+        int headerIdx = lines.FindIndex(l => l.Contains("Operands") && l.Contains("Latency") && l.Contains("Throughput"));
+        headerIdx.Should().BeGreaterThanOrEqualTo(0, "the slim table has an Operands/µOps/Ports/Latency/Throughput header row");
+        string header = lines[headerIdx];
+        header.Should().NotContain("Fused", "the µOps fused/unfused split is dropped to keep the table narrow");
+
+        // The narrowness IS the invariant: a header wider than the popup's fenced-text wrap width would
+        // wrap mid-row and destroy the column alignment.
+        header.TrimEnd().Length.Should().BeLessThanOrEqualTo(55, "the table must stay under the popup's fenced-text wrap width");
+
+        // Every data row keeps its numeric cells under the header labels.
+        int latOffset = header.IndexOf("Latency", StringComparison.Ordinal);
+        var dataRows = lines.Skip(headerIdx + 1).TakeWhile(l => l != "```").ToList();
+        dataRows.Should().NotBeEmpty("the table must have at least one data row");
+        foreach (string row in dataRows.Where(r => r.Length > latOffset))
+        {
+            row[latOffset - 1].Should().Be(' ', $"the Latency column must start exactly under its header. Row:\n{row}");
+        }
+    }
+
+    // Multiple operand forms within one microarchitecture are rows of the same table, without repeating
+    // the mnemonic (it is already in the description and applies to every row).
+    [Fact]
+    public void GetHover_PerformanceSection_MultipleFormsAreRowsOfOneTable()
+    {
+        var server = new LanguageServer();
+        server.Initialize(new AsmLanguageServerOptions
+        {
+            ARCH_8086 = true,
+            ARCH_X64 = true,
+            ARCH_AVX = true,
+            ARCH_AVX2 = true,
+            ARCH_AVX512_F = true,
+            ARCH_AVX512_VL = true,
+            ARCH_AVX512_BW = true,
+            AsmDoc_On = true,
+            PerformanceInfo_On = true,
+            PerformanceInfo_EmeraldRapids_On = true,
+        });
+        server.Initialized();
+        server.HoverMarkupKind = MarkupKind.Markdown;
+
+        var uri = "file:///test.asm";
+        server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "vpmovm2b xmm0, k1" }
+        });
+
+        var hover = server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 1 }
+        }).Should().BeOfType<Hover>().Subject;
+
+        string body = ((MarkupContent)hover.Contents!).Value;
+
+        body.Should().Contain("**Performance (EmeraldRapids)**");
+        var lines = body.Replace("\r\n", "\n").Split('\n').ToList();
+        lines.Should().Contain(l => l.StartsWith("XMM, K", StringComparison.Ordinal), "each operand form is a row keyed by its operands only");
+        lines.Should().Contain(l => l.StartsWith("ZMM, K", StringComparison.Ordinal), "each operand form is a row keyed by its operands only");
+        body.Should().NotContain("VPMOVM2B XMM", "the mnemonic is not repeated on data rows; it is already in the description");
+        body.Should().NotContain("AVX512BW_128", "the remark is dropped from this table; it pushed rows past the popup's wrap width");
+    }
+
+    // The mnemonic name in the description becomes the clickable documentation link on Markdown clients,
+    // instead of a separate trailing "[Documentation](url)" line — one fewer thing competing for attention
+    // in a small hover popup, and it reads naturally ("MOV: ...", where MOV is the link).
+    [Fact]
+    public void GetHover_Markdown_MnemonicNameIsTheDocumentationLink()
+    {
+        var server = new LanguageServer();
+        server.Initialize(new AsmLanguageServerOptions
+        {
+            ARCH_8086 = true,
+            ARCH_186 = true,
+            ARCH_286 = true,
+            ARCH_386 = true,
+            ARCH_X64 = true,
+            AsmDoc_On = true,
+            AsmDoc_Url = "https://example.com/wiki/",
+            PerformanceInfo_On = false,
+        });
+        server.Initialized();
+        server.HoverMarkupKind = MarkupKind.Markdown;
+
+        var uri = "file:///test.asm";
+        server.OnTextDocumentOpened(new DidOpenTextDocumentParams
+        {
+            TextDocument = new TextDocumentItem { Uri = new Uri(uri), LanguageId = "asm", Version = 1, Text = "mov rax, rbx" }
+        });
+
+        var hover = server.GetHover(new TextDocumentPositionParams
+        {
+            TextDocument = new TextDocumentIdentifier { Uri = new Uri(uri) },
+            Position = new Position { Line = 0, Character = 1 }
+        }).Should().BeOfType<Hover>().Subject;
+
+        string body = ((MarkupContent)hover.Contents!).Value;
+        body.Should().StartWith("[MOV](", "the mnemonic name itself is the clickable link");
+        body.Should().NotContain("[Documentation](", "the trailing 'Documentation' line is superseded by the inline link");
+
+        // The link and arch list form one paragraph and the description text the next one, so the
+        // description starts on its own line instead of trailing the arch list.
+        var lines = body.Replace("\r\n", "\n").Split('\n');
+        lines[0].TrimEnd().Should().EndWith("]", "the first paragraph is the link plus the bracketed arch list");
+        lines.Length.Should().BeGreaterThanOrEqualTo(3, "the description follows as its own paragraph");
+        lines[1].Should().BeEmpty("a blank line separates the paragraphs (a single newline is only a soft break in markdown)");
     }
 
     // Visual Studio advertises contentFormat:["plaintext"] for hover and renders plaintext in a
@@ -819,15 +872,15 @@ mov rax, rbx";
     /// </summary>
     private static void AssertPerformanceTableColumnsAligned(string hoverBody)
     {
-        // Split into lines, dropping the markdown ```text fence and the trailing [Documentation] link.
+        // Split into lines, dropping the trailing doc-URL line (not table content).
         var lines = hoverBody
             .Replace("\r\n", "\n")
             .Split('\n')
-            .Where(l => l != "```text" && l != "```" && !l.StartsWith("[Documentation]"))
+            .Where(l => !l.StartsWith("[Documentation]", StringComparison.Ordinal))
             .ToList();
 
-        // The two header rows: a "µOps" spanner line then the column labels. (The instruction column has
-        // no label — it's self-evident — so the header row is identified by the numeric column names.)
+        // The header row: the column labels ("Fused"/"Unfused"/"Throughput"/…). The instruction column has
+        // no label — it's self-evident — so the header row is identified by the numeric column names.
         int labelRow = lines.FindIndex(l => l.Contains("Fused") && l.Contains("Unfused") && l.Contains("Throughput"));
         labelRow.Should().BeGreaterThanOrEqualTo(0, "the perf table must have a 'Fused … Unfused … Throughput' header row");
         string header = lines[labelRow];

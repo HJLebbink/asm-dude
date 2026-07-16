@@ -24,9 +24,12 @@
 
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using Range = Microsoft.VisualStudio.LanguageServer.Protocol.Range;
 
 namespace AsmDude2LS;
 
@@ -36,35 +39,58 @@ namespace AsmDude2LS;
 /// <c>textDocument.hover.contentFormat</c> at initialize (Markdown when offered, PlainText otherwise)
 /// — see <c>LanguageServer.HoverMarkupKind</c>.
 ///
-/// <para><b>Markdown clients (VS Code):</b> a standard <see cref="Hover"/> + <see cref="MarkupContent"/>
-/// whose body is wrapped in a <c>```text</c> fence (so the aligned performance table keeps its
-/// monospace columns) with a clickable <c>[Documentation](url)</c> link appended.</para>
+/// <para><b>Markdown clients (VS Code, and Visual Studio 18.9 or later):</b> a standard
+/// <see cref="Hover"/> + <see cref="MarkupContent"/>. The description is plain markdown prose. The
+/// leading mnemonic becomes a clickable documentation link. The performance section is a bold heading
+/// paragraph plus a slim fenced monospace table per microarchitecture
+/// (<see cref="PerformanceDisplay.BuildPerformanceMarkdown"/>). This branch must not rely on richer
+/// markdown, because the VS hover host renders only a small subset: it does not render GFM pipe tables
+/// (the raw <c>|</c> text leaks through as one paragraph), it silently strips raw HTML such as
+/// <c>&lt;details&gt;</c> and standalone <c>---</c> rules, it attaches a "Copy Code" button to every
+/// fenced code block, and it wraps fenced monospace text at roughly 55 characters, which tears any
+/// wider column layout apart mid-row. Any fenced table must therefore stay narrower than that wrap
+/// width.</para>
 ///
-/// <para><b>Visual Studio (advertises <c>contentFormat:["plaintext"]</c>):</b> VS renders plaintext
-/// hover in the <i>proportional</i> environment font, so a space-padded table does NOT line up (the
-/// instruction column is wider in pixels than its character count). Instead we return a
+/// <para><b>Plaintext clients (Visual Studio before 18.9, advertises <c>contentFormat:["plaintext"]</c>):</b>
+/// VS renders plaintext hover in the <i>proportional</i> environment font, so a space-padded table does
+/// not line up (the instruction column is wider in pixels than its character count). Instead we return a
 /// <see cref="VSInternalHover"/> whose <c>_vs_rawContent</c> stacks one
 /// <see cref="ClassifiedTextElement"/> per line, each a <see cref="ClassifiedTextRun"/> classified as
-/// <c>"formal language"</c> with <see cref="ClassifiedTextRunStyle.UseClassificationFont"/> — VS draws
-/// that in a fixed-pitch font, so the columns align. The doc URL is appended as a plain line (hover
-/// links can't be clickable over LSP — <c>NavigationAction</c> is an unserializable delegate; see
-/// <see cref="VSInternalTypes"/>/the file header in VSInternalTypes.cs).</para>
+/// <c>"formal language"</c> with <see cref="ClassifiedTextRunStyle.UseClassificationFont"/>. VS draws
+/// that in a fixed-pitch font, so the columns align. The doc URL is appended as a plain line, because
+/// hover links are not clickable over LSP (<c>NavigationAction</c> is an unserializable delegate; see
+/// the file header in VSInternalTypes.cs).</para>
 /// </summary>
 public static class HoverBuilder
 {
     /// <summary>
     /// Build a hover from a set of text sections (description, performance table, sim state, …).
     /// Returns a <see cref="Hover"/> (Markdown clients) or a <see cref="VSInternalHover"/> (Visual
-    /// Studio), or <c>null</c> if there is nothing to show.
+    /// Studio pre-18.9), or <c>null</c> if there is nothing to show.
     /// </summary>
+    /// <param name="perfMarkdownSection">
+    /// A pre-composed markdown fragment for the performance section
+    /// (<see cref="PerformanceDisplay.BuildPerformanceMarkdown"/>), appended verbatim after the
+    /// description. Only Markdown clients use it. When non-null, only <paramref name="sections"/>[0] (the
+    /// description) is taken from <paramref name="sections"/>; any further sections are the plaintext
+    /// client's representation of the same data and would duplicate it. Pass <c>null</c> when the hover
+    /// has no performance section (registers, labels, constants), so all of <paramref name="sections"/>
+    /// is used as-is.
+    /// </param>
+    /// <param name="linkText">
+    /// The exact leading substring of <paramref name="sections"/>[0] (typically the mnemonic name) to turn
+    /// into the documentation link on Markdown clients. Ignored when it does not match the start of the
+    /// text or when <paramref name="docUrl"/> is absent.
+    /// </param>
     public static object? CreateHover(
-        MarkupKind kind, string[] sections, int line, int startChar, int endChar, string? docUrl = null)
+        MarkupKind kind, string[] sections, int line, int startChar, int endChar,
+        string? docUrl = null, string? perfMarkdownSection = null, string? linkText = null)
     {
         string body = string.Join(
             "\n",
             sections.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.TrimEnd('\r', '\n')));
 
-        if (string.IsNullOrWhiteSpace(body))
+        if (string.IsNullOrWhiteSpace(body) && string.IsNullOrEmpty(perfMarkdownSection))
         {
             return null;
         }
@@ -77,9 +103,34 @@ public static class HoverBuilder
 
         if (kind == MarkupKind.Markdown)
         {
+            // With a perf section present, only sections[0] (the description) is used; the remaining
+            // sections carry the plaintext client's rendering of the same data (see the param doc).
+            string description = (perfMarkdownSection != null && sections.Length > 0)
+                ? sections[0].TrimEnd('\r', '\n')
+                : body;
+
+            bool linkified = !string.IsNullOrEmpty(docUrl) && !string.IsNullOrEmpty(linkText)
+                && description.StartsWith(linkText, StringComparison.Ordinal);
+
             var sb = new StringBuilder();
-            sb.Append("```text\n").Append(body).Append("\n```");
-            if (!string.IsNullOrEmpty(docUrl))
+            if (linkified)
+            {
+                sb.Append('[').Append(linkText).Append("](").Append(docUrl).Append(')')
+                  .Append(description, linkText!.Length, description.Length - linkText.Length);
+            }
+            else
+            {
+                sb.Append(description);
+            }
+
+            if (!string.IsNullOrEmpty(perfMarkdownSection))
+            {
+                sb.Append(perfMarkdownSection);
+            }
+
+            // The doc link must always be reachable: when the leading text could not be linkified,
+            // fall back to a separate trailing link line.
+            if (!linkified && !string.IsNullOrEmpty(docUrl))
             {
                 sb.Append("\n\n[Documentation](").Append(docUrl).Append(')');
             }
@@ -91,7 +142,7 @@ public static class HoverBuilder
             };
         }
 
-        // Visual Studio (plaintext): emit monospace rich content so the table columns line up.
+        // Visual Studio pre-18.9 (plaintext): emit monospace rich content so the table columns line up.
         return new VSInternalHover
         {
             Range = range,

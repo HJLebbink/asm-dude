@@ -140,6 +140,84 @@ namespace AsmDude2LS
         }
 
         /// <summary>
+        /// Renders the performance data for Markdown hover clients: per microarchitecture, a bold
+        /// "Performance (Arch)" heading paragraph followed by a small fenced monospace table. The table
+        /// must stay narrow. The VS markdown hover host wraps fenced monospace text at roughly 55
+        /// characters, and one wrapped row destroys the whole column layout, so this table shows only
+        /// operands, µOps (fused), latency, and throughput as padded columns. It does not repeat the
+        /// mnemonic on every row (the mnemonic is already in the description and applies to all rows),
+        /// the remark is dropped entirely (it pushed rows past the wrap width), and the ports string is
+        /// the trailing unpadded column per row, so an overlong ports value can only overhang its own
+        /// row instead of widening the whole table. A fence
+        /// is the only construct this host renders in a fixed-pitch font: GFM pipe tables are not
+        /// rendered, and raw HTML and thematic breaks are stripped. The full-width table with all µOps
+        /// columns stays available in <see cref="BuildPerformanceTable"/>, which the plaintext client path
+        /// renders via <c>_vs_rawContent</c>. Returns the empty string when there is no data.
+        /// </summary>
+        public static string BuildPerformanceMarkdown(IEnumerable<(PerformanceItem item, int formCount)> collapsed)
+        {
+            List<(PerformanceItem item, int formCount)> list = collapsed as List<(PerformanceItem item, int formCount)> ?? [.. collapsed];
+            if (list.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            // Only Operands, µOps, Latency, and Throughput are padded columns; their widths are stable
+            // and small. Ports strings vary wildly in width (for example "1*p0156+1*p23"), so ports are
+            // the unpadded tail of each row: they start at a fixed, aligned offset, and an overlong value
+            // can only overhang its own row instead of widening every row of the table past the popup's
+            // wrap width.
+            const int ColCount = 4;
+            string[] header = ["Operands", "µOps", "Latency", "Throughput"];
+
+            StringBuilder result = new();
+            int i = 0;
+            while (i < list.Count)
+            {
+                MicroArch arch = list[i].item.microArch_;
+                List<string[]> rows = [];
+                while (i < list.Count && list[i].item.microArch_ == arch)
+                {
+                    (PerformanceItem item, int formCount) = list[i];
+                    string operands = item.args_ + (formCount > 1 ? $" (+{formCount - 1})" : string.Empty);
+                    rows.Add([
+                        operands,
+                        item.mu_Ops_Fused_ ?? string.Empty,
+                        item.latency_ ?? string.Empty,
+                        item.throughput_ ?? string.Empty,
+                        item.mu_Ops_Port_ ?? string.Empty,
+                    ]);
+                    i++;
+                }
+
+                // Each padded column is as wide as the widest of its header label and every data cell,
+                // computed per architecture so each table is as narrow as its own data allows.
+                int[] width = new int[ColCount];
+                for (int c = 0; c < ColCount; c++)
+                {
+                    width[c] = header[c].Length;
+                    foreach (string[] row in rows)
+                    {
+                        width[c] = Math.Max(width[c], row[c].Length);
+                    }
+                }
+
+                result.Append("\n\n**Performance (").Append(arch).Append(")**\n\n```text\n");
+                StringBuilder table = new();
+                AppendRow(table, header, "Ports", width);
+                foreach (string[] row in rows)
+                {
+                    table.Append('\n');
+                    AppendRow(table, row, row[4], width);
+                }
+
+                result.Append(table).Append("\n```");
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
         /// Appends one table line: each of the six padded columns (left-aligned to <paramref name="width"/>,
         /// separated by two spaces) followed by the optional raw <paramref name="remark"/>. Trailing
         /// whitespace is trimmed so header/empty cells don't leave a ragged right edge.

@@ -3129,6 +3129,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
         string keyword_uppercase = keyword.ToUpperInvariant();
         string[]? hoverContent = null;
         string? hoverKeyword = null; // keyword text for colored mnemonic display
+        string? perfMarkdownSection = null; // pre-composed markdown perf fragment, Markdown clients only (mnemonic/jump case)
         AsmTokenType tokenType = this.GetAsmTokenType(keyword_uppercase);
 
         // Prefer the real parser's classification at this position — GetAsmTokenType is a string-only
@@ -3194,26 +3195,43 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                         }
                     }
 
-                    string full_Descr = AsmTools.AsmSourceTools.Linewrap($"{mnemonic} :[{archStr}] {descr}", MaxNumberOfCharsInToolTips);
+                    // ArchTools.ToString(IEnumerable<Arch>) already returns its own bracketed " [ARCH,…]";
+                    // do not wrap it in another pair of brackets here. Markdown clients get the mnemonic
+                    // and arch list as one paragraph and the description text as the next paragraph (a
+                    // single newline is only a soft break in markdown, so a blank line is required), and
+                    // no Linewrap, because the markdown renderer reflows text itself. Plaintext clients
+                    // keep the single pre-wrapped line.
+                    string full_Descr = (this.HoverMarkupKind == MarkupKind.Markdown)
+                        ? $"{mnemonic} :{archStr}\n\n{descr}"
+                        : AsmTools.AsmSourceTools.Linewrap($"{mnemonic} :{archStr} {descr}", MaxNumberOfCharsInToolTips);
                     string performanceStr = "";
 
-                    bool performanceInfoAvailable = false;
                     if (this.options.PerformanceInfo_On)
                     {
                         MicroArch selectedMicroArchs = this.options.Get_MicroArch_Switched_On();
-                        // uops.info has one row per operand form; collapse rows with identical timing so the
-                        // table stays a handful of lines instead of dozens per mnemonic. BuildPerformanceTable
-                        // sizes each column to its widest cell so the headers and rows line up even when an
-                        // operand form is long (see PerformanceDisplay for the previous fixed-width bug).
+                        // uops.info has one row per operand form; collapse rows with identical timing so
+                        // the hover stays a handful of entries instead of dozens per mnemonic. The two
+                        // client kinds need different table shapes. Markdown clients get a bold heading
+                        // paragraph plus a slim fenced table (BuildPerformanceMarkdown), because the VS
+                        // markdown hover wraps fenced monospace text at roughly 55 characters and cannot
+                        // render any wider layout. Plaintext clients get the full-width padded table;
+                        // their _vs_rawContent path renders it in a fixed-pitch font at full width.
                         var collapsed = PerformanceDisplay.CollapseByTiming(this.performanceStore.GetPerformance(mnemonic, selectedMicroArchs));
-                        performanceStr = PerformanceDisplay.BuildPerformanceTable(collapsed);
-                        performanceInfoAvailable = performanceStr.Length > 0;
+                        if (this.HoverMarkupKind == MarkupKind.Markdown)
+                        {
+                            string perfMarkdown = PerformanceDisplay.BuildPerformanceMarkdown(collapsed);
+                            perfMarkdownSection = (perfMarkdown.Length > 0) ? perfMarkdown : null;
+                        }
+                        else
+                        {
+                            performanceStr = PerformanceDisplay.BuildPerformanceTable(collapsed);
+                        }
                     }
 
                     hoverContent = [
                         full_Descr,
                         // BuildPerformanceTable already emits the "Performance:" title; separate with a blank line.
-                        performanceInfoAvailable ? "\n" + performanceStr : "",
+                        (performanceStr.Length > 0) ? "\n" + performanceStr : "",
                     ];
                     break;
                 }
@@ -3473,7 +3491,7 @@ public class LanguageServer : INotifyPropertyChanged, IDisposable
                 ? this.GetMnemonicUrl(hoverKeyword)
                 : null;
 
-            return HoverBuilder.CreateHover(this.HoverMarkupKind, hoverContent, line, startPos, endPos, docUrl);
+            return HoverBuilder.CreateHover(this.HoverMarkupKind, hoverContent, line, startPos, endPos, docUrl, perfMarkdownSection, hoverKeyword);
         }
         return null;
     }
