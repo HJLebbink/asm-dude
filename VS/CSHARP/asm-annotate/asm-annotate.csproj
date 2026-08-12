@@ -16,12 +16,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="itext" Version="9.6.0" />
+    <PackageReference Include="itext" Version="9.7.0" />
     <!-- Pin to fix CVE GHSA-5crp-9r3c-p9vr in transitive Newtonsoft.Json 9.0.1 from itext -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <!-- BannedApiAnalyzers + VisualStudio.Threading.Analyzers are provided centrally by
          VS/CSHARP/Directory.Build.props. -->
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.301">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.400">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

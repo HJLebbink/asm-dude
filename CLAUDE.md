@@ -87,7 +87,7 @@ The LSP server is split into two projects following the **library + executable p
    - Main class: `LanguageServer.cs` manages LSP communication via StreamJsonRpc
    - Features: syntax highlighting, code completion, signature help, hover info, folding ranges
    - **Semantic Tokens**: Rich syntax highlighting via `textDocument/semanticTokens/full`
-   - **LSP Types**: Uses `Microsoft.VisualStudio.LanguageServer.Protocol` 18.5.3 (public API, no hacks needed)
+   - **LSP Types**: Uses `Microsoft.VisualStudio.LanguageServer.Protocol` (public API, no hacks needed)
    - **VS-specific Types**: Uses `VSTypes.cs` and `VSInternalTypes.cs` for Visual Studio extensions
 
 2. **VS Extension (asm-dude2-vsix)**: Modern Visual Studio 2022/2026 extension (.NET 10.0-windows)
@@ -287,11 +287,12 @@ dotnet test VS\CSHARP\asm-dude2-ls-tests\asm-dude2-ls-tests.csproj
 
 **Status**: COMPLETE
 
-The LSP server uses `Microsoft.VisualStudio.LanguageServer.Protocol` 18.5.1 (from vssdk feed) with 261 public types. No CLR hacks needed.
+The LSP server uses `Microsoft.VisualStudio.LanguageServer.Protocol` (from the vssdk feed), where all LSP
+types are public. No CLR hacks needed.
 
-**Current Setup**:
-- ✅ `Microsoft.VisualStudio.LanguageServer.Protocol` 18.5.1 - all LSP types public
-- ✅ `Microsoft.VisualStudio.LanguageServer.Protocol.Extensions` 18.5.1 - VS-specific extensions
+**Current Setup** (version numbers live in [Package Dependencies](#package-dependencies-updated-for-vs-2026)):
+- ✅ `Microsoft.VisualStudio.LanguageServer.Protocol` - all LSP types public
+- ✅ `Microsoft.VisualStudio.LanguageServer.Protocol.Extensions` - VS-specific extensions
 - ✅ Built-in System.Text.Json serialization (no custom converters needed)
 - ✅ Uses `Uri` type for document identifiers
 - ✅ Uses `int` for Position.Line/Character
@@ -314,16 +315,21 @@ Z3 is **not on nuget.org** — it is distributed as `.nupkg` files on GitHub rel
 1. Go to https://github.com/Z3Prover/z3/releases and find the new release.
 2. Download `Microsoft.Z3.<version>.nupkg` (and optionally `.snupkg`) from the release assets.
 3. Place the file(s) in `local-nuget/` at the repo root (replace the old files).
-4. Update the `Microsoft.Z3` version in:
+4. Update the `Microsoft.Z3` version in all four projects that reference it:
    - `VS/CSHARP/asm-sim-lib/asm-sim-lib.csproj`
+   - `VS/CSHARP/asm-sim-host-lib/asm-sim-host-lib.csproj`
+   - `VS/CSHARP/asm-sim-main/asm-sim-main.csproj`
    - `VS/CSHARP/asm-sim-tests/asm-sim-tests.csproj`
-5. Run `dotnet build VS/AsmDude.sln` — verify 0 errors.
-6. Run simulator tests via `vstest.console.dll` (not `dotnet test` — silent failure on .NET 10 + MSTest 4.1):
+5. Run `dotnet build VS/AsmDude.sln` and verify 0 errors.
+6. Run simulator tests via `vstest.console.dll` (not `dotnet test`, which fails silently on .NET 10 + MSTest):
    ```
    dotnet "C:/Program Files/dotnet/sdk/10.0.100/vstest.console.dll" VS/CSHARP/asm-sim-tests/bin/Debug/net10.0-windows/asm-sim-tests.dll
    ```
-   Expected: **152 passed, 28 skipped, 0 failed**.
+   Expected on Z3 5.0.0 (verified 2026-08-13): **262 passed, 3 skipped, 0 failed**, about 3 minutes.
 7. Verify `libz3.dll` appears in `VS/CSHARP/asm-dude2-ls/bin/Debug/net10.0-windows/`.
+
+The 4.16.0 → 5.0.0 major bump needed no source change: the managed `Microsoft.Z3` API AsmSim uses is
+unchanged.
 
 The NuGet source `local-z3` → `local-nuget/` is already configured in `NuGet.config`.
 
@@ -637,19 +643,33 @@ the real placeholder descriptions, asm-dude2-ls-tests).
 
 ## Package Dependencies (Updated for VS 2026)
 
-**Current Packages** (All Stable & Available):
-- `Microsoft.VisualStudio.LanguageServer.Protocol` **18.5.3** (LSP types - public API, vssdk feed)
-- `Microsoft.VisualStudio.LanguageServer.Protocol.Extensions` **18.5.3** (VS-specific LSP extensions)
-- `StreamJsonRpc` **2.25.9** (`asm-dude2-ls-lib` only) / **2.24.84** (`asm-dude2-vsix` only — see note below)
-- `Microsoft.VisualStudio.SDK` **17.14.40265** (VS 2022/2026 — see note below)
-- `Microsoft.VSSDK.BuildTools` **17.14.2120** (VS 2022/2026 — see note below)
-- `Microsoft.Extensions.Logging.Abstractions` **10.0.3** (Logging)
+**Current Packages** (all stable and available; verified 2026-08-13):
+- `Microsoft.VisualStudio.LanguageServer.Protocol` **18.11.1** (LSP types, public API, vssdk feed)
+- `Microsoft.VisualStudio.LanguageServer.Protocol.Extensions` **18.11.1** (VS-specific LSP extensions)
+- `Microsoft.VisualStudio.Language.StandardClassification` **18.11.21** (classification names)
+- `Microsoft.VisualStudio.Extensibility.Sdk` / `.Build` **18.8.1103-Preview** (VSIX; see the version-matching rule below)
+- `StreamJsonRpc` **2.26.57** (`asm-dude2-ls-lib`, `asm-sim-server`)
+- `MessagePack` **3.1.8**, `Nerdbank.MessagePack` **1.2.36**, `Nerdbank.Streams` **2.13.31**
+- `Microsoft.Extensions.Logging.Abstractions` / `Microsoft.Extensions.Hosting` **10.0.11**
+- `Microsoft.Z3` **5.0.0** (from `local-nuget/`, not nuget.org; see [Upgrading Z3](#upgrading-z3))
+- `Microsoft.CodeAnalysis.CSharp.Scripting` **5.6.0**, `itext` **9.7.0**
+- Analyzers (in `VS/CSHARP/Directory.Build.props`): `Meziantou.Analyzer` **3.0.151**,
+  `Microsoft.VisualStudio.Threading.Analyzers` **18.7.57**,
+  `Microsoft.CodeAnalysis.BannedApiAnalyzers` **5.6.0**
+- Tests: `Microsoft.NET.Test.Sdk` **18.8.1**, `xunit.v3` **3.2.2**, `MSTest.*` **4.3.3**
 
 
 **Note:** Starting with Extensibility SDK 18.5, the VSIX can target `net10.0-windows8.0`. The extension host in VS 18.5+ supports .NET 10. Previous versions required `net8.0-windows8.0` (see [microsoft/VSExtensibility#544](https://github.com/microsoft/VSExtensibility/issues/544)).
 
 **⚠ The `Microsoft.VisualStudio.Extensibility.Sdk` minor version MUST match the installed Visual Studio minor version.**
-The SDK generates `Microsoft.VisualStudio.RpcContracts` with a matching version at build time. If the SDK minor version is higher than VS (e.g., SDK 18.6 on VS 18.5), VS rejects the extension because it doesn't have the newer RpcContracts. If the SDK version is too old (e.g., SDK 18.2 on VS 18.5), commands may silently fail to register. Check your VS version via Help → About (or `vswhere -property installationVersion`), then use the matching SDK preview from the vssdk feed. Current: installed VS is **18.8** (Insiders, the `0fafafd7` Exp hive) → SDK **18.8**.1030-Preview. Do NOT jump to the absolute-latest 18.9 SDK while VS is 18.8 — a higher SDK than VS is rejected (RpcContracts mismatch). Latest per-band on the vssdk feed (June 2026): 18.7.1240 / 18.8.1030 / 18.9.750.
+The SDK generates `Microsoft.VisualStudio.RpcContracts` with a matching version at build time. If the SDK minor version is higher than VS (e.g., SDK 18.6 on VS 18.5), VS rejects the extension because it doesn't have the newer RpcContracts. If the SDK version is too old (e.g., SDK 18.2 on VS 18.5), commands may silently fail to register. Check your VS version via Help → About (or `vswhere -property installationVersion`), then use the matching SDK preview from the vssdk feed.
+
+**With more than one VS installed, the OLDEST one sets the ceiling.** Two are installed
+(verified 2026-08-13): Insiders is **18.9** and Community is **18.8**. The SDK is therefore pinned to the
+**18.8** band, currently **18.8.1103-Preview**, because an 18.9 SDK would be rejected by the 18.8 install
+(RpcContracts mismatch). One band behind the newest VS is fine; a large gap is not, since commands can then
+silently fail to register. Latest per band on the vssdk feed (August 2026): 18.7.1266 / 18.8.1103 /
+18.9.1291 / 18.10.1126 / 18.11.327.
 
 **NuGet Sources**: Requires both nuget.org and vssdk feed (configured in `NuGet.config`):
 ```

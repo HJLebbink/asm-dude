@@ -29,21 +29,21 @@
 
   <ItemGroup>
     <!-- Meziantou: pragmatic correctness / immutability / readonly rules (the "readonly data structures" ask). -->
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.117">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.151">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
 
     <!-- VSTHRD async / JoinableTask / StreamJsonRpc deadlock rules — important for the LSP server,
          the VSIX and the sim server. -->
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.7.23">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.7.57">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
 
     <!-- Bans ad-hoc logging APIs (Console / File.Append*) so logging goes through AsmLog — see
          BannedSymbols.txt + the CLAUDE.md "Logging" rule. CLI/test/fuzzer projects opt out via NoWarn. -->
-    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="4.14.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -45,8 +45,10 @@ internal class AsmLabelCodeLens : InvokableCodeLens
         if (desc != null && desc.StartsWith("refcount:"))
         {
             int pipeIdx = desc.IndexOf('|');
-            if (pipeIdx > 0)
-                int.TryParse(desc.AsSpan(9, pipeIdx - 9), out count);
+            if (pipeIdx > 0 && int.TryParse(desc.AsSpan(9, pipeIdx - 9), out int parsed))
+            {
+                count = parsed;
+            }
         }
 
         string text = count == 1 ? "1 reference" : $"{count} references";

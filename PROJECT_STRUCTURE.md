@@ -16,7 +16,7 @@
 - **Path**: `VS/CSHARP/asm-sim-lib/asm-sim-lib.csproj`
 - **Target**: net10.0-windows
 - **Namespace**: asm_sim_lib2
-- **Dependencies**: asm-tools-lib, Microsoft.Z3 (4.16.0), QuikGraph (2.5.0)
+- **Dependencies**: asm-tools-lib, Microsoft.Z3 (5.0.0), QuikGraph (2.5.0)
 - **Key Types**:
   - `State`, `StateUpdate`, `StaticFlow`, `DynamicFlow` - Simulation state
   - `OpcodeBase` and derived classes - Instruction implementations
@@ -27,7 +27,7 @@
 - **Path**: `VS/CSHARP/asm-dude2-ls-lib/asm-dude2-ls-lib.csproj`
 - **Target**: net10.0-windows
 - **Namespace**: AsmDude2LS
-- **Dependencies**: asm-tools-lib, asm-sim-lib, Microsoft.VisualStudio.LanguageServer.Protocol (18.5.3), StreamJsonRpc (2.25.9)
+- **Dependencies**: asm-tools-lib, asm-sim-lib, Microsoft.VisualStudio.LanguageServer.Protocol (18.11.1), StreamJsonRpc (2.26.57)
 - **Key Types**:
   - `LanguageServer` - LSP server implementation
   - `MnemonicStore`, `PerformanceStore` - Data stores

@@ -22,9 +22,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StreamJsonRpc" Version="2.26.21" />
+    <PackageReference Include="StreamJsonRpc" Version="2.26.57" />
     <!-- StreamJsonRpc pulls a vulnerable MessagePack transitively; pin the patched version (NU1903). -->
-    <PackageReference Include="MessagePack" Version="3.1.7" />
+    <PackageReference Include="MessagePack" Version="3.1.8" />
   </ItemGroup>
 
   <ItemGroup>

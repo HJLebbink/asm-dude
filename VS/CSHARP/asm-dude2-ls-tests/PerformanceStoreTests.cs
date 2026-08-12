@@ -195,4 +195,40 @@ public class PerformanceStoreTests
     }
 
     #endregion
+
+    #region Bundled data integrity
+
+    // Every row of every bundled TSV must carry a mnemonic the Mnemonic enum recognizes; the loader
+    // silently drops unknown rows (with a runtime warning), so an unrecognized name means that timing
+    // data never reaches the user. This guards the asm-annotate perf-uops importer's normalization:
+    // uops.info iclass names carry disambiguation suffixes (PCMPESTRI64, MOV_CR, VPEXTRW_C5, ...) that
+    // must be mapped to real mnemonics at TSV generation time.
+    [Fact]
+    public void BundledTsvFiles_AllMnemonicsAreKnown()
+    {
+        var unknown = new SortedSet<string>();
+        foreach (string file in Directory.EnumerateFiles(this._performancePath, "*.tsv"))
+        {
+            foreach (string line in File.ReadLines(file))
+            {
+                if (line.Length == 0 || line[0] == ';' || line[0] == '#')
+                {
+                    continue;
+                }
+
+                int tab = line.IndexOf('\t');
+                string name = (tab < 0) ? line : line[..tab];
+                if (AsmTools.AsmSourceTools.ParseMnemonic(name, false) == Mnemonic.NONE)
+                {
+                    unknown.Add(name);
+                }
+            }
+        }
+
+        unknown.Should().BeEmpty(
+            "every bundled TSV row must parse to a known mnemonic, or its data is silently dropped at load time; unknown: {0}",
+            string.Join(", ", unknown));
+    }
+
+    #endregion
 }

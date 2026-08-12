@@ -31,6 +31,9 @@ VS/CSHARP/asm-annotate/output/
 **/.vs/*
 
 VS/packages/*
+# Z3 is not on nuget.org, so its .nupkg is downloaded by hand into local-nuget/ (see the
+# "Upgrading Z3" section in CLAUDE.md). The files are ~150 MB per release; keep them out of git.
+local-nuget/
 VS/Python/intel-doc-2-md/resources/architecture-instruction-set-extensions-programming-reference.pdf
 VS/CSHARP/asm-dude-vsix/Resources/Performance/instruction_tables.ods
 
